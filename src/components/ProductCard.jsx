@@ -14,7 +14,7 @@ function ProductCard() {
             <p>1</p>
             <div>original</div>
           </div>
-          <div className="bg-blue-100 flex flex-col gap-1 mb-6">
+          <div className="bg-blue-100 flex flex-col gap-1 pb-6 border-b border-[#EBEBEB] ">
             <p>2222</p>
             <p>333333</p>
           </div>
@@ -25,7 +25,7 @@ function ProductCard() {
             </div>
             <div>icon</div>
           </div>
-          <div className="flex flex-col gap-2"></div>
+          {/* <div className="flex flex-col gap-2"></div> */}
         </div>
       </div>
     </div>
