@@ -2,7 +2,7 @@ function ProductCard() {
   return (
     <div className="flex items-center justify-center p-4 w-[21.6rem] h-[13.5rem] bg-white rounded-2xl border-[1.5px] border-[#EBEBEB]">
       <div className="flex items-start justify-between gap-4 w-full h-full">
-        <div className="bg-amber-300 h-20 w-[4.5rem]">
+        <div className="flex items-center justify-center bg-amber-300 h-20 w-[4.5rem]">
           <div>image</div>
         </div>
         <div className="flex flex-col justify-cen w-56 h-[11rem]">
