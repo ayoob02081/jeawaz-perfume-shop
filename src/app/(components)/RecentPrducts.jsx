@@ -1,3 +1,4 @@
+import GenderType from "@/components/GenderType";
 import ProductCard from "@/components/ProductCard";
 
 function RecentPrducts() {
@@ -5,10 +6,18 @@ function RecentPrducts() {
     <div className="flex flex-col justify-around items-center h-96 bg-purple-100">
       <div className="flex justify-between items-center w-full px-6">
         <div>new products</div>
-        <div>type</div>
+       <GenderType/>
       </div>
-      <div>
-        <ProductCard />
+      <div className="flex gap-6 justify-between items-center h-56 w-full px-7 snap-x snap-mandatory overflow-x-scroll">
+        <div className="snap-center">
+          <ProductCard />
+        </div>
+        <div className="snap-center">
+          <ProductCard />
+        </div>
+        <div className="snap-center">
+          <ProductCard />
+        </div>
       </div>
       <div>scrol bar</div>
       <div className="flex items-center justify-between gap-4">

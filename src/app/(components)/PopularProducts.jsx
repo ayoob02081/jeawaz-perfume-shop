@@ -1,3 +1,4 @@
+import GenderType from "@/components/GenderType";
 import ProductCard from "@/components/ProductCard";
 
 function PopularProducts() {
@@ -5,7 +6,7 @@ function PopularProducts() {
     <div className="flex flex-col justify-around items-center h-[65rem] bg-amber-400 mx-6">
       <div className="flex flex-col gap-4 justify-between items-center w-full px-6">
         <div>popular products</div>
-        <div>type</div>
+        <GenderType />
       </div>
       <div className="flex flex-col gap-4 items-center justify-between">
         <ProductCard />

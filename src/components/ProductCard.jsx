@@ -8,7 +8,7 @@ function ProductCard() {
         <div className="flex flex-col justify-cen w-56 h-[11rem]">
           <div className="bg-green-200 flex items-center justify-between mb-4">
             <div>type</div>
-            <div>man</div>
+            <div>man icon</div>
           </div>
           <div className="bg bg-red-100 flex items-center justify-between mb-2">
             <p>1</p>
