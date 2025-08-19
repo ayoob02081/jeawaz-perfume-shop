@@ -11,7 +11,7 @@ function FooterDetail() {
         height={24}
       />
     </div>
-    <div className="grow flex flex-col items-center justify-between gap-1 ">
+    <div className="grow flex flex-col items-start justify-between gap-1 ">
       <p className="font-bold">Lorem ipsum dolor sit.</p>
       <p>Lorem, ipsum dolor.</p>
     </div>

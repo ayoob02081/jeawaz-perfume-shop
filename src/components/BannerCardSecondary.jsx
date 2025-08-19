@@ -2,8 +2,10 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 function BannerCardSecondary() {
   return (
-    <div className="relative w-[21.5rem] h-36  rounded-2xl bg-black ">
-      <div className="flex items-center justify-center text-white">backgrond</div>
+    <div className="relative w-[21.5rem] h-36  rounded-2xl from-30% via-40 bg-linear-to-r to-[#211E1A]   ">
+      <div className="flex items-center justify-center text-white">
+        backgrond
+      </div>
       <button className="absolute bottom-6 right-5 text-xs text-text-primary bg-white-10 backdrop-blur-md rounded-4xl">
         <div className=" flex items-center ">
           <p className="w-[4.9rem] h-5 px-1.5 py-1 text-[8px] bg-white hover:bg-white-10 hover:backdrop-blur-md text-black hover:text-white rounded-4xl duration-200 ">
