@@ -3,9 +3,9 @@ import Link from "next/link";
 
 function Header() {
   return (
-    <header className=" top-0 right-0 left-0 p-2 h-32">
+    <header className="top-0 right-0 left-0 p-2 h-32 container mx-auto xl:max-w-7xl">
       <nav>
-        <ul className="grid grid-cols-3 p-2 gap-x-10 gap-y-5 container mx-auto xl:max-w-7xl">
+        <ul className="grid grid-cols-3 p-2 gap-x-10 gap-y-5 ">
           <li className=" justify-items-start">
             <Link
               className="block p-3 rounded-full border-2 border-primary/10"

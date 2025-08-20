@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import "./globals.css";
+import MobilePannel from "@/components/MobilePannel";
 
 export const metadata = {
   title: "Jeawaz",
@@ -11,7 +12,8 @@ export default function RootLayout({ children }) {
     <html lang="fa" dir="rtl">
       <body className="font-display antialiased">
         <Header />
-        <div className=" xl:max-w-7xl">{children}</div>
+        {children}
+        <MobilePannel />
       </body>
     </html>
   );

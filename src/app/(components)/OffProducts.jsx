@@ -2,13 +2,13 @@ import ProductCard from "@/components/ProductCard";
 
 function OffProducts() {
   return (
-    <div className="w-screen  bg-cyan-200">
+    <div className="container mx-auto xl:max-w-7xl bg-cyan-200">
       <div className="flex flex-col justify-around items-center h-96">
         <div className="flex justify-between items-center w-full px-6">
           <div>off products</div>
           <div>time</div>
         </div>
-        <div className="flex gap-6 justify-between items-center h-56 w-full px-7 snap-x snap-mandatory overflow-x-scroll">
+        <div className="flex gap-6 justify-between items-center w-full px-7 snap-x snap-mandatory overflow-x-scroll">
           <div className="snap-center">
             <ProductCard />
           </div>

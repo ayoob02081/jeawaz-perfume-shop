@@ -10,9 +10,17 @@
 
 @font-face {
   font-family: "Vazirmatn";
-  src: url("/public/fonts/vazir/Vazirmatn-Regular.woff2") format("woff2");
+  src: url("/fonts/vazir/Vazirmatn-Regular.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("/fonts/vazir/Vazirmatn-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
   font-display: swap;
 }
 
@@ -100,7 +108,7 @@
     @apply overflow-y-hidden overflow-x-auto mx-20 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300  dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500;
   }
   .scrollbarxx {
-    @apply  scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-slate-700 scrollbar-track-slate-300 overflow-x-scroll scrollbar-h-2 ;
+    @apply scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-slate-700 scrollbar-track-slate-300 overflow-x-scroll scrollbar-h-2;
   }
 }
 
