@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 function FooterDetail() {
-  return <div className="flex items-center justify-between gap-4  h-16">
+  return <div className="flex items-center justify-between gap-4 h-16">
     <div className="bg-white p-4 rounded-full ">
       <Image
         className="w-full h-full"

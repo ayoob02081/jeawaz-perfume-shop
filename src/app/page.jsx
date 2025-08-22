@@ -5,8 +5,8 @@ import SpecialProducts from "./(components)/SpecialProducts";
 import OffProducts from "./(components)/OffProducts";
 import FilteredProducts from "./(components)/FilteredProducts";
 import PopularProducts from "./(components)/PopularProducts";
-import Footer from "@/components/Footer";
-import MobilePannel from "@/components/MobilePannel";
+import OptionsFooter from "@/components/OptionsFooter";
+import Footer from "./(components)/Footer";
 
 export default function Home() {
   return (
@@ -18,7 +18,7 @@ export default function Home() {
       <OffProducts />
       <FilteredProducts />
       <PopularProducts />
-      <Footer />
+      <OptionsFooter />
     </div>
   );
 }
