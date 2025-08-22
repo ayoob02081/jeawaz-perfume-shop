@@ -105,10 +105,13 @@
 
 @layer components {
   .scrollbarX {
-    @apply overflow-y-hidden overflow-x-auto mx-20 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300  dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500;
+    @apply overflow-y-hidden overflow-x-scroll snap-x snap-mandatory scrollbar-none [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary  dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500;
   }
-  .scrollbarxx {
-    @apply scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-slate-700 scrollbar-track-slate-300 overflow-x-scroll scrollbar-h-2;
+  .bannerSize {
+    @apply w-[21.5rem] sm:w-xl lg:w-4xl xl:w-6xl h-56 sm:h-[13.65rem] md:h-[16.35rem] lg:h-[21.8rem] xl:h-[27.2rem];
+  }
+  .bannerSecondarySize {
+    @apply w-[21.56rem] sm:w-[28.91rem] xl:w-[36.14rem] h-[8.8rem] sm:h-[11.66rem] xl:h-[14.58rem];
   }
 }
 

@@ -46,7 +46,6 @@ function ProductCard() {
             </div>
             <div>icon</div>
           </div>
-          {/* <div className="flex flex-col gap-2"></div> */}
         </div>
       </div>
     </div>

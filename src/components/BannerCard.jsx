@@ -3,7 +3,7 @@ import Image from "next/image";
 
 function BannerCard() {
   return (
-    <div className="relative flex items-center justify-center w-[21.5rem] sm:w-xl lg:w-4xl xl:w-6xl h-56 sm:h-[13.65rem] md:h-[16.35rem] lg:h-[21.8rem] xl:h-[27.2rem] border-2 border-primary-10 rounded-2xl snap-center">
+    <div className="relative flex items-center justify-center bannerSize border-2 border-primary-10 rounded-2xl overflow-hidden">
       <Image
         src="/images/Banner1 xl.jpg"
         alt="Banner"

@@ -6,7 +6,7 @@ function FilteredProducts() {
       <div className="flex justify-center items-center w-full px-6">
         filter products
       </div>
-      <div className="flex gap-4 justify-between items-center w-full px-16 py-6 snap-x snap-mandatory overflow-x-scroll">
+      <div className="flex gap-4 justify-between items-center w-full px-16 py-6 scrollbarX ">
         <FilterCard />
         <FilterCard />
         <FilterCard />

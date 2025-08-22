@@ -2,7 +2,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 function BannerCardSecondary() {
   return (
-    <div className="relative w-[21.5rem] h-36  rounded-2xl from-30% via-40 bg-linear-to-r to-[#211E1A]   ">
+    <div className="relative bannerSecondarySize rounded-2xl from-30% via-40 bg-linear-to-r to-[#211E1A] border   ">
       <div className="flex items-center justify-center text-white">
         backgrond
       </div>

@@ -2,15 +2,15 @@ import BannerCard from "@/components/BannerCard";
 
 function Banner() {
   return (
-    <div className="relative flex items-center justify-between gap-4 bg-green-100 mt-6">
-      <div className="flex gap-6 sm:gap-16 justify-between items-center w-full p-7 sm:px-16 snap-x snap-mandatory overflow-x-scroll scrollbar-none">
-        <div className="snap-center">
+    <div className="flex items-center justify-center gap-4 bg-green-100 mt-6 container mx-auto xl:max-w-7xl">
+      <div className="flex gap-6 sm:gap-10 py-6 px-6 justify-evenly items-center w-full scrollbarX">
+        <div className="snap-center pb-2">
           <BannerCard />
         </div>
-        <div className="snap-center">
+        <div className="snap-center pb-2">
           <BannerCard />
         </div>
-        <div className="snap-center">
+        <div className="snap-center pb-2">
           <BannerCard />
         </div>
       </div>
