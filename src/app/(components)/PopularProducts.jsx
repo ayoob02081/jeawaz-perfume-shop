@@ -1,4 +1,4 @@
-import GenderType from "@/components/GenderType";
+import GenderType from "@/ui/GenderType";
 import HomePageProducts from "@/components/HomePageProducts";
 import ProductCard from "@/components/ProductCard";
 

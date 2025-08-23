@@ -1,5 +1,5 @@
 import React from "react";
-import GenderType from "./GenderType";
+import GenderType from "../ui/GenderType";
 
 function HomePageProducts({ title, genderType, children, className }) {
   return (
