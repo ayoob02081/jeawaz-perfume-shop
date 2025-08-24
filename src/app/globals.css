@@ -89,6 +89,7 @@
   --color-primary: rgb(204, 49, 45);
   --color-primary-10: rgba(204, 49, 45, 0.1);
   --color-secondary: rgb(255, 244, 248);
+  --color-secondary2: rgb(247, 247, 247);
   --color-success: rgb(41, 182, 119);
   --color-warning: rgb(242, 194, 62);
   --color-error: rgb(210, 48, 45);
@@ -108,7 +109,7 @@
     @apply overflow-y-hidden overflow-x-scroll snap-x snap-mandatory scrollbar-none [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary  dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500;
   }
   .bannerSize {
-    @apply w-[21.5rem] sm:w-xl lg:w-4xl xl:w-6xl h-56 sm:h-[13.65rem] md:h-[16.35rem] lg:h-[21.8rem] xl:h-[27.2rem];
+    @apply w-[21.5rem] sm:w-[34.47rem]  md:w-[41.36rem] lg:w-[55.15rem] xl:w-[68.94rem] h-56 sm:h-[13.04rem] md:h-[15.65rem] lg:h-[20.86rem] xl:h-[26.8rem];
   }
   .bannerSecondarySize {
     @apply w-[21.56rem] sm:w-[28.91rem] xl:w-[36.14rem] h-[8.8rem] sm:h-[11.66rem] xl:h-[14.58rem];
