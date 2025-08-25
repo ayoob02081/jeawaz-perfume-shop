@@ -119,7 +119,7 @@ function Header() {
                 <Link href={"/"}>
                   <div className="flex items-center justify-center px-4 py-2 gap-2 ">
                     <CreditCardIcon className="size-5" />
-                    <p className="text-sm">hellow</p>
+                    <p className="text-sm">پشتیبانی</p>
                   </div>
                 </Link>
               </li>
