@@ -117,6 +117,12 @@
   .mobileHeader {
     @apply grid grid-cols-3 p-2 gap-x-10 gap-y-5;
   }
+  .btn {
+    @apply border border-text-secondary rounded-[3.3rem]
+  }
+  .btn-primary {
+    @apply border-4 border-secondary2 bg-primary text-white
+  }
 }
 
 @media (prefers-color-scheme: dark) {

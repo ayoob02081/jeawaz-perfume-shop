@@ -44,9 +44,9 @@ function Header() {
               </div>
             </div>
             <div className="flex flex-none items-center justify-between gap-2 lg:gap-4">
-              <li className="w-28 lg:w-36 h-10 lg:h-12 border border-text-secondary rounded-[3.3rem]">
+              <li className="w-28 lg:w-36 h-10 lg:h-12 btn">
                 <Link href={"/"}>
-                  <div className="flex items-center justify-center px-1.5 lg:px-4 py-2 lg:py-3 gap-2 ">
+                  <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2 ">
                     <p className="text-xs">ورود | ثبت نام</p>
                     <CreditCardIcon className="size-5" />
                   </div>
@@ -76,9 +76,9 @@ function Header() {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-between gap-4">
-              <li className="w-36 lg:w-44 h-12 border border-text-secondary rounded-[3.3rem]">
+              <li className="w-36 lg:w-44 h-12 btn btn-primary">
                 <Link href={"/"}>
-                  <div className="flex items-center justify-center px-5 py-3 gap-2 ">
+                  <div className="flex items-center justify-center px-5 size-full gap-2 ">
                     <CreditCardIcon className="size-6" />
                     <p className="text-xs lg:text-sm">دسته بندی ها</p>
                   </div>
@@ -115,9 +115,9 @@ function Header() {
               <li className="w-[8.18rem] flex items-center justify-center">
                 <p className="md:text-base">09180522273</p>
               </li>
-              <li className="w-24 lg:w-[7.62rem] h-10 border border-text-secondary rounded-[3.3rem]">
+              <li className="w-24 lg:w-[7.62rem] h-10 btn btn-primary">
                 <Link href={"/"}>
-                  <div className="flex items-center justify-center px-4 py-2 gap-2 ">
+                  <div className="flex items-center justify-center px-4 size-full gap-2 ">
                     <CreditCardIcon className="size-5" />
                     <p className="text-sm">پشتیبانی</p>
                   </div>

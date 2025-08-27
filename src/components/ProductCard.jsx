@@ -1,5 +1,6 @@
-import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import ImageFrame from "./ImageFrame";
 import CardIconResponsive from "./CardIconResponsive";
 
 function ProductCard() {
@@ -23,33 +24,47 @@ function ProductCard() {
             <CardIconResponsive
               src="/images/talkh.png"
               alt="raiehe icon"
-              className="max-md:hidden h-10 w-10 bg-secondary2 rounded-full hover:w-[8.35rem] duration-200"
+              className="max-md:hidden h-10 bg-secondary2"
+              hoverWidth="w-[8.35rem]"
+              justify="start"
+              title="رایحه شیرین"
+              textStyle="text-black"
               width={24}
-            >
-              {/* <p className=" opacity-100 hidden hover:flex max-md:text-xs md:text-sm hover:text-black duration-200 ">
-                رایحه شیرین
-              </p> */}
-            </CardIconResponsive>
+            />
             <CardIconResponsive
               src="/images/man1.png"
               alt="man icon"
-              className="max-md:hidden h-10 w-10 bg-secondary2 rounded-full hover:w-28 duration-200"
+              className="max-md:hidden h-10 bg-secondary2"
+              hoverWidth="w-[5.5rem]"
+              justify="end"
+              title="مردانه"
+              textStyle="text-black"
+              dir="ltr"
               width={24}
             />
             <CardIconResponsive
               src="/images/talkh.png"
               alt="raiehe icon"
-              className="md:hidden h-8 w-8 bg-secondary2 rounded-full hover:w-[6.5rem] duration-200"
-              width={17}
+              className="md:hidden h-8 bg-secondary2"
+              hoverWidth="w-[6.5rem]"
+              justify="start"
+              title="رایحه شیرین"
+              textStyle="text-black"
+              width={16}
             />
             <CardIconResponsive
               src="/images/man1.png"
               alt="man icon"
-              className="md:hidden h-8 w-8 bg-secondary2 rounded-full hover:w-20 duration-200"
-              width={17}
+              className="md:hidden h-8 bg-secondary2"
+              hoverWidth="w-[4.5rem]"
+              justify="end"
+              title="مردانه"
+              textStyle="text-black"
+              dir="ltr"
+              width={16}
             />
           </div>
-          <CardIconResponsive
+          <ImageFrame
             src="/images/perfume1.png"
             alt="perfume image"
             className="w-full grow max-md:hidden size-44"
@@ -59,13 +74,13 @@ function ProductCard() {
             <p className="text-text-secondary max-md:text-xs text-base font-bold">
               Channel
             </p>
-            <CardIconResponsive
+            <ImageFrame
               src="/images/bg-orginal.png"
               alt="orginal icon"
-              className="max-md:hidden"
+              className="max-md:hidden justify-center"
               width={77}
             />
-            <CardIconResponsive
+            <ImageFrame
               src="/images/bg-orginal.png"
               alt="orginal icon"
               className="md:hidden"

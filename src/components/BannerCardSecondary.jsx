@@ -1,10 +1,15 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import ImageFrame from "./ImageFrame";
 
 function BannerCardSecondary() {
   return (
     <div className="relative bannerSecondarySize rounded-2xl from-30% via-40 bg-linear-to-r to-[#211E1A] border   ">
       <div className="flex items-center justify-center text-white">
-        backgrond
+        <img
+          src="/images/banner2 md.png"
+          alt="banner image"
+          className="size-full"
+        />
       </div>
       <button className="absolute bottom-6 right-5 text-xs text-text-primary bg-white-10 backdrop-blur-md rounded-4xl">
         <div className=" flex items-center ">

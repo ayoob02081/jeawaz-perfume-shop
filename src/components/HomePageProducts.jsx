@@ -2,9 +2,11 @@ import React from "react";
 import GenderType from "../ui/GenderType";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-function HomePageProducts({ title, genderType, children, className }) {
+function HomePageProducts({ title, genderType, children, className, bgColor }) {
   return (
-    <div className="flex flex-col items-center py-2 container mx-auto xl:max-w-7xl gap-6 ">
+    <div
+      className={`flex flex-col items-center py-2 container mx-auto xl:max-w-7xl gap-6 ${bgColor}`}
+    >
       <div className="flex justify-between items-center w-full px-6">
         <div>{title}</div>
         <div className="flex items-center gap-4">

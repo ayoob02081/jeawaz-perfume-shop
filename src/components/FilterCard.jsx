@@ -1,17 +1,31 @@
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import ImageFrame from "./ImageFrame";
+
 function FilterCard() {
   return (
     <div className="snap-center">
-      <div className="grow grid grid-cols-3 w-72 h-24 justify-center items-center justify-items-center bg-white rounded-2xl border-[1.5px] border-[#EBEBEB] ">
-        <div className=" h-full w-full self-center justify-self-center p-3">
-          <div className="flex items-center justify-center bg-amber-300 h-[4.5rem] w-[4.5rem] rounded-xl">
-            image
-          </div>
+      <div className="flex w-72 h-24 sm:h-[7.5rem] justify-centr items-center gap-2 bg-white rounded-2xl border-[1.5px] border-[#EBEBEB] ">
+        <div className="grow flex items-center justify-center h-16 w-16 sm:w-20 sm:h-20 rounded-xl">
+          <ImageFrame
+            src="/images/perfume1.png"
+            alt="perfume image"
+            className="h-20 grow max-sm:hidden"
+            width={80}
+          />
+          <ImageFrame
+            src="/images/perfume1.png"
+            alt="perfume image"
+            className="h-20 w-9 grow sm:hidden"
+            width={72}
+          />
         </div>
-        <div className="bg-blue-100 flex flex-col gap-1 py-4 justify-self-start border-b border-[#EBEBEB] ">
-          <p>2222</p>
-          <p>333333</p>
+        <div className="grow flex flex-col gap-2 py-4 justify-self-start">
+          <p className="font-bold text-sm sm:text-base">رایحه تلخ</p>
+          <p className="text-text-secondary text-xs sm:text-sm">۲۳۰ محصول</p>
         </div>
-        <div className="justify-self-end self-end p-4">icon</div>
+        <div className="flex-none justify-self-end self-end px-4 pb-6">
+          <ArrowLeftIcon className="size-4 sm:size-5 text-black" />
+        </div>
       </div>
     </div>
   );

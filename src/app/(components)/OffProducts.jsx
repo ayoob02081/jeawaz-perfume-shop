@@ -3,7 +3,11 @@ import ProductCard from "@/components/ProductCard";
 
 function OffProducts() {
   return (
-    <HomePageProducts title={"off products"} className={""}>
+    <HomePageProducts
+      title={"off products"}
+      className={""}
+      bgColor="bg-[#FFF4F8]"
+    >
       <div className="snap-center pb-6">
         <ProductCard />
       </div>
