@@ -4,7 +4,7 @@ import ProductCard from "@/components/ProductCard";
 
 function RecentPrducts() {
   return (
-    <HomePageProducts genderType="true" title={"new products"} className={""}>
+    <HomePageProducts genderType="true" title={"new products"} className={"rounded-2xl"}>
       <div></div>
       <div className="snap-center pb-6">
         <ProductCard />

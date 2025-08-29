@@ -1,4 +1,14 @@
-import { ArrowLeftIcon, CreditCardIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowLeftIcon,
+  CheckBadgeIcon,
+  ChevronDownIcon,
+  CreditCardIcon,
+  PhoneIcon,
+  ReceiptPercentIcon,
+  Squares2X2Icon,
+  TagIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -48,7 +58,7 @@ function Header() {
                 <Link href={"/"}>
                   <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2 ">
                     <p className="text-xs">ورود | ثبت نام</p>
-                    <CreditCardIcon className="size-5" />
+                    <UserIcon className="size-5" />
                   </div>
                 </Link>
               </li>
@@ -78,9 +88,10 @@ function Header() {
             <div className="flex items-center justify-between gap-4">
               <li className="w-36 lg:w-44 h-12 btn btn-primary">
                 <Link href={"/"}>
-                  <div className="flex items-center justify-center px-5 size-full gap-2 ">
-                    <CreditCardIcon className="size-6" />
+                  <div className="flex items-center justify-center size-full gap-2 ">
+                    <Squares2X2Icon className="size-6" />
                     <p className="text-xs lg:text-sm">دسته بندی ها</p>
+                    <ChevronDownIcon className="size-4"/>
                   </div>
                 </Link>
               </li>
@@ -88,7 +99,7 @@ function Header() {
                 <li className="">
                   <Link href={"/"}>
                     <div className="flex items-center justify-center gap-2 ">
-                      <CreditCardIcon className="size-5" />
+                      <CheckBadgeIcon className="size-5" />
                       <p className="text-sm">پرفروش ترین ها</p>
                     </div>
                   </Link>
@@ -96,7 +107,7 @@ function Header() {
                 <li className="">
                   <Link href={"/"}>
                     <div className="flex items-center justify-center gap-2 ">
-                      <CreditCardIcon className="size-5" />
+                      <TagIcon className="size-5" />
                       <p className="text-sm">جدیدترین ها</p>
                     </div>
                   </Link>
@@ -104,7 +115,7 @@ function Header() {
                 <li className="">
                   <Link href={"/"}>
                     <div className="flex items-center justify-center gap-2 ">
-                      <CreditCardIcon className="size-5" />
+                      <ReceiptPercentIcon className="size-5" />
                       <p className="text-sm">تخفیف دار</p>
                     </div>
                   </Link>
@@ -118,7 +129,7 @@ function Header() {
               <li className="w-24 lg:w-[7.62rem] h-10 btn btn-primary">
                 <Link href={"/"}>
                   <div className="flex items-center justify-center px-4 size-full gap-2 ">
-                    <CreditCardIcon className="size-5" />
+                    <PhoneIcon className="size-5" />
                     <p className="text-sm">پشتیبانی</p>
                   </div>
                 </Link>

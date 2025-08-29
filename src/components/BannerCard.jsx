@@ -5,7 +5,16 @@ function BannerCard() {
   return (
     <div className="relative flex items-center justify-center bannerSize border-2 border-primary-10 rounded-2xl overflow-hidden ">
       <Image
+        className="max-sm:hidden"
         src="/images/Banner1 xl.jpg"
+        alt="Banner"
+        layout="fill"
+        objectFit="cover"
+        quality={100}
+      />
+      <Image
+        className="sm:hidden"
+        src="/images/Banner1.png"
         alt="Banner"
         layout="fill"
         objectFit="cover"

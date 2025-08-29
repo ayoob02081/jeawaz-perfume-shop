@@ -7,7 +7,7 @@ function PopularProducts() {
     <HomePageProducts
       genderType="true"
       title={"popular products"}
-      className={" flex-col md:flex-row overflow-hidden sm:overflow-x-auto"}
+      className={" flex-col md:flex-row overflow-hidden sm:overflow-x-auto rounded-2xl"}
     >
       <div className="snap-center pb-6">
         <ProductCard />

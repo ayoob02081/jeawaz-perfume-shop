@@ -9,13 +9,13 @@ function FilterCard() {
           <ImageFrame
             src="/images/perfume1.png"
             alt="perfume image"
-            className="h-20 grow max-sm:hidden"
+            className="h-20 grow max-sm:hidden justify-center"
             width={80}
           />
           <ImageFrame
             src="/images/perfume1.png"
             alt="perfume image"
-            className="h-20 w-9 grow sm:hidden"
+            className="h-20 w-9 grow sm:hidden justify-center"
             width={72}
           />
         </div>

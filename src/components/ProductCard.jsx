@@ -67,7 +67,7 @@ function ProductCard() {
           <ImageFrame
             src="/images/perfume1.png"
             alt="perfume image"
-            className="w-full grow max-md:hidden size-44"
+            className="w-full grow max-md:hidden justify-center size-44"
             width={136}
           />
           <div className="flex-none flex items-center justify-between mb-2">

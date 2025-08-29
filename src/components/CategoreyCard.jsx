@@ -9,13 +9,13 @@ function CategoreyCard() {
           <ImageFrame
             src="/images/perfume1.png"
             alt="perfume image"
-            className="h-14 w-9 grow max-md:hidden "
+            className="h-14 w-9 grow max-md:hidden justify-center "
             width={56}
           />
           <ImageFrame
             src="/images/perfume1.png"
             alt="perfume image"
-            className="h-14 w-9 grow md:hidden "
+            className="h-14 w-9 grow md:hidden justify-center"
             width={37}
           />
         </div>

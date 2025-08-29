@@ -6,7 +6,7 @@ function OffProducts() {
     <HomePageProducts
       title={"off products"}
       className={""}
-      bgColor="bg-[#FFF4F8]"
+      bgColor="bg-[#FFF4F8] rounded-2xl py-6"
     >
       <div className="snap-center pb-6">
         <ProductCard />
