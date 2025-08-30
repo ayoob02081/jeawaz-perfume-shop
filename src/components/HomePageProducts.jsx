@@ -1,6 +1,7 @@
 import React from "react";
 import GenderType from "../ui/GenderType";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 function HomePageProducts({ title, genderType, children, className, bgColor }) {
   return (
@@ -11,12 +12,15 @@ function HomePageProducts({ title, genderType, children, className, bgColor }) {
         <div>{title}</div>
         <div className="flex items-center gap-4">
           {genderType ? <GenderType /> : "Timer"}
-          <div className="hidden md:flex items-center justify-between gap-4 ">
+          <Link
+            href={"/"}
+            className="hidden md:flex items-center justify-between gap-4 pr-3 border-r-[1.5px] border-secondary2"
+          >
             <div className="text-lg text-primary">مشاهده همه</div>
             <div className="text-primary max-md:size-[1.1rem] size-6">
               <ArrowLeftIcon />
             </div>
-          </div>
+          </Link>
         </div>
       </div>
       <div

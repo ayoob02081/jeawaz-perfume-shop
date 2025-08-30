@@ -11,6 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
+import ImageFrame from "./ImageFrame";
 
 function Header() {
   return (
@@ -91,7 +92,7 @@ function Header() {
                   <div className="flex items-center justify-center size-full gap-2 ">
                     <Squares2X2Icon className="size-6" />
                     <p className="text-xs lg:text-sm">دسته بندی ها</p>
-                    <ChevronDownIcon className="size-4"/>
+                    <ChevronDownIcon className="size-4" />
                   </div>
                 </Link>
               </li>
@@ -129,7 +130,12 @@ function Header() {
               <li className="w-24 lg:w-[7.62rem] h-10 btn btn-primary">
                 <Link href={"/"}>
                   <div className="flex items-center justify-center px-4 size-full gap-2 ">
-                    <PhoneIcon className="size-5" />
+                    <ImageFrame
+                      src="/images/call-ringing-4-wihte-icon.svg"
+                      alt="call ringing icon"
+                      className=""
+                      width={20}
+                    />
                     <p className="text-sm">پشتیبانی</p>
                   </div>
                 </Link>

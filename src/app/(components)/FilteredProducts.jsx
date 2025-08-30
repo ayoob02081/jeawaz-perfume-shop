@@ -10,6 +10,7 @@ function FilteredProducts() {
         <FilterCard />
         <FilterCard />
         <FilterCard />
+        <FilterCard />
       </div>
       <div>scrol bar</div>
     </div>

@@ -1,31 +1,53 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import ImageFrame from "./ImageFrame";
 
 function BannerCard() {
   return (
-    <div className="relative flex items-center justify-center bannerSize border-2 border-primary-10 rounded-2xl overflow-hidden ">
+    <div className="relative flex items-center justify-center bannerSize border-2 border-primary-10 rounded-xl md:rounded-3xl overflow-hidden ">
       <Image
-        className="max-sm:hidden"
+        className="max-sm:hidden object-cover"
         src="/images/Banner1 xl.jpg"
         alt="Banner"
         layout="fill"
-        objectFit="cover"
         quality={100}
       />
       <Image
-        className="sm:hidden"
+        className="sm:hidden object-cover"
         src="/images/Banner1.png"
         alt="Banner"
         layout="fill"
-        objectFit="cover"
         quality={100}
       />
-      <button className="absolute bottom-7 right-5 flex items-center justify-between gap-2 px-3.5 py-2 text-xs text-white bg-primary hover:text-primary hover:bg-white ring-4 ring-primary-10 rounded-4xl duration-200">
-        <p className="">watch products</p>
-        <div>
-          <ArrowLeftIcon className=" size-4" />
+      <div className="absolute bottom-7 md:bottom-9 lg:bottom-12 right-5 md:right-6 lg:right-7 flex items-center justify-start gap-4">
+        <button className="h-8 sm:h-[2.03rem] xl:h-[2.6rem] 2xl:h-12 flex items-center justify-between gap-2 px-3.5 sm:px-3 py-2 sm:py-2 text-white bg-primary hover:text-primary hover:bg-white hover:ring-primary ring-4 sm:ring-2 ring-primary-10 rounded-4xl duration-300">
+          <p className="text-xs sm:text-[10px] xl:text-base font-bold">
+            مشاهده محصولات
+          </p>
+          <div>
+            <ArrowLeftIcon className="size-4" />
+          </div>
+        </button>
+        <div className="flex items-center justify-between gap-2 max-sm:hidden">
+          <button className="btn h-8 sm:h-[2.03rem] xl:h-[2.6rem] 2xl:h-12 rounded-full py-1 px-2 xl:px-2.5 2xl:px-3.5 ring-4 sm:ring-2 ring-primary-10 border-0 text-white bg-orange-950 hover:text-orange-950  hover:bg-white hover:ring-orange-950 duration-300">
+            <ImageFrame
+              src="/images/call-ringing-4-wihte-icon.svg"
+              alt="call ringing icon"
+              className="max-xl:hidden"
+              width={20}
+            />
+             <ImageFrame
+              src="/images/call-ringing-4-wihte-icon.svg"
+              alt="call ringing icon"
+              className="xl:hidden"
+              width={16}
+            />
+          </button>
+          <p className="text-xs sm:text-[10px] xl:text-base text-whie font-bold">
+            دریافت مشاوره
+          </p>
         </div>
-      </button>
+      </div>
     </div>
   );
 }
