@@ -1,15 +1,29 @@
 import React from "react";
-import GenderType from "../ui/GenderType";
+import GenderType from "./GenderType";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
-function HomePageProducts({ title, genderType, children, className, bgColor }) {
+function HomePageProducts({
+  title,
+  title2,
+  desc,
+  genderType,
+  children,
+  className,
+  bgColor,
+}) {
   return (
     <div
       className={`flex flex-col items-center py-2 container mx-auto xl:max-w-7xl gap-6 ${bgColor}`}
     >
       <div className="flex justify-between items-center w-full px-6">
-        <div>{title}</div>
+        <div className="flex flex-col items-center justify-center md:items-start gap-2 px-6">
+          <div className="flex items-center gap-1">
+            <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-primary">{title}</h2>
+            <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-text-primary">{title2}</h2>
+          </div>
+          <p className="text-xs sm:text-sm md:text-lg text-text-secondary">{desc}</p>
+        </div>
         <div className="flex items-center gap-4">
           {genderType ? <GenderType /> : "Timer"}
           <Link

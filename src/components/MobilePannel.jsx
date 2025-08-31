@@ -3,7 +3,7 @@ import Link from "next/link";
 
 function MobilePannel() {
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-[83px] container mx-auto xl:max-w-7xl md:hidden bg-white px-5">
+    <div className="fixed bottom-0 left-0 right-0 h-[83px] w-full md:hidden bg-white px-5 z-50">
       <ul className="grid grid-cols-4 justify-items-center p-2 gap-x-5 gap-y-5 h-full">
         <li className=" justify-items-start">
           <Link

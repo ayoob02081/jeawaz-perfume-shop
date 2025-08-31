@@ -32,13 +32,16 @@ function Header() {
                     type="search"
                     placeholder="نام ادکلن ، دسته بندی ، برند و ..."
                   />
-                  <div className="absolute left-6 top-1/2 -translate-1/2 bg-white rounded-full p-2">
+                  <div className="absolute flex items-center justify-center gap-1 left-6 lg:left-12 top-1/2 -translate-1/2 bg-white rounded-full p-2">
                     <Image
                       src="/images/search.svg"
                       alt="search icon"
                       width={24}
                       height={24}
                     />
+                    <p className="max-lg:hidden lg:flex text-sm text-text-primary">
+                      جستجو
+                    </p>
                   </div>
                 </li>
               </div>
@@ -58,7 +61,7 @@ function Header() {
               <li className="w-28 lg:w-36 h-10 lg:h-12 btn">
                 <Link href={"/"}>
                   <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2 ">
-                    <p className="text-xs">ورود | ثبت نام</p>
+                    <p className="text-xs lg:text-sm">ورود | ثبت نام</p>
                     <UserIcon className="size-5" />
                   </div>
                 </Link>

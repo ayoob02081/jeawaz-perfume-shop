@@ -1,11 +1,11 @@
-import Banner from "@/app/(components)/Banner";
-import Categories from "@/app/(components)/Categories";
-import RecentsPrducts from "./(components)/RecentPrducts";
-import SpecialProducts from "./(components)/SpecialProducts";
-import OffProducts from "./(components)/OffProducts";
-import FilteredProducts from "./(components)/FilteredProducts";
-import PopularProducts from "./(components)/PopularProducts";
 import OptionsFooter from "@/components/OptionsFooter";
+import Banner from "./(components)/Banner";
+import RecentsPrducts from "./(components)/RecentPrducts";
+import Categories from "./(components)/Categories";
+import FilteredProducts from "./(components)/FilteredProducts";
+import OffProducts from "./(components)/OffProducts";
+import PopularProducts from "./(components)/PopularProducts";
+import SpecialProducts from "./(components)/SpecialProducts";
 
 export default function Home() {
   return (

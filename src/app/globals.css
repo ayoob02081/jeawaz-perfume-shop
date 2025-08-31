@@ -100,6 +100,7 @@
   --color-yellow: rgb(231, 180, 40);
   --color-text-primary: rgb(26, 24, 20);
   --color-text-secondary: rgb(96, 96, 96);
+  --color-icon-black: rgb(4, 4, 4);
 
   /* --font-display: "Vazirmatn", "sans-serif"; */
 }
@@ -118,10 +119,10 @@
     @apply grid grid-cols-3 p-2 gap-x-10 gap-y-5;
   }
   .btn {
-    @apply border border-text-secondary rounded-[3.3rem]
+    @apply border border-text-secondary rounded-[3.3rem];
   }
   .btn-primary {
-    @apply border-4 border-secondary2 bg-primary text-white
+    @apply border-4 border-secondary2 bg-primary text-white;
   }
 }
 

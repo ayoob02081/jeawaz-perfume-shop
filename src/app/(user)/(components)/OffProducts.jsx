@@ -4,7 +4,9 @@ import ProductCard from "@/components/ProductCard";
 function OffProducts() {
   return (
     <HomePageProducts
-      title={"off products"}
+      title={"پرتخفیف ترین"}
+      title2={"محصولات"}
+      desc={"پرتخفیف ترین رایحه ها ، همین‌جاست."}
       className={""}
       bgColor="bg-[#FFF4F8] rounded-2xl py-6"
     >

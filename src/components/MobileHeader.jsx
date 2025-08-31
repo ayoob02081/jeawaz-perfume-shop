@@ -1,15 +1,24 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import MobileMenuButton from "./MobileMenu";
+import SideBar from "./SideBar";
 
-function MobileHeader() {
+function MobileHeader({}) {
+  const [open, setOpen] = useState(false);
+  const toggle = () => {
+    setOpen((prevState) => !prevState);
+  };
   return (
     <header className="top-0 right-0 left-0 p-2 h-32 container mx-auto xl:max-w-7xl md:hidden">
       <nav>
         <ul className="mobileHeader">
           <li className=" justify-items-start">
-            <Link
-              className="block p-3 rounded-full border-2 border-primary/10"
-              href="/"
+            <button
+              className="text-2xl focus:outline-none block p-3 rounded-full border-2 border-primary/10"
+              onClick={toggle}
             >
               <Image
                 src="/images/category.svg"
@@ -17,7 +26,7 @@ function MobileHeader() {
                 width={24}
                 height={24}
               />
-            </Link>
+            </button>
           </li>
           <li className=" justify-items-center">
             <Link className="block p-2" href="/">
