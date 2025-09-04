@@ -1,24 +1,28 @@
-
-function RadioButton({ name, id, checked, value, onChange, label }) {
-  return  (
-    <div className="flex items-center gap-1">
-      <input
-        type="radio"
-        name={name}
-        id={id}
-        checked={checked}
-        value={value}
-        onChange={onChange}
-        className="cursor-pointer rounded-[5px] border-none size-4 checked:text-primary-900"
-      />
-      <label
-        htmlFor={id}
-        className="cursor-pointer"
-      >
+function RadioButton({
+  name,
+  id,
+  checked,
+  value,
+  onChange,
+  label,
+  className,
+  children,
+}) {
+  return (
+      <label htmlFor={id} className={`cursor-pointer ${className}`}>
+        <input
+          type="radio"
+          name={name}
+          id={id}
+          // checked={checked}
+          value={value}
+          // onChange={onChange}
+          className="sr-only"
+        />
+        {children}
         {label}
       </label>
-    </div>
   );
 }
 
-export default RadioButton
+export default RadioButton;

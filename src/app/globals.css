@@ -90,6 +90,7 @@
   --color-primary-10: rgba(204, 49, 45, 0.1);
   --color-secondary: rgb(255, 244, 248);
   --color-secondary2: rgb(247, 247, 247);
+  --color-stroke: rgb(235, 235, 235);
   --color-success: rgb(41, 182, 119);
   --color-warning: rgb(242, 194, 62);
   --color-error: rgb(210, 48, 45);
@@ -123,6 +124,15 @@
   }
   .btn-primary {
     @apply border-4 border-secondary2 bg-primary text-white;
+  }
+  .profileLink {
+    @apply flex items-center gap-2 border-t border-stroke py-5 text-xs;
+  }
+  .profileTitle {
+    @apply text-xs text-text-primary;
+  }
+  .profileLinkSecond {
+    @apply flex items-center justify-between gap-2 border-t border-stroke py-5 text-sm;
   }
 }
 

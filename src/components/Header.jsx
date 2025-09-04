@@ -1,9 +1,9 @@
+"use client";
+
 import {
   ArrowLeftIcon,
   CheckBadgeIcon,
   ChevronDownIcon,
-  CreditCardIcon,
-  PhoneIcon,
   ReceiptPercentIcon,
   Squares2X2Icon,
   TagIcon,
@@ -12,8 +12,15 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import ImageFrame from "./ImageFrame";
+import Logo from "./Logo";
+import { useState } from "react";
+import CategorySideBar from "./CategorySideBar";
 
 function Header() {
+  const [categoryOpen, setCategooryOpen] = useState(false);
+  const toggleCategory = () => {
+    setCategooryOpen((prevState) => !prevState);
+  };
   return (
     <header className="max-md:hidden p-2 container mx-auto xl:max-w-7xl ">
       <nav>
@@ -23,7 +30,7 @@ function Header() {
               <div className="flex grow items-center justify-between">
                 <li className=" justify-items-center">
                   <Link className="block p-2" href="/">
-                    jeawaz
+                    <Logo width={92} />
                   </Link>
                 </li>
                 <li className="flex relative grow col-span-3 h-12 rounded-[48px] bg-[#F7F7F7]">
@@ -90,14 +97,21 @@ function Header() {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-between gap-4">
-              <li className="w-36 lg:w-44 h-12 btn btn-primary">
-                <Link href={"/"}>
+              <li className="w-36 lg:w-44 h-12">
+                <button
+                  className="w-full h-full btn btn-primary"
+                  onClick={toggleCategory}
+                >
                   <div className="flex items-center justify-center size-full gap-2 ">
                     <Squares2X2Icon className="size-6" />
                     <p className="text-xs lg:text-sm">دسته بندی ها</p>
                     <ChevronDownIcon className="size-4" />
                   </div>
-                </Link>
+                </button>
+                <CategorySideBar
+                  toggleCategory={toggleCategory}
+                  categoryOpen={categoryOpen}
+                />
               </li>
               <div className="flex items-center justify-start gap-4">
                 <li className="">

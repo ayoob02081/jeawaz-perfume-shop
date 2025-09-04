@@ -1,14 +1,19 @@
 "use client";
 
 import {
+  ArrowLeftIcon,
+  ChevronLeftIcon,
   ClipboardDocumentCheckIcon,
   HomeIcon,
   Squares2X2Icon,
   UserCircleIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import ImageFrame from "./ImageFrame";
+import Logo from "./Logo";
 
-function SideBar() {
+function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
   // const pathName = usePathname();
   // const { data, isLoading } = useGetUser();
   // const { user } = data || {};
@@ -35,68 +40,119 @@ function SideBar() {
   // };
 
   return (
-    <div className="bg-white w-[90vw] z-50 backdrop:backdrop-blur-3xl">
-      <ul className="flex flex-col">
-        <li>
-          <Link className="profileLink" href="/">
-            <HomeIcon className="size-5" />
-            <span>صفحه اصلی</span>
-          </Link>
+    <ul
+      className={`${
+        sidebarOpen ? "right-0" : "-right-[100vw]"
+      } absolute top-0 bg-black/30 w-[100vw] h-screen z-50 backdrop-blur-md flex flex-col duration-200`}
+    >
+      <div className="pt-6 w-[75vw] bg-white h-full">
+        <li className="p-6 pb-10 flex items-center justify-between ">
+          <Logo width={62}/>
+          <button className="size-6" onClick={toggleSideBar}>
+            <ImageFrame
+              src="/images/close-icon.svg"
+              alt="close icon"
+              className=""
+              width={24}
+            />
+          </button>
         </li>
-        <li>
-          <Link
-            // className={`${
-            //   pathName.endsWith("/profile") ? "text-primary-900" : ""
-            // } profileLink`}
-            href={"/profile"}
-          >
-            <Squares2X2Icon className="size-5" />
-            <span>داشبورد</span>
-          </Link>
-        </li>
-        <li>
-          <Link
-            // className={`${
-            //   pathName.startsWith("/profile/me") ? "text-primary-900" : ""
-            // } profileLink`}
-            href="/profile/me"
-          >
-            <UserCircleIcon className="size-5" />
-            <span>اطلاعات کاربری</span>
-          </Link>
-        </li>
-        <li>
-          <Link
-            // className={`${
-            //   pathName.startsWith("/profile/payments") ? "text-primary-900" : ""
-            // } profileLink`}
-            href={"/profile/payments"}
-          >
-            <ClipboardDocumentCheckIcon className="size-5" />
-            <span>سفارش‌ها</span>
-          </Link>
-        </li>
-        {/* <li>
-          {user?.role === "ADMIN" && (
-            <Link
-              className={`${
-                pathName.startsWith("/admin") ? "text-primary-900" : ""
-              } profileLink`}
-              href={"/admin"}
+        <div className="px-6 pb-4 border-b-4 border-stroke">
+          <li>
+            <button
+              className="profileLink justify-between text-base w-full "
+              onClick={toggleCategory}
             >
-              <UserGroupIcon className="size-5" />
-              <span>صفحه ادمین</span>
+              <div className="flex items-center">
+                <ImageFrame
+                  src="/images/category.svg"
+                  alt="offer icon"
+                  width={24}
+                  className="pl-2"
+                />
+                <div className="flex items-center justify-center gap-1 border-r-[1.5px] border-primary-10 px-2">
+                  <span className="profileTitle text-base">دسته بندی</span>
+                  <span className="profileTitle text-[10px]">محصولات</span>
+                </div>
+              </div>
+              <ChevronLeftIcon className="size-5" />
+            </button>
+          </li>
+          <li>
+            <Link
+              className="profileLink"
+              // className={`${
+              //   pathName.endsWith("/profile") ? "text-primary-900" : ""
+              // } profileLink`}
+              href={"/profile"}
+            >
+              <ImageFrame
+                src="/images/warranty-check-icon.svg"
+                alt="offer icon"
+                width={24}
+                className=""
+              />
+
+              <span className="profileTitle">پرفروش ترین ها</span>
             </Link>
-          )}
-        </li> */}
-        {/* <li>
-          <Button className="profileLink w-full" onClick={logoutHandler}>
-            <ArrowRightStartOnRectangleIcon className="size-5" />
-            <span>خروج از حساب کاربری</span>
-          </Button>
-        </li> */}
-      </ul>
-    </div>
+          </li>
+          <li>
+            <Link
+              className="profileLink"
+              // className={`${
+              //   pathName.startsWith("/profile/me") ? "text-primary-900" : ""
+              // } profileLink`}
+              href="/profile/me"
+            >
+              <ImageFrame
+                src="/images/two-tag-icon.svg"
+                alt="offer icon"
+                width={24}
+                className=""
+              />
+              <span className="profileTitle">جدیدترین ها</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              className="profileLink"
+              // className={`${
+              //   pathName.startsWith("/profile/payments") ? "text-primary-900" : ""
+              // } profileLink`}
+              href={"/profile/payments"}
+            >
+              <ImageFrame
+                src="/images/special-offer-2-icon.svg"
+                alt="offer icon"
+                width={24}
+                className=""
+              />
+              <span className="profileTitle">تخفیف دار</span>
+            </Link>
+          </li>
+        </div>
+        <div className="p-6">
+          <li>
+            <Link className="profileLinkSecond border-none" href="/">
+              <span>مطالب آموزشی</span>
+              <ChevronLeftIcon className="size-4" />
+            </Link>
+          </li>
+          <li>
+            <Link className="profileLinkSecond" href="/">
+              <span>تماس با ما</span>
+              <ChevronLeftIcon className="size-4" />
+            </Link>
+          </li>
+          <li>
+            <Link className="profileLinkSecond" href="/">
+              <span>درباره ما</span>
+              <ChevronLeftIcon className="size-4" />
+            </Link>
+          </li>
+        </div>
+      </div>
+    </ul>
   );
 }
 

@@ -3,22 +3,27 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import MobileMenuButton from "./MobileMenu";
 import SideBar from "./SideBar";
+import CategorySideBar from "./CategorySideBar";
+import Logo from "./Logo";
 
 function MobileHeader({}) {
-  const [open, setOpen] = useState(false);
-  const toggle = () => {
-    setOpen((prevState) => !prevState);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [categoryOpen, setCategooryOpen] = useState(false);
+  const toggleCategory = () => {
+    setCategooryOpen((prevState) => !prevState);
+  };
+  const toggleSideBar = () => {
+    setSidebarOpen((prevState) => !prevState);
   };
   return (
     <header className="top-0 right-0 left-0 p-2 h-32 container mx-auto xl:max-w-7xl md:hidden">
       <nav>
-        <ul className="mobileHeader">
+        <ul className="mobileHeader relative">
           <li className=" justify-items-start">
             <button
               className="text-2xl focus:outline-none block p-3 rounded-full border-2 border-primary/10"
-              onClick={toggle}
+              onClick={toggleSideBar}
             >
               <Image
                 src="/images/category.svg"
@@ -30,7 +35,7 @@ function MobileHeader({}) {
           </li>
           <li className=" justify-items-center">
             <Link className="block p-2" href="/">
-              jeawaz
+              <Logo width={82} />
             </Link>
           </li>
           <li className=" justify-items-end">
@@ -44,7 +49,7 @@ function MobileHeader({}) {
                 width={18.5}
                 height={18.5}
               />
-              <p className="absolute -top-1 -right-1 px-1.5 py-0. rounded-full bg-primary text-white text-[12px]">
+              <p className="absolute -top-1 -right-1 px-1.5 pt-[1.5px] rounded-full bg-primary text-white text-[12px]">
                 4
               </p>
             </Link>
@@ -65,6 +70,15 @@ function MobileHeader({}) {
             </div>
           </li>
         </ul>
+        <SideBar
+          toggleSideBar={toggleSideBar}
+          toggleCategory={toggleCategory}
+          sidebarOpen={sidebarOpen}
+        />
+        <CategorySideBar
+          toggleCategory={toggleCategory}
+          categoryOpen={categoryOpen}
+        />
       </nav>
     </header>
   );
