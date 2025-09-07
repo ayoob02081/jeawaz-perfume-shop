@@ -9,14 +9,7 @@ function FilteredProducts() {
         <ImageFrame
           src="/images/star-8-icon.svg"
           alt="star icon"
-          className="max-sm:hidden text-icon-black"
-          width={36}
-        />
-         <ImageFrame
-          src="/images/star-8-icon.svg"
-          alt="star icon"
-          className="sm:hidden text-icon-black"
-          width={24}
+          className="max-sm:size-4 text-icon-black sm:size-9"
         />
         <h2 className="text-text-primary">دنیایی متفاوت</h2>
       </div>

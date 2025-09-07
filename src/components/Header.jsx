@@ -2,35 +2,36 @@
 
 import {
   ArrowLeftIcon,
-  CheckBadgeIcon,
   ChevronDownIcon,
-  ReceiptPercentIcon,
   Squares2X2Icon,
-  TagIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
-import Image from "next/image";
 import Link from "next/link";
 import ImageFrame from "./ImageFrame";
 import Logo from "./Logo";
 import { useState } from "react";
 import CategorySideBar from "./CategorySideBar";
+import SideBar from "./SideBar";
 
 function Header() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categoryOpen, setCategooryOpen] = useState(false);
   const toggleCategory = () => {
     setCategooryOpen((prevState) => !prevState);
   };
+  const toggleSideBar = () => {
+    setSidebarOpen((prevState) => !prevState);
+  };
   return (
-    <header className="max-md:hidden p-2 container mx-auto xl:max-w-7xl ">
-      <nav>
+    <header className="container mx-auto xl:max-w-7xl p-2">
+      <nav className="max-md:hidden">
         <ul className="flex flex-col justify-between gap-6">
           <div className="flex items-center justify-between gap-10">
             <div className="flex grow items-center justify-betwee gap-4">
               <div className="flex grow items-center justify-between">
                 <li className=" justify-items-center">
                   <Link className="block p-2" href="/">
-                    <Logo width={92} />
+                    <Logo width="w-[5.75rem] h-12" />
                   </Link>
                 </li>
                 <li className="flex relative grow col-span-3 h-12 rounded-[48px] bg-[#F7F7F7]">
@@ -40,11 +41,10 @@ function Header() {
                     placeholder="نام ادکلن ، دسته بندی ، برند و ..."
                   />
                   <div className="absolute flex items-center justify-center gap-1 left-6 lg:left-12 top-1/2 -translate-1/2 bg-white rounded-full p-2">
-                    <Image
+                    <ImageFrame
                       src="/images/search.svg"
                       alt="search icon"
-                      width={24}
-                      height={24}
+                      className="size-6"
                     />
                     <p className="max-lg:hidden lg:flex text-sm text-text-primary">
                       جستجو
@@ -53,9 +53,9 @@ function Header() {
                 </li>
               </div>
               <div className="flex flex-none items-center justify-between gap-4">
-                <li className="">
+                {/* <li className="">
                   <p className="text-xs lg:text-sm">مطالب آموزشی</p>
-                </li>
+                </li> */}
                 <li className="">
                   <p className="text-xs lg:text-sm">درباره ما</p>
                 </li>
@@ -75,11 +75,10 @@ function Header() {
               </li>
               <li className="flex items-center justify-between w-32 lg:w-[8.8rem]">
                 <div className="size-12 px-2.5 py-2.5 rounded-full border-4 border-secondary2 bg-[#2F0D0C]">
-                  <Image
+                  <ImageFrame
                     src="/images/card stroke white.svg"
                     alt="card icon"
-                    width={24}
-                    height={24}
+                    className="size-6"
                   />
                 </div>
                 <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem]">
@@ -117,7 +116,11 @@ function Header() {
                 <li className="">
                   <Link href={"/"}>
                     <div className="flex items-center justify-center gap-2 ">
-                      <CheckBadgeIcon className="size-5" />
+                      <ImageFrame
+                        src="/images/warranty-check-icon.svg"
+                        alt="tag icon"
+                        className="size-5"
+                      />
                       <p className="text-sm">پرفروش ترین ها</p>
                     </div>
                   </Link>
@@ -125,7 +128,11 @@ function Header() {
                 <li className="">
                   <Link href={"/"}>
                     <div className="flex items-center justify-center gap-2 ">
-                      <TagIcon className="size-5" />
+                      <ImageFrame
+                        src="/images/two-tag-icon.svg"
+                        alt="tag icon"
+                        className="size-5"
+                      />
                       <p className="text-sm">جدیدترین ها</p>
                     </div>
                   </Link>
@@ -133,7 +140,11 @@ function Header() {
                 <li className="">
                   <Link href={"/"}>
                     <div className="flex items-center justify-center gap-2 ">
-                      <ReceiptPercentIcon className="size-5" />
+                      <ImageFrame
+                        src="/images/special-offer-2-icon.svg"
+                        alt="offer icon"
+                        className="size-5"
+                      />
                       <p className="text-sm">تخفیف دار</p>
                     </div>
                   </Link>
@@ -150,8 +161,7 @@ function Header() {
                     <ImageFrame
                       src="/images/call-ringing-4-wihte-icon.svg"
                       alt="call ringing icon"
-                      className=""
-                      width={20}
+                      className="size-5"
                     />
                     <p className="text-sm">پشتیبانی</p>
                   </div>
@@ -160,6 +170,66 @@ function Header() {
             </div>
           </div>
         </ul>
+      </nav>
+
+      <nav className="md:hidden h-32">
+        <ul className="mobileHeader relative">
+          <li className="justify-items-start">
+            <button
+              className="text-2xl focus:outline-none block p-3 rounded-full border-2 border-primary/10"
+              onClick={toggleSideBar}
+            >
+              <ImageFrame
+                src="/images/category.svg"
+                alt="category icon"
+                className="size-6"
+              />
+            </button>
+          </li>
+          <li className=" justify-items-center">
+            <Link className="block p-2" href="/">
+              <Logo width="h-[2.65rem] w-[5.15rem]" />
+            </Link>
+          </li>
+          <li className=" justify-items-end">
+            <Link
+              className="relative block p-3 rounded-full border-2 border-primary/10"
+              href="/"
+            >
+              <ImageFrame
+                src="/images/card stroke.svg"
+                alt="card icon"
+                className="size-[1.15rem]"
+              />
+              <p className="absolute -top-1 -right-1 px-1.5 pt-[1.5px] rounded-full bg-primary text-white text-[12px]">
+                ۴
+              </p>
+            </Link>
+          </li>
+          <li className="flex relative grow col-span-3 w-full h-12 rounded-[48px] bg-[#F7F7F7]">
+            <input
+              className="p-4 outline-0 w-full"
+              type="search"
+              placeholder="نام ادکلن ، دسته بندی ، برند و ..."
+            />
+            <div className="absolute left-6 top-1/2 -translate-1/2 bg-white rounded-full p-2">
+              <ImageFrame
+                src="/images/search.svg"
+                alt="search icon"
+                className="size-6"
+              />
+            </div>
+          </li>
+        </ul>
+        <SideBar
+          toggleSideBar={toggleSideBar}
+          toggleCategory={toggleCategory}
+          sidebarOpen={sidebarOpen}
+        />
+        <CategorySideBar
+          toggleCategory={toggleCategory}
+          categoryOpen={categoryOpen}
+        />
       </nav>
     </header>
   );

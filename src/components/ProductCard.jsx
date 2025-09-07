@@ -1,5 +1,4 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
 import ImageFrame from "./ImageFrame";
 import CardIconResponsive from "./CardIconResponsive";
 
@@ -8,83 +7,54 @@ function ProductCard() {
     <div className="flex items-center justify-center p-4 w-[21.6rem] md:w-[19.4rem] h-[13.5rem] md:h-[28.9rem] bg-white rounded-2xl border-[1.5px] border-[#EBEBEB]">
       <div className="flex items-start justify-between gap-4 w-full h-full">
         <div className="flex flex-none md:hidden items-center justify-center h-20 w-[4.5rem]">
-          <div className="size-16">
-            <Image
-              src="/images/perfume1.png"
-              alt="Perfume"
-              width={100}
-              height={100}
-              objectFit="cover"
-              quality={100}
-            />
-          </div>
+          <ImageFrame
+            src="/images/perfume1.png"
+            alt="perfume"
+            className="size-16"
+          />
         </div>
         <div className="flex grow flex-col w-full h-full">
           <div className=" flex flex-none items-center justify-between mb-4">
             <CardIconResponsive
               src="/images/talkh.png"
               alt="raiehe icon"
-              className="max-md:hidden h-10 bg-secondary2"
-              hoverWidth="w-[8.35rem]"
+              className="max-md:h-8 md:h-10 bg-secondary2"
+              hoverWidthMaxMd="w-[6.5rem]"
+              hoverWidthMd="w-[8.35rem]"
               justify="start"
               title="رایحه شیرین"
               textStyle="text-black"
-              width={24}
+              size="max-md:size-4 md:size-6"
             />
             <CardIconResponsive
               src="/images/man1.png"
               alt="man icon"
-              className="max-md:hidden h-10 bg-secondary2"
-              hoverWidth="w-[5.5rem]"
+              className="max-md:h-8 md:h-10 bg-secondary2"
+              hoverWidthMaxMd="w-[5.5rem]"
+              hoverWidthMd="w-[4.55rem]"
+              hoverWidth="md:w-[5.5rem]"
               justify="end"
               title="مردانه"
               textStyle="text-black"
               dir="ltr"
-              width={24}
-            />
-            <CardIconResponsive
-              src="/images/talkh.png"
-              alt="raiehe icon"
-              className="md:hidden h-8 bg-secondary2"
-              hoverWidth="w-[6.5rem]"
-              justify="start"
-              title="رایحه شیرین"
-              textStyle="text-black"
-              width={16}
-            />
-            <CardIconResponsive
-              src="/images/man1.png"
-              alt="man icon"
-              className="md:hidden h-8 bg-secondary2"
-              hoverWidth="w-[4.5rem]"
-              justify="end"
-              title="مردانه"
-              textStyle="text-black"
-              dir="ltr"
-              width={16}
+              size="max-md:size-4 md:size-6"
             />
           </div>
-          <ImageFrame
-            src="/images/perfume1.png"
-            alt="perfume image"
-            className="w-full grow max-md:hidden justify-center size-44"
-            width={136}
-          />
-          <div className="flex-none flex items-center justify-between mb-2">
+          <div className="grow max-md:hidden md:flex items-center justify-center">
+            <ImageFrame
+              src="/images/perfume1.png"
+              alt="perfume image"
+              className="size-[8.5rem]"
+            />
+          </div>
+          <div className="flex-none flex items-center justify-between mb-2 mt-4">
             <p className="text-text-secondary max-md:text-xs text-base font-bold">
               Channel
             </p>
             <ImageFrame
               src="/images/bg-orginal.png"
               alt="orginal icon"
-              className="max-md:hidden justify-center"
-              width={77}
-            />
-            <ImageFrame
-              src="/images/bg-orginal.png"
-              alt="orginal icon"
-              className="md:hidden"
-              width={64}
+              className="max-md:w-16 justify-center h-full md:w-[4.815rem]"
             />
           </div>
           <div className="flex-none flex flex-col gap-1 pb-6 font-bold border-b border-[#EBEBEB] ">

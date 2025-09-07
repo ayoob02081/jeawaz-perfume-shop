@@ -1,13 +1,9 @@
-import RadioButton from "@/ui/RadioButton";
-import ImageFrame from "./ImageFrame";
-
 function SideBarCategoryCard({ fieldsetId, children }) {
   return (
-    <fieldset
-      id={fieldsetId}
-      className="flex items-center justify-evenly border-t border-[#E6EAF3] bg-secondary2 h-[5.45rem]"
-    >
-      {children}
+    <fieldset id={fieldsetId} className="md:rounded-r-3xl md:overflow-hidden">
+      <div className="md:h-[30rem] border-t border-[#E6EAF3] bg-secondary2 max-md:h-[5.45rem]">
+        {children}
+      </div>
     </fieldset>
   );
 }

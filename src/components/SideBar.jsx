@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  ArrowLeftIcon,
-  ChevronLeftIcon,
-  ClipboardDocumentCheckIcon,
-  HomeIcon,
-  Squares2X2Icon,
-  UserCircleIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import ImageFrame from "./ImageFrame";
 import Logo from "./Logo";
@@ -46,14 +38,13 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
       } absolute top-0 bg-black/30 w-[100vw] h-screen z-50 backdrop-blur-md flex flex-col duration-200`}
     >
       <div className="pt-6 w-[75vw] bg-white h-full">
-        <li className="p-6 pb-10 flex items-center justify-between ">
-          <Logo width={62}/>
+        <li className="p-6 pb-10 flex items-center justify-between">
+          <Logo width="size-16" />
           <button className="size-6" onClick={toggleSideBar}>
             <ImageFrame
               src="/images/close-icon.svg"
               alt="close icon"
-              className=""
-              width={24}
+              className="size-6"
             />
           </button>
         </li>
@@ -67,8 +58,7 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
                 <ImageFrame
                   src="/images/category.svg"
                   alt="offer icon"
-                  width={24}
-                  className="pl-2"
+                  className="pl-2 size-6"
                 />
                 <div className="flex items-center justify-center gap-1 border-r-[1.5px] border-primary-10 px-2">
                   <span className="profileTitle text-base">دسته بندی</span>
@@ -89,8 +79,7 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
               <ImageFrame
                 src="/images/warranty-check-icon.svg"
                 alt="offer icon"
-                width={24}
-                className=""
+                className="size-6"
               />
 
               <span className="profileTitle">پرفروش ترین ها</span>
@@ -107,8 +96,7 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
               <ImageFrame
                 src="/images/two-tag-icon.svg"
                 alt="offer icon"
-                width={24}
-                className=""
+                className="size-6"
               />
               <span className="profileTitle">جدیدترین ها</span>
             </Link>
@@ -124,20 +112,19 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
               <ImageFrame
                 src="/images/special-offer-2-icon.svg"
                 alt="offer icon"
-                width={24}
-                className=""
+                className="size-6"
               />
               <span className="profileTitle">تخفیف دار</span>
             </Link>
           </li>
         </div>
         <div className="p-6">
-          <li>
+          {/* <li>
             <Link className="profileLinkSecond border-none" href="/">
               <span>مطالب آموزشی</span>
               <ChevronLeftIcon className="size-4" />
             </Link>
-          </li>
+          </li> */}
           <li>
             <Link className="profileLinkSecond" href="/">
               <span>تماس با ما</span>

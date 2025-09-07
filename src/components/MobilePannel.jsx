@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import ImageFrame from "./ImageFrame";
 
 function MobilePannel() {
   return (
@@ -11,12 +11,10 @@ function MobilePannel() {
             href="/"
           >
             <div className="w-6 h-6">
-              <Image
-                className="w-full h-full"
+              <ImageFrame
+                className="size-6"
                 src="/images/homefilled.svg"
                 alt="home icon"
-                width={24}
-                height={24}
               />
             </div>
             <p className="text-xs text-text-secondary">خانه</p>
@@ -28,12 +26,10 @@ function MobilePannel() {
             href="/"
           >
             <div className="w-6 h-6">
-              <Image
-                className="w-full h-full"
+              <ImageFrame
+                className="size-6"
                 src="/images/category stroke.svg"
                 alt="products icon"
-                width={24}
-                height={24}
               />
             </div>
             <p className="text-xs text-text-secondary">فروشگاه</p>
@@ -45,12 +41,10 @@ function MobilePannel() {
             href="/"
           >
             <div className="w-6 h-6">
-              <Image
-                className="w-full h-full"
+              <ImageFrame
+                className="size-6"
                 src="/images/card stroke2.svg"
                 alt="card icon"
-                width={24}
-                height={24}
               />
             </div>
             <p className="text-xs text-text-secondary">سبد خرید</p>
@@ -62,12 +56,10 @@ function MobilePannel() {
             href="/"
           >
             <div className="w-6 h-6">
-              <Image
-                className="w-full h-full"
+              <ImageFrame
+                className="size-6"
                 src="/images/acount stroke.svg"
                 alt="acount icon"
-                width={24}
-                height={24}
               />
             </div>
             <p className="text-xs text-text-secondary">پروفایل</p>

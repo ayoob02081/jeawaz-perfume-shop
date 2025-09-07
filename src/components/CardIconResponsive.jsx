@@ -1,12 +1,13 @@
 import ImageFrame from "./ImageFrame";
 
 function CardIconResponsive({
-  width,
+  size,
   src,
   alt,
   className,
   title,
-  hoverWidth,
+  hoverWidthMd,
+  hoverWidthMaxMd,
   justify,
   textStyle,
   dir,
@@ -14,20 +15,18 @@ function CardIconResponsive({
   return (
     <div
       dir={dir}
-      className={`group duration-300 rounded-[40px] px-2 hover:${hoverWidth} ${className}`}
+      className={`flex items-center group rounded-[40px] px-2 md:hover:${hoverWidthMd} max-md:hover:${hoverWidthMaxMd} bg-secondary ${className} duration-300`}
     >
       <ImageFrame
         src={src}
         alt={alt}
-        className={`size-full text-nowrap justify-${justify}`}
-        width={width}
-      >
+        className={`text-nowrap justify-${justify} ${size}`}
+      />
         <p
           className={`w-0 opacity-0 group-hover:opacity-100 duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pr-2 md:text-sm ${textStyle}`}
         >
           {title}
         </p>
-      </ImageFrame>
     </div>
   );
 }

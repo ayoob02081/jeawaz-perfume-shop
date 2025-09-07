@@ -4,45 +4,58 @@ import SidebarFilterCard from "./SideBarFilterCard";
 import FilterRadioBtn from "./FilterRadioBtn";
 import SideBarCategoryCard from "./SideBarCategoryCard";
 import CategoryRadioBtn from "./CategoryRadioBtn";
+import Backdrop from "@/ui/Backdrop";
+import Logo from "./Logo";
 
 function CategorySideBar({ toggleCategory, categoryOpen }) {
   return (
-    <div
-      className={`${categoryOpen ? "right-0" : "-right-[100vw]"} 
-    absolute top-0 w-screen h-screen bg-white z-50 overflow-auto scrollbar-none duration-200`}
-    >
-      <div className="flex items-center justify-between px-4 py-6">
+    <Backdrop toggleOpen={categoryOpen}>
+      <div className="flex items-center justify-between px-4 py-6 md:hidden md:h-0">
         <button className="size-6" onClick={toggleCategory}>
           <ArrowRightIcon className="size-5" />
         </button>
-        <span className="text-text-primary font-bold">دسته بندی محصولات </span>
+        <span className="text-text-primary font-bold">دسته بندی محصولات</span>
         <div className="size-5"></div>
       </div>
-      <form>
-        <SideBarCategoryCard fieldsetId="">
-          <CategoryRadioBtn
-            radioId="both"
-            name="gender"
-            label="عطر های مشترک"
-            imageSrc="/images/perfume1.png"
-            width={24}
-          />
-          <CategoryRadioBtn
-            radioId="women"
-            name="gender"
-            label="عطر های زنانه"
-            imageSrc="/images/perfume1.png"
-            width={24}
-          />
-          <CategoryRadioBtn
-            radioId="men"
-            name="gender"
-            label="عطر های مردانه"
-            imageSrc="/images/perfume1.png"
-            width={24}
-          />
+      <form className="flex max-md:flex-col md:items-stretch h-full">
+        <SideBarCategoryCard
+          className="md:hidden"
+          fieldsetId="category-section"
+        >
+          <div className="flex flex-col items-center justify-between h-full md:p-4 md:pl-0">
+            <div className="flex md:flex-col items-center max-md:justify-evenly">
+              <CategoryRadioBtn
+                className="p-2"
+                radioId="both"
+                name="gender"
+                label="عطر های مشترک"
+                imageSrc="/images/perfume1.png"
+                size="max-md:size-6 md:size-10 "
+                chevron="block"
+              />
+              <CategoryRadioBtn
+                className=""
+                radioId="women"
+                name="gender"
+                label="عطر های زنانه"
+                imageSrc="/images/perfume1.png"
+                size="max-md:size-6 md:size-10"
+                chevron="block"
+              />
+              <CategoryRadioBtn
+                className=""
+                radioId="men"
+                name="gender"
+                label="عطر های مردانه"
+                imageSrc="/images/perfume1.png"
+                size="max-md:size-6 md:size-10"
+                chevron="block"
+              />
+            </div>
+            <Logo width="w-[5.75rem] h-12" className="md:p-2 max-md:hidden" />
+          </div>
         </SideBarCategoryCard>
-        <div>
+        <div className="md:hidden">
           <Link
             href={"/"}
             className="flex items-center justify-between p-6 text-primary "
@@ -51,7 +64,7 @@ function CategorySideBar({ toggleCategory, categoryOpen }) {
             <ChevronLeftIcon className="text-primary size-4" />
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-y-8 justify-items-start py-8 px-6 border-t border-stroke">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-y-8 md:gap-x-6 justify-items-start items-start py-8 px-6 border-t border-stroke">
           <SidebarFilterCard fieldsetId="volume-value" title="حجم">
             <FilterRadioBtn radioId="volume-5" name="volume" label="۵ میل" />
             <FilterRadioBtn radioId="volume-10" name="volume" label="۱۰ میل" />
@@ -70,7 +83,28 @@ function CategorySideBar({ toggleCategory, categoryOpen }) {
             <FilterRadioBtn radioId="sweet-scent" name="scent" label="شیرین" />
             <FilterRadioBtn radioId="sour-scent" name="scent" label="ترش" />
           </SidebarFilterCard>
-          <SidebarFilterCard fieldsetId="price-range" title="محدوده قیمت">
+          <SidebarFilterCard fieldsetId="fragrance-type" title="طبع عطر">
+            <FilterRadioBtn
+              radioId="warm-fragrance"
+              name="fragrance"
+              label="گرم"
+            />
+            <FilterRadioBtn
+              radioId="cold-fragrance"
+              name="fragrance"
+              label="سرد"
+            />
+            <FilterRadioBtn
+              radioId="moderate-fragrance"
+              name="fragrance"
+              label="معتدل"
+            />
+          </SidebarFilterCard>
+          <SidebarFilterCard
+            fieldsetId="price-range"
+            title="محدوده قیمت"
+            className="md:col-span-2"
+          >
             <FilterRadioBtn
               radioId="under-one-million"
               name="price"
@@ -92,26 +126,9 @@ function CategorySideBar({ toggleCategory, categoryOpen }) {
               label="بالای پنج میلیون"
             />
           </SidebarFilterCard>
-          <SidebarFilterCard fieldsetId="fragrance-type" title="طبع عطر">
-            <FilterRadioBtn
-              radioId="warm-fragrance"
-              name="fragrance"
-              label="گرم"
-            />
-            <FilterRadioBtn
-              radioId="cold-fragrance"
-              name="fragrance"
-              label="سرد"
-            />
-            <FilterRadioBtn
-              radioId="moderate-fragrance"
-              name="fragrance"
-              label="معتدل"
-            />
-          </SidebarFilterCard>
         </div>
       </form>
-    </div>
+    </Backdrop>
   );
 }
 

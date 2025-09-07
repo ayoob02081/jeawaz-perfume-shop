@@ -1,29 +1,32 @@
 import RadioButton from "@/ui/RadioButton";
 import ImageFrame from "./ImageFrame";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 export default function CategoryRadioBtn({
   radioId,
   name,
   label,
   imageSrc,
-  width,
+  size,
+  chevron,
+  className,
 }) {
   return (
     <RadioButton
-      className="flex flex-col items-center justify-between h-full w-[6.75rem] text-xs rounded-b-lg px-2 py-3 text-text-primary
-            has-checked:border has-checked:border-t-0 border-primary has-checked:px-3 has-checked:bg-white has-checked:*:bg-secondary2 duration-200"
+      className={`${className} flex max-md:flex-col md:flex-row items-center justify-between max-md:h-full w-[6.75rem] md:w-56 text-xs md:text-sm rounded-b-lg max-md:px-2 md:pr-2 py-3 text-text-primary
+            has-checked:border max-md:has-checked:border-t-0 md:has-checked:border-l-0 border-primary max-md:has-checked:px-3 has-checked:bg-white has-checked:**:first:bg-secondary2 duration-200`}
       id={radioId}
       name={name}
       value={radioId}
       label={label}
+      chevron={chevron}
       //   onChange=""
       //   checked=""
     >
       <ImageFrame
         src={imageSrc}
         alt="perfume image"
-        className="felx items-center justify-center rounded-md bg-white size-10 duration-200"
-        width={width}
+        className={`felx items-center justify-center rounded-md bg-white ${size} duration-200 overflow-hidden`}
       />
     </RadioButton>
   );

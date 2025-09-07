@@ -1,15 +1,14 @@
 import RadioButton from "@/ui/RadioButton";
 import ImageFrame from "./ImageFrame";
 
-function SideBarFilterCard({ title, fieldsetId, children }) {
+function SideBarFilterCard({ title, fieldsetId, children, className }) {
   return (
-    <div className="flex flex-col items-start gap-5 text-sm">
+    <div className={`flex flex-col items-start gap-5 text-sm ${className}`}>
       <div className="flex items-center gap-1">
         <ImageFrame
           src="/images/star-2-primery-icon.svg"
           alt="star icon"
           className="size-4"
-          width={16}
         />
         <h5 className="text-text-primary">{title}</h5>
       </div>
