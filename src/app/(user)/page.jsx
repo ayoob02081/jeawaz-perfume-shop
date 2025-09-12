@@ -1,4 +1,3 @@
-import OptionsFooter from "@/components/OptionsFooter";
 import Banner from "./(components)/Banner";
 import RecentsPrducts from "./(components)/RecentPrducts";
 import Categories from "./(components)/Categories";
@@ -17,7 +16,6 @@ export default function Home() {
       <OffProducts />
       <FilteredProducts />
       <PopularProducts />
-      <OptionsFooter />
     </div>
   );
 }

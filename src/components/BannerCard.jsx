@@ -1,5 +1,6 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import ImageFrame from "./ImageFrame";
+import Link from "next/link";
 
 function BannerCard() {
   return (
@@ -17,14 +18,14 @@ function BannerCard() {
         objectFit="cover"
       />
       <div className="absolute bottom-7 md:bottom-9 lg:bottom-12 right-5 md:right-6 lg:right-7 flex items-center justify-start gap-4">
-        <button className="h-8 sm:h-[2.03rem] xl:h-[2.6rem] 2xl:h-12 flex items-center justify-between gap-2 px-3.5 sm:px-3 py-2 sm:py-2 text-white bg-primary hover:text-primary hover:bg-white hover:ring-primary ring-4 sm:ring-2 ring-primary-10 rounded-4xl duration-300">
+        <Link href={"/products"} className="h-8 sm:h-[2.03rem] xl:h-[2.6rem] 2xl:h-12 flex items-center justify-between gap-2 px-3.5 sm:px-3 py-2 sm:py-2 text-white bg-primary hover:text-primary hover:bg-white hover:ring-primary ring-4 sm:ring-2 ring-primary-10 rounded-4xl duration-300">
           <p className="text-xs sm:text-[10px] lg:text-xs xl:text-base font-bold">
             مشاهده محصولات
           </p>
           <div>
             <ArrowLeftIcon className="size-4" />
           </div>
-        </button>
+        </Link>
         <div className="flex items-center justify-between gap-2 max-sm:hidden">
           <button className="btn h-8 sm:h-[2.03rem] xl:h-[2.6rem] 2xl:h-12 rounded-full py-1 px-2 xl:px-2.5 2xl:px-3.5 ring-4 sm:ring-2 ring-primary-10 border-0 text-white bg-orange-950 hover:text-orange-950  hover:bg-white hover:ring-orange-950 duration-300">
             <ImageFrame

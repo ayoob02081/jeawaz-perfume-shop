@@ -8,7 +8,7 @@ function ProductCard() {
       <div className="flex items-start justify-between gap-4 w-full h-full">
         <div className="flex flex-none md:hidden items-center justify-center h-20 w-[4.5rem]">
           <ImageFrame
-            src="/images/perfume1.png"
+            src="/images/perfume2.svg"
             alt="perfume"
             className="size-16"
           />
@@ -42,22 +42,22 @@ function ProductCard() {
           </div>
           <div className="grow max-md:hidden md:flex items-center justify-center">
             <ImageFrame
-              src="/images/perfume1.png"
+              src="/images/perfume2.svg"
               alt="perfume image"
               className="size-[8.5rem]"
             />
           </div>
-          <div className="flex-none flex items-center justify-between mb-2 mt-4">
+          <div className="flex-none flex items-center justify-between mb-2 md:mt-4 h-6">
             <p className="text-text-secondary max-md:text-xs text-base font-bold">
               Channel
             </p>
             <ImageFrame
-              src="/images/bg-orginal.png"
+              src="/images/bg-original.svg"
               alt="orginal icon"
               className="max-md:w-16 justify-center h-full md:w-[4.815rem]"
             />
           </div>
-          <div className="flex-none flex flex-col gap-1 pb-6 font-bold border-b border-[#EBEBEB] ">
+          <div className="flex-none flex flex-col gap-1 max-md:pb-5 md:pb-6 font-bold border-b border-[#EBEBEB] ">
             <p className="max-md:text-base text-lg font-bold">
               Tiziana Terenzi
             </p>

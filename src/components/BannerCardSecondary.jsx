@@ -1,5 +1,6 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import ImageFrame from "./ImageFrame";
+import Link from "next/link";
 
 function BannerCardSecondary() {
   return (
@@ -12,7 +13,10 @@ function BannerCardSecondary() {
         />
       </div>
 
-      <button className="absolute bottom-8 sm:bottom-12 xl:bottom-14 bg-white-10 backdrop-blur-md text-text-primary hover:**:bg-transparent hover:**:text-text-primary right-5 sm:right-7 xl:right-9 font-bold text-[8px] sm:text-[10px] xl:text-xs 2xl:text-sm rounded-4xl duration-200 hover:**:duration-200">
+      <Link
+        href={"/products"}
+        className="absolute bottom-8 sm:bottom-12 xl:bottom-14 bg-white-10 backdrop-blur-md text-text-primary hover:**:bg-transparent hover:**:text-text-primary right-5 sm:right-7 xl:right-9 font-bold text-[8px] sm:text-[10px] xl:text-xs 2xl:text-sm rounded-4xl duration-200 hover:**:duration-200"
+      >
         <div className=" flex items-center h-5 sm:h-6 xl:h-8 2xl:h-8 ">
           <p className=" px-1.5 lg:px-2.5 py-1 h-full flex items-center bg-white justify-center rounded-4xl duration-200 ">
             مشاهده محصولات
@@ -21,7 +25,7 @@ function BannerCardSecondary() {
             <ArrowLeftIcon className="size-2 sm:size-3 xl:size-4" />
           </div>
         </div>
-      </button>
+      </Link>
     </div>
   );
 }

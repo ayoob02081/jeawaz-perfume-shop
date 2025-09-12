@@ -125,7 +125,7 @@
   .btn-primary {
     @apply border-4 border-secondary2 bg-primary text-secondary2 hover:bg-secondary2 hover:**:text-primary hover:border hover:border-primary duration-200;
   }
-   .btn-secondary {
+  .btn-secondary {
     @apply hover:bg-primary hover:text-secondary2 hover:border-secondary2 duration-200;
   }
   .profileLink {
@@ -136,6 +136,9 @@
   }
   .profileLinkSecond {
     @apply flex items-center justify-between gap-2 border-t border-stroke py-5 text-sm;
+  }
+  .pagesBtn {
+    @apply flex items-center justify-center size-10 text-sm bg-white border border-[#E4E7E9] hover:border hover:border-primary hover:bg-white hover:text-primary focus-within:bg-primary focus-within:border-0 focus-within:text-white rounded-full duration-200;
   }
 }
 

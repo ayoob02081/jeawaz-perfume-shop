@@ -57,10 +57,20 @@ function Header() {
                   <p className="text-xs lg:text-sm">مطالب آموزشی</p>
                 </li> */}
                 <li className="">
-                  <p className="text-xs lg:text-sm">درباره ما</p>
+                  <Link
+                    href={"/"}
+                    className="text-text-primary hover:text-primary duration-200"
+                  >
+                    <p className="text-xs lg:text-sm">درباره ما</p>
+                  </Link>
                 </li>
                 <li className="">
-                  <p className="text-xs lg:text-sm">تماس با ما</p>
+                  <Link
+                    href={"/"}
+                    className="text-text-primary hover:text-primary duration-200"
+                  >
+                    <p className="text-xs lg:text-sm">تماس با ما</p>
+                  </Link>
                 </li>
               </div>
             </div>
@@ -73,24 +83,29 @@ function Header() {
                   </div>
                 </Link>
               </li>
-              <li className="flex items-center justify-between w-32 lg:w-[8.8rem]">
-                <div className="size-12 px-2 py-2 rounded-full border-4 border-secondary2 bg-[#2F0D0C]">
-                  <ImageFrame
-                    src="/images/card stroke white.svg"
-                    alt="card icon"
-                    className="size-6"
-                  />
-                </div>
-                <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem]">
-                  <p className="text-xs lg:text-sm">سبد خرید شما</p>
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2 py-0.5 px-2 lg:px-3 rounded-3xl bg-secondary2">
-                      <p className="text-xs lg:text-sm">۴</p>
-                      <p className="text-xs lg:text-sm">کالا</p>
-                    </div>
-                    <ArrowLeftIcon className=" size-3 lg:size-4" />
+              <li>
+                <Link
+                  className="flex items-center justify-between w-32 lg:w-[8.8rem]"
+                  href={"/card"}
+                >
+                  <div className="size-12 px-2 py-2 rounded-full border-4 border-secondary2 bg-[#2F0D0C]">
+                    <ImageFrame
+                      src="/images/card stroke white.svg"
+                      alt="card icon"
+                      className="size-6"
+                    />
                   </div>
-                </div>
+                  <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem]">
+                    <p className="text-xs lg:text-sm">سبد خرید شما</p>
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center gap-2 py-0.5 px-2 lg:px-3 rounded-3xl bg-secondary2">
+                        <p className="text-xs lg:text-sm">۴</p>
+                        <p className="text-xs lg:text-sm">کالا</p>
+                      </div>
+                      <ArrowLeftIcon className=" size-3 lg:size-4" />
+                    </div>
+                  </div>
+                </Link>
               </li>
             </div>
           </div>
@@ -101,16 +116,17 @@ function Header() {
                   className="w-full h-full btn btn-primary flex items-center justify-center size-full gap-2"
                   onClick={toggleCategory}
                 >
-                  {/* <div className=" "> */}
                   <Squares2X2Icon className="size-6" />
                   <p className="text-xs lg:text-sm">دسته بندی ها</p>
                   <ChevronDownIcon className="size-4" />
-                  {/* </div> */}
                 </button>
               </li>
               <div className="flex items-center justify-start gap-4">
                 <li className="">
-                  <Link href={"/"}>
+                  <Link
+                    href={"/"}
+                    className="text-text-primary hover:text-primary duration-200"
+                  >
                     <div className="flex items-center justify-center gap-2 ">
                       <ImageFrame
                         src="/images/warranty-check-icon.svg"
@@ -122,7 +138,10 @@ function Header() {
                   </Link>
                 </li>
                 <li className="">
-                  <Link href={"/"}>
+                  <Link
+                    href={"/"}
+                    className="text-text-primary hover:text-primary duration-200"
+                  >
                     <div className="flex items-center justify-center gap-2 ">
                       <ImageFrame
                         src="/images/two-tag-icon.svg"
@@ -134,7 +153,10 @@ function Header() {
                   </Link>
                 </li>
                 <li className="">
-                  <Link href={"/"}>
+                  <Link
+                    href={"/"}
+                    className="text-text-primary hover:text-primary duration-200"
+                  >
                     <div className="flex items-center justify-center gap-2 ">
                       <ImageFrame
                         src="/images/special-offer-2-icon.svg"
