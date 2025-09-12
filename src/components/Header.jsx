@@ -65,16 +65,16 @@ function Header() {
               </div>
             </div>
             <div className="flex flex-none items-center justify-between gap-2 lg:gap-4">
-              <li className="w-28 lg:w-36 h-10 lg:h-12 btn">
+              <li className="w-28 lg:w-36 h-10 lg:h-12 btn btn-secondary">
                 <Link href={"/"}>
-                  <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2 ">
+                  <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2">
                     <p className="text-xs lg:text-sm">ورود | ثبت نام</p>
                     <UserIcon className="size-5" />
                   </div>
                 </Link>
               </li>
               <li className="flex items-center justify-between w-32 lg:w-[8.8rem]">
-                <div className="size-12 px-2.5 py-2.5 rounded-full border-4 border-secondary2 bg-[#2F0D0C]">
+                <div className="size-12 px-2 py-2 rounded-full border-4 border-secondary2 bg-[#2F0D0C]">
                   <ImageFrame
                     src="/images/card stroke white.svg"
                     alt="card icon"
@@ -98,19 +98,15 @@ function Header() {
             <div className="flex items-center justify-between gap-4">
               <li className="w-36 lg:w-44 h-12">
                 <button
-                  className="w-full h-full btn btn-primary"
+                  className="w-full h-full btn btn-primary flex items-center justify-center size-full gap-2"
                   onClick={toggleCategory}
                 >
-                  <div className="flex items-center justify-center size-full gap-2 ">
-                    <Squares2X2Icon className="size-6" />
-                    <p className="text-xs lg:text-sm">دسته بندی ها</p>
-                    <ChevronDownIcon className="size-4" />
-                  </div>
+                  {/* <div className=" "> */}
+                  <Squares2X2Icon className="size-6" />
+                  <p className="text-xs lg:text-sm">دسته بندی ها</p>
+                  <ChevronDownIcon className="size-4" />
+                  {/* </div> */}
                 </button>
-                <CategorySideBar
-                  toggleCategory={toggleCategory}
-                  categoryOpen={categoryOpen}
-                />
               </li>
               <div className="flex items-center justify-start gap-4">
                 <li className="">
@@ -161,7 +157,7 @@ function Header() {
                     <ImageFrame
                       src="/images/call-ringing-4-wihte-icon.svg"
                       alt="call ringing icon"
-                      className="size-5"
+                      className="size-5 "
                     />
                     <p className="text-sm">پشتیبانی</p>
                   </div>
@@ -226,11 +222,11 @@ function Header() {
           toggleCategory={toggleCategory}
           sidebarOpen={sidebarOpen}
         />
-        <CategorySideBar
-          toggleCategory={toggleCategory}
-          categoryOpen={categoryOpen}
-        />
       </nav>
+      <CategorySideBar
+        toggleCategory={toggleCategory}
+        categoryOpen={categoryOpen}
+      />
     </header>
   );
 }

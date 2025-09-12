@@ -23,7 +23,7 @@ function CategorySideBar({ toggleCategory, categoryOpen }) {
           fieldsetId="category-section"
         >
           <div className="flex flex-col items-center justify-between h-full md:p-4 md:pl-0">
-            <div className="flex md:flex-col items-center max-md:justify-evenly">
+            <div className="flex md:flex-col items-center max-md:justify-evenly h-full">
               <CategoryRadioBtn
                 className="p-2"
                 radioId="both"

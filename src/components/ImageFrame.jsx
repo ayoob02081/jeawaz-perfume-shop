@@ -1,9 +1,16 @@
 import Image from "next/image";
 
-function ImageFrame({ src, alt, className, children }) {
+function ImageFrame({ src, alt, className, children, objectFit = "contain" }) {
   return (
-    <div className={`relative flex items-center justify-center p-2 ${className}`}>
-      <Image src={src} alt={alt} fill={true} style={{ objectFit: "contain" }} />
+    <div
+      className={`relative flex items-center justify-center p-2 ${className}`}
+    >
+      <Image
+        src={src}
+        alt={alt}
+        fill={true}
+        style={{ objectFit: `${objectFit}` }}
+      />
       {children}
     </div>
   );

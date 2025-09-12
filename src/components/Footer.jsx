@@ -5,7 +5,7 @@ function Footer() {
     <div className="bg-black h-[43.5rem] w-full max-sm:hidden">
       <div className="flex flex-col items-center gap-6 p-16">
         <div className="flex flex-col items-center justify-center gap-4 text-white">
-          <Logo width="w-28 h-[4.25rem]" />
+          <Logo width="w-28 h-[4.25rem]" className="justify-center" />
           <p className="text-sm">جیواز، دنیای رایحه‌های خاصه</p>
         </div>
         <div className="flex flex-col items-center justify-evenly gap-2 text-text-secondary text-xs">
@@ -26,26 +26,26 @@ function Footer() {
           <div className="flex flex-col items-start gap-2">
             <h4 className="text-lg">عطر فروشی</h4>
             <div className="grid grid-cols-2 max-w-48 gap-x-4 gap-y-1 text-base text-text-secondary">
-              <p>item1</p>
-              <p>item2</p>
-              <p>item3</p>
-              <p>item4</p>
+              <p>درباره ما</p>
+              <p>ارتباط باما</p>
+              <p>قوانین و مقررات</p>
+              <p>ادرس ها</p>
             </div>
           </div>
-          <div className="flex flex-col items-start gap-2">
+          {/* <div className="flex flex-col items-start gap-2">
             <h4 className="text-lg">خدمات ما</h4>
             <div className="grid grid-cols-1 max-w-48 gap-x-4 gap-y-1 text-base text-text-secondary">
               <p>item1</p>
               <p>item2</p>
             </div>
-          </div>
+          </div> */}
           <div className="flex flex-col items-start gap-2">
-            <h4 className="text-lg">3</h4>
+            <h4 className="text-lg">فروشگاه</h4>
             <div className="grid grid-cols-2 max-w-48 gap-x-4 gap-y-1 text-base text-text-secondary">
-              <p>item1</p>
-              <p>item2</p>
-              <p>item3</p>
-              <p>item4</p>
+              <p>جدیدترین</p>
+              <p>محصولات پر تخفیف</p>
+              <p>محصولات</p>
+              <p>محصولات پرفروش</p>
             </div>
           </div>
         </div>
@@ -55,16 +55,16 @@ function Footer() {
               <p>09181231234</p>
               <p>09181231234</p>
             </div>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing.</p>
+            <p>منتظر صدای گرم شما هستیم !! اگر سوالی داشتید با ماتماس بگیرید</p>
           </div>
           <div className="flex flex-col justify-between gap-4">
-            <p>trust us</p>
+            <p>به ما اعتماد کنید</p>
             <div>trust icons</div>
           </div>
         </div>
       </div>
       <div className="flex items-center justify-between w-full px-16 text-white">
-        <p>Rules Lorem ipsum dolor sit amet.</p>
+        <p>تمامی حقوق مادی و معنوی برای این سایت محفوظ می باشد</p>
         <div>insta</div>
       </div>
     </div>
