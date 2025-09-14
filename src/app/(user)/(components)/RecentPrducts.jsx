@@ -6,6 +6,7 @@ function RecentPrducts() {
   return (
     <HomePageProducts
       genderType="true"
+      section={"recent"}
       title={"جدید ترین "}
       title2={"محصولات ما"}
       desc={"ترندهای رایحه، همین‌جاست."}

@@ -1,19 +1,27 @@
-function CheckBox({ name, id, checked, value, onChange, label, className }) {
+function CheckBox({
+  name,
+  id,
+  checked,
+  value,
+  onChange,
+  label,
+  className,
+  children,
+}) {
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
+    <label htmlFor={id} className={`flex items-center gap-2 ${className}`}>
       <input
         type="checkbox"
         name={name}
         id={id}
-        checked={checked}
+        // checked={checked}
         value={value}
-        onChange={onChange}
-        className="cursor-pointer form-checkbox rounded-[5px] border-none size-4 checked:text-primary-900"
+        // onChange={onChange}
+        className="sr-only"
       />
-      <label htmlFor={id} className="cursor-pointer">
-        {label}
-      </label>
-    </div>
+      <p>{label}</p>
+      {children}
+    </label>
   );
 }
 

@@ -120,7 +120,7 @@
     @apply grid grid-cols-3 p-2 gap-x-10 gap-y-5;
   }
   .btn {
-    @apply border border-text-secondary rounded-[3.3rem];
+    @apply flex items-center justify-center border border-text-secondary rounded-[3.3rem];
   }
   .btn-primary {
     @apply border-4 border-secondary2 bg-primary text-secondary2 hover:bg-secondary2 hover:**:text-primary hover:border hover:border-primary duration-200;

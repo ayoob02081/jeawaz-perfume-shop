@@ -11,6 +11,7 @@ function HomePageProducts({
   children,
   className,
   bgColor,
+  section,
 }) {
   return (
     <div
@@ -19,13 +20,19 @@ function HomePageProducts({
       <div className="flex justify-between items-center w-full px-6">
         <div className="flex flex-col items-center justify-center md:items-start gap-2 px-6">
           <div className="flex items-center gap-1">
-            <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-primary">{title}</h2>
-            <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-text-primary">{title2}</h2>
+            <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-primary">
+              {title}
+            </h2>
+            <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-text-primary">
+              {title2}
+            </h2>
           </div>
-          <p className="text-xs sm:text-sm md:text-lg text-text-secondary">{desc}</p>
+          <p className="text-xs sm:text-sm md:text-lg text-text-secondary">
+            {desc}
+          </p>
         </div>
         <div className="flex items-center gap-4">
-          {genderType ? <GenderType /> : "Timer"}
+          {genderType ? <GenderType section={section} /> : "Timer"}
           <Link
             href={"/"}
             className="hidden md:flex items-center justify-between gap-4 pr-3 border-r-[1.5px] border-secondary2"

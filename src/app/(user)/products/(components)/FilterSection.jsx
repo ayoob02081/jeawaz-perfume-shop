@@ -1,6 +1,8 @@
 import ImageFrame from "@/components/ImageFrame";
 import Badge from "@/ui/Badge";
-import BrandFilter from "./BrandFilter";
+import FilterCheckbox from "@/components/FilterCheckbox";
+import BreadCrumbBase from "@/ui/BreadCrumbBase";
+import BreadCrumb from "@/ui/BreadCrumb";
 
 function FilterSection() {
   return (
@@ -25,29 +27,44 @@ function FilterSection() {
           />
         </div>
       </div>
-      <div className="flex items-center justify-between w-full h-[4.5rem] border border-primary/10 bg-primary/5 rounded-[40px] px-6">
-        <BrandFilter
-          title="Calvin Klein (CK)"
-          src="/images/ck-icon.svg"
-          alt="ck icon"
-        />
-        <BrandFilter
-          title="Yves Saint Laurent (YSL)"
-          src="/images/Yves Saint Laurent (YSL)-icon.svg"
-          alt="ysl icon"
-        />
-        <BrandFilter
-          title="Chanel"
-          src="/images/channel-icon.svg"
-          alt="chanel icon"
-        />
-        <BrandFilter
-          title="Calvin Klein (CK)"
-          src="/images/ck-icon.svg"
-          alt="ck icon"
-        />
+      <form className="max-md:hidden w-full ">
+        <div className="flex items-center justify-between gap-4 w-full h-[4.5rem] border border-primary/10 bg-primary/5 rounded-[40px] px-6 overflow-auto scrollbar-none">
+          <FilterCheckbox
+            checkId={"Calvin Klein (CK)"}
+            imageSrc={"/images/ck-icon.svg"}
+            label={"Calvin Klein (CK)"}
+            name={"brandFilter"}
+            className={""}
+          />
+          <FilterCheckbox
+            checkId={"Yves Saint Laurent (YSL)"}
+            imageSrc={"/images/Yves Saint Laurent (YSL)-icon.svg"}
+            label={"Yves Saint Laurent (YSL)"}
+            name={"brandFilter"}
+            className={""}
+          />
+          <FilterCheckbox
+            checkId={"Chanel"}
+            imageSrc={"/images/channel-icon.svg"}
+            label={"Chanel"}
+            name={"brandFilter"}
+            className={""}
+          />
+          <FilterCheckbox
+            checkId={"Calvin Klein (CK)2"}
+            imageSrc={"/images/ck-icon.svg"}
+            label={"Calvin Klein (CK)2"}
+            name={"brandFilter"}
+            className={""}
+          />
+        </div>
+      </form>
+      <div className="max-md:hidden">
+        <BreadCrumbBase>
+          <BreadCrumb href={"/"} label={"home"} />
+          <BreadCrumb href={"/products"} label={"products"} chevron />
+        </BreadCrumbBase>
       </div>
-      <div>3</div>
     </div>
   );
 }

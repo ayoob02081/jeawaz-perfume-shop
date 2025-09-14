@@ -6,6 +6,7 @@ function PopularProducts() {
   return (
     <HomePageProducts
       genderType="true"
+      section={"popular"}
       title={"پر فروش ترین"}
       title2={"محصولات ما"}
       desc={"رایحه هایی که همیشه می درخشن"}
