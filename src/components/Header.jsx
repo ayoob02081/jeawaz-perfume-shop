@@ -12,15 +12,21 @@ import Logo from "./Logo";
 import { useState } from "react";
 import CategorySideBar from "./CategorySideBar";
 import SideBar from "./SideBar";
+import BackDropLogin from "./BackDropLogin";
+import Login from "./Login";
 
 function Header() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categoryOpen, setCategooryOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
   const toggleCategory = () => {
     setCategooryOpen((prevState) => !prevState);
   };
   const toggleSideBar = () => {
     setSidebarOpen((prevState) => !prevState);
+  };
+  const toggleLoginOpen = () => {
+    setLoginOpen((prevState) => !prevState);
   };
   return (
     <header className="container mx-auto xl:max-w-7xl p-2">
@@ -76,12 +82,12 @@ function Header() {
             </div>
             <div className="flex flex-none items-center justify-between gap-2 lg:gap-4">
               <li className="w-28 lg:w-36 h-10 lg:h-12 btn btn-secondary">
-                <Link href={"/"}>
+                <button onClick={toggleLoginOpen}>
                   <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2">
                     <p className="text-xs lg:text-sm">ورود | ثبت نام</p>
                     <UserIcon className="size-5" />
                   </div>
-                </Link>
+                </button>
               </li>
               <li>
                 <Link
@@ -189,7 +195,6 @@ function Header() {
           </div>
         </ul>
       </nav>
-
       <nav className="md:hidden h-32">
         <ul className="mobileHeader relative">
           <li className="justify-items-start">
@@ -212,7 +217,7 @@ function Header() {
           <li className=" justify-items-end">
             <Link
               className="relative block p-3 rounded-full border-2 border-primary/10"
-              href="/"
+              href="/card"
             >
               <ImageFrame
                 src="/images/card stroke.svg"
@@ -249,6 +254,9 @@ function Header() {
         toggleCategory={toggleCategory}
         categoryOpen={categoryOpen}
       />
+      <BackDropLogin toggleOpen={loginOpen}>
+        <Login toggleLoginOpen={toggleLoginOpen}/>
+      </BackDropLogin>
     </header>
   );
 }

@@ -23,7 +23,7 @@ function MobilePannel() {
         <li className=" justify-items-start">
           <Link
             className="flex flex-col justify-between items-center gap-2 p-3"
-            href="/"
+            href="/products"
           >
             <div className="w-6 h-6">
               <ImageFrame
@@ -38,7 +38,7 @@ function MobilePannel() {
         <li className=" justify-items-start">
           <Link
             className="flex flex-col justify-between items-center gap-2 p-3"
-            href="/"
+            href="/card"
           >
             <div className="w-6 h-6">
               <ImageFrame
@@ -53,7 +53,7 @@ function MobilePannel() {
         <li className=" justify-items-start">
           <Link
             className="flex flex-col justify-between items-center gap-2 p-3"
-            href="/"
+            href="/profile"
           >
             <div className="w-6 h-6">
               <ImageFrame

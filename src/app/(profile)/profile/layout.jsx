@@ -1,13 +1,13 @@
-import "../globals.css";
+import "../../globals.css";
 import Header from "@/components/Header";
 import MobilePannel from "@/components/MobilePannel";
 import Footer from "@/components/Footer";
 import OptionsFooter from "@/components/OptionsFooter";
-import Providers from "../Providers";
+import Providers from "../../Providers";
 
 export const metadata = {
   title: "Jeawaz",
-  description: "perfume",
+  description: "Profile",
 };
 
 export default function RootLayout({ children }) {

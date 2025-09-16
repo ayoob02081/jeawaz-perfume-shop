@@ -126,7 +126,7 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
             </Link>
           </li> */}
           <li>
-            <Link className="profileLinkSecond" href="/">
+            <Link className="profileLinkSecond border-none" href="/">
               <span>تماس با ما</span>
               <ChevronLeftIcon className="size-4" />
             </Link>

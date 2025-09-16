@@ -4,12 +4,12 @@ import SidebarFilterCard from "./SideBarFilterCard";
 import FilterRadioBtn from "./FilterRadioBtn";
 import SideBarCategoryCard from "./SideBarCategoryCard";
 import CategoryRadioBtn from "./CategoryRadioBtn";
-import Backdrop from "@/ui/Backdrop";
 import Logo from "./Logo";
+import BackDropSidebar from "./BackDropSidebar";
 
 function CategorySideBar({ toggleCategory, categoryOpen }) {
   return (
-    <Backdrop toggleOpen={categoryOpen}>
+    <BackDropSidebar toggleOpen={categoryOpen}>
       <div className="flex items-center justify-between px-4 py-6 md:hidden md:h-0">
         <button className="size-6" onClick={toggleCategory}>
           <ArrowRightIcon className="size-5" />
@@ -128,7 +128,7 @@ function CategorySideBar({ toggleCategory, categoryOpen }) {
           </SidebarFilterCard>
         </div>
       </form>
-    </Backdrop>
+    </BackDropSidebar>
   );
 }
 
