@@ -94,7 +94,7 @@ function Header() {
                   className="flex items-center justify-between w-32 lg:w-[8.8rem]"
                   href={"/card"}
                 >
-                  <div className="size-12 px-2 py-2 rounded-full border-4 border-secondary2 bg-[#2F0D0C]">
+                  <div className="size-12 px-2 py-2 rounded-full border-4 border-secondary-2 bg-[#2F0D0C]">
                     <ImageFrame
                       src="/images/card stroke white.svg"
                       alt="card icon"
@@ -104,7 +104,7 @@ function Header() {
                   <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem]">
                     <p className="text-xs lg:text-sm">سبد خرید شما</p>
                     <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-2 py-0.5 px-2 lg:px-3 rounded-3xl bg-secondary2">
+                      <div className="flex items-center gap-2 py-0.5 px-2 lg:px-3 rounded-3xl bg-secondary-2">
                         <p className="text-xs lg:text-sm">۴</p>
                         <p className="text-xs lg:text-sm">کالا</p>
                       </div>
@@ -255,7 +255,7 @@ function Header() {
         categoryOpen={categoryOpen}
       />
       <BackDropLogin toggleOpen={loginOpen}>
-        <Login toggleLoginOpen={toggleLoginOpen}/>
+        <Login toggleLoginOpen={toggleLoginOpen} />
       </BackDropLogin>
     </header>
   );

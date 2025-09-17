@@ -35,7 +35,7 @@ function HomePageProducts({
           {genderType ? <GenderType section={section} /> : "Timer"}
           <Link
             href={"/"}
-            className="hidden md:flex items-center justify-between gap-4 pr-3 border-r-[1.5px] border-secondary2"
+            className="hidden md:flex items-center justify-between gap-4 pr-3 border-r-[1.5px] border-secondary-2"
           >
             <div className="text-lg text-primary">مشاهده همه</div>
             <div className="text-primary max-md:size-[1.1rem] size-6">

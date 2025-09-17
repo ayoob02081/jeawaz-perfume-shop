@@ -60,7 +60,7 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
                   alt="offer icon"
                   className="pl-2 size-6"
                 />
-                <div className="flex items-center justify-center gap-1 border-r-[1.5px] border-primary-10 px-2">
+                <div className="flex items-center justify-center gap-1 border-r-[1.5px] border-primary/10 px-2">
                   <span className="profileTitle text-base">دسته بندی</span>
                   <span className="profileTitle text-[10px]">محصولات</span>
                 </div>

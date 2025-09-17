@@ -85,11 +85,9 @@
 
 @theme {
   --background-app-rgb: rgb(244, 245, 247);
-  --color-white-10: rgba(255, 255, 255, 0.1);
   --color-primary: rgb(204, 49, 45);
-  --color-primary-10: rgba(204, 49, 45, 0.1);
   --color-secondary: rgb(255, 244, 248);
-  --color-secondary2: rgb(247, 247, 247);
+  --color-secondary-2: rgb(247, 247, 247);
   --color-stroke: rgb(235, 235, 235);
   --color-success: rgb(41, 182, 119);
   --color-warning: rgb(242, 194, 62);
@@ -123,10 +121,10 @@
     @apply flex items-center justify-center border border-text-secondary rounded-[3.3rem];
   }
   .btn-primary {
-    @apply border-4 border-secondary2 bg-primary text-secondary2 hover:bg-secondary2 hover:**:text-primary hover:border hover:border-primary duration-200;
+    @apply border-4 border-secondary-2 bg-primary text-secondary-2 hover:bg-secondary-2 hover:**:text-primary hover:border hover:border-primary duration-200;
   }
   .btn-secondary {
-    @apply hover:bg-primary hover:text-secondary2 hover:border-secondary2 duration-200;
+    @apply hover:bg-primary hover:text-secondary-2 hover:border-secondary-2 duration-200;
   }
   .profileLink {
     @apply flex items-center gap-2 border-t border-stroke py-5 text-xs;
