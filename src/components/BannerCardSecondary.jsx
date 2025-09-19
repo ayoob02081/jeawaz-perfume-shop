@@ -3,7 +3,7 @@ import Link from "next/link";
 
 function BannerCardSecondary() {
   return (
-    <div className="relative bannerSecondarySize rounded-2xl from-30% via-40 bg-linear-to-r to-[#211E1A] border   ">
+    <div className="relative bannerSecondarySize rounded-2xl xl:rounded-3xl from-30% via-40 bg-linear-to-r to-[#211E1A] border overflow-hidden  ">
       <div className="flex items-center justify-center text-white">
         <img
           src="/images/banner2 md.png"

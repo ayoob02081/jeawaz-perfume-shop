@@ -14,6 +14,7 @@ import CategorySideBar from "./CategorySideBar";
 import SideBar from "./SideBar";
 import BackDropLogin from "./BackDropLogin";
 import Login from "./Login";
+import SearchSection from "./SearchSection";
 
 function Header() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -40,22 +41,8 @@ function Header() {
                     <Logo width="w-[5.75rem] h-12" />
                   </Link>
                 </li>
-                <li className="flex relative grow col-span-3 h-12 rounded-[48px] bg-[#F7F7F7]">
-                  <input
-                    className="p-4 outline-0 w-full"
-                    type="search"
-                    placeholder="نام ادکلن ، دسته بندی ، برند و ..."
-                  />
-                  <div className="absolute flex items-center justify-center gap-1 left-6 lg:left-12 top-1/2 -translate-1/2 bg-white rounded-full p-2">
-                    <ImageFrame
-                      src="/images/search.svg"
-                      alt="search icon"
-                      className="size-6"
-                    />
-                    <p className="max-lg:hidden lg:flex text-sm text-text-primary">
-                      جستجو
-                    </p>
-                  </div>
+                <li className="flex relative grow col-span-3 ">
+                  <SearchSection placeholder="نام ادکلن ، دسته بندی ، برند و ..." />
                 </li>
               </div>
               <div className="flex flex-none items-center justify-between gap-4">
@@ -82,7 +69,7 @@ function Header() {
             </div>
             <div className="flex flex-none items-center justify-between gap-2 lg:gap-4">
               <li className="w-28 lg:w-36 h-10 lg:h-12 btn btn-secondary">
-                <button onClick={toggleLoginOpen}>
+                <button onClick={toggleLoginOpen} className="size-full">
                   <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2">
                     <p className="text-xs lg:text-sm">ورود | ثبت نام</p>
                     <UserIcon className="size-5" />
@@ -229,19 +216,8 @@ function Header() {
               </p>
             </Link>
           </li>
-          <li className="flex relative grow col-span-3 w-full h-12 rounded-[48px] bg-[#F7F7F7]">
-            <input
-              className="p-4 outline-0 w-full"
-              type="search"
-              placeholder="نام ادکلن ، دسته بندی ، برند و ..."
-            />
-            <div className="absolute left-6 top-1/2 -translate-1/2 bg-white rounded-full p-2">
-              <ImageFrame
-                src="/images/search.svg"
-                alt="search icon"
-                className="size-6"
-              />
-            </div>
+          <li className="flex relative grow col-span-3 w-full h-12">
+            <SearchSection placeholder="نام ادکلن ، دسته بندی ، برند و ..." />
           </li>
         </ul>
         <SideBar
