@@ -35,9 +35,9 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
     <ul
       className={`${
         sidebarOpen ? "right-0" : "-right-[100vw]"
-      } absolute top-0 bg-black/30 w-[100vw] h-screen z-50 backdrop-blur-md flex flex-col duration-200`}
+      } fixed top-0 bg-black/30 w-[100vw] h-screen z-50 backdrop-blur-md flex flex-col overflow-y-auto duration-200`}
     >
-      <div className="pt-6 w-[75vw] bg-white h-full">
+      <div className="pt-6 w-[75vw] h-screen bg-white pb-28">
         <li className="p-6 pb-10 flex items-center justify-between">
           <Logo width="size-16" />
           <button className="size-6" onClick={toggleSideBar}>

@@ -8,7 +8,6 @@ const RESEND_TIME = 90;
 
 function Login({ toggleLoginOpen }) {
   const [phoneNumber, setPhoneNumber] = useState("");
-  console.log(phoneNumber.length === 11);
 
   const [step, setStep] = useState(1);
   const [time, setTime] = useState(RESEND_TIME);

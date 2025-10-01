@@ -1,18 +1,32 @@
 "use client";
 
-import { ArrowLeftIcon } from "@heroicons/react/24/solid";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
-function GoBack() {
+function GoBack({ className, onClick, side = "right", label }) {
   const router = useRouter();
 
   const GoBackHandle = () => {
+    {
+      onClick && onClick();
+    }
     router.back();
   };
 
   return (
-    <button onClick={GoBackHandle}>
-      <ArrowLeftIcon className="size-8 text-secondary-600 hover:text-secondary-800 transition-all duration-300" />
+    <button
+      onClick={GoBackHandle}
+      className="flex items-center justify-center size-full gap-2"
+    >
+      {label && side === "left" && <p className="">{label}</p>}
+      {side === "right" ? (
+        <ArrowRightIcon className={` ${className}`} />
+      ) : (
+        <ArrowLeftIcon className={` ${className}`} />
+      )}
+      {label && side === "right" && (
+        <p className="text-xl text-text-primary font-bold">{label}</p>
+      )}
     </button>
   );
 }

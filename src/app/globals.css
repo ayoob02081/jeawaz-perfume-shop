@@ -4,6 +4,7 @@
   preferredstrategy: "pseudoelements";
 }
 
+/* @import "animate.css"; */
 @font-face {
   font-family: "Vazirmatn";
   src: url("/fonts/vazir/Vazirmatn-Regular.woff2") format("woff2");
@@ -23,7 +24,6 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
- 
 }
 
 @theme inline {
@@ -37,9 +37,12 @@
 @theme {
   --background-app-rgb: rgb(244, 245, 247);
   --color-primary: rgb(204, 49, 45);
-  --color-secondary: rgb(255, 244, 248);
-  --color-secondary-2: rgb(247, 247, 247);
-  --color-stroke: rgb(235, 235, 235);
+  --color-secondary: rgb(245, 245, 247);
+  --color-secondary-2: rgb(255, 255, 255);
+  --color-stroke: rgb(240, 240, 240);
+  --color-stroke-2: rgb(235, 235, 235);
+  --color-stroke-3: rgb(230, 230, 230);
+  --color-grey: rgb(247, 247, 247);
   --color-success: rgb(41, 182, 119);
   --color-warning: rgb(242, 194, 62);
   --color-error: rgb(210, 48, 45);
@@ -48,10 +51,14 @@
   --color-brown: rgb(95, 54, 53);
   --color-purple: rgb(50, 22, 89);
   --color-yellow: rgb(231, 180, 40);
+  --color-text: rgb(25, 26, 38);
   --color-text-primary: rgb(26, 24, 20);
+  --color-text-secondary-light: rgb(168, 168, 168);
   --color-text-secondary: rgb(96, 96, 96);
+  --color-text-mokamel: rgb(95, 112, 134);
+  --color-text-cap: rgb(164, 168, 186);
   --color-icon-black: rgb(4, 4, 4);
-
+  --color-icon-brown: rgb(47, 13, 12);
   /* --font-display: "Vazirmatn", "sans-serif"; */
 }
 
@@ -69,13 +76,31 @@
     @apply grid grid-cols-3 p-2 gap-x-10 gap-y-5;
   }
   .btn {
-    @apply flex items-center justify-center border border-text-secondary rounded-[3.3rem];
+    @apply flex items-center justify-center rounded-[3.3rem];
   }
-  .btn-primary {
-    @apply border-4 border-secondary-2 bg-primary text-secondary-2 hover:bg-secondary-2 hover:**:text-primary hover:border hover:border-primary duration-200;
+  .btn--primary {
+    @apply border-4 border-grey bg-primary text-grey hover:bg-grey hover:**:text-primary hover:text-primary hover:border hover:border-primary active:bg-grey active:**:text-primary active:text-primary active:border active:border-primary duration-200;
   }
-  .btn-secondary {
-    @apply hover:bg-primary hover:text-secondary-2 hover:border-secondary-2 duration-200;
+  .btn--primary--2 {
+    @apply text-primary border-primary hover:bg-primary hover:text-grey hover:border-grey active:bg-primary active:text-grey active:border-grey duration-200;
+  }
+  .btn--secondary {
+    @apply border border-text-secondary hover:bg-primary hover:text-grey hover:border-grey active:bg-primary active:text-grey active:border-grey duration-200;
+  }
+  .btn--secondary--2 {
+    @apply border border-secondary bg-secondary hover:bg-white hover:text-primary hover:border-primary active:bg-white active:text-primary active:border-primary duration-200;
+  }
+  .btn--success {
+    @apply border bg-success  border-grey text-grey hover:border-success hover:text-success hover:bg-white hover:**:text-success hover:border active:border-success active:text-success active:bg-white active:**:text-success active:border duration-200;
+  }
+  .badge {
+    @apply flex items-center justify-center px-3 py-1 text-xs bg-grey text-primary rounded-[3.3rem];
+  }
+  .badge--primary {
+    @apply bg-primary/10 text-primary;
+  }
+  .badge--secondary {
+    @apply bg-grey text-text-secondary;
   }
   .profileLink {
     @apply flex items-center gap-2 border-t border-stroke py-5 text-xs;
@@ -87,10 +112,19 @@
     @apply flex items-center justify-between gap-2 border-t border-stroke py-5 text-sm;
   }
   .pagesBtn {
-    @apply flex items-center justify-center size-10 text-sm bg-white border border-[#E4E7E9] hover:border hover:border-primary hover:bg-white hover:text-primary focus-within:bg-primary focus-within:border-0 focus-within:text-white rounded-full duration-200;
+    @apply flex items-center justify-center size-10 text-sm bg-white border border-[#E4E7E9] hover:border hover:border-primary hover:bg-white hover:text-primary active:border active:border-primary active:bg-white active:text-primary  focus-within:bg-primary focus-within:border-0 focus-within:text-white rounded-full duration-200;
+  }
+  .tdBase {
+    @apply flex items-center justify-center text-nowrap;
+  }
+  .cartEventsBtn {
+    @apply flex items-center justify-center max-lg:size-[1.82rem] lg:size-12 rounded-full duration-200;
+  }
+  .textField__input {
+    @apply flex items-center justify-start px-2 bg-grey rounded-xl py-2 outline-0 focus:bg-white border-[1.5px] border-grey focus:border-primary duration-200
   }
   .footerLink {
-    @apply grid gap-x-6 gap-y-1 text-base text-nowrap text-text-secondary *:hover:text-primary *:duration-200
+    @apply grid gap-x-6 gap-y-1 text-base text-nowrap text-text-secondary *:hover:text-primary *:active:text-primary *:duration-200;
   }
 }
 
@@ -140,4 +174,12 @@ input::-webkit-search-cancel-button {
 
 input[type="number"] {
   -moz-appearance: textfield; /* Firefox */
+}
+
+.animate__animated {
+  --animate-duration: 400ms;
+}
+
+.animate__fadeOut {
+  --animate-duration: 200ms;
 }

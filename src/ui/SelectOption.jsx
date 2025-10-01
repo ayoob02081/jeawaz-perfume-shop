@@ -5,7 +5,7 @@ function SelectOption({ label, value, onClick }) {
     <li
       value={value}
       onClick={onClick}
-      className="flex items-center justify-start hover:bg-secondary-2 size-full px-1 md:py-2 rounded-md"
+      className="flex items-center justify-start hover:bg-grey size-full px-1 md:py-2 rounded-md"
     >
       {label}
     </li>

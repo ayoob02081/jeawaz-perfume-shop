@@ -7,7 +7,7 @@ import SortSection from "@/components/SortSection";
 function ProductPage() {
   return (
     <div className=" container mx-auto p-2 px-4">
-      <div className="md:h-56 border-b md:border-y-[1.5px] border-[#FCF5F4] md:border-stroke xl:max-w-7xl mx-auto">
+      <div className="md:h-56 border-b border-stroke xl:max-w-7xl mx-auto">
         <FilterSection />
       </div>
       <div className="w-full flex items-center justify-between py-6">

@@ -5,7 +5,7 @@ function CategoreyCard() {
   return (
     <div className="flex gap-2 w-[21.6rem] h-24 md:w-[26.3rem] md:h-36 justify-center items-center justify-items-center bg-white rounded-2xl border-[1.5px] border-[#EBEBEB] ">
       <div className="h-full self-start justify-self-start px-4">
-        <div className="flex items-center justify-center h-20 w-16 md:w-[5.25rem] md:h-28 rounded-b-xl bg-secondary-2">
+        <div className="flex items-center justify-center h-20 w-16 md:w-[5.25rem] md:h-28 rounded-b-xl bg-grey">
           <ImageFrame
             src="/images/perfume2.svg"
             alt="perfume image"

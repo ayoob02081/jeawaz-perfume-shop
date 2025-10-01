@@ -2,7 +2,7 @@ import FooterDetail from "./FooterDetail";
 
 function OptionsFooter() {
   return (
-    <div className=" bg-secondary mb-20 sm:m-0">
+    <div className=" bg-secondary md:m-0 max-md:mb-20">
       <div className="flex flex-col flex-wrap items-start justify-evenly sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:justify-items-center gap-4 p-6">
         <FooterDetail
           src="/images/24-hours-icon.svg"

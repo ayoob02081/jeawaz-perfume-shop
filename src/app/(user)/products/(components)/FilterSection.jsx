@@ -8,7 +8,7 @@ function FilterSection() {
   return (
     <div className="flex flex-col items-start justify-between h-full py-4">
       <div className="flex items-center justify-between gap-4">
-        <button className="flex items-center justify-center gap-2 btn btn-secondary w-[8.315rem] h-11">
+        <button className="flex items-center justify-center gap-2 btn btn--secondary w-[8.315rem] h-11">
           <ImageFrame
             src="images/filter-icon.svg"
             alt="filter icon"

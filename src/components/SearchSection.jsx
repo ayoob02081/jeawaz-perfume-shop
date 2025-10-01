@@ -2,7 +2,7 @@ import ImageFrame from "./ImageFrame";
 
 function SearchSection({ placeholder, onClick }) {
   return (
-    <div className="flex items-center justify-center focus-within:border-[1.5px] lg:hover:*:left-12 lg:hover:*:*:last:w-auto lg:hover:*:last:*:last:block focus-within:*:last:*:last:w-auto focus-within:*:last:*:last:block focus-within:*:last:left-12 focus-within:*:last:bg-secondary-2 border-primary size-full h-12 rounded-[48px] bg-[#F7F7F7] focus-within:bg-white ">
+    <div className="flex items-center justify-center focus-within:border-[1.5px] lg:hover:*:left-12 lg:hover:*:*:last:w-auto lg:hover:*:last:*:last:block focus-within:*:last:*:last:w-auto focus-within:*:last:*:last:block focus-within:*:last:left-12 focus-within:*:last:bg-grey border-primary size-full h-12 rounded-[48px] bg-grey focus-within:bg-white ">
       <input
         className="p-4 outline-0 w-full"
         type="search"

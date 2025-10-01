@@ -57,7 +57,7 @@ function LoginForm({
           (step === 1 && phoneNumberLength) || (step === 2 && OTPLength)
             ? "bg-primary"
             : "bg-primary/50 "
-        } btn btn-primary w-full h-12 border-0  `}
+        } btn btn--primary w-full h-12 border-0  `}
       >
         {step === 1 ? " دریافت کد ورود" : "ورود"}
       </button>

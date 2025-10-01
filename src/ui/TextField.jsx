@@ -6,11 +6,12 @@ function TextField({
   onChange,
   dir = "rtl",
   isRequired,
-  className ="",
+  className = "",
+  placeholder,
 }) {
   return (
-    <div className="space-y-4">
-      <label htmlFor={name} className="text-secondary-600 text-lg mb-4">
+    <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
+      <label htmlFor={name} className="text-text mb-4">
         {label}
         {isRequired && <span className="text-error">*</span>}
       </label>
@@ -19,8 +20,9 @@ function TextField({
         name={name}
         id={name}
         dir={dir}
-        value={value}
-        onChange={onChange}
+        placeholder={placeholder}
+        // value={value}
+        // onChange={onChange}
         className={`textField__input ${
           dir === "ltr" ? "text-left" : "text-right"
         } ${className}`}

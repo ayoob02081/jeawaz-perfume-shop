@@ -18,7 +18,7 @@ function ProductCard() {
             <CardIconResponsive
               src="/images/talkh.png"
               alt="raiehe icon"
-              className="max-md:h-8 md:h-10 bg-secondary-2"
+              className="max-md:h-8 md:h-10 bg-grey"
               hoverWidthMaxMd="w-[6.5rem]"
               hoverWidthMd="w-[8.35rem]"
               justify="start"
@@ -29,7 +29,7 @@ function ProductCard() {
             <CardIconResponsive
               src="/images/man1.png"
               alt="man icon"
-              className="max-md:h-8 md:h-10 bg-secondary-2"
+              className="max-md:h-8 md:h-10 bg-grey"
               hoverWidthMaxMd="w-[5.5rem]"
               hoverWidthMd="w-[4.55rem]"
               hoverWidth="md:w-[5.5rem]"
