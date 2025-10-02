@@ -1,7 +1,7 @@
 "use client";
 
 // import Loading from "@/components/Loading";
-// import { useAddToCart, useRemoveFromCart } from "@/hooks/useCartEvents";
+// import { useAddToCart, useRemoveFromCart } from "@/hooks/useCardEvents";
 // import { useGetUser } from "@/hooks/useAuth";
 import { MinusIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 // import { useQueryClient } from "@tanstack/react-query";
@@ -10,7 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 // import toast from "react-hot-toast";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 
-function CartEvents({ product, className, BtnBackgroundColor }) {
+function CardEvents({ product, className, BtnBackgroundColor }) {
   //   const queryClient = useQueryClient();
   const pathname = usePathname();
   const router = useRouter();
@@ -75,16 +75,16 @@ function CartEvents({ product, className, BtnBackgroundColor }) {
       >
         <button
           // onClick={AddToCartHandler}
-          className={`cartEventsBtn ${BtnBackgroundColor} hover:bg-success active:bg-success text-text-primary hover:text-white active:text-white`}
+          className={`cardEventsBtn ${BtnBackgroundColor} hover:bg-success active:bg-success text-text-primary hover:text-white active:text-white`}
         >
           <PlusIcon className="max-md:size-3.5 size-6" />
         </button>
-        <span className="cartEventsBtn max-lg:text-xs lg:text-lg border-[1.5px] border-stroke-3 rounded-full">
+        <span className="cardEventsBtn max-lg:text-xs lg:text-lg border-[1.5px] border-stroke-3 rounded-full">
           {/* {toPersianNumbers(quantityCount(user, product))} */}۱
         </span>
         <button
           // onClick={RemoveFromCartHandler}
-          className={`cartEventsBtn ${BtnBackgroundColor} hover:bg-error active:bg-error text-error hover:text-white active:text-white`}
+          className={`cardEventsBtn ${BtnBackgroundColor} hover:bg-error active:bg-error text-error hover:text-white active:text-white`}
         >
           {/* {quantityCount(user, product) > 1 ? ( */}
           {/* <MinusIcon className="max-md:size-3.5 size-6" /> */}
@@ -116,4 +116,4 @@ function CartEvents({ product, className, BtnBackgroundColor }) {
   );
 }
 
-export default CartEvents;
+export default CardEvents;

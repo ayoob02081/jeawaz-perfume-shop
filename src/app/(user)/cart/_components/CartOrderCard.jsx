@@ -1,4 +1,4 @@
-import CartEvents from "@/components/CartEvents";
+import CardEvents from "@/components/CardEvents";
 import ImageFrame from "@/components/ImageFrame";
 import PriceSection from "@/components/PriceSection";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
@@ -32,7 +32,7 @@ function CartOrderCard() {
               <PriceSection offPrice={1450000} offValue={40} price={1550000} />
             </div>
             <div className="flex items-center justify-center">
-              <CartEvents
+              <CardEvents
                 BtnBackgroundColor="bg-grey"
                 strokeColor="stroke"
                 className="lg:*:*:size-5 *:*:size-4"

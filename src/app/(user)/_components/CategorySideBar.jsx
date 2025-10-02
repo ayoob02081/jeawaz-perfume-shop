@@ -4,8 +4,8 @@ import SidebarFilterCard from "./SideBarFilterCard";
 import FilterRadioBtn from "./FilterRadioBtn";
 import SideBarCategoryCard from "./SideBarCategoryCard";
 import CategoryRadioBtn from "./CategoryRadioBtn";
-import Logo from "./Logo";
-import Modal from "./Modal";
+import Modal from "@/components/Modal";
+import Logo from "@/components/Logo";
 
 function CategorySideBar({ toggleCategory, categoryOpen, setCategoryOpen }) {
   return (

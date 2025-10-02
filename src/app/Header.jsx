@@ -1,4 +1,4 @@
-import HeaderLayout from "./HeaderLayout";
+import HeaderLayout from "@/components/HeaderLayout";
 
 function Header() {
   return (

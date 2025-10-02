@@ -1,8 +1,8 @@
 import PagesNumber from "@/components/PagesNumber";
-import ProductCard from "@/components/ProductCard";
 import React from "react";
-import FilterSection from "./(components)/FilterSection";
 import SortSection from "@/components/SortSection";
+import FilterSection from "./_components/FilterSection";
+import ProductCard from "../_components/ProductCard";
 
 function ProductPage() {
   return (

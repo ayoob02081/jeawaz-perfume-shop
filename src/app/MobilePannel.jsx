@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import ImageFrame from "./ImageFrame";
 import { usePathname } from "next/navigation";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { UserIcon as UserIconFill } from "@heroicons/react/24/solid";
+import ImageFrame from "@/components/ImageFrame";
 
 function MobilePannel() {
   const pathname = usePathname();

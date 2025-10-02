@@ -1,4 +1,4 @@
-import CartLayout from "@/components/CartLayout";
+import CartLayout from "./_components/CartLayout";
 
 function CartPage() {
   return (

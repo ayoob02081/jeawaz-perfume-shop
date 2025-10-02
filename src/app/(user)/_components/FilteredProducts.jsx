@@ -1,5 +1,5 @@
-import FilterCard from "@/components/FilterCard";
 import ImageFrame from "@/components/ImageFrame";
+import FilterCard from "./FilterCard";
 
 function FilteredProducts() {
   return (

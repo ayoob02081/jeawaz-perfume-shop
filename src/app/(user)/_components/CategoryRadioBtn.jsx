@@ -1,5 +1,5 @@
+import ImageFrame from "@/components/ImageFrame";
 import RadioButton from "@/ui/RadioButton";
-import ImageFrame from "./ImageFrame";
 
 export default function CategoryRadioBtn({
   radioId,

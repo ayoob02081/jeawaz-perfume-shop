@@ -1,5 +1,4 @@
-import RadioButton from "@/ui/RadioButton";
-import ImageFrame from "./ImageFrame";
+import ImageFrame from "@/components/ImageFrame";
 
 function SideBarFilterCard({ title, fieldsetId, children, className }) {
   return (

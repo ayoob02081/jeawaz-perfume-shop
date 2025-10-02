@@ -5,10 +5,8 @@ import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
-import ImageFrame from "./ImageFrame";
 import GoBack from "@/ui/GoBack";
 import { useState } from "react";
-import CartSummery from "@/app/(user)/cart/(components)/CartSummery";
 import { usePathname } from "next/navigation";
 import TextField from "@/ui/TextField";
 import TextAreaField from "@/ui/TextAreaField";
@@ -18,8 +16,10 @@ import {
   ChevronDownIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import PriceSection from "./PriceSection";
-import CartOrders from "@/app/(user)/cart/(components)/CartOrders";
+import ImageFrame from "@/components/ImageFrame";
+import CartSummery from "./CartSummery";
+import CartOrders from "./CartOrders";
+import PriceSection from "@/components/PriceSection";
 
 function CartLayout() {
   const pathName = usePathname();

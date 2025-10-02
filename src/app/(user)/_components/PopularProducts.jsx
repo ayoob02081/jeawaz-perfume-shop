@@ -1,18 +1,19 @@
-// import GenderType from "@/components/GenderType";
-import HomePageProducts from "@/components/HomePageProducts";
-import ProductCard from "@/components/ProductCard";
+import HomePageProducts from "./HomePageProducts";
+import ProductCard from "./ProductCard";
 
-function RecentPrducts() {
+
+function PopularProducts() {
   return (
     <HomePageProducts
       genderType="true"
-      section={"recent"}
-      title={"جدید ترین "}
+      section={"popular"}
+      title={"پر فروش ترین"}
       title2={"محصولات ما"}
-      desc={"ترندهای رایحه، همین‌جاست."}
-      className={"rounded-2xl"}
+      desc={"رایحه هایی که همیشه می درخشن"}
+      className={
+        " flex-col md:flex-row overflow-hidden sm:overflow-x-auto rounded-2xl"
+      }
     >
-      <div></div>
       <div className="snap-center pb-6">
         <ProductCard />
       </div>
@@ -35,4 +36,4 @@ function RecentPrducts() {
   );
 }
 
-export default RecentPrducts;
+export default PopularProducts;

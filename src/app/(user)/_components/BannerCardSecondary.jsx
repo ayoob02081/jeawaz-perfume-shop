@@ -1,3 +1,4 @@
+import ImageFrame from "@/components/ImageFrame";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
@@ -5,10 +6,16 @@ function BannerCardSecondary() {
   return (
     <div className="relative bannerSecondarySize rounded-2xl xl:rounded-3xl from-30% via-40 bg-linear-to-r to-[#211E1A] border overflow-hidden  ">
       <div className="flex items-center justify-center text-white">
-        <img
+        {/* <img
           src="/images/banner2 md.png"
           alt="banner image"
           className="size-full"
+        /> */}
+        <ImageFrame
+          src="/images/Banner2.jpg"
+          alt="Banner"
+          className="size-full"
+          objectFit="cover"
         />
       </div>
 

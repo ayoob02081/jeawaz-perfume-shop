@@ -1,4 +1,5 @@
-import BannerCard from "@/components/BannerCard";
+
+import BannerCard from "./BannerCard";
 
 function Banner() {
   return (

@@ -119,7 +119,7 @@
   .tdBase {
     @apply flex items-center justify-center text-nowrap;
   }
-  .cartEventsBtn {
+  .cardEventsBtn {
     @apply flex items-center justify-center max-lg:size-[1.82rem] lg:size-12 rounded-full duration-200;
   }
   .textField__input {

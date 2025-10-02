@@ -1,4 +1,4 @@
-import CartEvents from "@/components/CartEvents";
+import CardEvents from "@/components/CardEvents";
 import ImageFrame from "@/components/ImageFrame";
 import PriceSection from "@/components/PriceSection";
 import Table from "@/ui/Table";
@@ -48,7 +48,7 @@ function MobileCard() {
               <PriceSection offPrice={1450000} offValue={40} price={1550000} />
             </div>
             <div className="flex items-center justify-center">
-              <CartEvents
+              <CardEvents
                 BtnBackgroundColor="bg-grey"
                 strokeColor="stroke"
                 className="lg:*:*:size-5 *:*:size-4"
@@ -78,7 +78,7 @@ function DeskCard() {
       </td>
       <td className="text-center">{toPersianNumbers(100)} میل</td>
       <td className="text-center">
-        <CartEvents BtnBackgroundColor="bg-grey" strokeColor="stroke" />
+        <CardEvents BtnBackgroundColor="bg-grey" strokeColor="stroke" />
       </td>
       <td className="text-center w-full">
         <PriceSection
@@ -197,7 +197,7 @@ function SummeryCard() {
               />
             </div>
             <div className="flex items-center justify-center">
-              <CartEvents
+              <CardEvents
                 BtnBackgroundColor="bg-white"
                 className="lg:*:*:size-5 *:*:size-4 h-10"
               />

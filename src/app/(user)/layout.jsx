@@ -1,9 +1,9 @@
 import "../globals.css";
-import Header from "@/components/Header";
-import MobilePannel from "@/components/MobilePannel";
-import Footer from "@/components/Footer";
 import OptionsFooter from "@/components/OptionsFooter";
 import Providers from "../Providers";
+import Header from "../Header";
+import Footer from "../Footer";
+import MobilePannel from "../MobilePannel";
 
 export const metadata = {
   title: "Jeawaz",

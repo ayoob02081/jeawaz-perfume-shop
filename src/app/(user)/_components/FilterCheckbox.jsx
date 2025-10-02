@@ -1,5 +1,5 @@
+import ImageFrame from "@/components/ImageFrame";
 import CheckBox from "@/ui/CheckBox";
-import ImageFrame from "./ImageFrame";
 
 function FilterCheckbox({ checkId, name, label, className, imageSrc }) {
   return (

@@ -1,25 +1,15 @@
 import "../../globals.css";
-
-import OptionsFooter from "@/components/OptionsFooter";
-import Providers from "../../Providers";
 import Header from "@/app/Header";
-import Footer from "@/app/Footer";
 import MobilePannel from "@/app/MobilePannel";
+import Providers from "@/app/Providers";
 
-export const metadata = {
-  title: "Jeawaz",
-  description: "Profile",
-};
-
-export default function RootLayout({ children }) {
+export default function AdminLayout({ children }) {
   return (
     <html lang="fa" dir="rtl">
       <body className="font-display antialiased">
         <Providers>
           <Header />
           {children}
-          <OptionsFooter />
-          <Footer />
           <MobilePannel />
         </Providers>
       </body>

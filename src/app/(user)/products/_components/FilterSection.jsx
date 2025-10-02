@@ -1,8 +1,8 @@
 import ImageFrame from "@/components/ImageFrame";
 import Badge from "@/ui/Badge";
-import FilterCheckbox from "@/components/FilterCheckbox";
 import BreadCrumbBase from "@/ui/BreadCrumbBase";
 import BreadCrumb from "@/ui/BreadCrumb";
+import FilterCheckbox from "../../_components/FilterCheckbox";
 
 function FilterSection() {
   return (

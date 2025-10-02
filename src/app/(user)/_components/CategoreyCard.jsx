@@ -1,5 +1,5 @@
+import ImageFrame from "@/components/ImageFrame";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import ImageFrame from "./ImageFrame";
 
 function CategoreyCard() {
   return (

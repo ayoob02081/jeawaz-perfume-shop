@@ -1,4 +1,4 @@
-import BannerCardSecondary from "@/components/BannerCardSecondary";
+import BannerCardSecondary from "./BannerCardSecondary";
 
 function SpecialProducts() {
   return (

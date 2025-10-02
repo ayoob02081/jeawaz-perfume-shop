@@ -1,5 +1,6 @@
-import HomePageProducts from "@/components/HomePageProducts";
-import ProductCard from "@/components/ProductCard";
+import HomePageProducts from "./HomePageProducts";
+import ProductCard from "./ProductCard";
+
 
 function OffProducts() {
   return (

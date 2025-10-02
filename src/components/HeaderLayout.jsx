@@ -10,11 +10,11 @@ import Link from "next/link";
 import ImageFrame from "./ImageFrame";
 import Logo from "./Logo";
 import { useEffect, useState } from "react";
-import CategorySideBar from "./CategorySideBar";
-import SideBar from "./SideBar";
 import Login from "./Login";
 import SearchSection from "./SearchSection";
 import Modal from "./Modal";
+import CategorySideBar from "@/app/(user)/_components/CategorySideBar";
+import SideBar from "./SideBar";
 
 function HeaderLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);

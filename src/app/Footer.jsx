@@ -1,6 +1,6 @@
 import Link from "next/link";
-import Logo from "./Logo";
-import ImageFrame from "./ImageFrame";
+import Logo from "../components/Logo";
+import ImageFrame from "../components/ImageFrame";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 
 function Footer() {
@@ -70,7 +70,7 @@ function Footer() {
                 </p>
               </Link>
               <Link href={"tel:+989180522273"} className="flex items-center">
-                  <p className="text-3xl text-white ">
+                <p className="text-3xl text-white ">
                   {toPersianNumbers("2273")}
                 </p>
                 <p className="text-3xl text-primary ">

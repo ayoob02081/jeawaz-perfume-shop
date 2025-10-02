@@ -1,5 +1,5 @@
-import CategoreyCard from "@/components/CategoreyCard";
 import ImageFrame from "@/components/ImageFrame";
+import CategoreyCard from "./CategoreyCard";
 
 function Categories() {
   return (
