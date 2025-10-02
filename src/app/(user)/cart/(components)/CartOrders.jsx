@@ -33,7 +33,7 @@ function MobileCard() {
       <div className="flex items-center justify-start gap-4 size-full">
         <div className="flex items-start justify-center h-full">
           <ImageFrame
-            src="/images/perfume2.svg"
+            src="/images/perfume-1.svg"
             alt="perfume"
             className="size-16"
           />
@@ -68,7 +68,7 @@ function DeskCard() {
         <div className="tdBase">
           <div className="flex items-start justify-center h-full">
             <ImageFrame
-              src="/images/perfume2.svg"
+              src="/images/perfume-1.svg"
               alt="perfume"
               className="size-[5.65rem]"
             />
@@ -101,7 +101,7 @@ function MobileSuccessedOrderCard() {
       <div className="flex items-center justify-start gap-4 size-full">
         <div className="flex items-start justify-center h-full">
           <ImageFrame
-            src="/images/perfume2.svg"
+            src="/images/perfume-1.svg"
             alt="perfume"
             className="size-16"
           />
@@ -127,7 +127,7 @@ function DeskSuccessedOrderCard() {
     >
       <div className="flex items-start justify-center h-full">
         <ImageFrame
-          src="/images/perfume2.svg"
+          src="/images/perfume-1.svg"
           alt="perfume"
           className="size-24"
         />
@@ -165,7 +165,7 @@ function SummeryCard() {
       <div className="flex items-center justify-start md:gap-2 lg:gap-4 size-full">
         <div className="flex items-center justify-center md:size-28 lg:size-[7.5rem] rounded-xl bg-white">
           <ImageFrame
-            src="/images/perfume2.svg"
+            src="/images/perfume-1.svg"
             alt="perfume"
             className="md:size-20 lg:size-[5.65rem]"
           />

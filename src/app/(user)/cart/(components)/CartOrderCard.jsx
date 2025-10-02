@@ -9,7 +9,7 @@ function CartOrderCard() {
       <div className="flex items-center justify-start gap-4 size-full">
         <div className="flex items-start justify-center h-full">
           <ImageFrame
-            src="/images/perfume2.svg"
+            src="/images/perfume-1.svg"
             alt="perfume"
             className="size-16"
           />
@@ -24,13 +24,19 @@ function CartOrderCard() {
               هوگو بوس جاست دیفرنت
             </span>
           </div>
-          <div className="badge badge--secondary w-max h-6">{toPersianNumbers(100)} میل</div>
+          <div className="badge badge--secondary w-max h-6">
+            {toPersianNumbers(100)} میل
+          </div>
           <div className="flex items-center justify-between size-full">
             <div>
               <PriceSection offPrice={1450000} offValue={40} price={1550000} />
             </div>
             <div className="flex items-center justify-center">
-              <CartEvents BtnBackgroundColor="bg-grey" strokeColor="stroke" className="lg:*:*:size-5 *:*:size-4"/>
+              <CartEvents
+                BtnBackgroundColor="bg-grey"
+                strokeColor="stroke"
+                className="lg:*:*:size-5 *:*:size-4"
+              />
             </div>
           </div>
         </div>

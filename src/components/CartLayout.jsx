@@ -257,13 +257,13 @@ function CartSecondStep() {
   return (
     <div className="flex flex-col gap-8 size-full">
       <div
-        className={`max-md:flex md:hidden flex-col max-md:border-[1.5px] border-stroke rounded-[20px] w-full ${
+        className={`max-md:flex md:hidden flex-col max-md:border-[1.5px] border-stroke rounded-[20px] w-full max-md:px-6 ${
           ordersOpen ? "justify-between" : "items-center justify-center"
         } transition-all duration-200`}
       >
         <button
           onClick={toggleOrders}
-          className="flex items-center justify-between gap-4 size-full max-md:p-6"
+          className="flex items-center justify-between gap-4 size-full max-md:py-6"
         >
           <p className="text-base">نمایش سبد خرید شما</p>
           <ChevronDownIcon

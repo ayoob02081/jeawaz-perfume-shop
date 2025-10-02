@@ -7,7 +7,7 @@ function CategoreyCard() {
       <div className="h-full self-start justify-self-start px-4">
         <div className="flex items-center justify-center h-20 w-16 md:w-[5.25rem] md:h-28 rounded-b-xl bg-grey">
           <ImageFrame
-            src="/images/perfume2.svg"
+            src="/images/perfume-1.svg"
             alt="perfume image"
             className="h-14 w-9 grow max-md:size-9 justify-center md:size-14"
           />

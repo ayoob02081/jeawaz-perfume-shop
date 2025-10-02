@@ -1,6 +1,5 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import ImageFrame from "./ImageFrame";
-import CardIconResponsive from "./CardIconResponsive";
 
 function ProductCard() {
   return (
@@ -8,7 +7,7 @@ function ProductCard() {
       <div className="flex items-start justify-between gap-4 w-full h-full">
         <div className="flex flex-none md:hidden items-center justify-center h-20 w-[4.5rem]">
           <ImageFrame
-            src="/images/perfume2.svg"
+            src="/images/perfume-1.svg"
             alt="perfume"
             className="size-16"
           />
@@ -16,33 +15,23 @@ function ProductCard() {
         <div className="flex grow flex-col w-full h-full">
           <div className=" flex flex-none items-center justify-between mb-4">
             <CardIconResponsive
-              src="/images/talkh.png"
-              alt="raiehe icon"
-              className="max-md:h-8 md:h-10 bg-grey"
+              type="shirin"
+              className="max-md:h-8 md:h-10"
               hoverWidthMaxMd="w-[6.5rem]"
               hoverWidthMd="w-[8.35rem]"
-              justify="start"
-              title="رایحه شیرین"
-              textStyle="text-black"
               size="max-md:size-4 md:size-6"
             />
             <CardIconResponsive
-              src="/images/man1.png"
-              alt="man icon"
-              className="max-md:h-8 md:h-10 bg-grey"
+              type="man"
+              className="max-md:h-8 md:h-10"
               hoverWidthMaxMd="w-[5.5rem]"
               hoverWidthMd="w-[4.55rem]"
-              hoverWidth="md:w-[5.5rem]"
-              justify="end"
-              title="مردانه"
-              textStyle="text-black"
-              dir="ltr"
               size="max-md:size-4 md:size-6"
             />
           </div>
           <div className="grow max-md:hidden md:flex items-center justify-center">
             <ImageFrame
-              src="/images/perfume2.svg"
+              src="/images/perfume-1.svg"
               alt="perfume image"
               className="size-[8.5rem]"
             />
@@ -81,3 +70,90 @@ function ProductCard() {
 }
 
 export default ProductCard;
+
+function CardIconResponsive({
+  size,
+  className,
+  hoverWidthMd,
+  hoverWidthMaxMd,
+  type,
+}) {
+  let bgColor;
+  let src;
+  let alt;
+  let textStyle;
+  let justify;
+  let title;
+  let dir;
+
+  switch (type) {
+    case "shirin":
+      bgColor = "bg-orange/10";
+      src = "/images/beach-icon.svg";
+      alt = "beach-icon";
+      textStyle = "text-orange";
+      justify = "start";
+      title = "رایحه شیرین";
+      dir = "rtl";
+      break;
+
+    case "talkh":
+      bgColor = "bg-dark-brown/10";
+      src = "/images/frozen-icon.svg";
+      alt = "frozen-icon";
+      textStyle = "text-dark-brown";
+      justify = "start";
+      title = "رایحه شیرین";
+      dir = "rtl";
+      break;
+
+    case "khonak":
+      bgColor = "bg-success/10";
+      src = "/images/dropwaters-icon.svg";
+      alt = "dropwaters-icon";
+      textStyle = "text-success";
+      justify = "start";
+      title = "رایحه شیرین";
+      dir = "rtl";
+      break;
+
+    case "man":
+      bgColor = "bg-grey";
+      src = "/images/man-icon.svg";
+      alt = "man-icon";
+      justify = "end";
+      title = "مردانه";
+      dir = "ltr";
+      break;
+
+    case "woman":
+      bgColor = "bg-grey";
+      src = "/images/woman-icon.svg";
+      alt = "woman-icon";
+      justify = "end";
+      title = "زنانه";
+      dir = "ltr";
+      break;
+
+    default:
+      break;
+  }
+
+  return (
+    <div
+      dir={dir}
+      className={`flex items-center group rounded-[40px] px-2 md:hover:${hoverWidthMd} max-md:hover:${hoverWidthMaxMd} ${bgColor} ${className} duration-300`}
+    >
+      <ImageFrame
+        src={src}
+        alt={alt}
+        className={`text-nowrap justify-${justify} ${size}`}
+      />
+      <p
+        className={`w-0 opacity-0 group-hover:opacity-100 duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pr-2 md:text-sm font-bold ${textStyle}`}
+      >
+        {title}
+      </p>
+    </div>
+  );
+}

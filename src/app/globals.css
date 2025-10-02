@@ -45,6 +45,8 @@
   --color-grey: rgb(247, 247, 247);
   --color-success: rgb(41, 182, 119);
   --color-warning: rgb(242, 194, 62);
+  --color-orange: rgb(245, 130, 32);
+  --color-dark-brown: rgb(47, 13, 12);
   --color-error: rgb(210, 48, 45);
   --color-red: rgb(240, 64, 85);
   --color-blue: rgb(67, 97, 238);
@@ -121,7 +123,7 @@
     @apply flex items-center justify-center max-lg:size-[1.82rem] lg:size-12 rounded-full duration-200;
   }
   .textField__input {
-    @apply flex items-center justify-start px-2 bg-grey rounded-xl py-2 outline-0 focus:bg-white border-[1.5px] border-grey focus:border-primary duration-200
+    @apply flex items-center justify-start px-2 bg-grey rounded-xl py-2 outline-0 focus:bg-white border-[1.5px] border-grey focus:border-primary duration-200;
   }
   .footerLink {
     @apply grid gap-x-6 gap-y-1 text-base text-nowrap text-text-secondary *:hover:text-primary *:active:text-primary *:duration-200;

@@ -9,17 +9,18 @@ import {
 import Link from "next/link";
 import ImageFrame from "./ImageFrame";
 import Logo from "./Logo";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CategorySideBar from "./CategorySideBar";
 import SideBar from "./SideBar";
-import BackDropLogin from "./BackDropLogin";
 import Login from "./Login";
 import SearchSection from "./SearchSection";
+import Modal from "./Modal";
 
 function HeaderLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+
   const toggleCategory = () => {
     setCategoryOpen((prevState) => !prevState);
   };
@@ -30,6 +31,30 @@ function HeaderLayout() {
   const toggleLoginOpen = () => {
     setLoginOpen((prevState) => !prevState);
   };
+
+  useEffect(() => {
+    if (sidebarOpen || categoryOpen || loginOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [sidebarOpen, categoryOpen, loginOpen]);
+
+  // useEffect(() => {
+  //   if (modalOpen) {
+  //     document.body.style.overflow = "hidden";
+  //     setIsVisible(true);
+  //   } else {
+  //     const timer = setTimeout(() => setIsVisible(false), 3000);
+  //     document.body.style.overflow = "auto";
+  //     return (document.body.style.overflow = "auto"), () => clearTimeout(timer);
+  //   }
+  // }, [modalOpen]);
+
   return (
     <>
       <nav className="max-md:hidden">
@@ -228,13 +253,16 @@ function HeaderLayout() {
           sidebarOpen={sidebarOpen}
         />
       </nav>
+
       <CategorySideBar
         toggleCategory={toggleCategory}
         categoryOpen={categoryOpen}
+        setCategoryOpen={setCategoryOpen}
       />
-      <BackDropLogin toggleOpen={loginOpen}>
+
+      <Modal toggleOpen={loginOpen} onClose={() => setLoginOpen(false)} login>
         <Login toggleLoginOpen={toggleLoginOpen} />
-      </BackDropLogin>
+      </Modal>
     </>
   );
 }

@@ -5,11 +5,15 @@ import FilterRadioBtn from "./FilterRadioBtn";
 import SideBarCategoryCard from "./SideBarCategoryCard";
 import CategoryRadioBtn from "./CategoryRadioBtn";
 import Logo from "./Logo";
-import BackDropSidebar from "./BackDropSidebar";
+import Modal from "./Modal";
 
-function CategorySideBar({ toggleCategory, categoryOpen }) {
+function CategorySideBar({ toggleCategory, categoryOpen, setCategoryOpen }) {
   return (
-    <BackDropSidebar toggleOpen={categoryOpen}>
+    <Modal
+      toggleOpen={categoryOpen}
+      onClose={() => setCategoryOpen(false)}
+      category
+    >
       <div className="flex items-center justify-between px-4 py-6 md:hidden md:h-0">
         <button className="size-6" onClick={toggleCategory}>
           <ArrowRightIcon className="size-5" />
@@ -128,7 +132,7 @@ function CategorySideBar({ toggleCategory, categoryOpen }) {
           </SidebarFilterCard>
         </div>
       </form>
-    </BackDropSidebar>
+    </Modal>
   );
 }
 
