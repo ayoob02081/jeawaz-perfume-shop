@@ -36,6 +36,7 @@
 
 @theme {
   --background-app-rgb: rgb(244, 245, 247);
+  --color-banner-gradient: rgb(33, 30, 26);
   --color-primary: rgb(204, 49, 45);
   --color-secondary: rgb(245, 245, 247);
   --color-secondary-2: rgb(255, 255, 255);
@@ -73,6 +74,9 @@
   }
   .bannerSecondarySize {
     @apply w-[21.56rem] sm:w-[28.91rem] xl:w-[36.14rem] h-[8.8rem] sm:h-[11.66rem] xl:h-[14.58rem];
+  }
+  .bannerBtnSecondary {
+    @apply font-bold text-[8px] sm:text-[10px] xl:text-xs 2xl:text-sm rounded-4xl h-5 sm:h-6 xl:h-8 2xl:h-8 bg-white/10 backdrop-blur-md text-text-primary hover:*:first:text-primary duration-200;
   }
   .mobileHeader {
     @apply grid grid-cols-3 p-2 gap-x-10 gap-y-5;

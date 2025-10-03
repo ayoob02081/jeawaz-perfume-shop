@@ -4,34 +4,36 @@ import Link from "next/link";
 
 function BannerCardSecondary() {
   return (
-    <div className="relative bannerSecondarySize rounded-2xl xl:rounded-3xl from-30% via-40 bg-linear-to-r to-[#211E1A] border overflow-hidden  ">
-      <div className="flex items-center justify-center text-white">
-        {/* <img
-          src="/images/banner2 md.png"
+    <div className="relative bannerSecondarySize rounded-2xl xl:rounded-3xl overflow-hidden ">
+      <div className="absolute size-full from-banner-gradient/0 bg-linear-to-r to-banner-gradient"></div>
+      <div className="flex flex-col items-center justify-center text-white">
+        <img
+          src="/images/banner-secondary-2.svg"
           alt="banner image"
           className="size-full"
-        /> */}
-        <ImageFrame
-          src="/images/Banner2.jpg"
-          alt="Banner"
-          className="size-full"
-          objectFit="cover"
         />
       </div>
-
-      <Link
-        href={"/products"}
-        className="absolute bottom-8 sm:bottom-12 xl:bottom-14 bg-white/10 backdrop-blur-md text-text-primary hover:**:bg-transparent hover:**:text-text-primary right-5 sm:right-7 xl:right-9 font-bold text-[8px] sm:text-[10px] xl:text-xs 2xl:text-sm rounded-4xl duration-200 hover:**:duration-200"
-      >
-        <div className=" flex items-center h-5 sm:h-6 xl:h-8 2xl:h-8 ">
+      <div className="absolute bottom-8 sm:bottom-12 xl:bottom-14 right-5 sm:right-7 xl:right-9 flex flex-col items-start justify-center gap-5">
+        <span className="flex flex-col items-start justify-center sm:gap-1 bg-transparent text-white">
+          <h2 className=" text-base sm:text-2xl xl:text-3xl font-bold">
+            هر لحظه، با عطری تازه
+          </h2>
+          <p className=" text-xs md:text-sm xl:font-bold">
+            جدیدترین عطرهای روز دنیا، مخصوص سلیقه‌ی خاص تو.
+          </p>
+        </span>
+        <Link
+          href={"/products"}
+          className=" flex items-center bannerBtnSecondary hover:*:last:absolute hover:*:last:-left-7 sm:hover:*:last:-left-8 xl:hover:*:last:-left-9 2xl:hover:*:last:-left-10 hover:*:last:*:size-3 sm:hover:*:last:*:size-4 xl:hover:*:last:*:size-5 hover:*:last:bg-white hover:*:last:text-primary hover:**:duration-200"
+        >
           <p className=" px-1.5 lg:px-2.5 py-1 h-full flex items-center bg-white justify-center rounded-4xl duration-200 ">
             مشاهده محصولات
           </p>
-          <div className="pl-1.5 pr-1 py-1 text-white duration-200">
+          <div className="-left-5 sm:-left-6 xl:-left-7 2xl:-left-8 flex items-center justify-center text-white -z-10 rounded-full size-5 sm:size-6 xl:size-8 duration-200">
             <ArrowLeftIcon className="size-2 sm:size-3 xl:size-4" />
           </div>
-        </div>
-      </Link>
+        </Link>
+      </div>
     </div>
   );
 }
