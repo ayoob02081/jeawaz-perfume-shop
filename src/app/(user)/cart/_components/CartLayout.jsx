@@ -5,7 +5,6 @@ import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
-import GoBack from "@/ui/GoBack";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import TextField from "@/ui/TextField";
@@ -20,6 +19,7 @@ import ImageFrame from "@/components/ImageFrame";
 import CartSummery from "./CartSummery";
 import CartOrders from "./CartOrders";
 import PriceSection from "@/components/PriceSection";
+import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
 
 function CartLayout() {
   const pathName = usePathname();
@@ -51,34 +51,24 @@ function CartLayout() {
   };
 
   return (
-    <div
-      className={`${
-        cartOpen ? "right-0" : "-right-[100vw]"
-      } max-md:fixed top-0 bg-white w-screen max-md:h-screen z-[60] duration-200 pt-6 max-md:overflow-y-auto bottom-20`}
+    <AdaptiveOverlayPage
+      isOpen={cartOpen}
+      onClick={toggleCart}
+      label="سبد خرید"
+      side="right"
+      className="size-4"
     >
-      <div className="flex flex-col gap-4 h-fit bg-white pb-28">
-        <div className="w-fit max-md:flex md:hidden items-center justify-center gap-2 p-6">
-          <GoBack
-            onClick={toggleCart}
-            label="سبد خرید"
-            side="right"
-            className="size-4"
-          />
-        </div>
-        <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-grey md:rounded-b-3xl">
-          <CardStepsIcon step={step} setStep={setStep} />
-        </div>
-        {/* <div className="flex flex-col items-cente justify-center gap-6 md:container md:mx-auto size-full mb-10 "> */}
-        <div
-          className={`${step === 3 ? "" : "md:flex-row"}
-            flex flex-col items-start xl:items-start md:justify-between xl:justify-normal gap-5 mx-6 md:p-6 md:py-8 md:border-[1.5px] border-stroke md:rounded-[20px]`}
-        >
-          <>{renderSteps()}</>
-          <CartSummery setStep={setStep} step={step} />
-          {/* </div> */}
-        </div>
+      <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-grey md:rounded-b-3xl">
+        <CardStepsIcon step={step} setStep={setStep} />
       </div>
-    </div>
+      <div
+        className={`${step === 3 ? "" : "md:flex-row"}
+            flex flex-col items-start xl:items-start md:justify-between xl:justify-normal gap-5 mx-6 md:p-6 md:py-8 md:border-[1.5px] border-stroke md:rounded-[20px]`}
+      >
+        <>{renderSteps()}</>
+        <CartSummery setStep={setStep} step={step} />
+      </div>
+    </AdaptiveOverlayPage>
   );
 }
 

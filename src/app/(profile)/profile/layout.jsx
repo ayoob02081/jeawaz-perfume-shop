@@ -5,6 +5,7 @@ import Providers from "../../Providers";
 import Header from "@/app/Header";
 import Footer from "@/app/Footer";
 import MobilePannel from "@/app/MobilePannel";
+import ProfileLayout from "./_components/ProfileLayout";
 
 export const metadata = {
   title: "Jeawaz",
@@ -17,7 +18,10 @@ export default function RootLayout({ children }) {
       <body className="font-display antialiased">
         <Providers>
           <Header />
-          {children}
+          <div className="flex items-start justify-center container mx-auto gap-4 my-12">
+            <ProfileLayout />
+            {children}
+          </div>
           <OptionsFooter />
           <Footer />
           <MobilePannel />

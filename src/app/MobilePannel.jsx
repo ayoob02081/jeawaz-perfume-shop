@@ -10,7 +10,7 @@ function MobilePannel() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-[83px] w-full md:hidden bg-white px-5 z-[70]">
+    <div className="fixed bottom-0 left-0 right-0 h-[83px] w-full md:hidden shadow-2xl shadow-black bg-white px-5 z-[70]">
       <ul className="grid grid-cols-4 justify-items-center p-2 gap-x-5 gap-y-5 h-full">
         <li className=" justify-items-start">
           <Link
@@ -21,7 +21,8 @@ function MobilePannel() {
               <ImageFrame
                 className="size-7"
                 src={
-                  pathname === "/"
+
+                  pathname === ("/")
                     ? "/images/home-fill-primary-icon.svg"
                     : "/images/home-stroke-sec-icon.svg"
                 }
@@ -40,7 +41,7 @@ function MobilePannel() {
               <ImageFrame
                 className="size-7"
                 src={
-                  pathname === "/products"
+                  pathname.startsWith("/products")
                     ? "/images/products-fill-primary-icon.svg"
                     : "/images/products-stroke-sec-icon.svg"
                 }
@@ -59,7 +60,7 @@ function MobilePannel() {
               <ImageFrame
                 className="size-7"
                 src={
-                  pathname === "/cart"
+                  pathname.startsWith("/cart")
                     ? "/images/bag-fill-primary-icon.svg"
                     : "/images/bag-stroke-sec-icon.svg"
                 }
@@ -75,7 +76,7 @@ function MobilePannel() {
             href="/profile"
           >
             <div className="flex items-center justify-center size-7">
-              {pathname === "/profile" ? (
+              {pathname.startsWith("/profile") ? (
                 <UserIconFill className="size-6 text-primary" />
               ) : (
                 <UserIcon className="size-6 text-[#606060]" />

@@ -3,7 +3,14 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
-function GoBack({ className, onClick, side = "right", label }) {
+function GoBack({
+  className,
+  onClick,
+  side = "right",
+  label,
+  fontStyle = "text-xl font-bold",
+  justify = "center",
+}) {
   const router = useRouter();
 
   const GoBackHandle = () => {
@@ -16,8 +23,10 @@ function GoBack({ className, onClick, side = "right", label }) {
   return (
     <button
       onClick={GoBackHandle}
-      className="flex items-center justify-center size-full gap-2"
+      className={`flex items-center justify-${justify} size-full gap-2`}
     >
+      {justify === "between" && side === "left" && <div></div>}
+
       {label && side === "left" && <p className="">{label}</p>}
       {side === "right" ? (
         <ArrowRightIcon className={` ${className}`} />
@@ -25,8 +34,9 @@ function GoBack({ className, onClick, side = "right", label }) {
         <ArrowLeftIcon className={` ${className}`} />
       )}
       {label && side === "right" && (
-        <p className="text-xl text-text-primary font-bold">{label}</p>
+        <p className={`${fontStyle} text-text-primary`}>{label}</p>
       )}
+      {justify === "between" && side === "right" && <div></div>}
     </button>
   );
 }
