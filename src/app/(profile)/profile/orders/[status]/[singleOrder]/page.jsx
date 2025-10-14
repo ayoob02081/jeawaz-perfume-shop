@@ -3,25 +3,26 @@
 import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
 import ImageFrame from "@/components/ImageFrame";
 import PriceSection from "@/components/PriceSection";
+import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
 import GoBack from "@/ui/GoBack";
 import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
-import { useQueryClient } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 
 function SingleOrderPage({ params }) {
   const pathName = usePathname();
   const correctParams = React.use(params);
-  const queryClient = useQueryClient();
   const [openOrder, setOpenOrder] = useState(false);
 
-  const cached = queryClient.getQueryData(["orders", correctParams.status]);
+  const { data, isLoading, error } = useGetAllOrdersByStatus(
+    correctParams.status
+  );
 
   const correntOrder =
-    cached?.filter((order) => {
+    data?.filter((order) => {
       const filteredOrder = order.id == correctParams.singleOrder;
       return filteredOrder;
     }) || {};
@@ -41,16 +42,42 @@ function SingleOrderPage({ params }) {
       max="true"
       min="true"
     >
-      <Order order={correntOrder[0]} />
+      <Order order={correntOrder[0]} status={correctParams.status} />
     </AdaptiveOverlayPage>
   );
 }
 
 export default SingleOrderPage;
 
-function Order({ order }) {
+function Order({ order, status }) {
   const { id, date, price, items } = order;
-  console.log(items);
+  const statusConfig = {
+    processing: {
+      title: "در حال پردازش",
+      color: "text-blue",
+      src: "/images/processing-icon.svg",
+      alt: "processing-icon",
+    },
+    delivered: {
+      title: "تحویل شده",
+      color: "text-green",
+      src: "/images/delivered-icon.svg",
+      alt: "delivered-icon",
+    },
+    returned: {
+      title: "مرجوع شده",
+      color: "text-text",
+      src: "/images/returned-icon.svg",
+      alt: "returned-icon",
+    },
+    canceled: {
+      title: "لغو شده",
+      color: "text-red",
+      src: "/images/canceled-icon.svg",
+      alt: "canceled-icon",
+    },
+  };
+
   return (
     <div className="max-lg:px-4 lg:p-6 flex flex-col items-start justify-start lg:border border-stroke lg:rounded-[20px]">
       <div className="max-lg:hidden">
@@ -121,7 +148,7 @@ function Order({ order }) {
         <div className="bg-grey rounded-2xl p-4 md:p-5 w-full">
           <div className="w-full">
             <div className="flex items-start justify-between w-full mb-5">
-              <div className="flex flex-wrap items-center justify-center gap-4 ">
+              <div className="flex flex-wrap items-center justify-start gap-4">
                 <div className="flex items-center justify-center gap-2">
                   <ImageFrame
                     src="/images/fast-deliver-icon.svg"
@@ -134,7 +161,7 @@ function Order({ order }) {
                 </div>
                 <p className="text-gray-600 text-xs">مرسوله 1 از 1</p>
               </div>
-              <button className="flex items-center justify-center gap-2">
+              <button className="flex items-center justify-end gap-2 text-nowrap">
                 <ImageFrame
                   src="/images/factor-icon.svg"
                   alt="recipt icon"
@@ -160,13 +187,15 @@ function Order({ order }) {
                   </span>
                   <span className="flex items-center justify-start gap-1">
                     <p className="text-gray-600">وضعیت مرسوله :</p>
-                    <div className="flex items-center justify-center gap-1 text-success ">
+                    <div
+                      className={`flex items-center justify-center gap-1 ${statusConfig[status].color} `}
+                    >
                       <ImageFrame
-                        src="/images/success-stroke-icon.svg"
-                        alt="success icon"
+                        src={statusConfig[status].src}
+                        alt={statusConfig[status].alt}
                         className="size-5"
                       />
-                      <p className="font-bold">تحویل شده</p>
+                      <p className="font-bold"> {statusConfig[status].title}</p>
                     </div>
                   </span>
                 </div>
