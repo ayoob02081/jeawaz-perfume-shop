@@ -152,10 +152,10 @@ function ProfileLinks() {
           alt="user-icon"
         />
         <ProfileLink
-          href={"/profile/notifications"}
+          href={"/profile/notifs/all"}
           label="پیام ها"
           src={`/images/notification-stroke-${
-            pathName.startsWith("/profile/notifications") ? "white" : "black"
+            pathName.startsWith("/profile/notifs") ? "white" : "black"
           }-icon.svg`}
           alt="notification-icon"
         />

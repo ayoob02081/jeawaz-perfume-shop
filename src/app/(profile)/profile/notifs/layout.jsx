@@ -4,30 +4,27 @@ import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-export default function NotificationsPage() {
+export default function NotifsPageLayout({ children }) {
   const pathName = usePathname();
-  const [openNotifications, setOpenNotifications] = useState(false);
-  const toggleNotificationsPage = () => {
-    setOpenNotifications((prevState) => !prevState);
-  };
+  const [openNotifs, setOpenNotifs] = useState(false);
 
-  if (pathName === "/profile/notifications" && openNotifications === false) {
-    setOpenNotifications(true);
+  if (pathName.startsWith("/profile/notifs") && openNotifs === false) {
+    setOpenNotifs(true);
   }
 
   return (
     <AdaptiveOverlayPage
-      isOpen={openNotifications}
-      onClick={toggleNotificationsPage}
+      isOpen={openNotifs}
       label="پیام‌ها"
       side="right"
       className="size-4"
       fontStyle="text-base font-normal"
       justify="between"
+      overflow="overflow-y-auto"
       max="true"
       min="true"
     >
-      EditPage
+      {children}
     </AdaptiveOverlayPage>
   );
 }

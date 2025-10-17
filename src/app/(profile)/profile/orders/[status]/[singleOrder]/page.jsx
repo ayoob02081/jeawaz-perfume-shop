@@ -39,6 +39,7 @@ function SingleOrderPage({ params }) {
       className="size-4"
       fontStyle="text-base font-normal"
       justify="between"
+      overflow="overflow-y-auto"
       max="true"
       min="true"
     >
