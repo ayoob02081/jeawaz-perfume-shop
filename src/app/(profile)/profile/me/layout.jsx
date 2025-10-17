@@ -4,30 +4,27 @@ import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-export default function EditPage() {
+export default function RootLayout({ children }) {
   const pathName = usePathname();
-  const [editProfileOpen, setEditProfileOpen] = useState(false);
-  const toggleEditPage = () => {
-    setEditProfileOpen((prevState) => !prevState);
-  };
+  const [openMeProfile, setOpenMeProfile] = useState(false);
 
-  if (pathName === "/profile/edit" && editProfileOpen === false) {
-    setEditProfileOpen(true);
+  if (pathName.startsWith("/profile/me") && openMeProfile === false) {
+    setOpenMeProfile(true);
   }
 
   return (
     <AdaptiveOverlayPage
-      isOpen={editProfileOpen}
-      onClick={toggleEditPage}
-      label="ویرایش اطلاعات کاربری"
+      isOpen={openMeProfile}
+      label="اطلاعات کاربری"
       side="right"
       className="size-4"
       fontStyle="text-base font-normal"
       justify="between"
+      overflow="overflow-y-auto"
       max="true"
       min="true"
     >
-      EditPage
+      {children}
     </AdaptiveOverlayPage>
   );
 }

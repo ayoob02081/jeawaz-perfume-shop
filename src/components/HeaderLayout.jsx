@@ -15,6 +15,7 @@ import SearchSection from "./SearchSection";
 import Modal from "./Modal";
 import CategorySideBar from "@/app/(user)/_components/CategorySideBar";
 import SideBar from "./SideBar";
+import { toPersianNumbers } from "@/utils/toPersianNumbers";
 
 function HeaderLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -189,9 +190,17 @@ function HeaderLayout() {
               </div>
             </div>
             <div className="flex items-center justify-between gap-4">
-              <li className="w-[8.18rem] flex items-center justify-center">
-                <p className="md:text-base">09180522273</p>
-              </li>
+             <Link href={"tel:+989180522273"} className="flex items-center justify-center text-xl">
+                <p className="text-text ">
+                  {toPersianNumbers("2273")}
+                </p>
+                <p className="text-text ">
+                  {toPersianNumbers("052")}
+                </p>
+                <p className="text-primary ">
+                  {toPersianNumbers("0918")}
+                </p>
+              </Link>
               <li className="w-24 lg:w-[7.62rem] h-10 btn btn--primary">
                 <Link href={"/"}>
                   <div className="flex items-center justify-center px-4 size-full gap-2 ">

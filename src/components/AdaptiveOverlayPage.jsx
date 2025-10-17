@@ -9,6 +9,7 @@ function AdaptiveOverlayPage({
   onClick,
   fontStyle,
   justify,
+  overflow,
   max,
   min,
 }) {
@@ -18,13 +19,11 @@ function AdaptiveOverlayPage({
         max === "true" ? "max-lg:fixed" : "max-md:fixed"
       } top-0 bg-white ${
         max === "true" ? "max-lg:w-screen" : "max-md:w-screen"
-      } max-lg:w-full lg:w-fit ${
+      } w-fit ${
         max === "true" ? "max-lg:h-screen" : "max-md:h-screen"
       } max-lg:z-[60] duration-200 ${
         max === "true" ? "max-lg:pt-6" : "max-md:pt-6"
-      } ${
-        max === "true" ? "max-lg:overflow-y-auto" : "max-md:overflow-y-auto"
-      } max-md:bottom-20 md:bottom-0`}
+      } ${overflow} max-md:bottom-20 md:bottom-0`}
     >
       <div className="flex flex-col gap-4 h-fit bg-white max-md:pb-28 md:pb-10">
         <div

@@ -57,6 +57,7 @@ function CartLayout() {
       label="سبد خرید"
       side="right"
       className="size-4"
+      overflow="overflow-y-auto"
     >
       <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-grey md:rounded-b-3xl">
         <CardStepsIcon step={step} setStep={setStep} />

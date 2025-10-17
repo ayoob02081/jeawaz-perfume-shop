@@ -3,90 +3,11 @@
 import ImageFrame from "@/components/ImageFrame";
 import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
-
-// async function fetchOrders(status) {
-//   // شبیه‌سازی API call
-//   await new Promise((r) => setTimeout(r, 300));
-
-//   return [
-//     {
-//       id: "123445",
-//       date: "1404/07/15",
-//       price: 1250000,
-//       items: [
-//         { src: "/images/perfume-1.svg", alt: "perfume image" },
-//         { src: "/images/perfume-2.svg", alt: "perfume image" },
-//         { src: "/images/perfume-3.svg", alt: "perfume image" },
-//       ],
-//     },
-//     {
-//       id: "123446",
-//       date: "1404/07/16",
-//       price: 1000000,
-//       items: [
-//         { src: "/images/perfume-1.svg", alt: "perfume image" },
-//         { src: "/images/perfume-2.svg", alt: "perfume image" },
-//         { src: "/images/perfume-3.svg", alt: "perfume image" },
-//       ],
-//     },
-//     {
-//       id: "123447",
-//       date: "1404/07/18",
-//       price: 1100000,
-//       items: [
-//         { src: "/images/perfume-1.svg", alt: "perfume image" },
-//         { src: "/images/perfume-2.svg", alt: "perfume image" },
-//         { src: "/images/perfume-3.svg", alt: "perfume image" },
-//       ],
-//     },
-//     {
-//       id: "123448",
-//       date: "1404/07/22",
-//       price: 1000000,
-//       items: [
-//         { src: "/images/perfume-1.svg", alt: "perfume image" },
-//         { src: "/images/perfume-2.svg", alt: "perfume image" },
-//         { src: "/images/perfume-3.svg", alt: "perfume image" },
-//       ],
-//     },
-//     {
-//       id: "123449",
-//       date: "1404/07/22",
-//       price: 1000000,
-//       items: [
-//         { src: "/images/perfume-1.svg", alt: "perfume image" },
-//         { src: "/images/perfume-2.svg", alt: "perfume image" },
-//         { src: "/images/perfume-3.svg", alt: "perfume image" },
-//       ],
-//     },
-//     {
-//       id: "123450",
-//       date: "1404/07/22",
-//       price: 1000000,
-//       items: [
-//         { src: "/images/perfume-1.svg", alt: "perfume image" },
-//         { src: "/images/perfume-2.svg", alt: "perfume image" },
-//         { src: "/images/perfume-3.svg", alt: "perfume image" },
-//       ],
-//     },
-//     {
-//       id: "123451",
-//       date: "1404/07/22",
-//       price: 1000000,
-//       items: [
-//         { src: "/images/perfume-1.svg", alt: "perfume image" },
-//         { src: "/images/perfume-2.svg", alt: "perfume image" },
-//         { src: "/images/perfume-3.svg", alt: "perfume image" },
-//       ],
-//     },
-//   ];
-// }
 
 function AllOrderStatus() {
   return (
-    <div className="flex items-center justify-between max-lg:p-6 lg:pl-6 gap-8 w-full snap-x overflow-x-scroll scrollbar-none">
+    <div className="flex items-center justify-between max-lg:p-6 gap-8 snap-x overflow-x-scroll scrollbar-none">
       <Status status="processing" />
       <Status status="delivered" />
       <Status status="returned" />

@@ -55,7 +55,7 @@ export default function OrderStatusPage({ status }) {
 
   return (
     <div
-      className={`flex flex-col items-center justify-center lg:rounded-xl lg:ml-6 lg:gap-6 `}
+      className={`flex flex-col items-center justify-center lg:rounded-xl lg:gap-6 `}
     >
       {data ? (
         data.map((order) => (

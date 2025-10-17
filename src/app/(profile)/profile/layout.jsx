@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
       <body className="font-display antialiased">
         <Providers>
           <Header />
-          <div className="flex items-start justify-center container mx-auto gap-4 my-12">
+          <div className="flex items-start justify-start container mx-auto max-w-7xl gap-4 my-12 px-4">
             <ProfileLayout />
             {children}
           </div>

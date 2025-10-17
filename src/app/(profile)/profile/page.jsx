@@ -1,9 +1,5 @@
-import AllOrderStatus from "./_components/AllOrderStatus";
+import ProfileInfoLayout from "./_components/ProfileInfoLayout";
 
 export default function Home() {
-  return (
-    <div className="max-lg:hidden">
-      <AllOrderStatus />
-    </div>
-  );
+  return <ProfileInfoLayout className="w-fit overflow-y-auto" />;
 }

@@ -10,9 +10,6 @@ import { useState } from "react";
 function ProfileLayout() {
   const pathName = usePathname();
   const [profileOpen, setProfileOpen] = useState(false);
-  // const toggleProfile = () => {
-  //   setProfileOpen((prevState) => !prevState);
-  // };
 
   if (pathName.startsWith("/profile") && profileOpen === false) {
     setProfileOpen(true);
@@ -21,7 +18,6 @@ function ProfileLayout() {
   return (
     <AdaptiveOverlayPage
       isOpen={profileOpen}
-      // onClick={toggleProfile}
       label="پروفایل کاربری"
       side="right"
       className="size-4"
@@ -58,16 +54,13 @@ function UserProfileLink({}) {
               </p>
             </span>
           </Link>
-          <Link
-            href={"/profile/edit"}
-            className="flex items-center justify-center"
-          >
+          <button className="flex items-center justify-center">
             <ImageFrame
               src="/images/edit-stroke-icon.svg"
               alt="edit-icon"
               className="size-6"
             />
-          </Link>
+          </button>
         </div>
       </div>
       <div className="h-[1.5px] w-full max-lg:hidden bg-stroke-3"></div>

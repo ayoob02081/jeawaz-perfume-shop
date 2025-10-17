@@ -53,31 +53,6 @@ function CartSummery({ setStep, step }) {
   };
 
   return <>{renderSteps()}</>;
-  //   return (
-  //     <>
-  //       {step !== 3 ? (
-  //         <div className="flex items-center justify-center h-full">
-  //           {step === 1 ? (
-  //             <CartSummeryAccept step={step} setStep={setStep} />
-  //           ) : (
-  //             <CartSummeryPay step={step} setStep={setStep} />
-  //           )}
-  //         </div>
-  //       ) : (
-  //         <div className="flex max-md:flex-col items-center justify-between gap-4 size-full">
-  //           <button
-  //             onClick={() => setStep(3)}
-  //             className="btn btn--primary--2 border size-full py-2 md:max-w-60"
-  //           >
-  //             دریافت فاکتور
-  //           </button>
-  //           <div className="btn btn--secondary--2 size-full py-2 duration-200 md:max-w-60">
-  //             <GoBack side="left" label="بازگشت به سایت" className="size-4" />
-  //           </div>
-  //         </div>
-  //       )}
-  //     </>
-  //   );
 }
 
 export default CartSummery;
