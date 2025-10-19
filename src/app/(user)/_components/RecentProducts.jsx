@@ -1,12 +1,12 @@
 "use client";
 
-import { useGetAllProducts } from "@/hooks/useProducts";
+import Loading from "@/components/Loading";
 import HomePageProducts from "./HomePageProducts";
 import ProductCard from "./ProductCard";
-import Loading from "@/components/Loading";
+import { useGetAllProducts } from "@/hooks/useProducts";
 import Error from "@/components/Error";
 
-function OffProducts() {
+function RecentProducts() {
   const { data, isLoading, error } = useGetAllProducts();
 
   if (isLoading) {
@@ -16,15 +16,16 @@ function OffProducts() {
   if (error) {
     return <Error />;
   }
-
   return (
     <HomePageProducts
-      titleOne={"پرتخفیف ترین"}
-      titleTwo={"محصولات"}
-      desc={"پرتخفیف ترین رایحه ها ، همین‌جاست."}
-      className={""}
-      bgColor="bg-[#FFF4F8] rounded-2xl py-6"
+      genderType="true"
+      section={"recent"}
+      titleOne={"جدید ترین "}
+      titleTwo={"محصولات ما"}
+      desc={"ترندهای رایحه، همین‌جاست."}
+      className={"rounded-2xl"}
     >
+      <div></div>
       {data &&
         data.map((product) => (
           <div className="snap-center pb-6" key={product.id}>
@@ -46,4 +47,4 @@ function OffProducts() {
   );
 }
 
-export default OffProducts;
+export default RecentProducts;

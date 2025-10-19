@@ -1,6 +1,20 @@
-import ImageFrame from "@/components/ImageFrame";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+
+function BannerSecondaryLayout() {
+  return (
+    <div className="container mx-auto xl:max-w-7xl flex flex-row flex-wrap items-center justify-evenly gap-4 scrollbarX">
+      <div className="snap-center">
+        <BannerCardSecondary />
+      </div>
+      <div className="snap-center ">
+        <BannerCardSecondary />
+      </div>
+    </div>
+  );
+}
+
+export default BannerSecondaryLayout;
 
 function BannerCardSecondary() {
   return (
@@ -37,5 +51,3 @@ function BannerCardSecondary() {
     </div>
   );
 }
-
-export default BannerCardSecondary;

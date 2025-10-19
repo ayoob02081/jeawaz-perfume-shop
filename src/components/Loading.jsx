@@ -1,29 +1,16 @@
-import { BarLoader, SyncLoader } from "react-spinners";
+import { PulseLoader } from "react-spinners";
 
-function Loading({
-  size = 10,
-  height = 3,
-  width = 200,
-  margin = 3,
-  speed = 2,
-  className,
-}) {
+function Loading({ size = 15, height = 3, width = 200, speed = 1, className }) {
   return (
-    <div className={`flex w-full items-center justify-center ${className}`}>
-      {/* <SyncLoader
-        className="flex"
-        color="rgb(var(--color-primary-700))"
-        cssOverride={{ justifyItems: "center" }}
-        margin={margin}
-        size={size}
-        speedMultiplier={speed}
-      /> */}
-      <BarLoader
-        // className="flex"
-        color="rgb(var(--color-primary-700))"
+    <div
+      className={`flex w-full items-center justify-center ${className} h-60`}
+    >
+      <PulseLoader
+        color="rgb(204, 49, 45)"
         cssOverride={{ justifyItems: "center" }}
         speedMultiplier={speed}
         height={height}
+        size={size}
         loading
         width={width}
       />

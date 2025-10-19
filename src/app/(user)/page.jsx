@@ -1,20 +1,20 @@
-import Banner from "./_components/Banner";
-import RecentsPrducts from "./_components/RecentPrducts";
-import Categories from "./_components/Categories";
-import FilteredProducts from "./_components/FilteredProducts";
+import BannerLayout from "./_components/BannerLayout";
+import RecentProducts from "./_components/RecentProducts";
+import CategoriesLayout from "./_components/CategoriesLayout";
+import FilteredProductsLayout from "./_components/FilteredProductsLayout";
 import OffProducts from "./_components/OffProducts";
 import PopularProducts from "./_components/PopularProducts";
-import SpecialProducts from "./_components/SpecialProducts";
+import BannerSecondaryLayout from "./_components/BannerSecondaryLayout";
 
 export default function Home() {
   return (
     <div className="flex flex-col justify-between gap-14 ">
-      <Banner />
-      <Categories />
-      <RecentsPrducts />
-      <SpecialProducts />
+      <BannerLayout />
+      <CategoriesLayout />
+      <RecentProducts />
+      <BannerSecondaryLayout />
       <OffProducts />
-      <FilteredProducts />
+      <FilteredProductsLayout />
       <PopularProducts />
     </div>
   );

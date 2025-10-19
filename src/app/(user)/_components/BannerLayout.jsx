@@ -1,6 +1,26 @@
 import ImageFrame from "@/components/ImageFrame";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+
+function BannerLayout() {
+  return (
+    <div className="flex items-center justify-center gap-4 mt-6 container mx-auto">
+      <div className="flex gap-6 sm:gap-10 px-20 justify-evenly items-center w-full scrollbarX rounded-[0] sm:rounded-2xl xl:first:pr-[10%] 2xl:first:pr-[20%] xl:last:pl-[10%] 2xl:last:pl-[20%]">
+        <div className="snap-center">
+          <BannerCard />
+        </div>
+        <div className="snap-center">
+          <BannerCard />
+        </div>
+        <div className="snap-center">
+          <BannerCard />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default BannerLayout;
 
 function BannerCard() {
   return (
@@ -18,7 +38,10 @@ function BannerCard() {
         objectFit="cover"
       />
       <div className="absolute bottom-7 md:bottom-9 lg:bottom-12 right-5 md:right-6 lg:right-7 flex items-center justify-start gap-4">
-        <Link href={"/products"} className="h-8 sm:h-[2.03rem] xl:h-[2.6rem] 2xl:h-12 flex items-center justify-between gap-2 px-3.5 sm:px-3 py-2 sm:py-2 text-white bg-primary hover:text-primary hover:bg-white hover:ring-primary ring-4 sm:ring-2 ring-primary/10 rounded-4xl duration-300">
+        <Link
+          href={"/products"}
+          className="h-8 sm:h-[2.03rem] xl:h-[2.6rem] 2xl:h-12 flex items-center justify-between gap-2 px-3.5 sm:px-3 py-2 sm:py-2 text-white bg-primary hover:text-primary hover:bg-white hover:ring-primary ring-4 sm:ring-2 ring-primary/10 rounded-4xl duration-300"
+        >
           <p className="text-xs sm:text-[10px] lg:text-xs xl:text-base font-bold">
             مشاهده محصولات
           </p>
@@ -42,5 +65,3 @@ function BannerCard() {
     </div>
   );
 }
-
-export default BannerCard;

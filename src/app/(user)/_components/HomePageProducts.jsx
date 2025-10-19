@@ -1,11 +1,11 @@
 import React from "react";
-import GenderType from "./GenderType";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import RadioButton from "@/ui/RadioButton";
 
 function HomePageProducts({
-  title,
-  title2,
+  titleOne,
+  titleTwo,
   desc,
   genderType,
   children,
@@ -21,10 +21,10 @@ function HomePageProducts({
         <div className="flex flex-col items-center justify-center md:items-start gap-2 px-6">
           <div className="flex items-center gap-1">
             <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-primary">
-              {title}
+              {titleOne}
             </h2>
             <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-text-primary">
-              {title2}
+              {titleTwo}
             </h2>
           </div>
           <p className="text-xs sm:text-sm md:text-lg text-text-secondary">
@@ -60,3 +60,28 @@ function HomePageProducts({
 }
 
 export default HomePageProducts;
+
+function GenderType({ section }) {
+  return (
+    <div className="flex items-center justify-between gap-1">
+      <RadioButton
+        className="btn border-[1.5px] w-20 text-sm border-stroke py-1 px-3 rounded-4xl text-black has-checked:text-primary has-checked:border-primary duration-200"
+        id={`man${section}`}
+        name={`gender${section}`}
+        value="man"
+        label="مردانه"
+        //   onChange=""
+        //   checked=""
+      />
+      <RadioButton
+        className="btn border-[1.5px] w-20 text-sm border-stroke py-1 px-3 rounded-4xl text-black has-checked:text-primary has-checked:border-primary duration-200"
+        id={`woman${section}`}
+        name={`gender${section}`}
+        value="woman"
+        label="زنانه"
+        //   onChange=""
+        //   checked=""
+      />
+    </div>
+  );
+}
