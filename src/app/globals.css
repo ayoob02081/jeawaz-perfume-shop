@@ -101,13 +101,16 @@
     @apply border bg-success  border-grey text-grey hover:border-success hover:text-success hover:bg-white hover:**:text-success hover:border active:border-success active:text-success active:bg-white active:**:text-success active:border duration-200;
   }
   .badge {
-    @apply flex items-center justify-center px-3 py-1 text-xs bg-grey text-primary rounded-[3.3rem];
+    @apply flex items-center justify-center px-3 py-1 text-xs md:text-sm bg-grey text-primary rounded-[3.3rem];
   }
   .badge--primary {
     @apply bg-primary/10 text-primary;
   }
   .badge--secondary {
     @apply bg-grey text-text-secondary;
+  }
+   .badge--secondary--2 {
+    @apply bg-white text-text border border-stroke;
   }
   .profileLink {
     @apply flex items-center gap-2 border-t border-stroke py-5 text-xs;

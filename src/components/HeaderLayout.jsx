@@ -16,6 +16,7 @@ import Modal from "./Modal";
 import CategorySideBar from "@/app/(user)/_components/CategorySideBar";
 import SideBar from "./SideBar";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
+import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
 
 function HeaderLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -189,31 +190,25 @@ function HeaderLayout() {
                 </li>
               </div>
             </div>
-            <div className="flex items-center justify-between gap-4">
-             <Link href={"tel:+989180522273"} className="flex items-center justify-center text-xl">
-                <p className="text-text ">
-                  {toPersianNumbers("2273")}
-                </p>
-                <p className="text-text ">
-                  {toPersianNumbers("052")}
-                </p>
-                <p className="text-primary ">
-                  {toPersianNumbers("0918")}
-                </p>
+            <li className="flex items-center justify-between gap-4">
+              <Link
+                href={"tel:+989180522273"}
+                className="flex items-center justify-between gap-4"
+              >
+                <div className="flex items-center justify-center text-xl pl-4 border-l-[1.5px] border-stroke">
+                  <p className="text-text ">{toPersianNumbers("2273")}</p>
+                  <p className="text-text ">{toPersianNumbers("052")}</p>
+                  <p className="text-primary ">{toPersianNumbers("0918")}</p>
+                </div>
+                <CardIconResponsive
+                  type="support"
+                  className="max-md:h-8 md:h-10"
+                  hoverWidthMaxMd="w-[7.62rem]"
+                  hoverWidthMd="w-24"
+                  size="max-md:size-4 md:size-6"
+                />
               </Link>
-              <li className="w-24 lg:w-[7.62rem] h-10 btn btn--primary">
-                <Link href={"/"}>
-                  <div className="flex items-center justify-center px-4 size-full gap-2 ">
-                    <ImageFrame
-                      src="/images/call-ringing-4-wihte-icon.svg"
-                      alt="call ringing icon"
-                      className="size-5 "
-                    />
-                    <p className="text-sm">پشتیبانی</p>
-                  </div>
-                </Link>
-              </li>
-            </div>
+            </li>
           </div>
         </ul>
       </nav>

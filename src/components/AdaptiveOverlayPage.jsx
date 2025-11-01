@@ -15,15 +15,11 @@ function AdaptiveOverlayPage({
 }) {
   return (
     <div
-      className={`${isOpen ? "right-0" : "-right-[100vw]"} ${
-        max === "true" ? "max-lg:fixed" : "max-md:fixed"
-      } top-0 bg-white ${
-        max === "true" ? "max-lg:w-screen" : "max-md:w-screen"
-      } w-fit ${
-        max === "true" ? "max-lg:h-screen" : "max-md:h-screen"
-      } max-lg:z-[60] duration-200 ${
-        max === "true" ? "max-lg:pt-6" : "max-md:pt-6"
-      } ${overflow} max-md:bottom-20 md:bottom-0`}
+      className={`${isOpen ? "right-0" : "-right-[100vw]"} top-0 bg-white ${
+        max === "true"
+          ? "max-lg:fixed max-lg:w-screen max-lg:h-screen"
+          : "max-md:fixed max-md:w-full max-md:h-screen"
+      } max-lg:z-[60] duration-200 ${overflow} max-md:bottom-20 md:bottom-0`}
     >
       <div className="flex flex-col gap-4 h-fit bg-white max-md:pb-28 md:pb-10">
         <div
@@ -31,7 +27,7 @@ function AdaptiveOverlayPage({
             max === "true" ? "max-lg:flex" : "max-md:flex"
           } ${
             min === "true" ? "lg:hidden" : "md:hidden"
-          } items-center justify-center gap-2 p-6`}
+          } items-center justify-center gap-2 pt-4 px-6`}
         >
           <GoBack
             onClick={onClick}

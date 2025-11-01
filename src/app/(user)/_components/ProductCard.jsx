@@ -1,6 +1,9 @@
+"use client";
+
 import ImageFrame from "@/components/ImageFrame";
 import PriceSection from "@/components/PriceSection";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
 
 function ProductCard({
   src,
@@ -13,7 +16,10 @@ function ProductCard({
   price,
   offValue,
   original,
+  productId,
 }) {
+  const router = useRouter();
+
   return (
     <div className="flex items-center justify-center p-4 w-[21.6rem] md:w-[19.4rem] h-[13.5rem] md:h-[28.9rem] bg-white rounded-2xl border-[1.5px] border-[#EBEBEB]">
       <div className="flex items-start justify-between gap-4 w-full h-full">
@@ -21,7 +27,7 @@ function ProductCard({
           <ImageFrame src={src} alt={alt} className="size-full" />
         </div>
         <div className="flex grow flex-col w-full h-full">
-          <div className=" flex flex-none items-center justify-between mb-1">
+          <div className="flex flex-none items-center justify-between max-md:mb-4 mb-1">
             <CardIconResponsive
               type={scent}
               className="max-md:h-8 md:h-10"
@@ -58,9 +64,12 @@ function ProductCard({
           </div>
           <div className="flex flex-none items-center justify-between gap-4 w-full pt-2">
             <PriceSection price={price} offValue={offValue} />
-            <div className="text-primary max-md:size-[1.1rem] size-6">
+            <button
+              onClick={() => router.push(`/products/${productId}`)}
+              className="text-primary max-md:size-[1.1rem] size-6"
+            >
               <ArrowLeftIcon />
-            </div>
+            </button>
           </div>
         </div>
       </div>
@@ -70,7 +79,7 @@ function ProductCard({
 
 export default ProductCard;
 
-function CardIconResponsive({
+export function CardIconResponsive({
   size,
   className,
   hoverWidthMd,
@@ -131,6 +140,15 @@ function CardIconResponsive({
       alt = "woman-icon";
       justify = "end";
       title = "زنانه";
+      dir = "ltr";
+      break;
+
+    case "support":
+      bgColor = "bg-primary/10";
+      src = "/images/call-ringing-4-primary-icon.svg";
+      alt = "call-ringing-icon";
+      justify = "end";
+      title = "پشتیبانی";
       dir = "ltr";
       break;
 

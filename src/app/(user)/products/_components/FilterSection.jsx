@@ -2,28 +2,35 @@ import ImageFrame from "@/components/ImageFrame";
 import Badge from "@/ui/Badge";
 import BreadCrumbBase from "@/ui/BreadCrumbBase";
 import BreadCrumb from "@/ui/BreadCrumb";
-import FilterCheckbox from "../../_components/FilterCheckbox";
 import CheckBox from "@/ui/CheckBox";
 
 function FilterSection() {
   return (
-    <div className="flex flex-col items-start justify-between h-full py-4">
-      <div className="flex items-center justify-between gap-4">
-        <button className="flex items-center justify-center gap-2 btn btn--secondary w-[8.315rem] h-11">
-          <ImageFrame
-            src="images/filter-icon.svg"
-            alt="filter icon"
-            className="size-5"
-          />
-          <p>فیلتر ها</p>
-        </button>
-        <div className="flex items-center justify-center gap-2">
+    <div className="flex flex-col items-start justify-between h-full w-full">
+      <div className="w-full ">
+        <div className="flex items-center justify-start gap-2 snap-x overflow-x-scroll scrollbar-none py-4 w-full">
+          <button className="flex items-center justify-between gap-2 rounded-[40px] border-[1.5px] border-stroke max-md:min-w-[6.625rem] md:min-w-[8.315rem] max-md:h-8 md:h-11 snap-center px-4">
+            <ImageFrame
+              src="images/filter-icon.svg"
+              alt="filter icon"
+              className="size-5"
+            />
+            <p className="max-md:text-xs">فیلتر ها</p>
+          </button>
           <Badge
             title="قیمت"
             // onClick={toggleFilter}
           />
           <Badge
             title="رایحه"
+            // onClick={toggleFilter}
+          />
+          <Badge
+            title="برند"
+            // onClick={toggleFilter}
+          />
+          <Badge
+            title="حجم"
             // onClick={toggleFilter}
           />
         </div>
@@ -60,7 +67,7 @@ function FilterSection() {
           />
         </div>
       </form>
-      <div className="max-md:hidden">
+      <div className="max-md:hidden pb-4">
         <BreadCrumbBase>
           <BreadCrumb href={"/"} label={"home"} />
           <BreadCrumb href={"/products"} label={"products"} chevron />
@@ -94,7 +101,6 @@ function FilterCheckbox({ checkId, name, label, className, imageSrc }) {
     </CheckBox>
   );
 }
-
 
 function BrandFilter({ title, src, alt, onClick, className }) {
   return (

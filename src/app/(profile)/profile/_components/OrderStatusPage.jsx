@@ -36,7 +36,7 @@ const statusConfig = {
 };
 
 export default function OrderStatusPage({ status }) {
-  const { title, color, src, alt } = statusConfig[status.status] || {};
+  const { title, color, src, alt } = statusConfig[status] || {};
   const { data, isLoading, error } = useGetAllOrdersByStatus(status);
 
   if (isLoading)

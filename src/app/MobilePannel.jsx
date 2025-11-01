@@ -10,31 +10,36 @@ function MobilePannel() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-[83px] w-full md:hidden shadow-2xl shadow-black bg-white px-5 z-[70]">
-      <ul className="grid grid-cols-4 justify-items-center p-2 gap-x-5 gap-y-5 h-full">
-        <li className=" justify-items-start">
+    <div className="fixed flex items-center justify-center bottom-3 right-0 h-[83px] w-full md:hidden z-[70]">
+      <ul className="grid grid-cols-4 justify-items-center gap-x-5 h-full w-[95%] shadow-2xl shadow-black rounded-2xl bg-white px-5">
+        <li className="flex items-center justify-center ">
           <Link
-            className="flex flex-col justify-between items-center gap-2 p-3"
+            className="flex flex-col justify-center items-center gap-2"
             href="/"
           >
             <div className="size-7">
               <ImageFrame
                 className="size-7"
                 src={
-
-                  pathname === ("/")
+                  pathname === "/"
                     ? "/images/home-fill-primary-icon.svg"
                     : "/images/home-stroke-sec-icon.svg"
                 }
                 alt="home icon"
               />
             </div>
-            <p className="text-xs text-text-secondary">خانه</p>
+            <p
+              className={`text-xs text-text-secondary text-nowrap font-bold ${
+                pathname === "/" ? "text-text" : "text-text-secondary"
+              }`}
+            >
+              خانه
+            </p>
           </Link>
         </li>
-        <li className=" justify-items-start">
+        <li className="flex items-center justify-center ">
           <Link
-            className="flex flex-col justify-between items-center gap-2 p-3"
+            className="flex flex-col justify-center items-center gap-2"
             href="/products"
           >
             <div className="size-7">
@@ -48,12 +53,20 @@ function MobilePannel() {
                 alt="products icon"
               />
             </div>
-            <p className="text-xs text-text-secondary">فروشگاه</p>
+            <p
+              className={`text-xs  text-nowrap font-bold ${
+                pathname.startsWith("/products")
+                  ? "text-text"
+                  : "text-text-secondary"
+              }`}
+            >
+              فروشگاه
+            </p>
           </Link>
         </li>
-        <li className=" justify-items-start">
+        <li className="flex items-center justify-center ">
           <Link
-            className="flex flex-col justify-between items-center gap-2 p-3"
+            className="flex flex-col justify-center items-center gap-2"
             href="/cart"
           >
             <div className="size-7">
@@ -67,12 +80,20 @@ function MobilePannel() {
                 alt="cart icon"
               />
             </div>
-            <p className="text-xs text-text-secondary">سبد خرید</p>
+            <p
+              className={`text-xs text-text-secondary text-nowrap font-bold ${
+                pathname.startsWith("/cart")
+                  ? "text-text"
+                  : "text-text-secondary"
+              }`}
+            >
+              سبد خرید
+            </p>
           </Link>
         </li>
-        <li className=" justify-items-start">
+        <li className="flex items-center justify-center ">
           <Link
-            className="flex flex-col justify-between items-center gap-2 p-3"
+            className="flex flex-col justify-center items-center gap-2"
             href="/profile"
           >
             <div className="flex items-center justify-center size-7">
@@ -82,7 +103,15 @@ function MobilePannel() {
                 <UserIcon className="size-6 text-[#606060]" />
               )}
             </div>
-            <p className="text-xs text-text-secondary">پروفایل</p>
+            <p
+              className={`text-xs text-text-secondary text-nowrap font-bold ${
+                pathname.startsWith("/profile")
+                  ? "text-text"
+                  : "text-text-secondary"
+              }`}
+            >
+              پروفایل
+            </p>
           </Link>
         </li>
       </ul>

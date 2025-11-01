@@ -1,12 +1,12 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import OrdersLayout from "../../_components/OrdersLayout";
-import React from "react";
 
-function SingleStatusPage({ params }) {
-  const correctParams = React.use(params);
+function SingleStatusPage() {
+  const params = useParams();
 
-  return <OrdersLayout status={correctParams} />;
+  return <OrdersLayout status={params.status} />;
 }
 
 export default SingleStatusPage;

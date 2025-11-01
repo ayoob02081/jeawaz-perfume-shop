@@ -69,6 +69,13 @@ export async function fetchProducts(type) {
       perTitle: "تیزیانا ترنزی",
       price: 1200000,
       offValue: 5,
+      images: [
+        "/images/perfume-1.svg",
+        "/images/perfume-1.svg",
+        "/images/perfume-1.svg",
+        "/images/perfume-1.svg",
+        "/images/perfume-1.svg",
+      ],
     },
     {
       id: "2",
@@ -81,6 +88,13 @@ export async function fetchProducts(type) {
       perTitle: "شنل اگویست پلاتینیوم",
       price: 1500000,
       offValue: 12,
+      images: [
+        "/images/perfume-2.svg",
+        "/images/perfume-2.svg",
+        "/images/perfume-2.svg",
+        "/images/perfume-2.svg",
+        "/images/perfume-2.svg",
+      ],
     },
     {
       id: "3",
@@ -93,6 +107,13 @@ export async function fetchProducts(type) {
       perTitle: "تیزیانا ترنزی",
       price: 3000000,
       offValue: 24,
+      images: [
+        "/images/perfume-3.svg",
+        "/images/perfume-3.svg",
+        "/images/perfume-3.svg",
+        "/images/perfume-3.svg",
+        "/images/perfume-3.svg",
+      ],
     },
     {
       id: "4",
@@ -105,6 +126,13 @@ export async function fetchProducts(type) {
       perTitle: "شنل اگویست پلاتینیوم",
       price: 2500000,
       offValue: 20,
+      images: [
+        "/images/perfume-4.svg",
+        "/images/perfume-4.svg",
+        "/images/perfume-4.svg",
+        "/images/perfume-4.svg",
+        "/images/perfume-4.svg",
+      ],
     },
     {
       id: "5",
@@ -117,6 +145,13 @@ export async function fetchProducts(type) {
       perTitle: "تیزیانا ترنزی",
       price: 2900000,
       offValue: 10,
+      images: [
+        "/images/perfume-5.svg",
+        "/images/perfume-5.svg",
+        "/images/perfume-5.svg",
+        "/images/perfume-5.svg",
+        "/images/perfume-5.svg",
+      ],
     },
     {
       id: "6",
@@ -129,6 +164,13 @@ export async function fetchProducts(type) {
       perTitle: "شنل اگویست پلاتینیوم",
       price: 1200000,
       offValue: 5,
+      images: [
+        "/images/perfume-1.svg",
+        "/images/perfume-1.svg",
+        "/images/perfume-1.svg",
+        "/images/perfume-1.svg",
+        "/images/perfume-1.svg",
+      ],
     },
     {
       id: "7",
@@ -141,6 +183,13 @@ export async function fetchProducts(type) {
       perTitle: "تیزیانا ترنزی",
       price: 1500000,
       offValue: 12,
+      images: [
+        "/images/perfume-2.svg",
+        "/images/perfume-2.svg",
+        "/images/perfume-2.svg",
+        "/images/perfume-2.svg",
+        "/images/perfume-2.svg",
+      ],
     },
     {
       id: "8",
@@ -153,6 +202,13 @@ export async function fetchProducts(type) {
       perTitle: "شنل اگویست پلاتینیوم",
       price: 3000000,
       offValue: 24,
+      images: [
+        "/images/perfume-3.svg",
+        "/images/perfume-3.svg",
+        "/images/perfume-3.svg",
+        "/images/perfume-3.svg",
+        "/images/perfume-3.svg",
+      ],
     },
     {
       id: "9",
@@ -165,6 +221,13 @@ export async function fetchProducts(type) {
       perTitle: "تیزیانا ترنزی",
       price: 2500000,
       offValue: 20,
+      images: [
+        "/images/perfume-4.svg",
+        "/images/perfume-4.svg",
+        "/images/perfume-4.svg",
+        "/images/perfume-4.svg",
+        "/images/perfume-4.svg",
+      ],
     },
   ];
 }

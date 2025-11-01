@@ -31,6 +31,7 @@ function PopularProducts() {
         data.map((product) => (
           <div className="snap-center pb-6" key={product.id}>
             <ProductCard
+              productId={product.id}
               src={product.src}
               alt={product.alt}
               gender={product.gender}
