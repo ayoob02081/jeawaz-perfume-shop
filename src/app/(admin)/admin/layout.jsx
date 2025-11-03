@@ -1,15 +1,29 @@
 import "../../globals.css";
-import Header from "@/app/Header";
-import MobilePannel from "@/app/MobilePannel";
-import Providers from "@/app/Providers";
 
-export default function AdminLayout({ children }) {
+import OptionsFooter from "@/components/OptionsFooter";
+import Providers from "../../Providers";
+import Header from "@/app/Header";
+import Footer from "@/app/Footer";
+import MobilePannel from "@/app/MobilePannel";
+import AdminSidebar from "./_components/AdminSidebar";
+
+export const metadata = {
+  title: "Jeawaz",
+  description: "Profile",
+};
+
+export default function RootLayout({ children }) {
   return (
     <html lang="fa" dir="rtl">
       <body className="font-display antialiased">
         <Providers>
           <Header />
-          {children}
+          <div className="flex items-start max-md:justify-center md:justify-start container mx-auto max-w-7xl gap-4 my-12 px-4">
+            <AdminSidebar />
+            {children}
+          </div>
+          <OptionsFooter />
+          <Footer />
           <MobilePannel />
         </Providers>
       </body>

@@ -1,10 +1,12 @@
-function AdminPage() {
+import ProfileInfoLayout from "@/components/ProfileInfoLayout";
+import AddressInfo from "./_components/AddressInfo";
+import ProfileInfo from "./_components/ProfileInfo";
+
+export default function Home() {
   return (
-    <div className="flex flex-col justify-between gap-14 ">
-      <h1 className="text-2xl font-bold">Admin Page</h1>
-      <p>This is the Admin page.</p>
-    </div>
+    <ProfileInfoLayout className="w-fit overflow-y-auto">
+      <ProfileInfo />
+      <AddressInfo />
+    </ProfileInfoLayout>
   );
 }
-
-export default AdminPage;

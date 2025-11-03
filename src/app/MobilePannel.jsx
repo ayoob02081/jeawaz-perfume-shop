@@ -29,7 +29,7 @@ function MobilePannel() {
               />
             </div>
             <p
-              className={`text-xs text-text-secondary text-nowrap font-bold ${
+              className={`text-xs text-nowrap font-bold ${
                 pathname === "/" ? "text-text" : "text-text-secondary"
               }`}
             >
@@ -54,7 +54,7 @@ function MobilePannel() {
               />
             </div>
             <p
-              className={`text-xs  text-nowrap font-bold ${
+              className={`text-xs text-nowrap font-bold ${
                 pathname.startsWith("/products")
                   ? "text-text"
                   : "text-text-secondary"
@@ -81,7 +81,7 @@ function MobilePannel() {
               />
             </div>
             <p
-              className={`text-xs text-text-secondary text-nowrap font-bold ${
+              className={`text-xs text-nowrap font-bold ${
                 pathname.startsWith("/cart")
                   ? "text-text"
                   : "text-text-secondary"
@@ -104,7 +104,7 @@ function MobilePannel() {
               )}
             </div>
             <p
-              className={`text-xs text-text-secondary text-nowrap font-bold ${
+              className={`text-xs text-nowrap font-bold ${
                 pathname.startsWith("/profile")
                   ? "text-text"
                   : "text-text-secondary"
