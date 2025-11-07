@@ -109,7 +109,7 @@
   .badge--secondary {
     @apply bg-grey text-text-secondary;
   }
-   .badge--secondary--2 {
+  .badge--secondary--2 {
     @apply bg-white text-text border border-stroke;
   }
   .profileLink {
@@ -212,4 +212,11 @@ input[type="number"] {
   -ms-transform: rotate(-5deg);
   -o-transform: rotate(-5deg);
   transform: rotate(-5deg);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: all 5000s ease-in-out 0s;
 }

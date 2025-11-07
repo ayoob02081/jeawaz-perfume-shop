@@ -2,16 +2,19 @@ import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import ImageFrame from "./ImageFrame";
 
 function LoginForm({
+  isEmailType,
+  toggleLoginType,
   phoneNumber,
-  setStep,
   onSubmit,
   step,
   children,
   toggleLoginOpen,
   otp,
 }) {
-  const phoneNumberLength = phoneNumber.length === 11;
-  const OTPLength = otp.length === 5;
+  const phoneNumberLength = isEmailType
+    ? phoneNumber.length >= 11
+    : phoneNumber.length === 11;
+  const OTPLength = isEmailType ? otp.length >= 8 : otp.length === 5;
 
   return (
     <div className="flex flex-col items-center justify-between md:gap-4 size-full">
@@ -27,7 +30,7 @@ function LoginForm({
       </button>
       <div className="flex flex-col items-stretch justify-between gap-6 md:gap-8 max-md:mt-4 w-full">
         {step === 1 && (
-          <div className="flex flex-col items-center justify-between gap-2 md:gap-4">
+          <div className="relative flex flex-col items-center justify-between gap-2 md:gap-4">
             <span className="md:text-2xl text-text-primary font-bold">
               به وبسایت <span className="text-primary">عطر جیاواز</span> خوش
               آمدید!
@@ -40,15 +43,27 @@ function LoginForm({
         {step === 2 && (
           <div className="flex flex-col items-center justify-between gap-2 md:gap-4">
             <span className="md:text-2xl text-text-primary font-bold">
-              دریافت کد ورود
+              {isEmailType ? "وارد کردن رمز" : " دریافت کد ورود"}
             </span>
             <p className="text-xs md:text-sm text-text-secondary">
-              کد 5 رقمی ارسال شده به شماره {toPersianNumbers(phoneNumber)} در
-              قسمت زیر وارد نمایید
+              {isEmailType
+                ? "لطفا رمز خود را وارد کنید"
+                : ` کد 5 رقمی ارسال شده به شماره ${toPersianNumbers(
+                    phoneNumber
+                  )} در
+             قسمت زیر وارد نمایید`}
             </p>
           </div>
         )}
         {children}
+        {step === 1 && (
+          <button
+            onClick={toggleLoginType}
+            className="absolute translate-x-1/2 right-1/2 max-md:bottom-32 md:bottom-26 text-xs text-blue decoration-1 underline underline-offset-[3px] cursor-pointer"
+          >
+            وارد شدن با {isEmailType === true ? "شماره تلفن همراه" : "ایمیل"}
+          </button>
+        )}
       </div>
       <button
         onClick={onSubmit}
@@ -59,9 +74,13 @@ function LoginForm({
             : "bg-primary/50 "
         } btn btn--primary w-full h-12 border-0  `}
       >
-        {step === 1 ? " دریافت کد ورود" : "ورود"}
+        {isEmailType === false && step === 1
+          ? " دریافت کد ورود"
+          : isEmailType === true && step === 1
+          ? "چک کردن ایمیل"
+          : "ورود"}
       </button>
-      <div className="max-md:hidden text-text-primary">
+      <div className="max-md:hidden text-text-primary pt-4">
         <span className="*:text-primary flex items-center justify-center gap-1.5 flex-wrap">
           ورود شما به معنای پذیرش <p> شرایط عطر جیاواز </p> و
           <p> قوانین حریم خصوصی </p> است

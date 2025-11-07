@@ -1,31 +1,47 @@
+"use client";
+
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
-import { DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
-import React from "react";
+import {
+  DevicePhoneMobileIcon,
+  EnvelopeIcon,
+  EyeIcon,
+  EyeSlashIcon,
+} from "@heroicons/react/24/outline";
+import React, { useState } from "react";
 import OTPInput from "react-otp-input";
 
-function LoginField({ onChange, step, setOtp, otp }) {
+function LoginField({ onChange, step, setOtp, otp, isEmailType }) {
+  const [passwordVisible, setPasswordVisible] = useState("password");
+
+  const ShowPasswordHandler = () => {
+    setPasswordVisible((prev) => (prev === "password" ? "text" : "password"));
+  };
   const renderSteps = () => {
     switch (step) {
       case 1:
         return (
           <div className="flex items-center justify-center gap-2 size-full px-5 py-1.5 rounded-[40px] bg-[#F1F1F1] text-text-secondary focus-within:*:text-text-primary  focus-within:bg-white  focus-within:border border-primary">
-            <DevicePhoneMobileIcon className="size-5" />
+            {isEmailType ? (
+              <EnvelopeIcon className="size-5" />
+            ) : (
+              <DevicePhoneMobileIcon className="size-5" />
+            )}
             <input
-              className="outline-0 size-full"
+              className="outline-0 size-full text-text"
               dir="rtl"
-              type="tel"
-              id="phoneNumber"
+              type={isEmailType ? "email" : "tel"}
+              id={isEmailType ? "email" : "phoneNumber"}
               pattern="[0-9]{4}-[0-9]{3}-[0-9]{4}"
-              maxLength={11}
+              maxLength={isEmailType ? null : 11}
               minLength={11}
-              placeholder="شماره همراه شما"
+              placeholder={isEmailType ? "ایمیل شما" : "شماره همراه شما"}
               onChange={onChange}
             />
           </div>
         );
 
       case 2:
-        return (
+        return isEmailType === false ? (
           <OTPInput
             inputType="tel"
             value={toPersianNumbers(otp)}
@@ -37,6 +53,26 @@ function LoginField({ onChange, step, setOtp, otp }) {
             renderInput={(props) => <input {...props} />}
             skipDefaultStyles
           />
+        ) : (
+          <div className="flex items-center justify-center gap-2 size-full px-5 py-1.5 rounded-[40px] bg-[#F1F1F1] text-text-secondary focus-within:*:text-text-primary  focus-within:bg-white  focus-within:border border-primary">
+            <input
+              className="outline-0 size-full"
+              dir="rtl"
+              type={passwordVisible}
+              id="password"
+              pattern="[0-9]{4}-[0-9]{3}-[0-9]{4}"
+              minLength={8}
+              placeholder="وارد کردن رمز عبور"
+              onChange={onChange}
+            />
+            <button onClick={ShowPasswordHandler}>
+              {passwordVisible === "password" ? (
+                <EyeSlashIcon className=" size-5" />
+              ) : (
+                <EyeIcon className=" size-5" />
+              )}
+            </button>
+          </div>
         );
 
       default:
