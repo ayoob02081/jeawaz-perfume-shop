@@ -1,11 +1,13 @@
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import ImageFrame from "./ImageFrame";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 
 function LoginForm({
   isEmailType,
   toggleLoginType,
   phoneNumber,
   onSubmit,
+  MoveBack,
   step,
   children,
   toggleLoginOpen,
@@ -14,7 +16,7 @@ function LoginForm({
   const phoneNumberLength = isEmailType
     ? phoneNumber.length >= 11
     : phoneNumber.length === 11;
-  const OTPLength = isEmailType ? otp.length >= 8 : otp.length === 5;
+  const OTPLength = isEmailType ? otp.length >= 6 : otp.length === 5;
 
   return (
     <div className="flex flex-col items-center justify-between md:gap-4 size-full">
@@ -28,6 +30,14 @@ function LoginForm({
           className="size-3.5 max-md:hidden"
         />
       </button>
+      {step === 2 && (
+        <button
+          className="absolute max-md:right-6 md:right-6 max-md:top-6 md:top-6 btn max-md:border-0 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl md:border-[1.5px] border-stroke md:size-10 md:rounded-full md:p-0"
+          onClick={MoveBack}
+        >
+          <ArrowRightIcon className="size-5 text-text" />
+        </button>
+      )}
       <div className="flex flex-col items-stretch justify-between gap-6 md:gap-8 max-md:mt-4 w-full">
         {step === 1 && (
           <div className="relative flex flex-col items-center justify-between gap-2 md:gap-4">

@@ -5,12 +5,19 @@ import React from "react";
 import SortSection from "@/components/SortSection";
 import FilterSection from "./_components/FilterSection";
 import ProductCard from "../_components/ProductCard";
-import { useGetAllProducts } from "@/hooks/useProducts";
+import { useGetAllProducts, useGetProductsbyID } from "@/hooks/useProducts";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 
 function ProductPage() {
   const { data, isLoading, error } = useGetAllProducts();
+  // const {
+  //   data: productData,
+  //   isLoading: isProductLoading,
+  //   error: productError,
+  // } = useGetProductsbyID(4);
+  // console.log(data?.products);
+  console.log(productData);
 
   if (isLoading) {
     return <Loading className="h-screen" />;
@@ -35,23 +42,23 @@ function ProductPage() {
         </div>
       </div>
       <div className=" w-auto flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-3 md:gap-6 py-6 ">
-        {data &&
-          data.map((product) => (
-            <ProductCard
-              key={product.id}
-              productId={product.id}
-              src={product.src}
-              alt={product.alt}
-              gender={product.gender}
-              scent={product.scent}
-              brand={product.brand}
-              enTitle={product.enTitle}
-              perTitle={product.perTitle}
-              offValue={product.offValue}
-              price={product.price}
-              original
-            />
-          ))}
+        {/* data?.products.map((product) => ( */}
+        {data?.map((product) => (
+          <ProductCard
+            key={product.id}
+            productId={product.id}
+            src={product.src}
+            alt={product.alt}
+            gender={product.gender}
+            scent={product.scent}
+            brand={product.brand}
+            enTitle={product.enTitle}
+            perTitle={product.perTitle}
+            offValue={product.offValue}
+            price={product.price}
+            original
+          />
+        ))}
       </div>
       <div className="flex items-center justify-center h-20">
         <PagesNumber />

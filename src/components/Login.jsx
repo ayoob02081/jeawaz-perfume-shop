@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import LoginForm from "./LoginForm";
 import LoginField from "@/ui/LoginField";
+import { loginApi } from "@/services/authServices";
+import { useMutation } from "@tanstack/react-query";
 
 const RESEND_TIME = 90;
 
@@ -16,6 +18,10 @@ function Login({ toggleLoginOpen }) {
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
 
+  const { isPending: isChecking, mutateAsync: loginApifn } = useMutation({
+    mutationFn: loginApi,
+  });
+
   const toggleLoginType = () => {
     setIsEmailType((prevState) => !prevState);
   };
@@ -24,9 +30,9 @@ function Login({ toggleLoginOpen }) {
     setPhoneNumber(e.target.value);
   };
 
-  const OTPHandler = (e) => {
-    setOtp(e.target.value);
-  };
+  // const OTPHandler = (e) => {
+  //   setOtp(e.target.value);
+  // };
 
   const EmailHandler = (e) => {
     setEmail(e.target.value);
@@ -40,6 +46,7 @@ function Login({ toggleLoginOpen }) {
   };
 
   const PasswordHandler = async (e) => {
+    e.preventDefault();
     if (step === 1 && email.length >= 11) {
       setStep(2);
     }
@@ -60,12 +67,23 @@ function Login({ toggleLoginOpen }) {
 
   const CheckPasswordHandler = async (e) => {
     e.preventDefault();
-    if (step === 2 && password.length >= 8) {
-      toggleLoginOpen();
-      setEmail("");
-      setPassword("");
-      setStep(1);
+    try {
+      const { token } = await loginApifn({ email, password });
+      if (token && step === 2 && password.length >= 6) {
+        toggleLoginOpen();
+        setEmail("");
+        setPassword("");
+        setStep(1);
+      }
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  const MoveBack = () => {
+    setStep(1);
+    setEmail("");
+    setPassword("");
   };
 
   //   useEffect(() => {
@@ -89,7 +107,7 @@ function Login({ toggleLoginOpen }) {
             isEmailType={isEmailType}
             otp={otp}
             step={step}
-            setStep={setStep}
+            MoveBack={MoveBack}
             phoneNumber={phoneNumber}
             onSubmit={SendOTPFormHandler}
             toggleLoginOpen={toggleLoginOpen}
@@ -110,7 +128,7 @@ function Login({ toggleLoginOpen }) {
             isEmailType={isEmailType}
             otp={otp}
             step={step}
-            setStep={setStep}
+            MoveBack={MoveBack}
             phoneNumber={phoneNumber}
             onSubmit={CheckOTPFormHandler}
             toggleLoginOpen={toggleLoginOpen}
@@ -142,7 +160,7 @@ function Login({ toggleLoginOpen }) {
             isEmailType={isEmailType}
             otp={password}
             step={step}
-            setStep={setStep}
+            MoveBack={MoveBack}
             phoneNumber={email}
             onSubmit={PasswordHandler}
             toggleLoginOpen={toggleLoginOpen}
@@ -162,7 +180,7 @@ function Login({ toggleLoginOpen }) {
             isEmailType={isEmailType}
             otp={password}
             step={step}
-            setStep={setStep}
+            MoveBack={MoveBack}
             phoneNumber={email}
             onSubmit={CheckPasswordHandler}
             toggleLoginOpen={toggleLoginOpen}

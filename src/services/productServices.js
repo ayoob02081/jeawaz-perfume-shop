@@ -1,22 +1,16 @@
-// import http from "./httpService";
+import http from "./httpService";
 
-// export function getAllProductsApi(qs, cookies) {
-//   return http
-//     .get(`/product/list?${qs}`, {
-//       headers: {
-//         Cookie: cookies,
-//       },
-//     })
-//     .then(({ data }) => data.data);
-// }
+export function getAllProductsApi() {
+  return http.get(`/products`).then(({data}) => data);
+}
 
 // export function getProductBySlugApi(slug) {
 //   return http.get(`/product/slug/${slug}`).then(({ data }) => data.data);
 // }
 
-// export function getProductByIdApi(id) {
-//   return http.get(`/product/${id}`).then(({ data }) => data.data);
-// }
+export function getProductByIdApi(id) {
+  return http.get(`/products/${id}`).then(({data}) => data);
+}
 
 // export function likeProductApi(id) {
 //   return http.post(`/product/like/${id}`).then(({ data }) => data.data);
