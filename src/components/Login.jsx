@@ -5,10 +5,11 @@ import LoginForm from "./LoginForm";
 import LoginField from "@/ui/LoginField";
 import { loginApi } from "@/services/authServices";
 import { useMutation } from "@tanstack/react-query";
+import { useGetAllUsers } from "@/hooks/useAuth";
 
 const RESEND_TIME = 90;
 
-function Login({ toggleLoginOpen }) {
+function Login({ toggleLoginOpen, setName, name }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
 
@@ -17,6 +18,12 @@ function Login({ toggleLoginOpen }) {
   const [time, setTime] = useState(RESEND_TIME);
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
+  const { isLoading, data } = useGetAllUsers();
+
+  const userName = data?.data[0].firstName + " " + data?.data[0].lastName;
+
+  // console.log(userName);
+  // console.log(data);
 
   const { isPending: isChecking, mutateAsync: loginApifn } = useMutation({
     mutationFn: loginApi,
@@ -85,6 +92,15 @@ function Login({ toggleLoginOpen }) {
     setEmail("");
     setPassword("");
   };
+
+  useEffect(() => {
+    if (userName !== null && userName !== undefined) {
+      setName(userName);
+    }
+    return;
+  }, [userName, setName]);
+  console.log(name);
+  
 
   //   useEffect(() => {
   //     const timer = time > 0 && setInterval((t) => setTime((t) => t - 1), 1000);

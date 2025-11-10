@@ -17,11 +17,14 @@ import CategorySideBar from "@/app/(user)/_components/CategorySideBar";
 import SideBar from "./SideBar";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
+import { useRouter } from "next/navigation";
 
 function HeaderLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [name, setName] = useState();
+  const router = useRouter();
 
   const toggleCategory = () => {
     setCategoryOpen((prevState) => !prevState);
@@ -46,229 +49,267 @@ function HeaderLayout() {
     };
   }, [sidebarOpen, categoryOpen, loginOpen]);
 
-  // useEffect(() => {
-  //   if (modalOpen) {
-  //     document.body.style.overflow = "hidden";
-  //     setIsVisible(true);
-  //   } else {
-  //     const timer = setTimeout(() => setIsVisible(false), 3000);
-  //     document.body.style.overflow = "auto";
-  //     return (document.body.style.overflow = "auto"), () => clearTimeout(timer);
-  //   }
-  // }, [modalOpen]);
-
   return (
     <>
-      <nav className="max-md:hidden">
-        <ul className="flex flex-col justify-between gap-6">
-          <div className="flex items-center justify-between gap-10">
-            <div className="flex grow items-center justify-betwee gap-4">
-              <div className="flex grow items-center justify-between">
-                <li className=" justify-items-center">
-                  <Link className="block p-2" href="/">
-                    <Logo width="w-[5.75rem] h-12" />
-                  </Link>
-                </li>
-                <li className="flex relative grow col-span-3 ">
-                  <SearchSection placeholder="نام ادکلن ، دسته بندی ، برند و ..." />
-                </li>
-              </div>
-              <div className="flex flex-none items-center justify-between gap-4">
-                {/* <li className="">
-                  <p className="text-xs lg:text-sm">مطالب آموزشی</p>
-                </li> */}
-                <li className="">
-                  <Link
-                    href={"/"}
-                    className="text-text-primary hover:text-primary duration-200"
-                  >
-                    <p className="text-xs lg:text-sm">درباره ما</p>
-                  </Link>
-                </li>
-                <li className="">
-                  <Link
-                    href={"/"}
-                    className="text-text-primary hover:text-primary duration-200"
-                  >
-                    <p className="text-xs lg:text-sm">تماس با ما</p>
-                  </Link>
-                </li>
-              </div>
-            </div>
-            <div className="flex flex-none items-center justify-between gap-2 lg:gap-4">
-              <li className="w-28 lg:w-36 h-10 lg:h-12 btn btn--secondary">
-                <button onClick={toggleLoginOpen} className="size-full">
-                  <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2">
-                    <p className="text-xs lg:text-sm">ورود | ثبت نام</p>
-                    <UserIcon className="size-5" />
-                  </div>
-                </button>
-              </li>
-              <li>
-                <Link
-                  className="flex items-center justify-between w-32 lg:w-[8.8rem]"
-                  href={"/cart"}
-                >
-                  <div className="size-12 px-2 py-2 rounded-full border-4 border-grey bg-[#2F0D0C]">
-                    <ImageFrame
-                      src="/images/card stroke white.svg"
-                      alt="card icon"
-                      className="size-6"
-                    />
-                  </div>
-                  <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem]">
-                    <p className="text-xs lg:text-sm">سبد خرید شما</p>
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-2 py-0.5 px-2 lg:px-3 rounded-3xl bg-grey">
-                        <p className="text-xs lg:text-sm">۴</p>
-                        <p className="text-xs lg:text-sm">کالا</p>
-                      </div>
-                      <ArrowLeftIcon className=" size-3 lg:size-4" />
-                    </div>
-                  </div>
-                </Link>
-              </li>
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center justify-between gap-4">
-              <li className="w-36 lg:w-44 h-12">
-                <button
-                  className="w-full h-full btn btn--primary flex items-center justify-center size-full gap-2"
-                  onClick={toggleCategory}
-                >
-                  <Squares2X2Icon className="size-6" />
-                  <p className="text-xs lg:text-sm">دسته بندی ها</p>
-                  <ChevronDownIcon className="size-4" />
-                </button>
-              </li>
-              <div className="flex items-center justify-start gap-4">
-                <li className="">
-                  <Link
-                    href={"/"}
-                    className="text-text-primary hover:text-primary duration-200"
-                  >
-                    <div className="flex items-center justify-center gap-2 ">
-                      <ImageFrame
-                        src="/images/warranty-check-icon.svg"
-                        alt="tag icon"
-                        className="size-5"
-                      />
-                      <p className="text-sm">پرفروش ترین ها</p>
-                    </div>
-                  </Link>
-                </li>
-                <li className="">
-                  <Link
-                    href={"/"}
-                    className="text-text-primary hover:text-primary duration-200"
-                  >
-                    <div className="flex items-center justify-center gap-2 ">
-                      <ImageFrame
-                        src="/images/two-tag-icon.svg"
-                        alt="tag icon"
-                        className="size-5"
-                      />
-                      <p className="text-sm">جدیدترین ها</p>
-                    </div>
-                  </Link>
-                </li>
-                <li className="">
-                  <Link
-                    href={"/"}
-                    className="text-text-primary hover:text-primary duration-200"
-                  >
-                    <div className="flex items-center justify-center gap-2 ">
-                      <ImageFrame
-                        src="/images/special-offer-2-icon.svg"
-                        alt="offer icon"
-                        className="size-5"
-                      />
-                      <p className="text-sm">تخفیف دار</p>
-                    </div>
-                  </Link>
-                </li>
-              </div>
-            </div>
-            <li className="flex items-center justify-between gap-4">
-              <Link
-                href={"tel:+989180522273"}
-                className="flex items-center justify-between gap-4"
-              >
-                <div className="flex items-center justify-center text-xl pl-4 border-l-[1.5px] border-stroke">
-                  <p className="text-text ">{toPersianNumbers("2273")}</p>
-                  <p className="text-text ">{toPersianNumbers("052")}</p>
-                  <p className="text-primary ">{toPersianNumbers("0918")}</p>
-                </div>
-                <CardIconResponsive
-                  type="support"
-                  className="max-md:h-8 md:h-10"
-                  hoverWidthMaxMd="w-[7.62rem]"
-                  hoverWidthMd="w-24"
-                  size="max-md:size-4 md:size-6"
-                />
-              </Link>
-            </li>
-          </div>
-        </ul>
-      </nav>
-      <nav className="md:hidden h-32">
-        <ul className="mobileHeader relative">
-          <li className="justify-items-start">
-            <button
-              className="text-2xl focus:outline-none block p-3 rounded-full border-2 border-primary/10"
-              onClick={toggleSideBar}
-            >
-              <ImageFrame
-                src="/images/category.svg"
-                alt="category icon"
-                className="size-6"
-              />
-            </button>
-          </li>
-          <li className=" justify-items-center">
-            <Link className="block p-2" href="/">
-              <Logo width="h-[2.65rem] w-[5.15rem]" />
-            </Link>
-          </li>
-          <li className=" justify-items-end">
-            <Link
-              href={"/cart"}
-              shallow={true}
-              className="relative block p-3 rounded-full border-2 border-primary/10"
-            >
-              <ImageFrame
-                src="/images/card stroke.svg"
-                alt="cart icon"
-                className="size-[1.15rem]"
-              />
-              <p className="absolute -top-1 -right-1 px-1.5 pt-[1.5px] rounded-full bg-primary text-white text-[12px]">
-                ۴
-              </p>
-            </Link>
-          </li>
-          <li className="flex relative grow col-span-3 w-full h-12">
-            <SearchSection placeholder="نام ادکلن ، دسته بندی ، برند و ..." />
-          </li>
-        </ul>
-        <SideBar
-          toggleSideBar={toggleSideBar}
-          toggleCategory={toggleCategory}
-          sidebarOpen={sidebarOpen}
-        />
-      </nav>
-
+      <DesktopHeader
+        toggleCategory={toggleCategory}
+        toggleLoginOpen={toggleLoginOpen}
+        router={router}
+        name={name}
+      />
+      <MobileHeader
+        toggleSideBar={toggleSideBar}
+        toggleCategory={toggleCategory}
+        toggleLoginOpen={toggleLoginOpen}
+        sidebarOpen={sidebarOpen}
+        router={router}
+        name={name}
+      />
       <CategorySideBar
         toggleCategory={toggleCategory}
         categoryOpen={categoryOpen}
         setCategoryOpen={setCategoryOpen}
       />
-
       <Modal toggleOpen={loginOpen} onClose={() => setLoginOpen(false)} login>
-        <Login toggleLoginOpen={toggleLoginOpen} />
+        <Login
+          toggleLoginOpen={toggleLoginOpen}
+          setName={setName}
+          name={name}
+        />
       </Modal>
     </>
   );
 }
 
 export default HeaderLayout;
+
+function DesktopHeader({ toggleCategory, toggleLoginOpen, name, router }) {
+  return (
+    <nav className="max-md:hidden">
+      <ul className="flex flex-col justify-between gap-6">
+        <div className="flex items-center justify-between gap-10">
+          <div className="flex grow items-center justify-betwee gap-4">
+            <div className="flex grow items-center justify-between">
+              <li className=" justify-items-center">
+                <Link className="block p-2" href="/">
+                  <Logo width="w-[5.75rem] h-12" />
+                </Link>
+              </li>
+              <li className="flex relative grow col-span-3 ">
+                <SearchSection placeholder="نام ادکلن ، دسته بندی ، برند و ..." />
+              </li>
+            </div>
+            <div className="flex flex-none items-center justify-between gap-4">
+              {/* <li className="">
+                  <p className="text-xs lg:text-sm">مطالب آموزشی</p>
+                </li> */}
+              <li className="">
+                <Link
+                  href={"/"}
+                  className="text-text-primary hover:text-primary duration-200"
+                >
+                  <p className="text-xs lg:text-sm">درباره ما</p>
+                </Link>
+              </li>
+              <li className="">
+                <Link
+                  href={"/"}
+                  className="text-text-primary hover:text-primary duration-200"
+                >
+                  <p className="text-xs lg:text-sm">تماس با ما</p>
+                </Link>
+              </li>
+            </div>
+          </div>
+          <div className="flex flex-none items-center justify-between gap-2 lg:gap-4">
+            <li className="w-28 lg:w-36 h-10 lg:h-12 btn btn--secondary py-0">
+              <button
+                onClick={
+                  !name || name === undefined
+                    ? toggleLoginOpen
+                    : () => router.push("/profile")
+                }
+                className="size-full"
+              >
+                <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2">
+                  <p className="text-xs lg:text-sm text-nowrap overflow-x-scroll w-full scrollbar-none">
+                    {name && name !== undefined ? name : "ورود | ثبت نام"}
+                  </p>
+                  <UserIcon className="size-5" />
+                </div>
+              </button>
+            </li>
+            <li>
+              <button
+                className="flex items-center justify-between w-32 lg:w-[8.8rem]"
+                onClick={
+                  !name || name === undefined
+                    ? toggleLoginOpen
+                    : () => router.push("/cart")
+                }
+              >
+                <div className="size-12 px-2 py-2 rounded-full border-4 border-grey bg-[#2F0D0C]">
+                  <ImageFrame
+                    src="/images/card stroke white.svg"
+                    alt="card icon"
+                    className="size-6"
+                  />
+                </div>
+                <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem]">
+                  <p className="text-xs lg:text-sm">سبد خرید شما</p>
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2 py-0.5 px-2 lg:px-3 rounded-3xl bg-grey">
+                      <p className="text-xs lg:text-sm">۴</p>
+                      <p className="text-xs lg:text-sm">کالا</p>
+                    </div>
+                    <ArrowLeftIcon className=" size-3 lg:size-4" />
+                  </div>
+                </div>
+              </button>
+            </li>
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
+            <li className="w-36 lg:w-44 h-12">
+              <button
+                className="w-full h-full btn btn--primary flex items-center justify-center size-full gap-2"
+                onClick={toggleCategory}
+              >
+                <Squares2X2Icon className="size-6" />
+                <p className="text-xs lg:text-sm">دسته بندی ها</p>
+                <ChevronDownIcon className="size-4" />
+              </button>
+            </li>
+            <div className="flex items-center justify-start gap-4">
+              <li className="">
+                <Link
+                  href={"/products"}
+                  className="text-text-primary hover:text-primary duration-200"
+                >
+                  <div className="flex items-center justify-center gap-2 ">
+                    <ImageFrame
+                      src="/images/warranty-check-icon.svg"
+                      alt="tag icon"
+                      className="size-5"
+                    />
+                    <p className="text-sm">پرفروش ترین ها</p>
+                  </div>
+                </Link>
+              </li>
+              <li className="">
+                <Link
+                  href={"/products"}
+                  className="text-text-primary hover:text-primary duration-200"
+                >
+                  <div className="flex items-center justify-center gap-2 ">
+                    <ImageFrame
+                      src="/images/two-tag-icon.svg"
+                      alt="tag icon"
+                      className="size-5"
+                    />
+                    <p className="text-sm">جدیدترین ها</p>
+                  </div>
+                </Link>
+              </li>
+              <li className="">
+                <Link
+                  href={"/products"}
+                  className="text-text-primary hover:text-primary duration-200"
+                >
+                  <div className="flex items-center justify-center gap-2 ">
+                    <ImageFrame
+                      src="/images/special-offer-2-icon.svg"
+                      alt="offer icon"
+                      className="size-5"
+                    />
+                    <p className="text-sm">تخفیف دار</p>
+                  </div>
+                </Link>
+              </li>
+            </div>
+          </div>
+          <li className="flex items-center justify-between gap-4">
+            <Link
+              href={"tel:+989180522273"}
+              className="flex items-center justify-between gap-4"
+            >
+              <div className="flex items-center justify-center text-xl pl-4 border-l-[1.5px] border-stroke">
+                <p className="text-text ">{toPersianNumbers("2273")}</p>
+                <p className="text-text ">{toPersianNumbers("052")}</p>
+                <p className="text-primary ">{toPersianNumbers("0918")}</p>
+              </div>
+              <CardIconResponsive
+                type="support"
+                className="max-md:h-8 md:h-10"
+                hoverWidthMaxMd="w-[7.62rem]"
+                hoverWidthMd="w-24"
+                size="max-md:size-4 md:size-6"
+              />
+            </Link>
+          </li>
+        </div>
+      </ul>
+    </nav>
+  );
+}
+function MobileHeader({
+  toggleSideBar,
+  toggleCategory,
+  toggleLoginOpen,
+  sidebarOpen,
+  name,
+  router,
+}) {
+  return (
+    <nav className="md:hidden h-32">
+      <ul className="mobileHeader relative">
+        <li className="justify-items-start">
+          <button
+            className="text-2xl focus:outline-none block p-3 rounded-full border-2 border-primary/10"
+            onClick={toggleSideBar}
+          >
+            <ImageFrame
+              src="/images/category.svg"
+              alt="category icon"
+              className="size-6"
+            />
+          </button>
+        </li>
+        <li className=" justify-items-center">
+          <Link className="block p-2" href="/">
+            <Logo width="h-[2.65rem] w-[5.15rem]" />
+          </Link>
+        </li>
+        <li className=" justify-items-end">
+          <button
+            onClick={
+              !name || name === undefined
+                ? toggleLoginOpen
+                : () => router.push("/cart")
+            }
+            // shallow={true}
+            className="relative block p-3 rounded-full border-2 border-primary/10"
+          >
+            <ImageFrame
+              src="/images/card stroke.svg"
+              alt="cart icon"
+              className="size-[1.15rem]"
+            />
+            <p className="absolute -top-1 -right-1 px-1.5 pt-[1.5px] rounded-full bg-primary text-white text-[12px]">
+              ۴
+            </p>
+          </button>
+        </li>
+        <li className="flex relative grow col-span-3 w-full h-12">
+          <SearchSection placeholder="نام ادکلن ، دسته بندی ، برند و ..." />
+        </li>
+      </ul>
+      <SideBar
+        toggleSideBar={toggleSideBar}
+        toggleCategory={toggleCategory}
+        sidebarOpen={sidebarOpen}
+      />
+    </nav>
+  );
+}

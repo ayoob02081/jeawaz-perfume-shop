@@ -17,7 +17,7 @@ function ProductPage() {
   //   error: productError,
   // } = useGetProductsbyID(4);
   // console.log(data?.products);
-  console.log(productData);
+  // console.log(productData);
 
   if (isLoading) {
     return <Loading className="h-screen" />;
