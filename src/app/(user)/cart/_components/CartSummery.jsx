@@ -6,20 +6,32 @@ import {
 } from "@/utils/toPersianNumbers";
 import CartOrders from "./CartOrders";
 
-function CartSummery({ setStep, step }) {
+function CartSummery({ items, date, totalPrice, setStep, step }) {
   const renderSteps = () => {
     switch (step) {
       case 1:
         return (
           <div className="flex items-center justify-center size-full max-md:mx-auto max-md:max-w-[22rem] md:max-w-[23rem]">
-            <CartSummeryAccept step={step} setStep={setStep} />
+            <CartSummeryAccept
+              items={items}
+              totalPrice={totalPrice}
+              date={date}
+              step={step}
+              setStep={setStep}
+            />
           </div>
         );
 
       case 2:
         return (
           <div className="flex items-center justify-center size-full md:max-w-max">
-            <CartSummeryPay step={step} setStep={setStep} />
+            <CartSummeryPay
+              items={items}
+              totalPrice={totalPrice}
+              date={date}
+              step={step}
+              setStep={setStep}
+            />
             <div className="size-full max-md:flex md:hidden items-center justify-between gap-4">
               <button
                 onClick={() => setStep(1)}
@@ -57,7 +69,7 @@ function CartSummery({ setStep, step }) {
 
 export default CartSummery;
 
-function CartSummeryAccept({ step, setStep }) {
+function CartSummeryAccept({ items, date, totalPrice, step, setStep }) {
   return (
     <div className="flex flex-col items-start justify-between gap-6 max-md:bg-secondary md:bg-grey p-4 rounded-xl size-full">
       <div className="flex items-center justify-start gap-4 size-full">
@@ -94,7 +106,7 @@ function CartSummeryAccept({ step, setStep }) {
               name=""
               id=""
               // value={value}
-              className="size-full"
+              className="size-full outline-0"
               placeholder="کد تخفیف را وارد کنید"
             />
             <button className="text-nowrap text-primary text-sm">
@@ -107,7 +119,9 @@ function CartSummeryAccept({ step, setStep }) {
         <span className="flex items-center justify-between size-full">
           <p className="text-sm">تعداد محصولات</p>
           <div className="flex items-center gap-1">
-            <p className="text-sm">{toPersianNumbers(3)}</p>
+            <p className="text-sm">
+              {toPersianNumbers((items && items?.length) || 0)}
+            </p>
             <p className="text-xs text-text-secondary-light">محصول</p>
           </div>
         </span>
@@ -124,7 +138,7 @@ function CartSummeryAccept({ step, setStep }) {
           <p className="text-sm">مجموع سبد خرید</p>
           <div className="flex items-center gap-1">
             <p className="text-lg font-bold">
-              {toPersianNumbersWithComma(8450000)}
+              {toPersianNumbersWithComma(totalPrice && totalPrice)}
             </p>
             <p className="text-xs text-text-secondary-light">تومان</p>
           </div>
@@ -134,7 +148,7 @@ function CartSummeryAccept({ step, setStep }) {
     </div>
   );
 }
-function CartSummeryPay({ step, setStep }) {
+function CartSummeryPay({ items, date, totalPrice, step, setStep }) {
   return (
     <div className="max-md:hidden md:flex flex-col items-center justify-between gap-4 max-md:bg-secondary md:bg-grey p-4 rounded-xl ">
       <span className="flex items-center justify-start gap-1 size-full text-text-primary">
@@ -142,10 +156,17 @@ function CartSummeryPay({ step, setStep }) {
         <p className="text-lg">خرید</p>
       </span>
       <div className="flex flex-col items-center justify-between size-full overflow-x-auto">
-        <CartOrders.Summery />
-        <CartOrders.Summery />
-        <CartOrders.Summery />
-        <CartOrders.Summery />
+        {items?.map((item) => (
+          <CartOrders.Summery
+            key={item.id}
+            src={item.src}
+            alt={item.alt}
+            enTitle={item.enTitle}
+            perTitle={item.perTitle}
+            price={item.price}
+            offValue={item.offValue}
+          />
+        ))}
       </div>
       <div className="flex flex-col items-center justify-between gap-4 size-full p-4 bg-white rounded-xl">
         <span className="flex items-center justify-between size-full">
@@ -166,7 +187,7 @@ function CartSummeryPay({ step, setStep }) {
           <p className="text-sm">مبلغ قابل پرداخت:</p>
           <div className="flex items-center gap-1">
             <p className="text-lg font-bold">
-              {toPersianNumbersWithComma(8450000)}
+              {toPersianNumbersWithComma(totalPrice && totalPrice)}
             </p>
             <p className="text-xs text-text-secondary-light">تومان</p>
           </div>

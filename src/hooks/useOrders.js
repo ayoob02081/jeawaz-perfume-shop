@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useGetAllOrdersByStatus = (status) =>
   useQuery({
-    queryKey: ["orders", status],
+    queryKey: ["orders-by-status", status],
     queryFn: () => fetchOrders(status),
     retry: false,
     refetchOnWindowFocus: true,

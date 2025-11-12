@@ -20,10 +20,17 @@ import CartSummery from "./CartSummery";
 import CartOrders from "./CartOrders";
 import PriceSection from "@/components/PriceSection";
 import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
+import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
+import Loading from "@/components/Loading";
 
 function CartLayout() {
   const pathName = usePathname();
   const [cartOpen, setCartOpen] = useState(false);
+  const { data, isLoading, error } = useGetAllOrdersByStatus("succeed");
+  const firstOrder = data && data[0];
+  console.log(data);
+  console.log(firstOrder);
+
   const toggleCart = () => {
     setCartOpen((prevState) => !prevState);
   };
@@ -37,13 +44,31 @@ function CartLayout() {
   const renderSteps = () => {
     switch (step) {
       case 1:
-        return <CartFirstStep />;
+        return (
+          <CartFirstStep
+            items={firstOrder?.items}
+            totalPrice={firstOrder?.price}
+            date={firstOrder?.date}
+          />
+        );
 
       case 2:
-        return <CartSecondStep />;
+        return (
+          <CartSecondStep
+            items={firstOrder?.items}
+            totalPrice={firstOrder?.price}
+            date={firstOrder?.date}
+          />
+        );
 
       case 3:
-        return <CartLastStep />;
+        return (
+          <CartLastStep
+            items={firstOrder?.items}
+            totalPrice={firstOrder?.price}
+            date={firstOrder?.date}
+          />
+        );
 
       default:
         return null;
@@ -62,13 +87,25 @@ function CartLayout() {
       <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-grey md:rounded-b-3xl">
         <CardStepsIcon step={step} setStep={setStep} />
       </div>
-      <div
-        className={`${step === 3 ? "" : "md:flex-row"}
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div
+          className={`${step === 3 ? "" : "md:flex-row"}
             flex flex-col items-start xl:items-start md:justify-between xl:justify-normal gap-5 mx-6 md:p-6 md:py-8 md:border-[1.5px] border-stroke md:rounded-[20px]`}
-      >
-        <>{renderSteps()}</>
-        <CartSummery setStep={setStep} step={step} />
-      </div>
+        >
+          <>{renderSteps()}</>
+          {firstOrder && (
+            <CartSummery
+              items={firstOrder?.items}
+              totalPrice={firstOrder?.price}
+              date={firstOrder?.date}
+              setStep={setStep}
+              step={step}
+            />
+          )}
+        </div>
+      )}
     </AdaptiveOverlayPage>
   );
 }
@@ -190,18 +227,25 @@ function CardStepsIcon({ productValue, className, step, setStep }) {
   );
 }
 
-function MobileOrderCard() {
+function MobileOrderCard({ items }) {
   return (
     <div className="max-lg:flex items-center justify-center flex-col gap-4 lg:hidden w-full">
-      <CartOrders.Mobile />
-      <CartOrders.Mobile />
-      <CartOrders.Mobile />
-      <CartOrders.Mobile />
+      {items?.map((item) => (
+        <CartOrders.Mobile
+          key={item.id}
+          src={item.src}
+          alt={item.alt}
+          enTitle={item.enTitle}
+          perTitle={item.perTitle}
+          price={item.price}
+          offValue={item.offValue}
+        />
+      ))}
     </div>
   );
 }
 
-function CartFirstStep() {
+function CartFirstStep({ items, date, totalPrice }) {
   return (
     <div className="flex flex-col md:items-center md:justify-between gap-5 size-full max-lg:*:first:hidden">
       <Table className="">
@@ -220,12 +264,17 @@ function CartFirstStep() {
           <th className="text-left max-xl:-translate-y-6">قیمت نهایی </th>
         </Table.Header>
         <Table.body>
-          <CartOrders.Desk />
-          <CartOrders.Desk />
-          <CartOrders.Desk />
-          {/* {orders.map((order, index) => (
-            <CartOrderRow key={order._id} order={order} index={index} />
-          ))} */}
+          {items?.map((item) => (
+            <CartOrders.Desk
+              key={item.id}
+              src={item.src}
+              alt={item.alt}
+              enTitle={item.enTitle}
+              perTitle={item.perTitle}
+              price={item.price}
+              offValue={item.offValue}
+            />
+          ))}
         </Table.body>
       </Table>
       <CardTitle
@@ -235,12 +284,12 @@ function CartFirstStep() {
         productValue={3}
         className="justify-between lg:hidden"
       />
-      <MobileOrderCard />
+      <MobileOrderCard items={items} />
     </div>
   );
 }
 
-function CartSecondStep() {
+function CartSecondStep({ items, date, totalPrice }) {
   const [ordersOpen, setOrdersOpen] = useState(false);
   const toggleOrders = () => {
     setOrdersOpen((prevState) => !prevState);
@@ -249,7 +298,7 @@ function CartSecondStep() {
     <div className="flex flex-col gap-8 size-full">
       <div
         className={`max-md:flex md:hidden flex-col max-md:border-[1.5px] border-stroke rounded-[20px] w-full max-md:px-6 ${
-          ordersOpen ? "justify-between" : "items-center justify-center"
+          ordersOpen ? "justify-between pb-6" : "items-center justify-center"
         } transition-all duration-200`}
       >
         <button
@@ -261,7 +310,7 @@ function CartSecondStep() {
             className={`size-4 ${ordersOpen && "rotate-180"} duration-200`}
           />
         </button>
-        {ordersOpen && <MobileOrderCard />}
+        {ordersOpen && <MobileOrderCard items={items} />}
       </div>
       <div className="flex flex-col items-center justify-between gap-4 w-full h-full max-md:border-[1.5px] border-stroke rounded-[20px] max-md:p-6">
         <div className="flex items-center justify-start gap-1 text-text-primary border-b border-stroke w-full pb-4">
@@ -414,7 +463,7 @@ function CartSecondStep() {
     </div>
   );
 }
-function CartLastStep() {
+function CartLastStep({ items, date, totalPrice }) {
   return (
     <div className="flex flex-col items-center justify-center gap-6 size-full">
       <div className="flex flex-col md:flex-row items-center md:items-start justify-between size-full">
@@ -437,9 +486,8 @@ function CartLastStep() {
         <div className="md:flex flex-col items-start justify-between gap-2 max-md:hidden">
           <p className="text-text-secondary">مبلغ پرداختی</p>
           <PriceSection
-            offPrice={1450000}
             offValue={0}
-            price={1550000}
+            price={totalPrice}
             priceClassName="text-3xl"
             textClassName="text-sm text-text-primary font-normal"
           />
@@ -491,7 +539,9 @@ function CartLastStep() {
               <th className="text-text-secondary-light font-normal">
                 تعداد سفارشات
               </th>
-              <td className="text-text-primary">{toPersianNumbers(3)} سفارش</td>
+              <td className="text-text-primary">
+                {toPersianNumbers(items?.length)} سفارش
+              </td>
             </tr>
           </Table.body>
           <Table.body>
@@ -505,12 +555,17 @@ function CartLastStep() {
         </Table>
       </div>
       <div className="flex flex-col md:flex-row md:flex-wrap items-center lg:items-start justify-center lg:justify-start gap-4 w-full ">
-        <CartOrders.SuccessMobile />
-        <CartOrders.SuccessMobile />
-        <CartOrders.SuccessMobile />
-        <CartOrders.SuccessDesk />
-        <CartOrders.SuccessDesk />
-        <CartOrders.SuccessDesk />
+        {items?.map((item) => (
+          <CartOrders.Success
+            key={item.id}
+            src={item.src}
+            alt={item.alt}
+            enTitle={item.enTitle}
+            perTitle={item.perTitle}
+            price={item.price}
+            offValue={item.offValue}
+          />
+        ))}
       </div>
     </div>
   );

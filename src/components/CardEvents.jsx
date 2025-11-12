@@ -53,13 +53,16 @@ function CardEvents({ product, className, BtnBackgroundColor }) {
   //     if (!user) return false;
   //     return user?.cart?.products.some((p) => p.productId === product._id);
   //   };
-  //   const quantityCount = (user, product) => {
-  //     if (!user) return false;
-  //     const singleProduct = user?.cart?.products.filter(
-  //       (p) => p.productId === product._id
-  //     );
-  //     return singleProduct[0].quantity;
-  //   };
+    const quantityCount = (user, product) => {
+      // if (!user) return false;
+      // const singleProduct = user?.cart?.products.filter(
+      //   (p) => p.productId === product._id
+      // );
+      // const singleProduct = user?.cart?.products.filter(
+      //   (p) => p.productId === product._id
+      // );
+      // return singleProduct[0].quantity;
+    };
 
   return (
     <div className="flex w-full items-center justify-center gap-4">

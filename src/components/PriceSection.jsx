@@ -18,7 +18,7 @@ function PriceSection({
   return (
     <div className={`${className}`}>
       <div
-        className={`flex ${pricesRow} flex-col justify-center items-center md:h-14`}
+        className={`relative flex ${pricesRow} flex-col justify-center items-center md:h-14`}
       >
         <div
           className={`flex grow items-center ${justify} gap-1 w-full h-full text-text-primary`}
@@ -34,7 +34,7 @@ function PriceSection({
           <div
             className={`flex grow items-center ${justify} gap-1 w-full h-full text-text-secondary`}
           >
-            <p className="badge badge--primary bg-primary text-white px-1.5">
+            <p className="max-md:absolute -right-7 badge badge--primary bg-primary text-white px-1.5">
               {toPersianNumbers(offValue)}٪
             </p>
             <span className={`flex gap-1 strikeThrough ${OldPricevisibility} `}>

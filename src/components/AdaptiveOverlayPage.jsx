@@ -1,7 +1,4 @@
-"use client";
-
 import GoBack from "@/ui/GoBack";
-import { useEffect } from "react";
 
 function AdaptiveOverlayPage({
   isOpen,
@@ -16,19 +13,6 @@ function AdaptiveOverlayPage({
   max,
   min,
 }) {
-  console.log(isOpen);
-  
-  useEffect(() => {
-    if (isOpen===true) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
   return (
     <div
       className={`${isOpen ? "right-0" : "-right-[100vw]"} top-0 bg-white ${

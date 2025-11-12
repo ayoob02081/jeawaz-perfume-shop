@@ -10,42 +10,63 @@ function CartOrders() {
 
 export default CartOrders;
 function CardTitle({
+  enTitle,
+  perTitle,
   FirstClassName = "text-base",
   SecondClassName = "text-sm",
   brand,
+  location = "public",
 }) {
   return (
-    <div className="flex items-start justify-between size-full flex-col gap-1">
-      {brand && <p className="text-text-secondary text-xs">Versace</p>}
-      <span className={`text-text-primary ${FirstClassName} font-bold`}>
-        Hugo Just Different
-      </span>
-      <span className={`text-text-primary ${SecondClassName} font-semibold`}>
-        هوگو بوس جاست دیفرنت
-      </span>
+    <div className="size-full">
+      {location === "public" && (
+        <div className="flex items-start justify-between size-full flex-col gap-1">
+          {brand && <p className="text-text-secondary text-xs">Versace</p>}
+          <span className={`text-text-primary ${FirstClassName} font-bold`}>
+            {enTitle}
+          </span>
+          <span
+            className={`text-text-primary ${SecondClassName} font-semibold`}
+          >
+            {perTitle}
+          </span>
+        </div>
+      )}
+      {location === "summeryCardTwo" && (
+        <div className="flex items-start justify-between size-full flex-col gap-1">
+          <div className="flex items-center justify-between size-full">
+            <span className="text-text-primary text-sm font-bold">
+              Hugo Just Different
+            </span>
+            <span className="flex items-center justify-end gap-0.5">
+              <p className="text-text-primary">{toPersianNumbers(100)}</p>
+              <p className="text-text-secondary text-sm">میل</p>
+            </span>
+          </div>
+          <span className="text-text-primary text-xs font-semibold">
+            هوگو بوس جاست دیفرنت
+          </span>
+        </div>
+      )}
     </div>
   );
 }
 
-function MobileCard() {
+function MobileCard({ src, alt, price, offValue, enTitle, perTitle }) {
   return (
     <div className="flex items-center justify-center p-3 gap-4 border-[0.094rem] border-stroke shadow-xs rounded-2xl w-full ">
       <div className="flex items-center justify-start gap-4 size-full">
         <div className="flex items-start justify-center h-full">
-          <ImageFrame
-            src="/images/perfume-1.svg"
-            alt="perfume"
-            className="size-16"
-          />
+          <ImageFrame src={src} alt={alt} className="size-16" />
         </div>
         <div className="flex flex-col gap-3 size-full">
-          <CardTitle brand />
+          <CardTitle enTitle={enTitle} perTitle={perTitle} brand />
           <div className="badge badge--secondary w-max h-6">
             {toPersianNumbers(100)} میل
           </div>
-          <div className="flex items-center justify-between size-full">
-            <div>
-              <PriceSection offPrice={1450000} offValue={40} price={1550000} />
+          <div className="max-sm:relative flex flex-co max-sm:justify-end items-center justify-between size-full">
+            <div className="max-sm:absolute -right-11">
+              <PriceSection offValue={offValue} price={price} />
             </div>
             <div className="flex items-center justify-center">
               <CardEvents
@@ -61,19 +82,15 @@ function MobileCard() {
   );
 }
 
-function DeskCard() {
+function DeskCard({ src, alt, price, offValue, enTitle, perTitle }) {
   return (
     <Table.Row border className="*:py-6">
       <td className="text-right">
         <div className="tdBase">
           <div className="flex items-start justify-center h-full">
-            <ImageFrame
-              src="/images/perfume-1.svg"
-              alt="perfume"
-              className="size-[5.65rem]"
-            />
+            <ImageFrame src={src} alt={alt} className="size-[5.65rem]" />
           </div>
-          <CardTitle />
+          <CardTitle enTitle={enTitle} perTitle={perTitle} />
         </div>
       </td>
       <td className="text-center">{toPersianNumbers(100)} میل</td>
@@ -82,37 +99,40 @@ function DeskCard() {
       </td>
       <td className="text-center w-full">
         <PriceSection
-          offPrice={1450000}
-          offValue={40}
-          price={1550000}
+          offValue={offValue}
+          price={price}
           className="w-full"
-          justify="end"
+          justify="justify-end"
         />
       </td>
     </Table.Row>
   );
 }
 
-function MobileSuccessedOrderCard() {
+function SuccessedOrderCard({ src, alt, price, offValue, enTitle, perTitle }) {
   return (
     <div
-      className={`max-md:flex md:hidden items-center justify-between w-full max-w-xl min-w-96 p-3 gap-4 border border-stroke-2 shadow-xs rounded-2xl`}
+      className={`flex items-center justify-between w-full sm:max-w-max sm:min-w-96 max-md:p-3 md:p-4 max-md:gap-4 md:gap-5 max-md:border md:border-[0.094rem] border-stroke-2 shadow-xs rounded-2xl`}
     >
-      <div className="flex items-center justify-start gap-4 size-full">
+      <DeskSuccessedOrderCard
+        src={src}
+        alt={alt}
+        enTitle={enTitle}
+        perTitle={perTitle}
+        price={price}
+        offValue={offValue}
+      />
+      <div className="max-md:flex md:hidden items-center justify-start gap-4 size-full">
         <div className="flex items-start justify-center h-full">
-          <ImageFrame
-            src="/images/perfume-1.svg"
-            alt="perfume"
-            className="size-16"
-          />
+          <ImageFrame src={src} alt={alt} className="size-16" />
         </div>
         <div className="flex flex-col gap-3 size-full">
-          <CardTitle />
+          <CardTitle enTitle={enTitle} perTitle={perTitle} />
           <div className="flex items-center justify-between size-full">
             <div className="badge badge--secondary w-max h-6">
               {toPersianNumbers(100)} میل
             </div>
-            <PriceSection offPrice={1450000} offValue={40} price={1550000} />
+            <PriceSection offValue={offValue} price={price} />
           </div>
         </div>
       </div>
@@ -120,20 +140,21 @@ function MobileSuccessedOrderCard() {
   );
 }
 
-function DeskSuccessedOrderCard() {
+function DeskSuccessedOrderCard({
+  src,
+  alt,
+  price,
+  offValue,
+  enTitle,
+  perTitle,
+}) {
   return (
-    <div
-      className={`md:flex max-md:hidden items-center justify-between w-full max-w-max min-w-96 p-4 gap-5 border-[0.094rem] border-stroke-2 shadow-xs rounded-2xl`}
-    >
+    <div className="md:flex max-md:hidden items-center justify-between w-full">
       <div className="flex items-start justify-center h-full">
-        <ImageFrame
-          src="/images/perfume-1.svg"
-          alt="perfume"
-          className="size-24"
-        />
+        <ImageFrame src={src} alt={alt} className="size-24" />
       </div>
       <div className="flex flex-col gap-3 size-full">
-        <CardTitle />
+        <CardTitle enTitle={enTitle} perTitle={perTitle} />
         <div className="flex items-center justify-between size-full gap-4">
           <span className="flex items-center justify-between gap-1 text-sm">
             <p className="text-text-secondary">تعداد:</p>
@@ -153,45 +174,34 @@ function DeskSuccessedOrderCard() {
       </div>
       <div className="flex flex-col items-end justify-center gap-4 size-full">
         <p className="text-sm text-text-secondary">مبلغ پرداختی</p>
-        <PriceSection offPrice={0} offValue={0} price={1550000} />
+        <PriceSection offValue={offValue} price={price} />
       </div>
     </div>
   );
 }
 
-function SummeryCard() {
+function SummeryCard({ src, alt, price, offValue, enTitle, perTitle }) {
   return (
     <div className="flex items-center justify-center p-3 gap-4 border-t border-stroke shadow-xs w-full ">
       <div className="flex items-center justify-start md:gap-2 lg:gap-4 size-full">
         <div className="flex items-center justify-center md:size-28 lg:size-[7.5rem] rounded-xl bg-white">
           <ImageFrame
-            src="/images/perfume-1.svg"
-            alt="perfume"
-            className="md:size-20 lg:size-[5.65rem]"
+            src={src}
+            alt={alt}
+            className="max-lg:size-20 lg:size-[5.65rem]"
           />
         </div>
         <div className="flex flex-col gap-3 size-full">
-          <div className="flex items-start justify-between size-full flex-col gap-1">
-            <div className="flex items-center justify-between size-full">
-              <span className="text-text-primary text-sm font-bold">
-                Hugo Just Different
-              </span>
-              <span className="flex items-center justify-end gap-0.5">
-                <p className="text-text-primary">{toPersianNumbers(100)}</p>
-                <p className="text-text-secondary text-sm">میل</p>
-              </span>
-            </div>
-            <span className="text-text-primary text-xs font-semibold">
-              هوگو بوس جاست دیفرنت
-            </span>
-          </div>
-
+          <CardTitle
+            enTitle={enTitle}
+            perTitle={perTitle}
+            location="summeryCardTwo"
+          />
           <div className="flex items-center justify-between size-full">
             <div>
               <PriceSection
-                offPrice={1450000}
-                offValue={0}
-                price={1550000}
+                offValue={offValue}
+                price={price}
                 priceClassName="text-xl"
                 textClassName="text-[10px]"
               />
@@ -212,5 +222,4 @@ function SummeryCard() {
 CartOrders.Mobile = MobileCard;
 CartOrders.Desk = DeskCard;
 CartOrders.Summery = SummeryCard;
-CartOrders.SuccessMobile = MobileSuccessedOrderCard;
-CartOrders.SuccessDesk = DeskSuccessedOrderCard;
+CartOrders.Success = SuccessedOrderCard;
