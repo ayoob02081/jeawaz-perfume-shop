@@ -1,6 +1,7 @@
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
-import ImageFrame from "./ImageFrame";
+import ImageFrame from "../../../../components/ImageFrame";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
 
 function LoginForm({
   isEmailType,
@@ -9,15 +10,17 @@ function LoginForm({
   onSubmit,
   MoveBack,
   step,
+  email,
   children,
   toggleLoginOpen,
   otp,
+  password,
 }) {
   const phoneNumberLength = isEmailType
-    ? phoneNumber.length >= 11
+    ? email.length >= 11
     : phoneNumber.length === 11;
-  const OTPLength = isEmailType ? otp.length >= 6 : otp.length === 5;
-
+  const OTPLength = isEmailType ? password.length >= 6 : otp.length === 5;
+  const router = useRouter();
   return (
     <div className="flex flex-col items-center justify-between md:gap-4 size-full">
       <button
@@ -46,7 +49,7 @@ function LoginForm({
               آمدید!
             </span>
             <p className="text-xs md:text-sm text-text-secondary">
-              برای ورود و عضویت در سایت شماره موبایل خود را وارد کنید
+              برای ورود در سایت {isEmailType?"ایمیل":"شماره موبایل"} خود را وارد کنید
             </p>
           </div>
         )}
@@ -69,9 +72,17 @@ function LoginForm({
         {step === 1 && (
           <button
             onClick={toggleLoginType}
-            className="absolute translate-x-1/2 right-1/2 max-md:bottom-32 md:bottom-26 text-xs text-blue decoration-1 underline underline-offset-[3px] cursor-pointer"
+            className="absolute  max-md:bottom-32 md:top-30 text-xs text-primary font-bold  cursor-pointer"
           >
-            وارد شدن با {isEmailType === true ? "شماره تلفن همراه" : "ایمیل"}
+            وارد شدن با {isEmailType === true ? "شماره موبایل" : "ایمیل"}
+          </button>
+        )}
+        {step === 1 && (
+          <button
+            onClick={() => router.replace("/auth/signin")}
+            className="absolute translate-x-1/2 right-1/2 max-md:bottom-26 md:bottom-26 text-xs text-blue decoration-1 underline underline-offset-[3px] cursor-pointer"
+          >
+            حساب کاربری ندارید؟
           </button>
         )}
       </div>

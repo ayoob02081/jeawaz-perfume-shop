@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 function FilteredProductsLayout() {
   const { data, isLoading, error } = useGetAllScents();
-  console.log(data);
+  // console.log(data);
 
   return (
     <div className="flex flex-col justify-between items-center container mx-auto xl:max-w-7xl py-4">

@@ -50,7 +50,7 @@ function ProductCard({
             <p className="text-text-secondary max-md:text-xs text-base font-bold">
               {brand}
             </p>
-            {original && (
+            {original === true && (
               <ImageFrame
                 src="/images/bg-original.svg"
                 alt="orginal icon"

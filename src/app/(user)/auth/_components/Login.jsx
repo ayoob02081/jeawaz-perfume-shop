@@ -5,7 +5,9 @@ import LoginForm from "./LoginForm";
 import LoginField from "@/ui/LoginField";
 import { loginApi } from "@/services/authServices";
 import { useMutation } from "@tanstack/react-query";
-import { useGetAllUsers } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { useGetAllUsers } from "@/hooks/useUsers";
 
 const RESEND_TIME = 90;
 
@@ -18,16 +20,23 @@ function Login({ toggleLoginOpen, setName, name }) {
   const [time, setTime] = useState(RESEND_TIME);
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
   const { isLoading, data } = useGetAllUsers();
 
-  const userName = data?.data[0].firstName + " " + data?.data[0].lastName;
+  const isEmailExist = data?.data.find((user) => user.email === email);
 
-  // console.log(userName);
-  // console.log(data);
+  const isPhoneNumberExist = data?.data.find(
+    (user) => user.phoneNumber === phoneNumber
+  );
 
-  const { isPending: isChecking, mutateAsync: loginApifn } = useMutation({
+  const {
+    data: loginData,
+    isPending: isChecking,
+    mutateAsync: loginApifn,
+  } = useMutation({
     mutationFn: loginApi,
   });
+
 
   const toggleLoginType = () => {
     setIsEmailType((prevState) => !prevState);
@@ -48,14 +57,24 @@ function Login({ toggleLoginOpen, setName, name }) {
   const SendOTPFormHandler = async (e) => {
     e.preventDefault();
     if (step === 1 && phoneNumber.length === 11) {
-      setStep(2);
+      if (isPhoneNumberExist[0] === true) {
+        setStep(2);
+      } else {
+        toast.error("شماره موبایل وارد شده وجود ندارد");
+        setPhoneNumber("");
+      }
     }
   };
 
   const PasswordHandler = async (e) => {
     e.preventDefault();
     if (step === 1 && email.length >= 11) {
-      setStep(2);
+      if (isEmailExist?.email === email) {
+        setStep(2);
+      } else {
+        toast.error("ایمیل وارد شده وجود ندارد");
+        setEmail("");
+      }
     }
     if (step === 2) {
       setPassword(e.target.value);
@@ -64,11 +83,18 @@ function Login({ toggleLoginOpen, setName, name }) {
 
   const CheckOTPFormHandler = async (e) => {
     e.preventDefault();
-    if (step === 2 && otp.length === 5) {
-      toggleLoginOpen();
-      setPhoneNumber("");
-      setOtp("");
-      setStep(1);
+    try {
+      // const { token } = await loginApifn({ email, password });
+      if (step === 2 && otp.length === 5) {
+        router.back();
+        setPhoneNumber("");
+        setOtp("");
+        setStep(1);
+        toast.success("به جیاواز خوش آمدید!");
+      }
+    } catch (error) {
+      toast.error("خطا در ورود به سایت ، لطفا مجددا تلاش کنید");
+      console.log(error);
     }
   };
 
@@ -77,12 +103,14 @@ function Login({ toggleLoginOpen, setName, name }) {
     try {
       const { token } = await loginApifn({ email, password });
       if (token && step === 2 && password.length >= 6) {
-        toggleLoginOpen();
+        router.back();
         setEmail("");
         setPassword("");
         setStep(1);
+        toast.success("به جیاواز خوش آمدید!");
       }
     } catch (error) {
+      toast.error("خطا در ورود به سایت ، لطفا مجددا تلاش کنید");
       console.log(error);
     }
   };
@@ -93,47 +121,29 @@ function Login({ toggleLoginOpen, setName, name }) {
     setPassword("");
   };
 
-  useEffect(() => {
-    if (userName !== null && userName !== undefined) {
-      setName(userName);
-    }
-    return;
-  }, [userName, setName]);
-  console.log(name);
-  
-
-  //   useEffect(() => {
-  //     const timer = time > 0 && setInterval((t) => setTime((t) => t - 1), 1000);
-  //     return () => {
-  //       if (timer) clearInterval(timer);
-  //     };
-  //   }, [time]);
-
-  //   return (
-  //     <div className="size-full p-6 md:p-10 md:px-14">
-  //       <SendOTPForm setStep={setStep} onChange={PhoneNumberHandler} />
-  //     </div>
-
-  const renderPhoneSteps = () => {
+  const renderSteps = () => {
     switch (step) {
       case 1:
         return (
           <LoginForm
             toggleLoginType={toggleLoginType}
             isEmailType={isEmailType}
+            password={password}
             otp={otp}
             step={step}
             MoveBack={MoveBack}
+            email={email}
             phoneNumber={phoneNumber}
-            onSubmit={SendOTPFormHandler}
+            onSubmit={isEmailExist ? PasswordHandler : SendOTPFormHandler}
             toggleLoginOpen={toggleLoginOpen}
             // isGetting={isGetting}
           >
             <LoginField
+              email={email}
               isEmailType={isEmailType}
-              otp={otp}
               step={step}
-              onChange={PhoneNumberHandler}
+              onChange={isEmailType ? EmailHandler : PhoneNumberHandler}
+              otp={otp}
             />
           </LoginForm>
         );
@@ -142,90 +152,27 @@ function Login({ toggleLoginOpen, setName, name }) {
         return (
           <LoginForm
             isEmailType={isEmailType}
+            password={password}
             otp={otp}
             step={step}
             MoveBack={MoveBack}
+            email={email}
             phoneNumber={phoneNumber}
-            onSubmit={CheckOTPFormHandler}
+            onSubmit={isEmailType ? CheckPasswordHandler : CheckOTPFormHandler}
             toggleLoginOpen={toggleLoginOpen}
             // onResendOtp={SendOTPFormHandler}
             // time={time}
             // isChecking={isChecking}
-            // onBack={() => setStep(1)}
           >
             <LoginField
               isEmailType={isEmailType}
               otp={otp}
               step={step}
+              onChange={PasswordHandler}
               setOtp={setOtp}
             />
           </LoginForm>
         );
-
-      default:
-        return null;
-    }
-  };
-
-  const renderEmailSteps = () => {
-    switch (step) {
-      case 1:
-        return (
-          <LoginForm
-            toggleLoginType={toggleLoginType}
-            isEmailType={isEmailType}
-            otp={password}
-            step={step}
-            MoveBack={MoveBack}
-            phoneNumber={email}
-            onSubmit={PasswordHandler}
-            toggleLoginOpen={toggleLoginOpen}
-            // isGetting={isGetting}
-          >
-            <LoginField
-              isEmailType={isEmailType}
-              step={step}
-              onChange={EmailHandler}
-            />
-          </LoginForm>
-        );
-
-      case 2:
-        return (
-          <LoginForm
-            isEmailType={isEmailType}
-            otp={password}
-            step={step}
-            MoveBack={MoveBack}
-            phoneNumber={email}
-            onSubmit={CheckPasswordHandler}
-            toggleLoginOpen={toggleLoginOpen}
-            // onResendOtp={SendOTPFormHandler}
-            // time={time}
-            // isChecking={isChecking}
-            // onBack={() => setStep(1)}
-          >
-            <LoginField
-              isEmailType={isEmailType}
-              otp={password}
-              step={step}
-              onChange={PasswordHandler}
-            />
-          </LoginForm>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  const renderSteps = () => {
-    switch (isEmailType) {
-      case true:
-        return renderEmailSteps();
-
-      case false:
-        return renderPhoneSteps();
 
       default:
         return null;

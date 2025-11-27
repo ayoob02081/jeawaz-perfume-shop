@@ -1,21 +1,23 @@
-"use client";
-
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import {
   DevicePhoneMobileIcon,
   EnvelopeIcon,
-  EyeIcon,
-  EyeSlashIcon,
 } from "@heroicons/react/24/outline";
-import React, { useState } from "react";
 import OTPInput from "react-otp-input";
+import PassInput from "./PassInput";
 
-function LoginField({ onChange, step, setOtp, otp, isEmailType }) {
-  const [passwordVisible, setPasswordVisible] = useState("password");
+function LoginField({
+  onChange,
+  step,
+  setOtp,
+  otp,
+  isEmailType,
+  email,
+  phoneNumber,
+}) {
+  const emailValue = email || "";
+  const phoneNumberValue = phoneNumber || "";
 
-  const ShowPasswordHandler = () => {
-    setPasswordVisible((prev) => (prev === "password" ? "text" : "password"));
-  };
   const renderSteps = () => {
     switch (step) {
       case 1:
@@ -32,10 +34,11 @@ function LoginField({ onChange, step, setOtp, otp, isEmailType }) {
               type={isEmailType ? "email" : "tel"}
               id={isEmailType ? "email" : "phoneNumber"}
               pattern="[0-9]{4}-[0-9]{3}-[0-9]{4}"
-              maxLength={isEmailType ? null : 11}
+              maxLength={!isEmailType ? 11 : null}
               minLength={11}
               placeholder={isEmailType ? "ایمیل شما" : "شماره همراه شما"}
               onChange={onChange}
+              value={isEmailType ? emailValue : phoneNumberValue}
             />
           </div>
         );
@@ -54,25 +57,7 @@ function LoginField({ onChange, step, setOtp, otp, isEmailType }) {
             skipDefaultStyles
           />
         ) : (
-          <div className="flex items-center justify-center gap-2 size-full px-5 py-1.5 rounded-[40px] bg-[#F1F1F1] text-text-secondary focus-within:*:text-text-primary  focus-within:bg-white  focus-within:border border-primary">
-            <input
-              className="outline-0 size-full"
-              dir="rtl"
-              type={passwordVisible}
-              id="password"
-              pattern="[0-9]{4}-[0-9]{3}-[0-9]{4}"
-              minLength={8}
-              placeholder="وارد کردن رمز عبور"
-              onChange={onChange}
-            />
-            <button onClick={ShowPasswordHandler}>
-              {passwordVisible === "password" ? (
-                <EyeSlashIcon className=" size-5" />
-              ) : (
-                <EyeIcon className=" size-5" />
-              )}
-            </button>
-          </div>
+          <PassInput onChange={onChange} className="bg-[#F1F1F1]" />
         );
 
       default:

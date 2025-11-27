@@ -10,21 +10,22 @@ import Link from "next/link";
 import ImageFrame from "./ImageFrame";
 import Logo from "./Logo";
 import { useEffect, useState } from "react";
-import Login from "./Login";
 import SearchSection from "./SearchSection";
-import Modal from "./Modal";
 import CategorySideBar from "@/app/(user)/_components/CategorySideBar";
 import SideBar from "./SideBar";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
 import { useRouter } from "next/navigation";
+import { useGetUser } from "@/hooks/useUsers";
 
 function HeaderLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [name, setName] = useState();
-  const router = useRouter();
+  const { data, isPending, error } = useGetUser();
+  // console.log(data, isPending, error);
+
+  const userFullName = data?.firstName + " " + data?.lastName;
+  // console.log(userFullName);
 
   const toggleCategory = () => {
     setCategoryOpen((prevState) => !prevState);
@@ -33,12 +34,9 @@ function HeaderLayout() {
   const toggleSideBar = () => {
     setSidebarOpen((prevState) => !prevState);
   };
-  const toggleLoginOpen = () => {
-    setLoginOpen((prevState) => !prevState);
-  };
 
   useEffect(() => {
-    if (sidebarOpen || categoryOpen || loginOpen) {
+    if (sidebarOpen || categoryOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
@@ -47,43 +45,34 @@ function HeaderLayout() {
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [sidebarOpen, categoryOpen, loginOpen]);
+  }, [sidebarOpen, categoryOpen]);
 
   return (
     <>
       <DesktopHeader
         toggleCategory={toggleCategory}
-        toggleLoginOpen={toggleLoginOpen}
-        router={router}
-        name={name}
+        userFullName={userFullName}
       />
       <MobileHeader
         toggleSideBar={toggleSideBar}
         toggleCategory={toggleCategory}
-        toggleLoginOpen={toggleLoginOpen}
         sidebarOpen={sidebarOpen}
-        router={router}
-        name={name}
+        userFullName={userFullName}
       />
       <CategorySideBar
         toggleCategory={toggleCategory}
         categoryOpen={categoryOpen}
         setCategoryOpen={setCategoryOpen}
       />
-      <Modal toggleOpen={loginOpen} onClose={() => setLoginOpen(false)} login>
-        <Login
-          toggleLoginOpen={toggleLoginOpen}
-          setName={setName}
-          name={name}
-        />
-      </Modal>
     </>
   );
 }
 
 export default HeaderLayout;
 
-function DesktopHeader({ toggleCategory, toggleLoginOpen, name, router }) {
+function DesktopHeader({ toggleCategory, userFullName }) {
+  const router = useRouter();
+
   return (
     <nav className="max-md:hidden">
       <ul className="flex flex-col justify-between gap-6">
@@ -125,15 +114,15 @@ function DesktopHeader({ toggleCategory, toggleLoginOpen, name, router }) {
             <li className="w-28 lg:w-36 h-10 lg:h-12 btn btn--secondary py-0">
               <button
                 onClick={
-                  !name || name === undefined
-                    ? toggleLoginOpen
+                  userFullName === undefined || !userFullName
+                    ? () => router.push("/auth/login")
                     : () => router.push("/profile")
                 }
                 className="size-full"
               >
                 <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2">
                   <p className="text-xs lg:text-sm text-nowrap overflow-x-scroll w-full scrollbar-none">
-                    {name && name !== undefined ? name : "ورود | ثبت نام"}
+                    {userFullName ? userFullName : "ورود | ثبت نام"}
                   </p>
                   <UserIcon className="size-5" />
                 </div>
@@ -143,8 +132,8 @@ function DesktopHeader({ toggleCategory, toggleLoginOpen, name, router }) {
               <button
                 className="flex items-center justify-between w-32 lg:w-[8.8rem]"
                 onClick={
-                  !name || name === undefined
-                    ? toggleLoginOpen
+                  !userFullName || userFullName === undefined
+                    ? () => router.push("/auth/login")
                     : () => router.push("/cart")
                 }
               >
@@ -256,11 +245,11 @@ function DesktopHeader({ toggleCategory, toggleLoginOpen, name, router }) {
 function MobileHeader({
   toggleSideBar,
   toggleCategory,
-  toggleLoginOpen,
   sidebarOpen,
-  name,
-  router,
+  userFullName,
 }) {
+  const router = useRouter();
+
   return (
     <nav className="md:hidden h-32">
       <ul className="mobileHeader relative">
@@ -284,11 +273,10 @@ function MobileHeader({
         <li className=" justify-items-end">
           <button
             onClick={
-              !name || name === undefined
-                ? toggleLoginOpen
+              !userFullName || userFullName === undefined
+                ? () => router.push("/auth/login")
                 : () => router.push("/cart")
             }
-            // shallow={true}
             className="relative block p-3 rounded-full border-2 border-primary/10"
           >
             <ImageFrame

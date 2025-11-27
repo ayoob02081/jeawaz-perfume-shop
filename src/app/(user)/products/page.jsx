@@ -5,12 +5,14 @@ import React from "react";
 import SortSection from "@/components/SortSection";
 import FilterSection from "./_components/FilterSection";
 import ProductCard from "../_components/ProductCard";
-import { useGetAllProducts, useGetProductsbyID } from "@/hooks/useProducts";
+import { useGetAllProducts } from "@/hooks/useProducts";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 
 function ProductPage() {
   const { data, isLoading, error } = useGetAllProducts();
+  // console.log(data);
+
   // const {
   //   data: productData,
   //   isLoading: isProductLoading,
@@ -42,7 +44,7 @@ function ProductPage() {
         </div>
       </div>
       <div className=" w-auto flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-3 md:gap-6 py-6 ">
-        {/* data?.products.map((product) => ( */}
+        {/* {data.products?.map((product) => ( */}
         {data?.map((product) => (
           <ProductCard
             key={product.id}
@@ -56,7 +58,8 @@ function ProductPage() {
             perTitle={product.perTitle}
             offValue={product.offValue}
             price={product.price}
-            original
+            // original={product.original}
+            original={true}
           />
         ))}
       </div>

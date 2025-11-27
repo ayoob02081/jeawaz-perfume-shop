@@ -1,21 +1,22 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { UserIcon as UserIconFill } from "@heroicons/react/24/solid";
 import ImageFrame from "@/components/ImageFrame";
+import { useGetUser } from "@/hooks/useUsers";
 
 function MobilePannel() {
   const pathname = usePathname();
+  const { data, isPending, error } = useGetUser();
 
   return (
     <div className="fixed flex items-center justify-center bottom-3 right-0 h-[83px] w-full md:hidden z-[70]">
       <ul className="grid grid-cols-4 justify-items-center gap-x-5 h-full w-[95%] shadow-2xl shadow-black rounded-2xl bg-white px-5">
         <li className="flex items-center justify-center ">
-          <Link
+          <button
             className="flex flex-col justify-center items-center gap-2"
-            href="/"
+            onClick={() => router.push("/")}
           >
             <div className="size-7">
               <ImageFrame
@@ -35,12 +36,12 @@ function MobilePannel() {
             >
               خانه
             </p>
-          </Link>
+          </button>
         </li>
         <li className="flex items-center justify-center ">
-          <Link
+          <button
             className="flex flex-col justify-center items-center gap-2"
-            href="/products"
+            onClick={() => router.push("/products")}
           >
             <div className="size-7">
               <ImageFrame
@@ -62,12 +63,16 @@ function MobilePannel() {
             >
               فروشگاه
             </p>
-          </Link>
+          </button>
         </li>
         <li className="flex items-center justify-center ">
-          <Link
+          <button
             className="flex flex-col justify-center items-center gap-2"
-            href="/cart"
+            onClick={
+              !data?.email || data?.email === undefined
+                ? () => router.push("/auth/login")
+                : () => router.push("/cart")
+            }
           >
             <div className="size-7">
               <ImageFrame
@@ -89,12 +94,16 @@ function MobilePannel() {
             >
               سبد خرید
             </p>
-          </Link>
+          </button>
         </li>
         <li className="flex items-center justify-center ">
-          <Link
+          <button
             className="flex flex-col justify-center items-center gap-2"
-            href="/profile"
+            onClick={
+              !data?.email || data?.email === undefined
+                ? () => router.push("/auth/login")
+                : () => router.push("/profile")
+            }
           >
             <div className="flex items-center justify-center size-7">
               {pathname.startsWith("/profile") ? (
@@ -112,7 +121,7 @@ function MobilePannel() {
             >
               پروفایل
             </p>
-          </Link>
+          </button>
         </li>
       </ul>
     </div>

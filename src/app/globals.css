@@ -133,6 +133,9 @@
   .textField__input {
     @apply flex items-center justify-start px-2 bg-grey rounded-xl py-2 outline-0 focus:bg-white border-[1.5px] border-grey focus:border-primary duration-200;
   }
+  .textField__authInput {
+    @apply rounded-full bg-[#f1f1f1] focus-within:bg-white;
+  }
   .footerLink {
     @apply grid gap-x-6 gap-y-1 text-base text-nowrap text-text-secondary *:hover:text-primary *:active:text-primary *:duration-200;
   }

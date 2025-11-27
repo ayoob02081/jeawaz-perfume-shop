@@ -20,16 +20,16 @@ import CartSummery from "./CartSummery";
 import CartOrders from "./CartOrders";
 import PriceSection from "@/components/PriceSection";
 import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
-import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
 import Loading from "@/components/Loading";
+import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
 
 function CartLayout() {
   const pathName = usePathname();
   const [cartOpen, setCartOpen] = useState(false);
   const { data, isLoading, error } = useGetAllOrdersByStatus("succeed");
   const firstOrder = data && data[0];
-  console.log(data);
-  console.log(firstOrder);
+  // console.log(data);
+  // console.log(firstOrder);
 
   const toggleCart = () => {
     setCartOpen((prevState) => !prevState);
@@ -327,14 +327,14 @@ function CartSecondStep({ items, date, totalPrice }) {
                 isRequired
                 label="نام و نام خانوادگی"
                 name="fullName"
-                className="w-full"
+                className="textField__input w-full"
                 placeholder="مثال : رضا جنیدی"
               />
               <TextField
                 isRequired
                 label="نام و نام خانوادگی"
                 name="fullName"
-                className="w-full"
+                className="textField__input w-full"
                 placeholder="مثال : رضا جنیدی"
               />
             </div>
@@ -355,14 +355,14 @@ function CartSecondStep({ items, date, totalPrice }) {
                   isRequired
                   label="استان"
                   name="ostan"
-                  className="w-full"
+                  className="textField__input w-full"
                   placeholder="انتخاب کنید"
                 />
                 <TextField
                   isRequired
                   label="شهر"
                   name="city"
-                  className="w-full"
+                  className="textField__input w-full"
                   placeholder="انتخاب کنید"
                 />
               </div>
@@ -371,14 +371,14 @@ function CartSecondStep({ items, date, totalPrice }) {
                   isRequired
                   label="پلاک"
                   name="No"
-                  className="w-full"
+                  className="textField__input w-full"
                   placeholder=" مثال :۱۰"
                 />
                 <TextField
                   isRequired
                   label="کدپستی"
                   name="postCode"
-                  className="w-full"
+                  className="textField__input w-full"
                   placeholder=" مثال : ۳۲۱۲۵۶۳۷۴۹۰"
                   type="number"
                 />

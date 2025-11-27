@@ -1,7 +1,7 @@
 import useOutsideClick from "@/hooks/useOutsideClick";
 import Backdrop from "@/ui/Backdrop";
 
-function Modal({ children, toggleOpen, onClose, login, category }) {
+function Modal({ children, toggleOpen, onClose, login, signin, category }) {
   const ref = useOutsideClick(onClose);
 
   const loginModalStyle = {
@@ -13,6 +13,17 @@ function Modal({ children, toggleOpen, onClose, login, category }) {
     toggleClose: "animate__fadeOutDownBig",
     modalClassName:
       "flex items-center justify-center max-md:w-[23rem] md:w-[33.8rem] max-md:h-80 md:h-96 bg-white rounded-3xl shadow-md animate__animated",
+  };
+
+  const signinModalStyle = {
+    openForm: "transform bottom-0 animate__fadeIn",
+    closeForm: "transform translate-y-[100vh] animate__fadeOut cursor-none",
+    className:
+      "flex max-md:items-end right-0 left-0 md:items-center justify-center max-md:pb-6 mx-auto w-full bg-black/15 h-screen backdrop-blur-md overflow-hidden z-[60] animate__animated ",
+    toggleOpen: "animate__fadeInUpBig",
+    toggleClose: "animate__fadeOutDownBig",
+    modalClassName:
+      "flex items-center justify-center max-md:w-[23rem] md:w-[33.8rem] bg-white rounded-3xl shadow-md animate__animated",
   };
 
   const categoryModalStyle = {
@@ -30,14 +41,17 @@ function Modal({ children, toggleOpen, onClose, login, category }) {
     <Backdrop
       openForm={
         (category && categoryModalStyle.openForm) ||
-        (login && loginModalStyle.openForm)
+        (login && loginModalStyle.openForm) ||
+        (signin && signinModalStyle.openForm)
       }
       closeForm={
         (category && categoryModalStyle.closeForm) ||
-        (login && loginModalStyle.closeForm)
+        (login && loginModalStyle.closeForm) ||
+        (signin && signinModalStyle.closeForm)
       }
       className={
         (login && loginModalStyle.className) ||
+        (signin && signinModalStyle.className) ||
         (category && categoryModalStyle.className)
       }
       toggleOpen={toggleOpen}
@@ -48,13 +62,16 @@ function Modal({ children, toggleOpen, onClose, login, category }) {
           toggleOpen
             ? login &&
               (loginModalStyle.toggleOpen ||
-                (category && categoryModalStyle.toggleOpen))
+                (signin && signinModalStyle.toggleOpen) ||
+                (category && category && categoryModalStyle.toggleOpen))
             : (login && loginModalStyle.toggleClose) ||
+              (signin && signinModalStyle.toggleClose) ||
               (category && categoryModalStyle.toggleClose)
         }
       
       ${
         (login && loginModalStyle.modalClassName) ||
+        (signin && signinModalStyle.modalClassName) ||
         (category && categoryModalStyle.modalClassName)
       }`}
       >
