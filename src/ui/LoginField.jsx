@@ -57,7 +57,11 @@ function LoginField({
             skipDefaultStyles
           />
         ) : (
-          <PassInput onChange={onChange} className="bg-[#F1F1F1]" />
+          <PassInput
+            onChange={onChange}
+            placeholder="وارد کردن رمز عبور"
+            className="bg-[#F1F1F1]"
+          />
         );
 
       default:

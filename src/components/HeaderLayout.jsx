@@ -51,9 +51,11 @@ function HeaderLayout() {
     <>
       <DesktopHeader
         toggleCategory={toggleCategory}
+        data={data}
         userFullName={userFullName}
       />
       <MobileHeader
+        data={data}
         toggleSideBar={toggleSideBar}
         toggleCategory={toggleCategory}
         sidebarOpen={sidebarOpen}
@@ -70,7 +72,7 @@ function HeaderLayout() {
 
 export default HeaderLayout;
 
-function DesktopHeader({ toggleCategory, userFullName }) {
+function DesktopHeader({ toggleCategory, userFullName, data }) {
   const router = useRouter();
 
   return (
@@ -114,7 +116,7 @@ function DesktopHeader({ toggleCategory, userFullName }) {
             <li className="w-28 lg:w-36 h-10 lg:h-12 btn btn--secondary py-0">
               <button
                 onClick={
-                  userFullName === undefined || !userFullName
+                  !data?.email || data?.email === undefined
                     ? () => router.push("/auth/login")
                     : () => router.push("/profile")
                 }
@@ -122,7 +124,7 @@ function DesktopHeader({ toggleCategory, userFullName }) {
               >
                 <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2">
                   <p className="text-xs lg:text-sm text-nowrap overflow-x-scroll w-full scrollbar-none">
-                    {userFullName ? userFullName : "ورود | ثبت نام"}
+                    {data?.email ? userFullName : "ورود | ثبت نام"}
                   </p>
                   <UserIcon className="size-5" />
                 </div>
@@ -242,12 +244,7 @@ function DesktopHeader({ toggleCategory, userFullName }) {
     </nav>
   );
 }
-function MobileHeader({
-  toggleSideBar,
-  toggleCategory,
-  sidebarOpen,
-  userFullName,
-}) {
+function MobileHeader({ toggleSideBar, toggleCategory, sidebarOpen, data }) {
   const router = useRouter();
 
   return (
@@ -273,7 +270,7 @@ function MobileHeader({
         <li className=" justify-items-end">
           <button
             onClick={
-              !userFullName || userFullName === undefined
+              !data?.email || data?.email === undefined
                 ? () => router.push("/auth/login")
                 : () => router.push("/cart")
             }
@@ -284,9 +281,11 @@ function MobileHeader({
               alt="cart icon"
               className="size-[1.15rem]"
             />
-            <p className="absolute -top-1 -right-1 px-1.5 pt-[1.5px] rounded-full bg-primary text-white text-[12px]">
-              ۴
-            </p>
+            {data?.email && (
+              <p className="absolute -top-1 -right-1 px-1.5 pt-[1.5px] rounded-full bg-primary text-white text-[12px]">
+                ۴
+              </p>
+            )}
           </button>
         </li>
         <li className="flex relative grow col-span-3 w-full h-12">

@@ -15,6 +15,7 @@ function Signin({ toggleLoginOpen, setName, name }) {
   const {
     data: signinData,
     isPending,
+    error: signinError,
     mutateAsync: signinApifn,
   } = useMutation({
     mutationFn: signinApi,
@@ -41,7 +42,10 @@ function Signin({ toggleLoginOpen, setName, name }) {
       toast.success("ثبت نام با موفقیت انجام شد!");
       router.back();
     } catch (error) {
-      toast.error("خطا در ثبت نام. لطفا دوباره تلاش کنید.");
+      toast.error(
+        signinError?.response?.data?.message ||
+          "خطا در ثبت نام. لطفا دوباره تلاش کنید."
+      );
     }
   };
 
@@ -101,9 +105,18 @@ function Signin({ toggleLoginOpen, setName, name }) {
           validationSchema={{ required: true }}
           placeholder="مثال: example@example.com"
         />
-        <PassInput onChange={onChange} className="bg-[#F1F1F1]" />
+        <PassInput
+          RHForm
+          isRequired
+          label="رمز عبور"
+          name="password"
+          register={register}
+          validationSchema={{ required: true }}
+          className="textField__input textField__authInput w-full"
+          placeholder="رمز عبور"
+        />
 
-        <RHFTextField
+        {/* <RHFTextField
           register={register}
           isRequired
           label="رمز عبور"
@@ -111,7 +124,7 @@ function Signin({ toggleLoginOpen, setName, name }) {
           type="password"
           className="textField__input textField__authInput w-full"
           validationSchema={{ required: true }}
-        />
+        /> */}
       </SigninForm>
     </div>
   );

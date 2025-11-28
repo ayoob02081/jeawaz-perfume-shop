@@ -49,7 +49,8 @@ function LoginForm({
               آمدید!
             </span>
             <p className="text-xs md:text-sm text-text-secondary">
-              برای ورود در سایت {isEmailType?"ایمیل":"شماره موبایل"} خود را وارد کنید
+              برای ورود در سایت {isEmailType ? "ایمیل" : "شماره موبایل"} خود را
+              وارد کنید
             </p>
           </div>
         )}
@@ -91,8 +92,8 @@ function LoginForm({
         type="submit"
         className={` ${
           (step === 1 && phoneNumberLength) || (step === 2 && OTPLength)
-            ? "bg-primary"
-            : "bg-primary/50 "
+            ? ""
+            : "cursor-not-allowed bg-primary/50 "
         } btn btn--primary w-full h-12 border-0  `}
       >
         {isEmailType === false && step === 1

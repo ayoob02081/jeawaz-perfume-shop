@@ -1,6 +1,7 @@
 import ImageFrame from "@/components/ImageFrame";
+import Loading from "@/components/Loading";
 
-function SigninForm({ children, toggleLoginOpen, handleSubmit }) {
+function SigninForm({ children, toggleLoginOpen, handleSubmit, isPending }) {
   return (
     <form
       className="flex flex-col items-center justify-between md:gap-4 size-full"
@@ -31,10 +32,13 @@ function SigninForm({ children, toggleLoginOpen, handleSubmit }) {
         {children}
       </div>
       <button
+        // onClick={onSubmit}
         type="submit"
-        className="bg-primary btn btn--primary w-full h-12 border-0"
+        className={`btn btn--primary w-full h-12 border-0 ${
+          isPending ? "cursor-not-allowed" : ""
+        }`}
       >
-        تایید اطلاعات
+        {isPending ? <Loading bgColor="white" /> : "تایید اطلاعات"}
       </button>
       <div className="max-md:hidden text-text-primary pt-4">
         <span className="*:text-primary flex items-center justify-center gap-1.5 flex-wrap">

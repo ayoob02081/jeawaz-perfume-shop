@@ -26,7 +26,6 @@ function TextField({
         className={` ${
           dir === "ltr" ? "text-left" : "text-right"
         } ${className}`}
-        {...register(name, { required: true })}
       />
     </div>
   );

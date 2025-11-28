@@ -5,9 +5,24 @@ import Error from "@/components/Error";
 import { useGetAllProducts } from "@/hooks/useProducts";
 import ImageFrame from "@/components/ImageFrame";
 import CardEvents from "@/components/CardEvents";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import RadioButton from "@/ui/RadioButton";
 import PriceSection from "@/components/PriceSection";
+import Accordion from "@/ui/Accordion";
+
+import { useState } from "react";
+import Image from "next/image";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Thumbs, Zoom } from "swiper/modules";
+import Lightbox from "yet-another-react-lightbox";
+import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/thumbs";
+import "yet-another-react-lightbox/styles.css";
+import "yet-another-react-lightbox/plugins/thumbnails.css";
+import { toPersianNumbers } from "@/utils/toPersianNumbers";
 
 const volumes = [
   { id: "volume-5", label: "۵ میل" },
@@ -31,7 +46,7 @@ function SingleProductPage({ slug }) {
   const currentSlug = data?.find((product) => product.id === slug);
 
   return (
-    <div className="grid max-md:grid-cols-1 md:grid-cols-2 min-h-screen h-full gap-6 w-full md:p-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 min-h-screen h-full md:gap-x-6 lg:gap-6 w-ful md:p-6 container mx-auto ">
       <ProductImage currentSlug={currentSlug} />
       <ProductDes currentSlug={currentSlug} />
       <ProductOptions currentSlug={currentSlug} />
@@ -43,49 +58,147 @@ function SingleProductPage({ slug }) {
 export default SingleProductPage;
 
 function ProductImage({ currentSlug }) {
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
   return (
-    <div className="w-full max-md:px-6 max-md:py-2">
-      <div
-        className="flex max-md:flex-col md:flex-row-reverse max-md:justify-center md:justify-start max-md:gap-6
-    md:gap-4 w-full max-md:rounded-[20px] max-md:bg-secondary max-md:p-6 md:overflow-hidden max-h-[28rem]"
-      >
-        <div className="flex md:grow items-center justify-center w-full md:bg-secondary md:rounded-[20px] md:p-6">
-          <ImageFrame
-            src={currentSlug.src}
-            alt={currentSlug.alt}
-            className="max-md:size-64 md:size-full"
+    <div className="relative items-center justify-start w-full max-md:p-4 h-fit">
+      {/* Custom Navigation Buttons */}
+      <div className="max-md:hidden md:absolute -translate-y-1/2 md:top-7/10 right-4 flex flex-row-reverse gap-2 items-center justify-between z-50">
+        <button className="custom-next flex items-center justify-center  ">
+          <ChevronLeftIcon
+            className={`${
+              currentSlide !== currentSlug.images.length - 1
+                ? "text-dark-brown bg-white"
+                : "text-dark-brown/40 bg-white/50"
+            } 
+             rounded-full size-10 md:px-3 lg:px-2.5
+          `}
           />
-        </div>
-        <div className="flex md:flex-none md:flex-col flex-nowra items-center justify-between gap-4 max-md:overflow-x-scroll snap-x md:overflow-y-scroll scrollbar-none">
-          {currentSlug.images.map((imgSrc, index) => (
-            <div
-              key={imgSrc + index}
-              className="flex items-center justify-center max-md:bg-white md:bg-secondary max-md:border border-stroke-2 rounded-lg snap-center"
-            >
-              <ImageFrame
-                src={imgSrc}
-                alt={imgSrc}
-                className="max-md:size-[4.35rem] md:size-[88px]"
-              />
-            </div>
-          ))}
-        </div>
+        </button>
+        <button className="custom-prev flex items-center justify-center">
+          <ChevronRightIcon
+            className={`${
+              currentSlide !== 0
+                ? "text-dark-brown bg-white"
+                : "text-dark-brown/40 bg-white/50"
+            } 
+           rounded-full size-10 md:px-3 lg:px-2.5
+          `}
+          />
+        </button>
       </div>
+
+      {/* Pagination Number */}
+      <div className="absolute max-md:top-5 md:top-9/12 right-1/2 translate-x-1/2 -translate-y-1/2 bg-white/70 rounded-sm px-2 py-1  text-xs mt-2 z-50">
+        <span>
+          {toPersianNumbers(currentSlide + 1)} /{" "}
+          {toPersianNumbers(currentSlug.images.length)}
+        </span>
+      </div>
+
+      {/* MAIN SLIDER  ==> اسلایدر اصلی */}
+      <div className=" max-md:bg-secondary max-md:p-6 rounded-[20px]">
+        <Swiper
+          modules={[Navigation, Thumbs, Zoom]}
+          zoom={true}
+          navigation={{
+            nextEl: ".custom-next",
+            prevEl: ".custom-prev",
+          }}
+          thumbs={{
+            swiper:
+              thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+          }}
+          spaceBetween={10}
+          className=" bg-secondary rounded-2xl overflow-hidden"
+          onSlideChange={(s) => setCurrentSlide(s.activeIndex)}
+        >
+          {currentSlug.images.map((img, i) => (
+            <SwiperSlide key={i}>
+              <div
+                className="cursor-pointer active:scale-[0.98] transition"
+                onClick={() => {
+                  setCurrentSlide(currentSlide);
+                  setOpen(true);
+                }}
+              >
+                <Image
+                  src={img}
+                  width={900}
+                  height={900}
+                  alt={`product-${i}`}
+                  className="object-cover w-full"
+                />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+
+        {/* THUMBNAILS ==> تصاویر کوچک */}
+        <Swiper
+          modules={[Thumbs]}
+          onSwiper={setThumbsSwiper}
+          watchSlidesProgress
+          spaceBetween={8}
+          slidesPerView={4}
+          className="mt-4"
+        >
+          {currentSlug.images.map((img, i) => (
+            <SwiperSlide key={i}>
+              <Image
+                src={img}
+                width={120}
+                height={120}
+                alt={`thumb-${i}`}
+                className=" w-full h-full max-md:bg-white md:bg-secondary rounded-2xl object-cover active:opacity-75 transition cursor-pointer max-md:border border-stroke-2"
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+
+      {/* LIGHTBOX */}
+      <Lightbox
+        open={open}
+        close={() => setOpen(false)}
+        index={currentSlide}
+        plugins={[Thumbnails]}
+        thumbnails={{ width: 120, height: 120 }}
+        slides={currentSlug.images.map((img) => ({ src: img }))}
+        on={{ view: ({ index }) => setCurrentSlide(index) }}
+        render={{
+          slide: ({ slide }) => (
+            <div className="w-full h-full flex items-center justify-center bg-black">
+              <img
+                src={slide.src}
+                alt=""
+                className="size-full object-contain"
+              />
+              <span className="absolute bottom-0 right-1/2 translate-x-1/2 -translate-y-1/2 bg-white/70 rounded-sm px-2 py-1  text-xs mt-2 z-50">
+                {toPersianNumbers(currentSlide + 1)} /{" "}
+                {toPersianNumbers(currentSlug.images.length)}
+              </span>
+            </div>
+          ),
+        }}
+      />
     </div>
   );
 }
 
 function ProductDes({ currentSlug }) {
   return (
-    <div className="grid grid-cols-1 w-full gap-y-4 max-md:p-6">
+    <div className="grid grid-cols-1 w-full gap-y-4 xl:gap-y-10 max-md:p-6 h-fit justify-items-start">
       <div className="flex flex-col gap-2 items-start justify-start w-full">
         <span className="flex items-start max-md:justify-between gap-2 md:justify-start w-full">
-          <p className="font-bold md:text-[28px]">
+          <p className="font-bold lg:text-[28px]">
             جیونچی آنجئو دمون له پارفیوم اند آکورد ایلیسیت
           </p>
           <p className="md:hidden">brand</p>
         </span>
-        <p className="text-xs md:text-lg text-text-secondary">
+        <p className="text-xs lg:text-lg text-text-secondary">
           GIVENCHY - Ange ou Demon Le Parfum & Accord Illicit
         </p>
       </div>
@@ -117,33 +230,36 @@ function ProductDes({ currentSlug }) {
         <p className="max-md:hidden">brand</p>
       </div>
       <div className="flex items-center justify-between w-full gap-4">
-        <button className="grow btn btn--success w-full h-12 px-2">
+        <button className=" btn btn--success w-full h-12 px-2">
           افزودن به سبد خرید
         </button>
         <div className=" flex-none">
-          <CardEvents BtnBackgroundColor="bg-grey" />
+          <CardEvents
+            btnStyle="max-lg:size-8 lg:size-12 not-active:bg-grey "
+            quantityStyle="max-lg:size-12 lg:size-12 max-lg:text-lg lg:text-lg"
+          />
         </div>
       </div>
-      <div className="flex flex-col justify-between gap-4 w-full max-md:hidden border-[1.5px] border-stroke-2 rounded-2xl p-4">
-        <div className="flex items-center justify-between gap-4 border-b border-secondary pb-4">
-          <p className="font-bold">توضیحات تکمیلی </p>
-          <ChevronDownIcon className="size-5" />
-        </div>
-        <p className="text-text-secondary text-sm">
-          لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
-          استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در
-          ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و
-          کاربردهای متنوع با هدف بهبود ابزارهای کاربردی . ، و برای شرایط فعلی
-          چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است،
+      {/* <div className="flex flex-col justify-between gap-4 w-full max-md:hidden border-[1.5px] border-stroke-2 rounded-2xl p-4"> */}
+      <Accordion
+        titleStyle="font-bold"
+        className="max-md:hidden md:flex  "
+        label="توضیحات تکمیلی"
+      >
+        <p className="text-text-secondary text-sm pt-4 border-t border-stroke leading-8 ">
+          لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده
+          از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و
+          سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و
         </p>
-      </div>
+      </Accordion>
+      {/* </div> */}
     </div>
   );
 }
 
 function ProductOptions() {
   return (
-    <div className="flex flex-col items-center justify-start gap-6 w-full max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:p-6 md:p-4 border-stroke-2 ">
+    <div className="grow flex flex-col items-center justify-start gap-6 w-full max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:p-6 md:p-4 border-stroke-2 ">
       <span className="flex items-center justify-start gap-2 w-full">
         <ImageFrame
           src="/images/menu-icon.svg"
@@ -183,7 +299,7 @@ function ProductOption({ textOne, textTwo }) {
 
 function ProductDetails() {
   return (
-    <div className="flex flex-col items-center justify-between gap-6 w-full max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl p-6 border-stroke-2 ">
+    <div className="grow flex flex-col items-center justify-between gap-6 w-full max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl p-6 border-stroke-2  ">
       <div className="flex flex-col items-start justify-between gap-2">
         <span className="flex items-center justify-start gap-2">
           <ImageFrame

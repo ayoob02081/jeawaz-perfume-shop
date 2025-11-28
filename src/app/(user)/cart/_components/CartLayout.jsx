@@ -10,11 +10,7 @@ import { usePathname } from "next/navigation";
 import TextField from "@/ui/TextField";
 import TextAreaField from "@/ui/TextAreaField";
 import RadioButton from "@/ui/RadioButton";
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  PlusIcon,
-} from "@heroicons/react/24/outline";
+import { CheckIcon, PlusIcon } from "@heroicons/react/24/outline";
 import ImageFrame from "@/components/ImageFrame";
 import CartSummery from "./CartSummery";
 import CartOrders from "./CartOrders";
@@ -22,6 +18,7 @@ import PriceSection from "@/components/PriceSection";
 import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
 import Loading from "@/components/Loading";
 import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
+import Accordion from "@/ui/Accordion";
 
 function CartLayout() {
   const pathName = usePathname();
@@ -290,28 +287,11 @@ function CartFirstStep({ items, date, totalPrice }) {
 }
 
 function CartSecondStep({ items, date, totalPrice }) {
-  const [ordersOpen, setOrdersOpen] = useState(false);
-  const toggleOrders = () => {
-    setOrdersOpen((prevState) => !prevState);
-  };
   return (
     <div className="flex flex-col gap-8 size-full">
-      <div
-        className={`max-md:flex md:hidden flex-col max-md:border-[1.5px] border-stroke rounded-[20px] w-full max-md:px-6 ${
-          ordersOpen ? "justify-between pb-6" : "items-center justify-center"
-        } transition-all duration-200`}
-      >
-        <button
-          onClick={toggleOrders}
-          className="flex items-center justify-between gap-4 size-full max-md:py-6"
-        >
-          <p className="text-base">نمایش سبد خرید شما</p>
-          <ChevronDownIcon
-            className={`size-4 ${ordersOpen && "rotate-180"} duration-200`}
-          />
-        </button>
-        {ordersOpen && <MobileOrderCard items={items} />}
-      </div>
+      <Accordion className="max-md:flex md:hidden" label="نمایش سبد خرید شما">
+        <MobileOrderCard items={items} />
+      </Accordion>
       <div className="flex flex-col items-center justify-between gap-4 w-full h-full max-md:border-[1.5px] border-stroke rounded-[20px] max-md:p-6">
         <div className="flex items-center justify-start gap-1 text-text-primary border-b border-stroke w-full pb-4">
           <h2 className="max-md:text-lg md:text-[1.375rem]">اطلاعات کاربری</h2>

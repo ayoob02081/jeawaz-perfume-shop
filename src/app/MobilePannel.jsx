@@ -1,12 +1,13 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { UserIcon as UserIconFill } from "@heroicons/react/24/solid";
 import ImageFrame from "@/components/ImageFrame";
 import { useGetUser } from "@/hooks/useUsers";
 
 function MobilePannel() {
+  const router = useRouter();
   const pathname = usePathname();
   const { data, isPending, error } = useGetUser();
 

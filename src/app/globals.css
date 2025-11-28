@@ -85,20 +85,21 @@
   .btn {
     @apply flex items-center justify-center rounded-[3.3rem];
   }
+
   .btn--primary {
-    @apply border-4 border-grey bg-primary text-grey hover:bg-grey hover:**:text-primary hover:text-primary hover:border hover:border-primary active:bg-grey active:**:text-primary active:text-primary active:border active:border-primary duration-200;
+    @apply border-4 border-grey bg-primary text-grey active:bg-grey active:**:text-primary active:text-primary active:border active:border-primary duration-200;
   }
-  .btn--primary--2 {
-    @apply text-primary border-primary hover:bg-primary hover:text-grey hover:border-grey active:bg-primary active:text-grey active:border-grey duration-200;
-  }
+  /* .btn--primary--2 {
+    @apply text-primary border-primary active:bg-primary active:text-grey active:border-grey duration-200;
+  } */
   .btn--secondary {
-    @apply border border-text-secondary hover:bg-primary hover:text-grey hover:border-grey active:bg-primary active:text-grey active:border-grey duration-200;
+    @apply border border-text-secondary active:bg-primary active:text-grey active:border-grey duration-200;
   }
   .btn--secondary--2 {
-    @apply border border-secondary bg-secondary hover:bg-white hover:text-primary hover:border-primary active:bg-white active:text-primary active:border-primary duration-200;
+    @apply border border-secondary bg-secondary active:bg-white active:text-primary active:border-primary duration-200;
   }
   .btn--success {
-    @apply border bg-success  border-grey text-grey hover:border-success hover:text-success hover:bg-white hover:**:text-success hover:border active:border-success active:text-success active:bg-white active:**:text-success active:border duration-200;
+    @apply border bg-success  border-grey text-grey active:text-success active:bg-white active:**:text-success active:border duration-200;
   }
   .badge {
     @apply flex items-center justify-center px-3 py-1 text-xs md:text-sm bg-grey text-primary rounded-[3.3rem];
@@ -127,17 +128,48 @@
   .tdBase {
     @apply flex items-center justify-center text-nowrap;
   }
-  .cardEventsBtn {
-    @apply flex items-center justify-center max-lg:size-[1.82rem] lg:size-12 rounded-full duration-200;
+  .btn-card-event {
+    @apply flex items-center justify-center max-lg:size-8 lg:size-12 rounded-full duration-200;
+  }
+  .btn-card-event--error {
+    @apply active:bg-error text-error active:text-white;
+  }
+  .btn-card-event--success {
+    @apply active:bg-success text-text-primary active:text-white;
   }
   .textField__input {
-    @apply flex items-center justify-start px-2 bg-grey rounded-xl py-2 outline-0 focus:bg-white border-[1.5px] border-grey focus:border-primary duration-200;
+    @apply flex items-center justify-start px-3 bg-grey rounded-xl py-2 outline-0 focus:bg-white border-[1.5px] border-grey focus:border-primary duration-200;
   }
   .textField__authInput {
     @apply rounded-full bg-[#f1f1f1] focus-within:bg-white;
   }
   .footerLink {
     @apply grid gap-x-6 gap-y-1 text-base text-nowrap text-text-secondary *:hover:text-primary *:active:text-primary *:duration-200;
+  }
+
+  @media (hover: none) {
+    .btn--primary:hover {
+      @apply bg-grey **:text-primary text-primary border border-primary active:bg-grey;
+    }
+    /* .btn--primary--2:hover {
+      @apply bg-primary text-grey border-grey;
+    } */
+    .btn--secondary:hover {
+      @apply bg-error text-grey border-grey;
+    }
+    .btn--secondary:hover {
+      @apply bg-white text-primary border-primary;
+    }
+    .btn--success:hover {
+      @apply border-success text-success bg-white **:text-success border active:border-success;
+    }
+
+    .btn-card-event--error:hover {
+      @apply bg-primary text-white;
+    }
+    .btn-card-event--success:hover {
+      @apply bg-success text-white;
+    }
   }
 }
 
@@ -171,6 +203,15 @@ button:disabled {
   pointer-events: none;
   box-shadow: none;
 }
+
+/* @media (hover: none) {
+  button:hover {
+    background-color: initial !important;
+    background: initial !important;
+    color: initial !important;
+    border: initial !important;
+  } */
+/* } */
 
 /* inupt number */
 input::-webkit-outer-spin-button,

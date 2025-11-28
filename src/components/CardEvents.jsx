@@ -9,12 +9,18 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 // import toast from "react-hot-toast";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
+import { useGetUser } from "@/hooks/useUsers";
 
-function CardEvents({ product, className, BtnBackgroundColor }) {
+function CardEvents({
+  product,
+  className,
+  btnStyle = "max-lg:size-8 lg:size-12",
+  quantityStyle = "max-lg:size-8 lg:size-12 max-lg:text-xs lg:text-lg",
+}) {
   //   const queryClient = useQueryClient();
   const pathname = usePathname();
   const router = useRouter();
-  //   const { data } = useGetUser();
+  const { data } = useGetUser();
   //   const { isPending: isAdding, mutateAsync: AddToCartFn } = useAddToCart();
   //   const { isPending, mutateAsync: RemoveFromCart } = useRemoveFromCart();
   //   const { user } = data || {};
@@ -53,16 +59,16 @@ function CardEvents({ product, className, BtnBackgroundColor }) {
   //     if (!user) return false;
   //     return user?.cart?.products.some((p) => p.productId === product._id);
   //   };
-    const quantityCount = (user, product) => {
-      // if (!user) return false;
-      // const singleProduct = user?.cart?.products.filter(
-      //   (p) => p.productId === product._id
-      // );
-      // const singleProduct = user?.cart?.products.filter(
-      //   (p) => p.productId === product._id
-      // );
-      // return singleProduct[0].quantity;
-    };
+  const quantityCount = (user, product) => {
+    // if (!user) return false;
+    // const singleProduct = user?.cart?.products.filter(
+    //   (p) => p.productId === product._id
+    // );
+    // const singleProduct = user?.cart?.products.filter(
+    //   (p) => p.productId === product._id
+    // );
+    // return singleProduct[0].quantity;
+  };
 
   return (
     <div className="flex w-full items-center justify-center gap-4">
@@ -78,16 +84,21 @@ function CardEvents({ product, className, BtnBackgroundColor }) {
       >
         <button
           // onClick={AddToCartHandler}
-          className={`cardEventsBtn ${BtnBackgroundColor} hover:bg-success active:bg-success text-text-primary hover:text-white active:text-white`}
+
+          className={` btn-card-event btn-card-event--success ${btnStyle}`}
+          // className={`cardEventsBtn  hover:bg-success active:bg-success text-text-primary hover:text-white active:text-white`}
         >
           <PlusIcon className="max-md:size-3.5 size-6" />
         </button>
-        <span className="cardEventsBtn max-lg:text-xs lg:text-lg border-[1.5px] border-stroke-3 rounded-full">
-          {/* {toPersianNumbers(quantityCount(user, product))} */}۱
+        <span
+          className={`btn-card-event border-[1.5px] border-stroke-3 rounded-full ${quantityStyle}`}
+        >
+          {toPersianNumbers(1)}
         </span>
         <button
           // onClick={RemoveFromCartHandler}
-          className={`cardEventsBtn ${BtnBackgroundColor} hover:bg-error active:bg-error text-error hover:text-white active:text-white`}
+          // className={`cardEventsBtn  hover:bg-error active:bg-error text-error hover:text-white active:text-white`}
+          className={`btn-card-event btn-card-event--error ${btnStyle}`}
         >
           {/* {quantityCount(user, product) > 1 ? ( */}
           {/* <MinusIcon className="max-md:size-3.5 size-6" /> */}

@@ -24,6 +24,7 @@ function Login({ toggleLoginOpen, setName, name }) {
   const { isLoading, data } = useGetAllUsers();
 
   const isEmailExist = data?.data.find((user) => user.email === email);
+console.log(isEmailExist);
 
   const isPhoneNumberExist = data?.data.find(
     (user) => user.phoneNumber === phoneNumber
@@ -134,7 +135,7 @@ function Login({ toggleLoginOpen, setName, name }) {
             MoveBack={MoveBack}
             email={email}
             phoneNumber={phoneNumber}
-            onSubmit={isEmailExist ? PasswordHandler : SendOTPFormHandler}
+            onSubmit={isEmailType ? PasswordHandler : SendOTPFormHandler}
             toggleLoginOpen={toggleLoginOpen}
             // isGetting={isGetting}
           >
