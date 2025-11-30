@@ -80,7 +80,7 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
                 // className={`${
                 //   pathName.endsWith("/profile") ? "text-primary-900" : ""
                 // } profileLink`}
-                href={"/profile"}
+                href={"/products"}
               >
                 <ImageFrame
                   src="/images/warranty-check-icon.svg"
@@ -97,7 +97,7 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
                 // className={`${
                 //   pathName.startsWith("/profile/me") ? "text-primary-900" : ""
                 // } profileLink`}
-                href="/profile/me"
+                href="/products"
               >
                 <ImageFrame
                   src="/images/two-tag-icon.svg"
@@ -113,7 +113,7 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
                 // className={`${
                 //   pathName.startsWith("/profile/payments") ? "text-primary-900" : ""
                 // } profileLink`}
-                href={"/profile/payments"}
+                href={"/products"}
               >
                 <ImageFrame
                   src="/images/special-offer-2-icon.svg"
@@ -132,7 +132,7 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
             </Link>
           </li> */}
             <li>
-              <Link className="profileLinkSecond border-none" href="/">
+              <Link className="profileLinkSecond border-none" href="/page/contact-us">
                 <span>تماس با ما</span>
                 <ChevronLeftIcon className="size-4" />
               </Link>

@@ -15,7 +15,7 @@ import CategorySideBar from "@/app/(user)/_components/CategorySideBar";
 import SideBar from "./SideBar";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useGetUser } from "@/hooks/useUsers";
 
 function HeaderLayout() {
@@ -74,6 +74,7 @@ export default HeaderLayout;
 
 function DesktopHeader({ toggleCategory, userFullName, data }) {
   const router = useRouter();
+  const pathName = usePathname();
 
   return (
     <nav className="max-md:hidden">
@@ -94,21 +95,35 @@ function DesktopHeader({ toggleCategory, userFullName, data }) {
               {/* <li className="">
                   <p className="text-xs lg:text-sm">مطالب آموزشی</p>
                 </li> */}
-              <li className="">
+              <li className="relative flex items-center justify-center">
                 <Link
-                  href={"/"}
-                  className="text-text-primary hover:text-primary duration-200"
+                  href={"/page/about-us"}
+                  className={`duration-200 ${
+                    pathName.endsWith("/about-us")
+                      ? "text-primary font-bold"
+                      : "text-text-primary hover:text-primary "
+                  }`}
                 >
                   <p className="text-xs lg:text-sm">درباره ما</p>
                 </Link>
+                {pathName.endsWith("/about-us") && (
+                  <div className="absolute -bottom-3 size-2 rounded-full bg-primary"></div>
+                )}
               </li>
-              <li className="">
+              <li className="relative flex items-center justify-center">
                 <Link
-                  href={"/"}
-                  className="text-text-primary hover:text-primary duration-200"
+                  href={"/page/contact-us"}
+                  className={`duration-200 ${
+                    pathName.endsWith("/contact-us")
+                      ? "text-primary font-bold"
+                      : "text-text-primary hover:text-primary"
+                  }`}
                 >
                   <p className="text-xs lg:text-sm">تماس با ما</p>
                 </Link>
+                {pathName.endsWith("/contact-us") && (
+                  <div className="absolute -bottom-3 size-2 rounded-full bg-primary"></div>
+                )}
               </li>
             </div>
           </div>

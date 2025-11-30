@@ -387,7 +387,32 @@ function CartSecondStep({ items, date, totalPrice }) {
             />
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row gap-4 w-full mb-6">
+        <div className="flex flex-col xl:flex-row gap-4 w-full mb-6">
+          <RadioButton
+            id="post"
+            name="post"
+            value="post"
+            className="flex items-center justify-between gap-4 w-full
+             text-xs md:text-sm max-md:rounded-lg md:rounded-[40px]
+             px-4 py-3 text-text-primary bg-grey has-checked:*:even:*:first:bg-primary
+             has-checked:*:even:*:first:border-primary
+             border-[1.5px] border-grey has-checked:border-primary has-checked:font-bold has-checked:bg-white
+             duration-200"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center justify-center size-4 rounded-sm border-[1.25px] border-text-secondary/50 ">
+                <CheckIcon className="size-2.5 text-grey" />
+              </div>
+              <p className="text-xs">
+                پست پیشتاز ({toPersianNumbers(2)} تا {toPersianNumbers(4)} روز
+                کاری)
+              </p>
+            </div>
+            <span className="flex items-center justify-between gap-1">
+              <p className="text-base">{toPersianNumbersWithComma(50000)}</p>
+              <p className="text-text-secondary-light text-xs">تومان</p>
+            </span>
+          </RadioButton>
           <RadioButton
             id="tipax"
             name="post"
@@ -414,9 +439,9 @@ function CartSecondStep({ items, date, totalPrice }) {
             </span>
           </RadioButton>
           <RadioButton
-            id="post"
+            id="terminal"
             name="post"
-            value="post"
+            value="terminal"
             className="flex items-center justify-between gap-4 w-full
              text-xs md:text-sm max-md:rounded-lg md:rounded-[40px]
              px-4 py-3 text-text-primary bg-grey has-checked:*:even:*:first:bg-primary
@@ -429,13 +454,12 @@ function CartSecondStep({ items, date, totalPrice }) {
                 <CheckIcon className="size-2.5 text-grey" />
               </div>
               <p className="text-xs">
-                پست پیشتاز ({toPersianNumbers(2)} تا {toPersianNumbers(5)} روز
-                کاری)
+                باربری و ترمینال ({toPersianNumbers(24)} ساعته )
               </p>
             </div>
             <span className="flex items-center justify-between gap-1">
-              <p className="text-base">{toPersianNumbersWithComma(45000)}</p>
-              <p className="text-text-secondary-light text-xs">تومان</p>
+              <p className="text-sm">پس کرایه</p>
+              {/* <p className="text-text-secondary-light text-xs">تومان</p> */}
             </span>
           </RadioButton>
         </div>

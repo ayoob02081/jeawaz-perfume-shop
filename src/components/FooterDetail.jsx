@@ -1,8 +1,16 @@
 import ImageFrame from "./ImageFrame";
 
-function FooterDetail({ src, alt, className, title, desc }) {
+function FooterDetail({
+  src,
+  alt,
+  className,
+  children,
+  direction = "flex-row",
+}) {
   return (
-    <div className="flex items-center justify-between gap-4 h-16">
+    <div
+      className={`flex ${direction} items-center justify-between gap-4 h-16`}
+    >
       <div className="relative bg-white p-4 rounded-full">
         <ImageFrame
           src={src}
@@ -11,10 +19,7 @@ function FooterDetail({ src, alt, className, title, desc }) {
         />
         <div className="absolute top-4 left-4 bg-primary/50 size-4 rounded-full"></div>
       </div>
-      <div className="grow flex flex-col items-start justify-between gap-1 ">
-        <p className="font-bold">{title}</p>
-        <p>{desc}</p>
-      </div>
+      {children}
     </div>
   );
 }

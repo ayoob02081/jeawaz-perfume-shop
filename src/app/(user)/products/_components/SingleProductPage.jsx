@@ -271,6 +271,7 @@ function ProductOptions() {
       <div className="grid max-sm:grid-cols-3 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-3 gap-x-4 w-full px-2">
         <ProductOption textOne="کشور تولید کننده" textTwo="امارات" />
         <ProductOption textOne="پخش بو" textTwo="قوی" />
+        <ProductOption textOne="ماندگاری" textTwo="زیاد" />
         <ProductOption textOne="حجم" textTwo="۱۰۵ میلی لیتر" />
         <ProductOption textOne="عطر ساز" textTwo="فرانسه" />
         <ProductOption textOne="ساختار رایحه" textTwo="رایحه شیرین" />

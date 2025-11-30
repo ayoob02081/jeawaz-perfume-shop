@@ -32,9 +32,9 @@ function Footer() {
           <div className="flex flex-col items-start gap-2">
             <h4 className="text-lg">عطر فروشی</h4>
             <div className="footerLink grid-cols-2">
-              <Link href={"/"}>درباره ما</Link>
-              <Link href={"/"}>ارتباط باما</Link>
-              <Link href={"/"}>قوانین و مقررات</Link>
+              <Link href={"/page/about-us"}>درباره ما</Link>
+              <Link href={"/page/contact-us"}>ارتباط باما</Link>
+              <Link href={"/page/terms"}>قوانین و مقررات</Link>
               <Link href={"/"}>ادرس ها</Link>
             </div>
           </div>
@@ -110,7 +110,7 @@ function Footer() {
         </div>
       </div>
       <div className="flex items-center justify-between w-full pt-6 text-white border-t border-text-secondary/60">
-        <p>تمامی حقوق مادی و معنوی برای این سایت محفوظ می باشد</p>
+        <p>تمامی حقوق مادی و معنوی برای جیاواز محفوظ می‌باشد</p>
         <div className="flex items-center justify-between gap-2">
           <Link href={"/"}>
             <ImageFrame
@@ -119,7 +119,14 @@ function Footer() {
               alt="whatsapp icon"
             />
           </Link>
-          <Link href={"/"}>
+          <Link href="https://t.me/jeaawazperfume">
+            <ImageFrame
+              className="size-7"
+              src="/images/telegram-icon.svg"
+              alt="telegram icon"
+            />
+          </Link>
+          <Link href="https://www.instagram.com/jeawaz_perfume/">
             <ImageFrame
               className="size-7"
               src="/images/insta-icon.svg"
