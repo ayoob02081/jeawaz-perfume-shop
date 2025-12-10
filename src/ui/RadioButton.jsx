@@ -17,9 +17,9 @@ function RadioButton({
         type="radio"
         name={name}
         id={id}
-        // checked={checked}
+        checked={checked}
         value={value}
-        // onChange={onChange}
+        onChange={onChange}
         className="sr-only"
       />
       {children}

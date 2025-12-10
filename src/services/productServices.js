@@ -1,51 +1,34 @@
 import http from "./httpService";
 
 export function getAllProductsApi() {
-  return http.get(`/products`).then(({data}) => data);
+  return http.get(`/products`).then(({ data }) => data);
 }
-
-// export function getProductBySlugApi(slug) {
-//   return http.get(`/product/slug/${slug}`).then(({ data }) => data.data);
-// }
 
 export function getProductByIdApi(id) {
-  return http.get(`/products/${id}`).then(({data}) => data);
+  return http.get(`/products/${id}`).then(({ data }) => data);
 }
 
+export function addProductApi(data) {
+  return http.post("/products", data).then(({ data }) => data);
+}
+
+export function updateProductApi({ productId, data }) {
+  return http.patch(`/products/${productId}`, data).then(({ data }) => data);
+}
+
+export function removeProductApi(id) {
+  return http.delete(`/products/${id}`).then(({ data }) => data);
+}
+
+// در آینده اضافه میشود
+
 // export function likeProductApi(id) {
-//   return http.post(`/product/like/${id}`).then(({ data }) => data.data);
-// }
-// export function updateProductApi({ productId, data }) {
-//   return http
-//     .patch(`/admin/product/update/${productId}`, data)
-//     .then(({ data }) => data.data);
+//   return http.post(`/products/${id}`).then(({data}) => data);
 // }
 
-// export function removeProductApi(id) {
-//   return http
-//     .delete(`/admin/product/remove/${id}`)
-//     .then(({ data }) => data.data);
+// export function getProductBySlugApi(slug) {
+//   return http.get(`/products/${slug}`).then(({data}) => data);
 // }
-
-// export function addProductApi(data) {
-//   return http.post("/admin/product/add", data).then(({ data }) => data.data);
-// }
-
-// src,
-// alt,
-// scent,
-// gender,
-// brand,
-// enTitle,
-// perTitle,
-// price,
-// offValue,
-
-// bitter talkh -scent
-// spicy tond -scent
-// sweet shirin -scent
-
-// sour torsh -scent
 
 export async function fetchProducts(type) {
   // شبیه‌سازی API call
@@ -53,73 +36,393 @@ export async function fetchProducts(type) {
 
   return [
     {
-      id: "1",
-      src: "/images/perfume-1.svg",
-      alt: "perfume-1 image",
-      scent: "sweet",
-      gender: "woman",
-      brand: "Channel",
+      id: 1,
+      brandCategories: [
+        {
+          id: 1,
+          brand: "Chanel",
+          title: "شنل",
+          iconUrl: "/images/brands/Chanel_Logo.webp",
+        },
+      ], //فقط  یک عدد مجاز است
       enTitle: "Tiziana Terenzi",
-      perTitle: "تیزیانا ترنزی",
-      price: 1200000,
+      perTitle: "تیزیانا ترنزی 1",
+      stock: 1000,
+      original: false,
+      images: [
+        "/images/perfume-1.svg",
+        "/images/perfume-1.svg",
+        "/images/perfume-1.svg",
+        "/images/perfume-1.svg",
+        "/images/perfume-1.svg",
+      ],
+      genderCategories: [
+        {
+          id: 2,
+          gender: "women",
+          title: "زنانه",
+          description: "عطرهای زنانه",
+          value: 180,
+          iconUrl: "/images/gendersIcon/women.png",
+          imageUrl: "/images/perfume-2.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+      ], //فقط یک عدد مجاز است
+      accordCategories: [
+        {
+          id: 1,
+          accord: "floral",
+          title: "گلی",
+          description: "رایحه گلی",
+          iconUrl: "/images/accordIcons/flower.png",
+          imageUrl: "/images/perfume-1.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+        {
+          id: 2,
+          accord: "woody",
+          title: "چوبی",
+          description: "رایحه چوبی",
+          iconUrl: "/images/accordIcons/wood.png",
+          imageUrl: "/images/perfume-2.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+        {
+          id: 3,
+          accord: "citrus",
+          title: "مرکباتی",
+          description: "رایحه مرکباتی",
+          iconUrl: "/images/accordIcons/citrus.png",
+          imageUrl: "/images/perfume-3.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+      ], // چند عدد مجاز است
+      offValue: 3,
+      price: 38000,
+      discription:
+        "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز",
+      notes: [
+        { firstNotes: ["گل رز", "گل یاسمن"] },
+        { middleNotes: ["ریحانه"] },
+        { finalNotes: ["پرتقال", "انگور", "گیلاس"] },
+      ],
+      volumes: [3, 5, 10, 20, 30, 75, 100, 125, 200], //[3, 5, 10, 20, 25, 30, 50, 75, 100, 105, 120, 125, 150, 200]
+      detailes: {
+        madeIn: "امارات",
+        designedIn: "فرانسه",
+        longevity: "۸ ساعت",
+        smelling: "قوی",
+        seasons: ["بهار", "تابستان", "پاییز"],
+        originalVolume: ["100", "50"],
+      },
+      createdAt: "2025-12-01T13:21:20.548Z",
+      updatedAt: "2025-12-01T13:21:58.573Z",
+    },
+    {
+      id: 2,
+      brandCategories: [
+        {
+          id: 2,
+          brand: "Dior",
+          title: "دیور",
+          iconUrl: "/images/brands/Dior_Logo.webp",
+        },
+      ],
+      enTitle: "Tiziana Terenzi",
+      perTitle: "تیزیانا ترنزی 2",
+      stock: 1000,
+      original: false,
+      images: [
+        "/images/perfume-2.svg",
+        "/images/perfume-2.svg",
+        "/images/perfume-2.svg",
+        "/images/perfume-2.svg",
+        "/images/perfume-2.svg",
+      ],
+      genderCategories: [
+        {
+          id: 1,
+          gender: "men",
+          title: "مردانه",
+          description: "عطرهای مردانه",
+          value: 160,
+          iconUrl: "/images/gendersIcon/men.PNG",
+          imageUrl: "/images/perfume-5.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+        // {
+        //   id: 2,
+        //   gender: "women",
+        //   title: "زنانه",
+        //   description: "عطرهای زنانه",
+        //   value: 180,
+        //   iconUrl: "/images/gendersIcon/women.png",
+        //   imageUrl: "/images/perfume-2.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+      ],
+      accordCategories: [
+        // {
+        //   id: 1,
+        //   accord: "floral",
+        //   title: "گلی",
+        //   description: "رایحه گلی",
+        //   iconUrl: "/images/accordIcons/flower.png",
+        //   imageUrl: "/images/perfume-1.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        // {
+        //   id: 2,
+        //   accord: "woody",
+        //   title: "چوبی",
+        //   description: "رایحه چوبی",
+        //   iconUrl: "/images/accordIcons/wood.png",
+        //   imageUrl: "/images/perfume-2.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        // {
+        //   id: 3,
+        //   accord: "citrus",
+        //   title: "مرکباتی",
+        //   description: "رایحه مرکباتی",
+        //   iconUrl: "/images/accordIcons/citrus.png",
+        //   imageUrl: "/images/perfume-3.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        {
+          id: 4,
+          accord: "aromatic",
+          title: "گیاهی",
+          description: "رایحه گیاهی",
+          iconUrl: "/images/accordIcons/aromatic.png",
+          imageUrl: "/images/perfume-4.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+        {
+          id: 5,
+          accord: "leather",
+          title: "چرمی",
+          description: "رایحه چرمی",
+          iconUrl: "/images/accordIcons/leather.png",
+          imageUrl: "/images/perfume-5.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+        {
+          id: 6,
+          accord: "chypre",
+          title: "شیپره",
+          description: "رایحه شیپره",
+          iconUrl: "/images/accordIcons/chypre.png",
+          imageUrl: "/images/perfume-1.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+        {
+          id: 7,
+          accord: "amber",
+          title: "عنبری",
+          description: "رایحه عنبری",
+          iconUrl: "/images/accordIcons/amber.png",
+          imageUrl: "/images/perfume-1.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+      ],
+      offValue: 4,
+      price: 59000,
+      discription:
+        "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز",
+      notes: [
+        { firstNotes: ["گل رز", "گل یاسمن"] },
+        { middleNotes: ["ریحانه"] },
+        { finalNotes: ["پرتقال", "انگور", "گیلاس"] },
+      ],
+      volumes: [3, 5, 10, 20, 30, 75, 100, 125, 200], //[3, 5, 10, 20, 25, 30, 50, 75, 100, 105, 120, 125, 150, 200]
+      detailes: {
+        madeIn: "امارات",
+        designedIn: "فرانسه",
+        longevity: "۸ ساعت",
+        smelling: "قوی",
+        seasons: ["بهار", "تابستان", "پاییز"],
+        originalVolume: ["100", "50"],
+      },
+      createdAt: "2025-12-01T13:21:20.548Z",
+      updatedAt: "2025-12-01T13:21:58.573Z",
+    },
+    {
+      id: 3,
+      brandCategories: [
+        {
+          id: 3,
+          brand: "Yves Saint Laurent",
+          title: "ایو سن لوران",
+          iconUrl: "/images/brands/Yves_Saint_Laurent_Logo.webp",
+        },
+      ],
+      enTitle: "Tiziana Terenzi",
+      perTitle: "تیزیانا ترنزی 3",
+      stock: 1000,
+      original: false,
+      images: [
+        "/images/perfume-3.svg",
+        "/images/perfume-3.svg",
+        "/images/perfume-3.svg",
+        "/images/perfume-3.svg",
+        "/images/perfume-3.svg",
+      ],
+      genderCategories: [
+        // {
+        //   id: 1,
+        //   gender: "men",
+        //   title: "مردانه",
+        //   description: "عطرهای مردانه",
+        //   value: 160,
+        //   iconUrl: "/images/gendersIcon/men.PNG",
+        //   imageUrl: "/images/perfume-5.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        // {
+        //   id: 2,
+        //   gender: "women",
+        //   title: "زنانه",
+        //   description: "عطرهای زنانه",
+        //   value: 180,
+        //   iconUrl: "/images/gendersIcon/women.png",
+        //   imageUrl: "/images/perfume-2.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        {
+          id: 3,
+          gender: "unisex",
+          title: "مشترک",
+          description: "عطرهای مشترک",
+          value: 200,
+          iconUrl: "/images/gendersIcon/unisex.png",
+          imageUrl: "/images/perfume-3.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+      ],
+      accordCategories: [
+        // {
+        //   id: 1,
+        //   accord: "floral",
+        //   title: "گلی",
+        //   description: "رایحه گلی",
+        //   iconUrl: "/images/accordIcons/flower.png",
+        //   imageUrl: "/images/perfume-1.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        // {
+        //   id: 2,
+        //   accord: "woody",
+        //   title: "چوبی",
+        //   description: "رایحه چوبی",
+        //   iconUrl: "/images/accordIcons/wood.png",
+        //   imageUrl: "/images/perfume-2.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        // {
+        //   id: 3,
+        //   accord: "citrus",
+        //   title: "مرکباتی",
+        //   description: "رایحه مرکباتی",
+        //   iconUrl: "/images/accordIcons/citrus.png",
+        //   imageUrl: "/images/perfume-3.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        // {
+        //   id: 4,
+        //   accord: "aromatic",
+        //   title: "گیاهی",
+        //   description: "رایحه گیاهی",
+        //   iconUrl: "/images/accordIcons/aromatic.png",
+        //   imageUrl: "/images/perfume-4.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        {
+          id: 5,
+          accord: "leather",
+          title: "چرمی",
+          description: "رایحه چرمی",
+          iconUrl: "/images/accordIcons/leather.png",
+          imageUrl: "/images/perfume-5.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+        // {
+        //   id: 6,
+        //   accord: "chypre",
+        //   title: "شیپره",
+        //   description: "رایحه شیپره",
+        //   iconUrl: "/images/accordIcons/chypre.png",
+        //   imageUrl: "/images/perfume-1.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        {
+          id: 7,
+          accord: "amber",
+          title: "عنبری",
+          description: "رایحه عنبری",
+          iconUrl: "/images/accordIcons/amber.png",
+          imageUrl: "/images/perfume-1.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+      ],
       offValue: 5,
-      images: [
-        "/images/perfume-1.svg",
-        "/images/perfume-1.svg",
-        "/images/perfume-1.svg",
-        "/images/perfume-1.svg",
-        "/images/perfume-1.svg",
+      price: 49000,
+      discription:
+        "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز",
+      notes: [
+        { firstNotes: ["گل رز", "گل یاسمن"] },
+        { middleNotes: ["ریحانه"] },
+        { finalNotes: ["پرتقال", "انگور", "گیلاس"] },
       ],
+      volumes: [3, 5, 10, 20, 30, 75, 100, 125, 200], //[3, 5, 10, 20, 25, 30, 50, 75, 100, 105, 120, 125, 150, 200]
+      detailes: {
+        madeIn: "امارات",
+        designedIn: "فرانسه",
+        longevity: "۸ ساعت",
+        smelling: "قوی",
+        seasons: ["بهار", "تابستان", "پاییز"],
+        originalVolume: ["100", "50"],
+      },
+      createdAt: "2025-12-01T13:21:20.548Z",
+      updatedAt: "2025-12-01T13:21:58.573Z",
     },
     {
-      id: "2",
-      src: "/images/perfume-2.svg",
-      alt: "perfume-2 image",
-      scent: "spicy",
-      gender: "man",
-      brand: "Channel",
-      enTitle: "Tiziana Terenzi",
-      perTitle: "شنل اگویست پلاتینیوم",
-      price: 1500000,
-      offValue: 12,
-      images: [
-        "/images/perfume-2.svg",
-        "/images/perfume-2.svg",
-        "/images/perfume-2.svg",
-        "/images/perfume-2.svg",
-        "/images/perfume-2.svg",
+      id: 4,
+      brandCategories: [
+        {
+          id: 4,
+          brand: "Gucci",
+          title: "گوچی",
+          iconUrl: "/images/brands/Gucci_Logo.webp",
+        },
       ],
-    },
-    {
-      id: "3",
-      src: "/images/perfume-3.svg",
-      alt: "perfume-3 image",
-      scent: "bitter",
-      gender: "woman",
-      brand: "Channel",
       enTitle: "Tiziana Terenzi",
-      perTitle: "تیزیانا ترنزی",
-      price: 3000000,
-      offValue: 24,
-      images: [
-        "/images/perfume-3.svg",
-        "/images/perfume-3.svg",
-        "/images/perfume-3.svg",
-        "/images/perfume-3.svg",
-        "/images/perfume-3.svg",
-      ],
-    },
-    {
-      id: "4",
-      src: "/images/perfume-4.svg",
-      alt: "perfume-4 image",
-      scent: "sweet",
-      gender: "woman",
-      brand: "Channel",
-      enTitle: "Tiziana Terenzi",
-      perTitle: "شنل اگویست پلاتینیوم",
-      price: 2500000,
-      offValue: 20,
+      perTitle: "تیزیانا ترنزی 4",
+      stock: 1000,
+      original: false,
       images: [
         "/images/perfume-4.svg",
         "/images/perfume-4.svg",
@@ -127,101 +430,260 @@ export async function fetchProducts(type) {
         "/images/perfume-4.svg",
         "/images/perfume-4.svg",
       ],
-    },
-    {
-      id: "5",
-      src: "/images/perfume-5.svg",
-      alt: "perfume-5 image",
-      scent: "bitter",
-      gender: "man",
-      brand: "Channel",
-      enTitle: "Tiziana Terenzi",
-      perTitle: "تیزیانا ترنزی",
-      price: 2900000,
-      offValue: 10,
-      images: [
-        "/images/perfume-5.svg",
-        "/images/perfume-5.svg",
-        "/images/perfume-5.svg",
-        "/images/perfume-5.svg",
-        "/images/perfume-5.svg",
+      genderCategories: [
+        {
+          id: 1,
+          gender: "men",
+          title: "مردانه",
+          description: "عطرهای مردانه",
+          value: 160,
+          iconUrl: "/images/gendersIcon/men.PNG",
+          imageUrl: "/images/perfume-5.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+        // {
+        //   id: 2,
+        //   gender: "women",
+        //   title: "زنانه",
+        //   description: "عطرهای زنانه",
+        //   value: 180,
+        //   iconUrl: "/images/gendersIcon/women.png",
+        //   imageUrl: "/images/perfume-2.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
       ],
-    },
-    {
-      id: "6",
-      src: "/images/perfume-1.svg",
-      alt: "perfume-1 image",
-      scent: "sweet",
-      gender: "woman",
-      brand: "Channel",
-      enTitle: "Tiziana Terenzi",
-      perTitle: "شنل اگویست پلاتینیوم",
-      price: 1200000,
+      accordCategories: [
+        // {
+        //   id: 1,
+        //   accord: "floral",
+        //   title: "گلی",
+        //   description: "رایحه گلی",
+        //   iconUrl: "/images/accordIcons/flower.png",
+        //   imageUrl: "/images/perfume-1.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        {
+          id: 2,
+          accord: "woody",
+          title: "چوبی",
+          description: "رایحه چوبی",
+          iconUrl: "/images/accordIcons/wood.png",
+          imageUrl: "/images/perfume-2.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+        // {
+        //   id: 3,
+        //   accord: "citrus",
+        //   title: "مرکباتی",
+        //   description: "رایحه مرکباتی",
+        //   iconUrl: "/images/accordIcons/citrus.png",
+        //   imageUrl: "/images/perfume-3.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        // {
+        //   id: 4,
+        //   accord: "aromatic",
+        //   title: "گیاهی",
+        //   description: "رایحه گیاهی",
+        //   iconUrl: "/images/accordIcons/aromatic.png",
+        //   imageUrl: "/images/perfume-4.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        {
+          id: 5,
+          accord: "leather",
+          title: "چرمی",
+          description: "رایحه چرمی",
+          iconUrl: "/images/accordIcons/leather.png",
+          imageUrl: "/images/perfume-5.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+        // {
+        //   id: 6,
+        //   accord: "chypre",
+        //   title: "شیپره",
+        //   description: "رایحه شیپره",
+        //   iconUrl: "/images/accordIcons/chypre.png",
+        //   imageUrl: "/images/perfume-1.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        {
+          id: 7,
+          accord: "amber",
+          title: "عنبری",
+          description: "رایحه عنبری",
+          iconUrl: "/images/accordIcons/amber.png",
+          imageUrl: "/images/perfume-1.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+      ],
       offValue: 5,
-      images: [
-        "/images/perfume-1.svg",
-        "/images/perfume-1.svg",
-        "/images/perfume-1.svg",
-        "/images/perfume-1.svg",
-        "/images/perfume-1.svg",
+      price: 79000,
+      discription:
+        "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز",
+      notes: [
+        { firstNotes: ["گل رز", "گل یاسمن"] },
+        { middleNotes: ["ریحانه"] },
+        { finalNotes: ["پرتقال", "انگور", "گیلاس"] },
       ],
+      volumes: [3, 5, 10, 20, 30, 75, 100, 125, 200], //[3, 5, 10, 20, 25, 30, 50, 75, 100, 105, 120, 125, 150, 200]
+      detailes: {
+        madeIn: "امارات",
+        designedIn: "فرانسه",
+        longevity: "۸ ساعت",
+        smelling: "قوی",
+        seasons: ["بهار", "تابستان", "پاییز"],
+        originalVolume: ["100", "50"],
+      },
+      createdAt: "2025-12-01T13:21:20.548Z",
+      updatedAt: "2025-12-01T13:21:58.573Z",
     },
     {
-      id: "7",
-      src: "/images/perfume-2.svg",
-      alt: "perfume-2 image",
-      scent: "spicy",
-      gender: "man",
-      brand: "Channel",
-      enTitle: "Tiziana Terenzi",
-      perTitle: "تیزیانا ترنزی",
-      price: 1500000,
-      offValue: 12,
-      images: [
-        "/images/perfume-2.svg",
-        "/images/perfume-2.svg",
-        "/images/perfume-2.svg",
-        "/images/perfume-2.svg",
-        "/images/perfume-2.svg",
+      id: 5,
+      brandCategories: [
+        {
+          id: 6,
+          brand: "Versace",
+          title: "ورساچه",
+          iconUrl: "/images/brands/Versace_Logo.webp",
+        },
       ],
-    },
-    {
-      id: "8",
-      src: "/images/perfume-3.svg",
-      alt: "perfume-3 image",
-      scent: "bitter",
-      gender: "woman",
-      brand: "Channel",
       enTitle: "Tiziana Terenzi",
-      perTitle: "شنل اگویست پلاتینیوم",
-      price: 3000000,
-      offValue: 24,
+      perTitle: "تیزیانا ترنزی 5",
+      stock: 1000,
+      original: false,
       images: [
-        "/images/perfume-3.svg",
-        "/images/perfume-3.svg",
-        "/images/perfume-3.svg",
-        "/images/perfume-3.svg",
-        "/images/perfume-3.svg",
+        "/images/perfume-5.svg",
+        "/images/perfume-5.svg",
+        "/images/perfume-5.svg",
+        "/images/perfume-5.svg",
+        "/images/perfume-5.svg",
       ],
-    },
-    {
-      id: "9",
-      src: "/images/perfume-4.svg",
-      alt: "perfume-4 image",
-      scent: "sweet",
-      gender: "woman",
-      brand: "Channel",
-      enTitle: "Tiziana Terenzi",
-      perTitle: "تیزیانا ترنزی",
-      price: 2500000,
-      offValue: 20,
-      images: [
-        "/images/perfume-4.svg",
-        "/images/perfume-4.svg",
-        "/images/perfume-4.svg",
-        "/images/perfume-4.svg",
-        "/images/perfume-4.svg",
+      genderCategories: [
+        // {
+        //   id: 1,
+        //   gender: "men",
+        //   title: "مردانه",
+        //   description: "عطرهای مردانه",
+        //   value: 160,
+        //   iconUrl: "/images/gendersIcon/men.PNG",
+        //   imageUrl: "/images/perfume-5.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        {
+          id: 2,
+          gender: "women",
+          title: "زنانه",
+          description: "عطرهای زنانه",
+          value: 180,
+          iconUrl: "/images/gendersIcon/women.png",
+          imageUrl: "/images/perfume-2.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
       ],
+      accordCategories: [
+        {
+          id: 1,
+          accord: "floral",
+          title: "گلی",
+          description: "رایحه گلی",
+          iconUrl: "/images/accordIcons/flower.png",
+          imageUrl: "/images/perfume-1.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+        // {
+        //   id: 2,
+        //   accord: "woody",
+        //   title: "چوبی",
+        //   description: "رایحه چوبی",
+        //   iconUrl: "/images/accordIcons/wood.png",
+        //   imageUrl: "/images/perfume-2.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        {
+          id: 3,
+          accord: "citrus",
+          title: "مرکباتی",
+          description: "رایحه مرکباتی",
+          iconUrl: "/images/accordIcons/citrus.png",
+          imageUrl: "/images/perfume-3.svg",
+          createdAt: "2025-12-01T13:21:20.548Z",
+          updatedAt: "2025-12-01T13:21:58.573Z",
+        },
+        // {
+        //   id: 4,
+        //   accord: "aromatic",
+        //   title: "گیاهی",
+        //   description: "رایحه گیاهی",
+        //   iconUrl: "/images/accordIcons/aromatic.png",
+        //   imageUrl: "/images/perfume-4.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        // {
+        //   id: 5,
+        //   accord: "leather",
+        //   title: "چرمی",
+        //   description: "رایحه چرمی",
+        //   iconUrl: "/images/accordIcons/leather.png",
+        //   imageUrl: "/images/perfume-5.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        // {
+        //   id: 6,
+        //   accord: "chypre",
+        //   title: "شیپره",
+        //   description: "رایحه شیپره",
+        //   iconUrl: "/images/accordIcons/chypre.png",
+        //   imageUrl: "/images/perfume-1.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+        // {
+        //   id: 7,
+        //   accord: "amber",
+        //   title: "عنبری",
+        //   description: "رایحه عنبری",
+        //   iconUrl: "/images/accordIcons/amber.png",
+        //   imageUrl: "/images/perfume-1.svg",
+        //   createdAt: "2025-12-01T13:21:20.548Z",
+        //   updatedAt: "2025-12-01T13:21:58.573Z",
+        // },
+      ],
+      offValue: 6,
+      price: 40000,
+      discription:
+        "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز",
+      notes: [
+        { firstNotes: ["گل رز", "گل یاسمن"] },
+        { middleNotes: ["ریحانه"] },
+        { finalNotes: ["پرتقال", "انگور", "گیلاس"] },
+      ],
+      volumes: [3, 5, 10, 20, 30, 75, 100, 125, 200], //[3, 5, 10, 20, 25, 30, 50, 75, 100, 105, 120, 125, 150, 200]
+      detailes: {
+        madeIn: "امارات",
+        designedIn: "فرانسه",
+        longevity: "۸ ساعت",
+        smelling: "قوی",
+        seasons: ["بهار", "تابستان", "پاییز"],
+        originalVolume: ["100", "50"],
+      },
+      createdAt: "2025-12-01T13:21:20.548Z",
+      updatedAt: "2025-12-01T13:21:58.573Z",
     },
   ];
 }

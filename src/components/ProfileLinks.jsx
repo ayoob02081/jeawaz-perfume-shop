@@ -26,11 +26,11 @@ export function UserProfileLink({ label, phoneNumber }) {
             href={"/profile/me"}
             className="flex items-center justify-between max-lg:gap-2 lg:gap-4"
           >
-            <div className="flex items-center justify-center max-lg:size-11 lg:size-14 lg:bg-white lg:rounded-xl">
+            <div className="flex items-center justify-center max-lg:siz-11 lg: size-14 bg-secondary lg:bg-white lg: rounded-xl">
               <ImageFrame
-                src="/images/user-stroke-sec-icon.svg"
+                src="/images/user-stroke-black-icon.svg"
                 alt="user-icon"
-                className="size-6"
+                className="size-7 "
               />
             </div>
             <span className="flex flex-col items-start justify-between gap-2 ">
@@ -54,7 +54,14 @@ export function UserProfileLink({ label, phoneNumber }) {
   );
 }
 
-export function ProfileLink({ children, label, src, alt, href }) {
+export function ProfileLink({
+  children,
+  label,
+  srcPrimary,
+  srcSecondary,
+  alt,
+  href,
+}) {
   const pathName = usePathname();
 
   return (
@@ -88,9 +95,9 @@ export function ProfileLink({ children, label, src, alt, href }) {
               }`}
             >
               <ImageFrame
-                src={src}
+                src={pathName.startsWith(href) ? srcPrimary : srcSecondary}
                 alt={alt}
-                className={`${label ? "size-6" : "size-7"}`}
+                className="size-7"
               />
             </div>
             {label && <p>{label}</p>}

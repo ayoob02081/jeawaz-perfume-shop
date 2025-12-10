@@ -2,13 +2,13 @@
 
 import ImageFrame from "@/components/ImageFrame";
 import Loading from "@/components/Loading";
-import { useGetAllCategories } from "@/hooks/useCategories";
+import { useGetAllGenderCategories } from "@/hooks/useCategories";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
 function CategoriesLayout() {
-  const { data, isLoading, error } = useGetAllCategories();
+  const { data, isLoading, error } = useGetAllGenderCategories();
 
   return (
     <div className="flex flex-col justify-between items-center py-4 container mx-auto xl:max-w-7xl">
@@ -28,10 +28,10 @@ function CategoriesLayout() {
           data?.map((category) => (
             <div key={category.id} className="sm:snap-center">
               <CategoreyCard
-                src={category.src}
-                alt={category.alt}
+                src={category.imageUrl}
+                alt={category.imageUrl}
                 value={category.value}
-                label={category.label}
+                label={category.description}
               />
             </div>
           ))
@@ -43,7 +43,7 @@ function CategoriesLayout() {
 
 export default CategoriesLayout;
 
-function CategoreyCard({ src, alt, value, label }) {
+function CategoreyCard({ src, alt, value = 0, label }) {
   const router = useRouter();
 
   return (

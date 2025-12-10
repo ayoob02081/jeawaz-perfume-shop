@@ -27,7 +27,7 @@ export default function ProductSinglePageLayout({ children }) {
   }
 
   const currentProduct = data?.find(
-    (product) => product.id === currentProductSlug
+    (product) => product?.id === Number(currentProductSlug)
   );
 
   return (

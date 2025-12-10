@@ -2,14 +2,13 @@
 
 import ImageFrame from "@/components/ImageFrame";
 import Loading from "@/components/Loading";
-import { useGetAllScents } from "@/hooks/useScents";
+import { useGetAllAccordCategories } from "@/hooks/useCategories";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
 function FilteredProductsLayout() {
-  const { data, isLoading, error } = useGetAllScents();
-  // console.log(data);
+  const { data, isLoading, error } = useGetAllAccordCategories();
 
   return (
     <div className="flex flex-col justify-between items-center container mx-auto xl:max-w-7xl py-4">
@@ -26,13 +25,13 @@ function FilteredProductsLayout() {
         {isLoading ? (
           <Loading />
         ) : (
-          data?.map((scent) => (
+          data?.map((accord) => (
             <FilterCard
-              key={scent.id}
-              src={scent.src}
-              alt={scent.alt}
-              value={scent.value}
-              label={scent.label}
+              key={accord.id}
+              src={accord.imageUrl}
+              alt={accord.imageUrl}
+              value={accord.accord}
+              label={accord.title}
             />
           ))
         )}

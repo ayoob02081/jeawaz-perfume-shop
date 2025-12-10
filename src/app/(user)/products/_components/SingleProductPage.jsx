@@ -23,15 +23,7 @@ import "swiper/css/thumbs";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
-
-const volumes = [
-  { id: "volume-5", label: "۵ میل" },
-  { id: "volume-10", label: "۱۰ میل" },
-  { id: "volume-20", label: "۲۰ میل" },
-  { id: "volume-50", label: "۵۰ میل" },
-  { id: "volume-75", label: "۷۵ میل" },
-  { id: "volume-100", label: "۱۰۰ میل" },
-];
+import { pickClosestTo } from "@/utils/pickClosestTo";
 
 function SingleProductPage({ slug }) {
   const { data, isLoading, error } = useGetAllProducts();
@@ -43,13 +35,20 @@ function SingleProductPage({ slug }) {
   if (error) {
     return <Error />;
   }
-  const currentSlug = data?.find((product) => product.id === slug);
+  const currentSlug = data?.find((product) => product.id === Number(slug));
+
+  const productAccords = currentSlug.accordCategories.map(
+    (accord) => accord.title
+  );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 min-h-screen h-full md:gap-x-6 lg:gap-6 w-ful md:p-6 container mx-auto ">
+    <div className="grid grid-cols-1 md:grid-cols-2 min-h-screen h-full md:gap-x-6 lg:gap-6 w-ful md:p-6 container mx-auto xl:max-w-7xl ">
       <ProductImage currentSlug={currentSlug} />
       <ProductDes currentSlug={currentSlug} />
-      <ProductOptions currentSlug={currentSlug} />
+      <ProductOptions
+        currentSlug={currentSlug}
+        productAccords={productAccords}
+      />
       <ProductDetails currentSlug={currentSlug} />
     </div>
   );
@@ -173,7 +172,7 @@ function ProductImage({ currentSlug }) {
             <div className="w-full h-full flex items-center justify-center bg-black">
               <img
                 src={slide.src}
-                alt=""
+                alt="perfume-image"
                 className="size-full object-contain"
               />
               <span className="absolute bottom-0 right-1/2 translate-x-1/2 -translate-y-1/2 bg-white/70 rounded-sm px-2 py-1  text-xs mt-2 z-50">
@@ -189,75 +188,96 @@ function ProductImage({ currentSlug }) {
 }
 
 function ProductDes({ currentSlug }) {
+  const defaultVolume = pickClosestTo(100, currentSlug?.volumes);
+  const [selectedVolume, setSelectedVolume] = useState(defaultVolume);
+  const OnChange = (e) => {
+    const value = e.target.value;
+
+    const selectedItem = currentSlug.volumes?.filter(
+      (volume) => volume === Number(value)
+    );
+    setSelectedVolume(selectedItem[0]);
+  };
+
   return (
     <div className="grid grid-cols-1 w-full gap-y-4 xl:gap-y-10 max-md:p-6 h-fit justify-items-start">
       <div className="flex flex-col gap-2 items-start justify-start w-full">
         <span className="flex items-start max-md:justify-between gap-2 md:justify-start w-full">
-          <p className="font-bold lg:text-[28px]">
-            جیونچی آنجئو دمون له پارفیوم اند آکورد ایلیسیت
-          </p>
-          <p className="md:hidden">brand</p>
+          <p className="font-bold lg:text-[28px]">{currentSlug.perTitle}</p>
+          <p className="md:hidden">{currentSlug.brandCategories[0].brand}</p>
         </span>
         <p className="text-xs lg:text-lg text-text-secondary">
-          GIVENCHY - Ange ou Demon Le Parfum & Accord Illicit
+          {currentSlug.enTitle}
         </p>
       </div>
       <div className="flex flex-col items-start max-md:justify-between max-md:gap-2 w-full max-md:border-t border-stroke-2 pt-4 md:row-start-3">
         <p className="md:hidden">انتخاب حجم:</p>
         <div className="flex items-center justify-start gap-2 w-full overflow-x-auto scrollbar-none snap-x">
-          {volumes.map((volume) => (
-            <RadioButton
-              key={volume.id + currentSlug.id}
-              label={volume.label}
-              id={volume.id + currentSlug.id}
-              name={`single-product-volume` + currentSlug.id}
-              value={volume.id}
-              className="btn btn--secondar badge badge--secondary--2 hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white text-nowrap snap-center duration-200 "
-            />
-          ))}
+          {currentSlug.stock >= 3 &&
+            currentSlug.volumes?.map((volume, index) => (
+              <RadioButton
+                key={index}
+                label={`${toPersianNumbers(volume)} میل`}
+                id={index}
+                name={`single-product-volume` + currentSlug.id}
+                value={volume}
+                onChange={OnChange}
+                checked={selectedVolume === volume ? true : false}
+                className="btn btn--secondar badge badge--secondary--2 hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white text-nowrap snap-center duration-200 "
+              />
+            ))}
         </div>
       </div>
       <div className="flex items-center md:justify-between max-md:justify-end w-full md:row-start-2">
-        <PriceSection
-          price={currentSlug.price}
-          offValue={currentSlug.offValue}
-          OldPricevisibility="block"
-          pricesRow="flex-col-reverse max-md:gap-0"
-          className=""
-          priceClassName="text-[32px]"
-          justify="max-md:justify-end md:justify-start"
-        />
-        <p className="max-md:hidden">brand</p>
+        {currentSlug.stock >= 3 && (
+          <PriceSection
+            volume={selectedVolume}
+            pricePerVolume={currentSlug.price}
+            offValue={currentSlug.offValue}
+            OldPricevisibility="block"
+            pricesRow="flex-col-reverse max-md:gap-0"
+            className=""
+            priceClassName="text-[32px]"
+            justify="max-md:justify-end md:justify-start"
+          />
+        )}
+        <p className="max-md:hidden">{currentSlug.brandCategories[0].brand}</p>
       </div>
       <div className="flex items-center justify-between w-full gap-4">
-        <button className=" btn btn--success w-full h-12 px-2">
-          افزودن به سبد خرید
-        </button>
+        {currentSlug.stock >= 3 ? (
+          <button className=" btn btn--success w-full h-12 px-2">
+            افزودن به سبد خرید
+          </button>
+        ) : (
+          <p className="text-primary font-bold max-md: md: text-3xl">
+            ناموجود!
+          </p>
+        )}
         <div className=" flex-none">
-          <CardEvents
-            btnStyle="max-lg:size-8 lg:size-12 not-active:bg-grey "
-            quantityStyle="max-lg:size-12 lg:size-12 max-lg:text-lg lg:text-lg"
-          />
+          {currentSlug.stock >= 3 && (
+            <CardEvents
+              btnStyle="max-lg:size-8 lg:size-12 not-active:bg-grey "
+              quantityStyle="max-lg:size-12 lg:size-12 max-lg:text-lg lg:text-lg"
+            />
+          )}
         </div>
       </div>
-      {/* <div className="flex flex-col justify-between gap-4 w-full max-md:hidden border-[1.5px] border-stroke-2 rounded-2xl p-4"> */}
       <Accordion
         titleStyle="font-bold"
         className="max-md:hidden md:flex  "
         label="توضیحات تکمیلی"
       >
         <p className="text-text-secondary text-sm pt-4 border-t border-stroke leading-8 ">
-          لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده
-          از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و
-          سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و
+          {currentSlug.discription}
         </p>
       </Accordion>
-      {/* </div> */}
     </div>
   );
 }
 
-function ProductOptions() {
+function ProductOptions({ currentSlug, productAccords }) {
+  const { detailes } = currentSlug;
+
   return (
     <div className="grow flex flex-col items-center justify-start gap-6 w-full max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:p-6 md:p-4 border-stroke-2 ">
       <span className="flex items-center justify-start gap-2 w-full">
@@ -269,36 +289,61 @@ function ProductOptions() {
         <p className="font-bold">ویژگی های محصول</p>
       </span>
       <div className="grid max-sm:grid-cols-3 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-3 gap-x-4 w-full px-2">
-        <ProductOption textOne="کشور تولید کننده" textTwo="امارات" />
-        <ProductOption textOne="پخش بو" textTwo="قوی" />
-        <ProductOption textOne="ماندگاری" textTwo="زیاد" />
-        <ProductOption textOne="حجم" textTwo="۱۰۵ میلی لیتر" />
-        <ProductOption textOne="عطر ساز" textTwo="فرانسه" />
-        <ProductOption textOne="ساختار رایحه" textTwo="رایحه شیرین" />
-        <ProductOption textOne="ساختار نت ها" textTwo="ادویه - گل - میوه" />
+        <ProductOption title="کشور تولید کننده" value={detailes.madeIn} />
+        <ProductOption title="پخش بو" value={detailes.smelling} />
+        <ProductOption title="ماندگاری" value={detailes.longevity} />
         <ProductOption
-          textOne="مناسب برای فصل"
-          textTwo="بهار - تابستان - پاییز"
+          title="حجم شیشه پلمپ"
+          volumes
+          data={detailes.originalVolume}
         />
+        <ProductOption title="عطر ساز" value={detailes.designedIn} />
+        <ProductOption
+          title="گروه‌‌بندی رایحه"
+          value="رایحه شیرین"
+          data={productAccords}
+          accords
+        />
+        <ProductOption title="مناسب برای فصل" data={detailes.seasons} accords />
       </div>
     </div>
   );
 }
 
-function ProductOption({ textOne, textTwo }) {
+function ProductOption({ title, value, data, accords, volumes }) {
   return (
     <>
       <p className="text-nowrap col-span-1 text-sm text-text-secondary py-3">
-        {textOne}
+        {title}
       </p>
-      <p className="text-nowrap max-sm:col-span-2 sm:col-span-3 md:col-span-1 lg:col-span-2 text-sm text-text font-bold w-full border-b border-stroke py-3">
-        {textTwo}
-      </p>
+      {!data ? (
+        <p className="text-nowrap max-sm:col-span-2 sm:col-span-3 md:col-span-1 lg:col-span-2 text-sm text-text font-bold w-full border-b border-stroke py-3">
+          {value}
+        </p>
+      ) : (
+        <span className="flex items-start gap-2 text-nowrap max-sm:col-span-2 sm:col-span-3 md:col-span-1 lg:col-span-2 text-sm text-text font-bold w-full border-b border-stroke py-3">
+          {data.map((item) =>
+            volumes ? (
+              <p key={item}>
+                {toPersianNumbers(item)} میل
+                {data.length >= 2 && " - "}
+              </p>
+            ) : (
+              <p key={item}>
+                {accords && item}
+                {data.length >= 2 && " - "}
+              </p>
+            )
+          )}
+        </span>
+      )}
     </>
   );
 }
 
-function ProductDetails() {
+function ProductDetails({ currentSlug }) {
+  const { notes } = currentSlug;
+
   return (
     <div className="grow flex flex-col items-center justify-between gap-6 w-full max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl p-6 border-stroke-2  ">
       <div className="flex flex-col items-start justify-between gap-2">
@@ -316,45 +361,60 @@ function ProductDetails() {
         </p>
       </div>
       <div className="flex flex-col items-center justify-between gap-2 size-full">
-        <Scents
-          src="/images/scent-background-1.svg"
-          alt="shape background"
-          className="w-[60px] h-[53.3px]"
-          textOne="نت آغازین"
-          scents={["انگور سیاه"]}
-        />
-        <Scents
-          src="/images/scent-background-2.svg"
-          alt="shape background"
-          className="w-[152.46px] h-[66.02px]"
-          textOne="نت های میانی"
-          scents={["گل یاسمن"]}
-        />
-        <Scents
-          src="/images/scent-background-3.svg"
-          alt="shape background"
-          className="w-[310px] h-[134.23px]"
-          textOne="نت های پایانی"
-          scents={["وانیل", "عنبر", "مشک", "نعناع هندی"]}
-        />
+        {notes?.map((items, index) => (
+          <Notes key={index} items={items} />
+        ))}
       </div>
     </div>
   );
 }
 
-function Scents({ src, alt, className, textOne, scents }) {
+function Notes({ items }) {
+  const { firstNotes, middleNotes, finalNotes } = items;
+
   return (
     <div className="relative flex flex-col items-center justify-center gap-2 text-nowrap whitespace-nowrap">
-      <ImageFrame src={src} alt={alt} className={className} />
+      <ImageFrame
+        src={`/images/scent-background-${
+          firstNotes ? "1" : middleNotes ? "2" : "3"
+        }.svg`}
+        alt="shape background"
+        className={
+          firstNotes
+            ? "w-[60px] h-[53.3px]"
+            : middleNotes
+            ? "w-[152.46px] h-[66.02px]"
+            : "w-[310px] h-[134.23px]"
+        }
+      />
       <span className="absolute flex flex-col items-center justify-center gap-1 z-20">
-        <p className="text-xs text-text font-bold">{textOne}</p>
-        {scents && (
+        <p className="text-xs text-text font-bold">
+          {firstNotes
+            ? "نت‌های آغازین"
+            : middleNotes
+            ? "نت‌های میانی"
+            : "نت‌های پایانی"}
+        </p>
+        {items && (
           <div className="flex items-center justify-between gap-2">
-            {scents?.map((s, index) => (
-              <p key={s + index} className="text-xs text-text-secondary ">
-                {scents.length > 1 ? s + " - " : s}
-              </p>
-            ))}
+            {firstNotes &&
+              firstNotes?.map((s, index) => (
+                <p key={s + index} className="**:text-xs text-text-secondary ">
+                  {firstNotes && firstNotes.length > 1 ? s + " - " : s}
+                </p>
+              ))}
+            {middleNotes &&
+              middleNotes?.map((s, index) => (
+                <p key={s + index} className="**:text-xs text-text-secondary ">
+                  {middleNotes && middleNotes.length > 1 ? s + " - " : s}
+                </p>
+              ))}
+            {finalNotes &&
+              finalNotes?.map((s, index) => (
+                <p key={s + index} className="**:text-xs text-text-secondary ">
+                  {finalNotes && finalNotes.length > 1 ? s + " - " : s}
+                </p>
+              ))}
           </div>
         )}
       </span>

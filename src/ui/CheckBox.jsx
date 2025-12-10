@@ -9,18 +9,21 @@ function CheckBox({
   children,
 }) {
   return (
-    <label htmlFor={id} className={`flex items-center gap-2 ${className}`}>
+    <label
+      htmlFor={id}
+      className={`flex flex-col items-center gap-2 ${className}`}
+    >
       <input
         type="checkbox"
         name={name}
         id={id}
-        // checked={checked}
+        checked={checked}
         value={value}
-        // onChange={onChange}
-        className="sr-only"
+        onChange={onChange}
+        className="sr-only size-0"
       />
-      <p>{label}</p>
       {children}
+      {label && <p className="text-xs">{label}</p>}
     </label>
   );
 }

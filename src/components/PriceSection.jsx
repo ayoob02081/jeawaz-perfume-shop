@@ -4,7 +4,8 @@ import {
 } from "@/utils/toPersianNumbers";
 
 function PriceSection({
-  price,
+  pricePerVolume,
+  volume,
   offValue,
   priceClassName = "max-md:text-xl text-2xl",
   textClassName = "text-xs",
@@ -13,7 +14,8 @@ function PriceSection({
   OldPricevisibility = "max-md:hidden",
   pricesRow = "max-md:flex-row-reverse max-md:gap-2",
 }) {
-  const offPrice = Math.round(price - (price * offValue) / 100);
+  const price = pricePerVolume * volume;
+  const offPrice = Math.round((price - (price * offValue) / 100) / 1000) * 1000;
 
   return (
     <div className={`${className}`}>
