@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
-function Accordion({ label, children, className = "flex", titleStyle,plus }) {
+function Accordion({ label, children, className = "flex", titleStyle, plus }) {
   const [accordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => {
     setAccordionOpen((prevState) => !prevState);
@@ -22,7 +22,7 @@ function Accordion({ label, children, className = "flex", titleStyle,plus }) {
         onClick={toggleAccordion}
         className="flex items-center justify-between gap-4 size-full max-md:py-6 md:py-4"
       >
-        <p className={titleStyle}>{label}</p>
+        <h4 className={titleStyle}>{label}</h4>
         {plus ? (
           accordionOpen ? (
             <MinusIcon className="size-6 text-primary" />

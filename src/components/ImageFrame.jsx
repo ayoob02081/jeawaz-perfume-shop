@@ -6,6 +6,7 @@ function ImageFrame({
   className,
   children,
   objectFit = "contain",
+  objectPosition = "center",
   fill = true,
 }) {
   return (
@@ -16,7 +17,10 @@ function ImageFrame({
         src={src}
         alt={alt}
         fill={fill}
-        style={{ objectFit: `${objectFit}` }}
+        style={{
+          objectFit: `${objectFit}`,
+          objectPosition: ` ${objectPosition}`,
+        }}
       />
       {children}
     </div>

@@ -125,20 +125,23 @@ function SideBar({ toggleSideBar, toggleCategory, sidebarOpen }) {
             </li>
           </div>
           <div className="p-6">
-            {/* <li>
-            <Link className="profileLinkSecond border-none" href="/">
-              <span>مطالب آموزشی</span>
-              <ChevronLeftIcon className="size-4" />
-            </Link>
-          </li> */}
             <li>
-              <Link className="profileLinkSecond border-none" href="/page/contact-us">
+              <Link className="profileLinkSecond" href="/terms">
+                <span>قوانین و مقررات</span>
+                <ChevronLeftIcon className="size-4" />
+              </Link>
+            </li>
+            <li>
+              <Link
+                className="profileLinkSecond border-none"
+                href="/page/contact-us"
+              >
                 <span>تماس با ما</span>
                 <ChevronLeftIcon className="size-4" />
               </Link>
             </li>
             <li>
-              <Link className="profileLinkSecond" href="/">
+              <Link className="profileLinkSecond" href="/about-us">
                 <span>درباره ما</span>
                 <ChevronLeftIcon className="size-4" />
               </Link>

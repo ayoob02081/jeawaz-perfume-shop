@@ -35,7 +35,7 @@
 }
 
 @theme {
-  --background-app-rgb: rgb(244, 245, 247);
+  --color-background-app: rgb(254, 248, 250);
   --color-banner-gradient: rgb(33, 30, 26);
   --color-primary: rgb(204, 49, 45);
   --color-secondary: rgb(245, 245, 247);

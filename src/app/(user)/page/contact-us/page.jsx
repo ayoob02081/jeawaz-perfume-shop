@@ -1,4 +1,5 @@
 import ImageFrame from "@/components/ImageFrame";
+import SupportBox from "@/components/SupportBox";
 import Accordion from "@/ui/Accordion";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import Link from "next/link";
@@ -38,7 +39,8 @@ function ContactUsPage() {
                     آدرس فروشگاه
                   </p>
                   <p className="max-md:text-sm md:text-base text-text font-bold leading-7">
-                   کردستان، بانه، بلوار ورزش، مجتمع تجاری آربابا، طبقه اول، پلاک ۵۹ و ۶۰
+                    کردستان، بانه، بلوار ورزش، مجتمع تجاری آربابا، طبقه اول،
+                    پلاک ۵۹ و ۶۰
                   </p>
                 </span>
               </div>
@@ -131,26 +133,7 @@ function ContactUsPage() {
       <div className="relative w-full max-md:h-36 md:h-48 bg-white z-10">
         <div className="absolute max-md:bottom-8 md:bottom-13 size-full bg-white -z-1"></div>
         <div className="h-fit flex flex-col items-center justify-center container mx-auto w-full xl:max-w-7xl p-6">
-          <div className="flex max-md:flex-col max-md:items-start md:items-center justify-between max-md:gap-8 bg-primary p-6 md:px-10 md:py-12 rounded-xl sm:rounded-2xl md:rounded-4xl w-full ">
-            <p className="text-white font-bold md:text-xl lg:text-2xl">
-              برای انتخاب بهترین عطر و مشاوره رایگان در کنارتان هستیم.
-            </p>
-            <Link
-              href={"tel:+989180522273"}
-              className="flex items-center gap-2 hover:*:first:bg-white/80 hover:*:last:text-white/80 "
-            >
-              <div className="flex items-center justify-center ring-4 ring-white/25 bg-white rounded-full size-6 md:size-8 lg:size-12 duration-200">
-                <ImageFrame
-                  src="/images/headphone-1-primary-icon.svg"
-                  alt="map-marker-nearby"
-                  className="size-3 md:size-4 lg:size-6"
-                />
-              </div>
-              <p className="text-sm md:text-base lg:text-lg text-white font-bold text-nowrap">
-                دریافت مشاوره
-              </p>
-            </Link>
-          </div>
+          <SupportBox />
           <div></div>
         </div>
       </div>

@@ -79,7 +79,7 @@ function DesktopHeader({ toggleCategory, userFullName, data }) {
   return (
     <nav className="max-md:hidden">
       <ul className="flex flex-col justify-between gap-6">
-        <div className="flex items-center justify-between gap-10">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex grow items-center justify-betwee gap-4">
             <div className="flex grow items-center justify-between">
               <li className=" justify-items-center">
@@ -92,9 +92,21 @@ function DesktopHeader({ toggleCategory, userFullName, data }) {
               </li>
             </div>
             <div className="flex flex-none items-center justify-between gap-4">
-              {/* <li className="">
-                  <p className="text-xs lg:text-sm">مطالب آموزشی</p>
-                </li> */}
+            <li className="relative flex items-center justify-center">
+                <Link
+                  href={"/page/terms"}
+                  className={`duration-200 ${
+                    pathName.endsWith("/terms")
+                      ? "text-primary font-bold"
+                      : "text-text-primary hover:text-primary "
+                  }`}
+                >
+                  <p className="text-xs lg:text-sm">قوانین و مقررات</p>
+                </Link>
+                {pathName.endsWith("/terms") && (
+                  <div className="absolute -bottom-3 size-2 rounded-full bg-primary"></div>
+                )}
+              </li>
               <li className="relative flex items-center justify-center">
                 <Link
                   href={"/page/about-us"}
