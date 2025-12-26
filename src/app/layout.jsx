@@ -10,7 +10,7 @@ import { Toaster } from "react-hot-toast";
 export default function RootLayout({ children, modal }) {
   return (
     <html lang="fa" dir="rtl">
-      <body dir="rtl" className="font-display antialiased">
+      <body dir="rtl" className="font-display antialiased scrollbar-none">
         <Providers>
           <Toaster />
           <Header />

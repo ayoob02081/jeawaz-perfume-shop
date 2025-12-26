@@ -21,7 +21,7 @@ function FilteredProductsLayout() {
         />
         <h2 className="text-text-primary">دنیایی متفاوت</h2>
       </div>
-      <div className="flex gap-4 justify-between items-center w-full px-16 my-6 scrollbarX rounded-2xl">
+      <div className="flex gap-4 justify-between items-center w-full px-16 my-6 scroll--x rounded-2xl">
         {isLoading ? (
           <Loading />
         ) : (
@@ -30,7 +30,7 @@ function FilteredProductsLayout() {
               key={accord.id}
               src={accord.imageUrl}
               alt={accord.imageUrl}
-              value={accord.accord}
+              quantity={accord.quantity}
               label={accord.title}
             />
           ))
@@ -42,7 +42,7 @@ function FilteredProductsLayout() {
 
 export default FilteredProductsLayout;
 
-function FilterCard({ src, alt, value, label }) {
+function FilterCard({ src, alt, quantity, label }) {
   const router = useRouter();
 
   return (
@@ -58,7 +58,7 @@ function FilterCard({ src, alt, value, label }) {
         <div className="grow flex flex-col gap-2 py-4 justify-self-start">
           <p className="font-bold text-sm sm:text-base">{label}</p>
           <p className="text-text-secondary text-xs sm:text-sm">
-            {toPersianNumbers(value)} محصول
+            {toPersianNumbers(quantity)} محصول
           </p>
         </div>
         <button

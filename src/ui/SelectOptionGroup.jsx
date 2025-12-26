@@ -6,7 +6,7 @@ function SelectOptionGroup({ children, className, onClick, dropOpen }) {
   return (
     <div className="relative md:w-56 ">
       <button
-        className="flex justify-between items-center w-full md:h-12 gap-3 md:bg-grey focus-within:bg-white focus-within:border-[1.5px] border-stroke  rounded-[30px] outline-0 border-0 duration-200 px-3 md:px-8 py-1"
+        className="flex justify-between items-center w-full md:h-12 gap-3 md:bg-grey focus-within:bg-white focus-within:border-[1.5px] border-stroke rounded-4xl outline-0 border-0 duration-200 px-3 md:px-8 py-1"
         onClick={onClick}
       >
         <p className="text-xs md:text-sm">مرتب سازی</p>

@@ -198,7 +198,7 @@ export function CardIconResponsive({
   return accord ? (
     <div
       dir="rtl"
-      className={`flex items-center group rounded-[40px] px-2 md:hover:${hoverWidthMd} max-md:hover:${hoverWidthMaxMd} ${bgColor} ${className} duration-300`}
+      className={`flex items-center group rounded-5xl px-2 md:hover:${hoverWidthMd} max-md:hover:${hoverWidthMaxMd} ${bgColor} ${className} duration-300`}
     >
       <ImageFrame src={src} alt={alt} className={`text-nowrap ${size}`} />
       <p
@@ -210,7 +210,7 @@ export function CardIconResponsive({
   ) : (
     <div
       dir="ltr"
-      className={`flex items-center group rounded-[40px] px-2 md:hover:${hoverWidthMd} max-md:hover:${hoverWidthMaxMd} ${bgColor} ${className} duration-300`}
+      className={`flex items-center group rounded-5xl px-2 md:hover:${hoverWidthMd} max-md:hover:${hoverWidthMaxMd} ${bgColor} ${className} duration-300`}
     >
       <ImageFrame
         src={src}

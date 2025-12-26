@@ -81,7 +81,7 @@ function CartLayout() {
       className="size-4"
       overflow="overflow-y-auto"
     >
-      <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-grey md:rounded-b-3xl">
+      <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-grey md:rounded-3xl">
         <CardStepsIcon step={step} setStep={setStep} />
       </div>
       {isLoading ? (
@@ -89,7 +89,7 @@ function CartLayout() {
       ) : (
         <div
           className={`${step === 3 ? "" : "md:flex-row"}
-            flex flex-col items-start xl:items-start md:justify-between xl:justify-normal gap-5 mx-6 md:p-6 md:py-8 md:border-[1.5px] border-stroke md:rounded-[20px]`}
+            flex flex-col items-start xl:items-start md:justify-between xl:justify-normal gap-5 mx-6 md:p-6 md:py-8 md:border-[1.5px] border-stroke md:rounded-2.5xl`}
         >
           <>{renderSteps()}</>
           {firstOrder && (
@@ -168,7 +168,7 @@ function CardStepsIcon({ productValue, className, step, setStep }) {
           سبد خرید
         </p>
       </button>
-      <div className="grow flex items-center justify-start bg-secondary-2 max-md:h-[0.1875rem] md:h-1.5 rounded-2xl max-md:-translate-y-3 md:-translate-y-3.5">
+      <div className="grow flex items-center justify-start bg-secondary-3 max-md:h-[0.1875rem] md:h-1.5 rounded-2xl max-md:-translate-y-3 md:-translate-y-3.5">
         <div
           className={`max-md:bg-text-primary md:bg-icon-brown max-md:h-[0.1875rem] md:h-1.5 rounded-2xl ${
             step === 1 ? "w-3/4" : "w-full"
@@ -197,7 +197,7 @@ function CardStepsIcon({ productValue, className, step, setStep }) {
           ثبت اطلاعات کاربری
         </p>
       </div>
-      <div className="grow flex items-center justify-start bg-secondary-2 max-md:h-[0.1875rem] md:h-1.5 rounded-2xl max-md:-translate-y-3 md:-translate-y-3.5">
+      <div className="grow flex items-center justify-start bg-secondary-3 max-md:h-[0.1875rem] md:h-1.5 rounded-2xl max-md:-translate-y-3 md:-translate-y-3.5">
         <div
           className={`max-md:bg-text-primary md:bg-icon-brown max-md:h-[0.1875rem] md:h-1.5 rounded-2xl ${
             step === 3 ? "w-full" : step === 2 ? "w-3/4" : "w-0"
@@ -292,7 +292,7 @@ function CartSecondStep({ items, date, totalPrice }) {
       <Accordion className="max-md:flex md:hidden" label="نمایش سبد خرید شما">
         <MobileOrderCard items={items} />
       </Accordion>
-      <div className="flex flex-col items-center justify-between gap-4 w-full h-full max-md:border-[1.5px] border-stroke rounded-[20px] max-md:p-6">
+      <div className="flex flex-col items-center justify-between gap-4 w-full h-full max-md:border-[1.5px] border-stroke rounded-2.5xl max-md:p-6">
         <div className="flex items-center justify-start gap-1 text-text-primary border-b border-stroke w-full pb-4">
           <h2 className="max-md:text-lg md:text-[1.375rem]">اطلاعات کاربری</h2>
           <p className="max-md:text-sm md:text-xl">شما</p>
@@ -393,7 +393,7 @@ function CartSecondStep({ items, date, totalPrice }) {
             name="post"
             value="post"
             className="flex items-center justify-between gap-4 w-full
-             text-xs md:text-sm max-md:rounded-lg md:rounded-[40px]
+             text-xs md:text-sm max-md:rounded-lg md:rounded-5xl
              px-4 py-3 text-text-primary bg-grey has-checked:*:even:*:first:bg-primary
              has-checked:*:even:*:first:border-primary
              border-[1.5px] border-grey has-checked:border-primary has-checked:font-bold has-checked:bg-white
@@ -418,7 +418,7 @@ function CartSecondStep({ items, date, totalPrice }) {
             name="post"
             value="tipax"
             className="flex items-center justify-between gap-4 w-full
-             text-xs md:text-sm max-md:rounded-lg md:rounded-[40px]
+             text-xs md:text-sm max-md:rounded-lg md:rounded-5xl
              px-4 py-3 text-text-primary bg-grey has-checked:*:even:*:first:bg-primary
              has-checked:*:even:*:first:border-primary
              border-[1.5px] border-grey has-checked:border-primary has-checked:font-bold has-checked:bg-white
@@ -443,7 +443,7 @@ function CartSecondStep({ items, date, totalPrice }) {
             name="post"
             value="terminal"
             className="flex items-center justify-between gap-4 w-full
-             text-xs md:text-sm max-md:rounded-lg md:rounded-[40px]
+             text-xs md:text-sm max-md:rounded-lg md:rounded-5xl
              px-4 py-3 text-text-primary bg-grey has-checked:*:even:*:first:bg-primary
              has-checked:*:even:*:first:border-primary
              border-[1.5px] border-grey has-checked:border-primary has-checked:font-bold has-checked:bg-white

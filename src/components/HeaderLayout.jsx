@@ -9,7 +9,7 @@ import {
 import Link from "next/link";
 import ImageFrame from "./ImageFrame";
 import Logo from "./Logo";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SearchSection from "./SearchSection";
 import CategorySideBar from "@/app/(user)/_components/CategorySideBar";
 import SideBar from "./SideBar";
@@ -22,10 +22,8 @@ function HeaderLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const { data, isPending, error } = useGetUser();
-  // console.log(data, isPending, error);
 
   const userFullName = data?.firstName + " " + data?.lastName;
-  // console.log(userFullName);
 
   const toggleCategory = () => {
     setCategoryOpen((prevState) => !prevState);
@@ -34,18 +32,6 @@ function HeaderLayout() {
   const toggleSideBar = () => {
     setSidebarOpen((prevState) => !prevState);
   };
-
-  useEffect(() => {
-    if (sidebarOpen || categoryOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [sidebarOpen, categoryOpen]);
 
   return (
     <>
@@ -60,11 +46,13 @@ function HeaderLayout() {
         toggleCategory={toggleCategory}
         sidebarOpen={sidebarOpen}
         userFullName={userFullName}
+        categoryOpen={categoryOpen}
       />
       <CategorySideBar
         toggleCategory={toggleCategory}
         categoryOpen={categoryOpen}
         setCategoryOpen={setCategoryOpen}
+        onClose={() => setCategoryOpen(false)}
       />
     </>
   );
@@ -72,12 +60,12 @@ function HeaderLayout() {
 
 export default HeaderLayout;
 
-function DesktopHeader({ toggleCategory, userFullName, data }) {
+function DesktopHeader({ toggleCategory, userFullName, data, categoryOpen }) {
   const router = useRouter();
   const pathName = usePathname();
 
   return (
-    <nav className="max-md:hidden">
+    <nav className="max-md:hidden md:fixed inset-0 top-0 right-0 left-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-50 bg-white shadow-md">
       <ul className="flex flex-col justify-between gap-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex grow items-center justify-betwee gap-4">
@@ -92,7 +80,7 @@ function DesktopHeader({ toggleCategory, userFullName, data }) {
               </li>
             </div>
             <div className="flex flex-none items-center justify-between gap-4">
-            <li className="relative flex items-center justify-center">
+              <li className="relative flex items-center justify-center">
                 <Link
                   href={"/page/terms"}
                   className={`duration-200 ${
@@ -189,10 +177,11 @@ function DesktopHeader({ toggleCategory, userFullName, data }) {
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-between gap-4">
-            <li className="w-36 lg:w-44 h-12">
+            <li className="relative w-36 lg:w-44 h-12 cursor-not-allowed">
               <button
                 className="w-full h-full btn btn--primary flex items-center justify-center size-full gap-2"
                 onClick={toggleCategory}
+                disabled={categoryOpen ? true : false}
               >
                 <Squares2X2Icon className="size-6" />
                 <p className="text-xs lg:text-sm">دسته بندی ها</p>
@@ -275,7 +264,7 @@ function MobileHeader({ toggleSideBar, toggleCategory, sidebarOpen, data }) {
   const router = useRouter();
 
   return (
-    <nav className="md:hidden h-32">
+    <nav className="md:hidden fixed inset-0 top-0 right-0 left-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-50 bg-white shadow-md">
       <ul className="mobileHeader relative">
         <li className="justify-items-start">
           <button

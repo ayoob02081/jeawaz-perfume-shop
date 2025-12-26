@@ -20,7 +20,6 @@ function RadioButton({
         checked={checked}
         value={value}
         onChange={onChange}
-        className="sr-only"
       />
       {children}
       {label && <p>{label}</p>}

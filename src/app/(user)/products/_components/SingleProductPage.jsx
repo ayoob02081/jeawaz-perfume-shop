@@ -42,7 +42,7 @@ function SingleProductPage({ slug }) {
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 min-h-screen h-full md:gap-x-6 lg:gap-6 w-ful md:p-6 container mx-auto xl:max-w-7xl ">
+    <div className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 w-ful md:p-6 container mx-auto xl:max-w-7xl md:mt-40">
       <ProductImage currentSlug={currentSlug} />
       <ProductDes currentSlug={currentSlug} />
       <ProductOptions
@@ -64,7 +64,7 @@ function ProductImage({ currentSlug }) {
   return (
     <div className="relative items-center justify-start w-full max-md:p-4 h-fit">
       {/* Custom Navigation Buttons */}
-      <div className="max-md:hidden md:absolute -translate-y-1/2 md:top-7/10 right-4 flex flex-row-reverse gap-2 items-center justify-between z-50">
+      <div className="max-md:hidden md:absolute -translate-y-1/2 md:top-7/10 right-4 flex flex-row-reverse gap-2 items-center justify-between z-30">
         <button className="custom-next flex items-center justify-center  ">
           <ChevronLeftIcon
             className={`${
@@ -90,7 +90,7 @@ function ProductImage({ currentSlug }) {
       </div>
 
       {/* Pagination Number */}
-      <div className="absolute max-md:top-5 md:top-9/12 right-1/2 translate-x-1/2 -translate-y-1/2 bg-white/70 rounded-sm px-2 py-1  text-xs mt-2 z-50">
+      <div className="absolute max-md:top-5 md:top-9/12 right-1/2 translate-x-1/2 -translate-y-1/2 bg-white/70 rounded-sm px-2 py-1  text-xs mt-2 z-30">
         <span>
           {toPersianNumbers(currentSlide + 1)} /{" "}
           {toPersianNumbers(currentSlug.images.length)}
@@ -98,7 +98,7 @@ function ProductImage({ currentSlug }) {
       </div>
 
       {/* MAIN SLIDER  ==> اسلایدر اصلی */}
-      <div className=" max-md:bg-secondary max-md:p-6 rounded-[20px]">
+      <div className=" max-md:bg-secondary max-md:p-6 rounded-2.5xl">
         <Swiper
           modules={[Navigation, Thumbs, Zoom]}
           zoom={true}
@@ -210,21 +210,22 @@ function ProductDes({ currentSlug }) {
           {currentSlug.enTitle}
         </p>
       </div>
-      <div className="flex flex-col items-start max-md:justify-between max-md:gap-2 w-full max-md:border-t border-stroke-2 pt-4 md:row-start-3">
+      <div className="flex flex-col items-star justify-between gap-2 w-full max-md:border-t border-stroke-2 pt-4 md:row-start-3 h-full overflow-hidden">
         <p className="md:hidden">انتخاب حجم:</p>
-        <div className="flex items-center justify-start gap-2 w-full overflow-x-auto scrollbar-none snap-x">
+        <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
           {currentSlug.stock >= 3 &&
             currentSlug.volumes?.map((volume, index) => (
               <RadioButton
                 key={index}
-                label={`${toPersianNumbers(volume)} میل`}
                 id={index}
                 name={`single-product-volume` + currentSlug.id}
                 value={volume}
                 onChange={OnChange}
                 checked={selectedVolume === volume ? true : false}
-                className="btn btn--secondar badge badge--secondary--2 hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white text-nowrap snap-center duration-200 "
-              />
+                className=" badge badge--secondary--2 hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white duration-200 "
+              >
+                <p className="text-nowrap">{toPersianNumbers(volume)} میل</p>
+              </RadioButton>
             ))}
         </div>
       </div>

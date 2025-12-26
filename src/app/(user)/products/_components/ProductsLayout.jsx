@@ -1,14 +1,22 @@
 "use client";
 
 import PagesNumber from "@/components/PagesNumber";
-import SortSection from "@/components/SortSection";
 import { useGetAllProducts } from "@/hooks/useProducts";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 import FilterSection from "./FilterSection";
 import ProductCard from "../../_components/ProductCard";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useFilters } from "@/hooks/useFilters";
+import { useEffect } from "react";
+import { parseFiltersFromUrl } from "@/lib/parsFiltersFromUrl";
+import { buildFiltersQuery } from "@/lib/buildFiltersQuery";
 
 function ProductsLayout() {
+  const { state, dispatch } = useFilters();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const {
     data: products,
     isLoading: isproductsLoading,
@@ -23,18 +31,23 @@ function ProductsLayout() {
     return <Error className="h-screen" />;
   }
 
+  // // hydrate once
+  // useEffect(() => {
+  //   const fromUrl = parseFiltersFromUrl(searchParams);
+  //   dispatch({ type: "HYDRATE", payload: fromUrl });
+  // }, []);
+
+  // // applied → URL
+  // useEffect(() => {
+  //   const query = buildFiltersQuery(state.applied);
+  //   if (query !== searchParams.toString()) {
+  //     router.replace(query, { scroll: false });
+  //   }
+  // }, [state.applied]);
+
   return (
-    <div className="container mx-auto xl:max-w-7xl py-2 px-4 w-full">
+    <div className="container mx-auto xl:max-w-7xl py-2 px-4 w-full mt-40 md:mt-32">
       <FilterSection />
-      <div className="w-full flex items-center justify-between py-6">
-        <div className=" flex items-center justify-center gap-2">
-          <div className="bg-primary h-3 w-[3px] rounded-full"></div>
-          <p className="text-xl font-bold">عطر های مردانه</p>
-        </div>
-        <div>
-          <SortSection />
-        </div>
-      </div>
       <div className=" w-auto flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-3 md:gap-6 py-6 ">
         {products?.map((product) => (
           <ProductCard key={product.id} product={product} />

@@ -21,7 +21,7 @@ function CategoriesLayout() {
         />
         <h2 className="text-text-primary">محصولات ما</h2>
       </div>
-      <div className="mx-6 flex flex-col sm:w-full sm:px-36 md:px-6 md:flex-row gap-4 sm:gap-6 items-center justify-between scrollbarX overflow-hidden sm:overflow-x-auto rounded-2xl">
+      <div className="mx-6 flex flex-col sm:w-full sm:px-36 md:px-6 md:flex-row gap-4 sm:gap-6 items-center justify-between scroll--x overflow-hidden sm:overflow-x-auto rounded-2xl">
         {isLoading ? (
           <Loading />
         ) : (
@@ -30,7 +30,7 @@ function CategoriesLayout() {
               <CategoreyCard
                 src={category.imageUrl}
                 alt={category.imageUrl}
-                value={category.value}
+                quantity={category.quantity}
                 label={category.description}
               />
             </div>
@@ -43,7 +43,7 @@ function CategoriesLayout() {
 
 export default CategoriesLayout;
 
-function CategoreyCard({ src, alt, value = 0, label }) {
+function CategoreyCard({ src, alt, quantity = 0, label }) {
   const router = useRouter();
 
   return (
@@ -60,7 +60,7 @@ function CategoreyCard({ src, alt, value = 0, label }) {
       <div className="grow flex flex-col gap-1 p-4">
         <p className="font-bold text-sm sm:text-xl">{label}</p>
         <p className="text-text-secondary text-sm sm:text-xl">
-          {toPersianNumbers(value)} محصول
+          {toPersianNumbers(quantity)} محصول
         </p>
       </div>
       <button

@@ -82,7 +82,7 @@ function StatusOrderCard({ order, title, color, src, alt }) {
   return (
     <div className="flex flex-col justify-between gap-6 w-full max-lg:border-t border-text/10 p-6 lg:border lg:rounded-2xl">
       <div
-        className={`flex items-center justify-center gap-1 h-11 w-36 rounded-[40px] ${color}`}
+        className={`flex items-center justify-center gap-1 h-11 w-36 rounded-5xl ${color}`}
       >
         <ImageFrame src={src} alt={alt} className="size-7" />
         <p className="text-xs font-bold">{title}</p>

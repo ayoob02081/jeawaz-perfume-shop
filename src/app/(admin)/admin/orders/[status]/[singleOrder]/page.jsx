@@ -80,7 +80,7 @@ function Order({ order, status }) {
   };
 
   return (
-    <div className="max-lg:px-4 lg:p-6 flex flex-col items-start justify-start lg:border border-stroke lg:rounded-[20px]">
+    <div className="max-lg:px-4 lg:p-6 flex flex-col items-start justify-start lg:border border-stroke lg:rounded-2.5xl">
       <div className="max-lg:hidden">
         <GoBack
           label="جزئیات سفارش"
@@ -90,7 +90,7 @@ function Order({ order, status }) {
           justify="between"
         />
       </div>
-      <div className="flex flex-col justify-center items-start w-full max-lg:p-4 max-lg:border-[1.5px] border-stroke max-lg:rounded-[20px]">
+      <div className="flex flex-col justify-center items-start w-full max-lg:p-4 max-lg:border-[1.5px] border-stroke max-lg:rounded-2.5xl">
         <div className="flex flex-wrap w-full max-md:gap-4 md:gap-6 py-6">
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">تاریخ تحویل سفارش :</p>

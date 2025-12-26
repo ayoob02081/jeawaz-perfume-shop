@@ -9,8 +9,12 @@ function page() {
   const router = useRouter();
 
   return (
-    <Modal toggleOpen={() => router.back()} onClose={() => router.back()} login>
-      <Login toggleLoginOpen={() => router.back()} />
+    <Modal
+      isOpen={() => router.back()}
+      onClose={() => {router.back()}}
+      className="max-md:h-80 md:h-[30rem]"
+    >
+      <Login toggleModalOpen={() => router.back()} />
     </Modal>
   );
 }

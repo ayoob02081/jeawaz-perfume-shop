@@ -33,7 +33,7 @@ function PassInput({
         {isRequired && <span className="text-error">*</span>}
       </label>
       <div
-        className={`flex items-center justify-between gap-2 size-full px-3 py-2 rounded-[40px] bg-[#f1f1f1] focus-within:*:text-text-primary  focus-within:bg-white focus-within:border-[1.5px] border-primary`}
+        className={`flex items-center justify-between gap-2 size-full px-3 py-2 rounded-5xl bg-[#f1f1f1] focus-within:*:text-text-primary  focus-within:bg-white focus-within:border-[1.5px] border-primary`}
       >
         <input
           className={`outline-0 size-full ${
@@ -63,7 +63,7 @@ function PassInput({
     </div>
   ) : (
     <div
-      className={`flex items-center justify-center gap-2 size-full px-5 py-1.5 rounded-[40px] ${className} text-text-secondary focus-within:*:text-text-primary  focus-within:bg-white focus-within:border border-primary`}
+      className={`flex items-center justify-center gap-2 size-full px-5 py-1.5 rounded-5xl ${className} text-text-secondary focus-within:*:text-text-primary  focus-within:bg-white focus-within:border border-primary`}
     >
       <input
         className="outline-0 size-full"

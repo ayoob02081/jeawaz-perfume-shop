@@ -8,111 +8,134 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useGetAllUsers } from "@/hooks/useUsers";
+import { toPersianNumbers } from "@/utils/toPersianNumbers";
+import OTPInput from "react-otp-input";
+import PassInput from "@/ui/PassInput";
+import { useForm } from "react-hook-form";
 
 const RESEND_TIME = 90;
 
-function Login({ toggleLoginOpen, setName, name }) {
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [email, setEmail] = useState("");
+function Login({ toggleModalOpen, closeBtn }) {
+  const [phoneNumber, setPhoneNumber] = useState(""); //?
+  const [email, setEmail] = useState(""); //?
+  const [password, setPassword] = useState(""); //?
+  const [otp, setOtp] = useState(""); //?
 
   const [step, setStep] = useState(1);
   const [isEmailType, setIsEmailType] = useState(true); // 'email' or 'phone'
   const [time, setTime] = useState(RESEND_TIME);
-  const [otp, setOtp] = useState("");
-  const [password, setPassword] = useState("");
   const router = useRouter();
   const { isLoading, data } = useGetAllUsers();
-
-  const isEmailExist = data?.data.find((user) => user.email === email);
-console.log(isEmailExist);
-
-  const isPhoneNumberExist = data?.data.find(
-    (user) => user.phoneNumber === phoneNumber
-  );
 
   const {
     data: loginData,
     isPending: isChecking,
     mutateAsync: loginApifn,
+    error: loginError,
   } = useMutation({
     mutationFn: loginApi,
   });
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const setState = (e) => {
+    const value = e.target.value;
+    if (isEmailType) {
+      setEmail(value);
+    } else {
+      setPhoneNumber(value);
+    }
+  };
 
   const toggleLoginType = () => {
     setIsEmailType((prevState) => !prevState);
   };
 
-  const PhoneNumberHandler = (e) => {
-    setPhoneNumber(e.target.value);
-  };
-
-  // const OTPHandler = (e) => {
-  //   setOtp(e.target.value);
-  // };
-
-  const EmailHandler = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const SendOTPFormHandler = async (e) => {
-    e.preventDefault();
-    if (step === 1 && phoneNumber.length === 11) {
-      if (isPhoneNumberExist[0] === true) {
-        setStep(2);
-      } else {
-        toast.error("شماره موبایل وارد شده وجود ندارد");
-        setPhoneNumber("");
-      }
-    }
-  };
-
   const PasswordHandler = async (e) => {
-    e.preventDefault();
-    if (step === 1 && email.length >= 11) {
-      if (isEmailExist?.email === email) {
-        setStep(2);
-      } else {
-        toast.error("ایمیل وارد شده وجود ندارد");
-        setEmail("");
+    if (e.email) {
+      const { email } = e;
+      if (step === 1 && email.length >= 11) {
+        const isEmailExist = data?.data.find((user) => user.email === email);
+        setEmail(email);
+        if (isEmailExist?.email === email) {
+          setStep(2);
+        } else {
+          toast.error("ایمیل وارد شده وجود ندارد");
+          setEmail("");
+        }
       }
-    }
-    if (step === 2) {
-      setPassword(e.target.value);
+    } else {
+      const { phoneNumber } = e;
+      if (step === 1 && phoneNumber.length >= 11) {
+        const isPhoneNumberExist = data?.data.find(
+          (user) => user.phoneNumber === phoneNumber
+        );
+        setPhoneNumber(phoneNumber);
+        if (isPhoneNumberExist[0] === true) {
+          setStep(2);
+        } else {
+          toast.error("شماره موبایل وارد شده وجود ندارد");
+          setPhoneNumber("");
+        }
+      }
     }
   };
+  // console.log(email, phoneNumber);
 
-  const CheckOTPFormHandler = async (e) => {
-    e.preventDefault();
-    try {
-      // const { token } = await loginApifn({ email, password });
-      if (step === 2 && otp.length === 5) {
-        router.back();
-        setPhoneNumber("");
-        setOtp("");
-        setStep(1);
-        toast.success("به جیاواز خوش آمدید!");
+  const handleSubmitForm = async (e) => {
+    console.log(e);
+    if (e.email) {
+      const { password } = e;
+      if (password.length >= 6) {
+        setPassword(password);
+        const userData = {
+          email,
+          password,
+        };
+        try {
+          const { token } = await loginApifn(userData);
+          if (token && step === 2 && password.length >= 6) {
+            router.back();
+            setEmail("");
+            setPassword("");
+            setStep(1);
+            toast.success("به جیاواز خوش آمدید!");
+          }
+        } catch (error) {
+          toast.error(
+            loginError?.response?.data?.message ||
+              "خطا در ورود به سایت ، لطفا مجددا تلاش کنید"
+          );
+        }
       }
-    } catch (error) {
-      toast.error("خطا در ورود به سایت ، لطفا مجددا تلاش کنید");
-      console.log(error);
-    }
-  };
-
-  const CheckPasswordHandler = async (e) => {
-    e.preventDefault();
-    try {
-      const { token } = await loginApifn({ email, password });
-      if (token && step === 2 && password.length >= 6) {
-        router.back();
-        setEmail("");
-        setPassword("");
-        setStep(1);
-        toast.success("به جیاواز خوش آمدید!");
+    } else {
+      const { otp } = e;
+      if (otp.length === 6) {
+        setOtp(otp);
+        const userData = {
+          phoneNumber,
+          otp,
+        };
+        try {
+          const { token } = await loginApifn(userData);
+          if (token && step === 2 && otp.length >= 6) {
+            router.back();
+            setPhoneNumber("");
+            setOtp("");
+            setStep(1);
+            toast.success("به جیاواز خوش آمدید!");
+          }
+        } catch (error) {
+          toast.error(
+            loginError?.response?.data?.message ||
+              "خطا در ورود به سایت ، لطفا مجددا تلاش کنید"
+          );
+        }
       }
-    } catch (error) {
-      toast.error("خطا در ورود به سایت ، لطفا مجددا تلاش کنید");
-      console.log(error);
     }
   };
 
@@ -135,16 +158,20 @@ console.log(isEmailExist);
             MoveBack={MoveBack}
             email={email}
             phoneNumber={phoneNumber}
-            onSubmit={isEmailType ? PasswordHandler : SendOTPFormHandler}
-            toggleLoginOpen={toggleLoginOpen}
+            toggleModalOpen={toggleModalOpen}
+            handleSubmit={() => handleSubmit(PasswordHandler)}
+            closeBtn={closeBtn}
             // isGetting={isGetting}
           >
             <LoginField
-              email={email}
-              isEmailType={isEmailType}
               step={step}
-              onChange={isEmailType ? EmailHandler : PhoneNumberHandler}
-              otp={otp}
+              register={register}
+              isRequired
+              isEmailType={isEmailType}
+              errors={errors}
+              email={email}
+              phoneNumber={phoneNumber}
+              onChange={setState}
             />
           </LoginForm>
         );
@@ -159,19 +186,40 @@ console.log(isEmailExist);
             MoveBack={MoveBack}
             email={email}
             phoneNumber={phoneNumber}
-            onSubmit={isEmailType ? CheckPasswordHandler : CheckOTPFormHandler}
-            toggleLoginOpen={toggleLoginOpen}
+            toggleModalOpen={toggleModalOpen}
+            handleSubmit={() => handleSubmit(handleSubmitForm)}
+            closeBtn={closeBtn}
+
             // onResendOtp={SendOTPFormHandler}
             // time={time}
             // isChecking={isChecking}
           >
-            <LoginField
-              isEmailType={isEmailType}
-              otp={otp}
-              step={step}
-              onChange={PasswordHandler}
-              setOtp={setOtp}
-            />
+            <div className="flex items-center justify-center gap-2 w-full h-12 ">
+              {isEmailType === false ? (
+                <OTPInput
+                  inputType="tel"
+                  value={toPersianNumbers(otp)}
+                  onChange={setOtp}
+                  numInputs={5}
+                  renderSeparator={<span> </span>}
+                  inputStyle="flex items-center justify-center pl-4 md:pl-5.5 pt-1 max-md:size-11 md:size-14 bg-[#F1F1F1] rounded-full outline-0 text-text-primary max-md:text-lg md:text-xl duration-200"
+                  containerStyle="flex max-md:gap-1 md:gap-2 items-center justify-center w-full focus-within:*:[input]:bg-white focus-within:*:[input]:border focus-within:*:border-primary duration-200"
+                  renderInput={(props) => <input {...props} />}
+                  skipDefaultStyles
+                />
+              ) : (
+                <PassInput
+                  RHForm
+                  isRequired
+                  label="رمز عبور"
+                  name="password"
+                  register={register}
+                  validationSchema={{ required: true }}
+                  className="textField__input textField__authInput w-full"
+                  placeholder="رمز عبور"
+                />
+              )}
+            </div>
           </LoginForm>
         );
 

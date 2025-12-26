@@ -14,7 +14,7 @@ function Accordion({ label, children, className = "flex", titleStyle, plus }) {
   };
   return (
     <div
-      className={` flex-col border-[1.5px] border-stroke rounded-[20px] w-full px-6 ${className} ${
+      className={` flex-col border-[1.5px] border-stroke rounded-2.5xl w-full px-6 ${className} ${
         accordionOpen ? "justify-between pb-6" : "items-center justify-center"
       } transition-all duration-200`}
     >

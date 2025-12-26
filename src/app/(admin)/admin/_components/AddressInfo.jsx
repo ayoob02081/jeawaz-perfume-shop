@@ -44,7 +44,7 @@ function FullAddress({ address }) {
 
 function AddressDeatails({ titleOne, titleTwo }) {
   return (
-    <span className="flex items-center justify-between md:justify-center md:rounded-[20px] md:bg-secondary md:h-8 gap-2 max-md:w-full text-sm md:text-xs text-text md:px-4">
+    <span className="flex items-center justify-between md:justify-center md:rounded-2.5xl md:bg-secondary md:h-8 gap-2 max-md:w-full text-sm md:text-xs text-text md:px-4">
       <p>{titleOne}</p>
       <p>{titleTwo}</p>
     </span>

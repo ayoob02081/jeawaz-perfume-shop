@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import RHFTextField from "@/ui/RHFTextField";
 import PassInput from "@/ui/PassInput";
 
-function Signin({ toggleLoginOpen, setName, name }) {
+function Signin({ closeBtn }) {
   const router = useRouter();
 
   const {
@@ -52,42 +52,45 @@ function Signin({ toggleLoginOpen, setName, name }) {
   return (
     <div className="relative size-full p-6 md:p-10 md:px-14">
       <SigninForm
+        closeBtn={closeBtn}
         handleSubmit={() => handleSubmit(handleSubmitForm)}
         MoveBack={() => {
           router.back();
         }}
-        toggleLoginOpen={() => {
+        toggleModalOpen={() => {
           router.back();
         }}
+        isAllFieldesSet={true}
       >
-        <RHFTextField
-          register={register}
-          isRequired
-          label="نام"
-          name="firstName"
-          className="textField__input textField__authInput w-full"
-          placeholder="مثال: رضا"
-          validationSchema={{ required: true }}
-        />
-        <RHFTextField
-          register={register}
-          isRequired
-          label="نام خانوادگی"
-          name="lastName"
-          className="textField__input textField__authInput w-full"
-          validationSchema={{ required: true }}
-          placeholder="مثال: جنیدی"
-        />
-        <RHFTextField
-          register={register}
-          isRequired
-          label="نام کاربری"
-          name="username"
-          className="textField__input textField__authInput w-full"
-          validationSchema={{ required: true }}
-          placeholder="مثال: reza123"
-        />
-        {/* <RHFTextField
+        <div className="flex flex-col w-full justify-between gap-10 overflow-auto scrollbar--primary scrollbar-w-2 p-4">
+          <RHFTextField
+            register={register}
+            isRequired
+            label="نام"
+            name="firstName"
+            className="textField__input textField__authInput w-full"
+            placeholder="مثال: رضا"
+            validationSchema={{ required: true }}
+          />
+          <RHFTextField
+            register={register}
+            isRequired
+            label="نام خانوادگی"
+            name="lastName"
+            className="textField__input textField__authInput w-full"
+            validationSchema={{ required: true }}
+            placeholder="مثال: جنیدی"
+          />
+          <RHFTextField
+            register={register}
+            isRequired
+            label="نام کاربری"
+            name="username"
+            className="textField__input textField__authInput w-full"
+            validationSchema={{ required: true }}
+            placeholder="مثال: reza123"
+          />
+          {/* <RHFTextField
           register={register}
           isRequired
           label="شماره موبایل"
@@ -96,35 +99,26 @@ function Signin({ toggleLoginOpen, setName, name }) {
           validationSchema={{ required: true }}
           placeholder="مثال: 09123456789"
         /> */}
-        <RHFTextField
-          register={register}
-          isRequired
-          label="ایمیل"
-          name="email"
-          className="textField__input textField__authInput w-full"
-          validationSchema={{ required: true }}
-          placeholder="مثال: example@example.com"
-        />
-        <PassInput
-          RHForm
-          isRequired
-          label="رمز عبور"
-          name="password"
-          register={register}
-          validationSchema={{ required: true }}
-          className="textField__input textField__authInput w-full"
-          placeholder="رمز عبور"
-        />
-
-        {/* <RHFTextField
-          register={register}
-          isRequired
-          label="رمز عبور"
-          name="password"
-          type="password"
-          className="textField__input textField__authInput w-full"
-          validationSchema={{ required: true }}
-        /> */}
+          <RHFTextField
+            register={register}
+            isRequired
+            label="ایمیل"
+            name="email"
+            className="textField__input textField__authInput w-full"
+            validationSchema={{ required: true }}
+            placeholder="مثال: example@example.com"
+          />
+          <PassInput
+            RHForm
+            isRequired
+            label="رمز عبور"
+            name="password"
+            register={register}
+            validationSchema={{ required: true }}
+            className="textField__input textField__authInput w-full"
+            placeholder="رمز عبور"
+          />
+        </div>
       </SigninForm>
     </div>
   );

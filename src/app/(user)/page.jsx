@@ -8,7 +8,7 @@ import BannerSecondaryLayout from "./_components/BannerSecondaryLayout";
 
 export default function Home() {
   return (
-    <div className="flex flex-col justify-between gap-14 ">
+    <div className="flex flex-col justify-between gap-14 mt-40 md:mt-32">
       <BannerLayout />
       <CategoriesLayout />
       <RecentProducts />

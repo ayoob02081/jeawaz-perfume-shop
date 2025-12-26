@@ -10,7 +10,7 @@ export default function ProfileLinks({ children }) {
 
   return (
     <div className=" flex items-center justify- gap-2 max-lg:w-full lg:w-fit min-w-xs max-lg:border-t-[1.5px] border-stroke-3 max-lg:*:*:*:first:border-none ">
-      <div className="flex flex-col items-start justify-center size-full lg:max-w-xs lg:pb-34 lg:gap-2 max-lg:px-4 py-4 lg:px-4 lg:bg-grey lg:rounded-[1.25rem]">
+      <div className="flex flex-col items-start justify-center size-full lg:max-w-xs lg:pb-34 lg:gap-2 max-lg:px-4 py-4 lg:px-4 lg:bg-grey lg:rounded-2.5xl">
         {children}
       </div>
     </div>

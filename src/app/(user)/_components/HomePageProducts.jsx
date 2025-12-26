@@ -45,7 +45,7 @@ function HomePageProducts({
         </div>
       </div>
       <div
-        className={`flex items-center w-full scrollbarX px-10 snap-x gap-4 md:gap-6 ${className}`}
+        className={`flex items-center w-full scroll--x px-10 snap-x gap-4 md:gap-6 ${className}`}
       >
         {children}
       </div>

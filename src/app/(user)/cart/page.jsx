@@ -2,7 +2,7 @@ import CartLayout from "./_components/CartLayout";
 
 function CartPage() {
   return (
-    <div>
+    <div className="mt-48 md:mt-40">
       <CartLayout />
     </div>
   );

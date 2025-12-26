@@ -3,7 +3,7 @@ import NotifTypePage from "./NotifTypePage";
 
 function NotifLayout({ type }) {
   return (
-    <div className="flex flex-col items-start justify-start gap-4 lg:border-[1.5px] border-stroke-2 lg:rounded-[20px] lg:p-4 pb-28">
+    <div className="flex flex-col items-start justify-start gap-4 lg:border-[1.5px] border-stroke-2 lg:rounded-2.5xl lg:p-4 pb-28">
       <h1 className="max-lg:hidden font-bold">پیام ها</h1>
       <div className="flex flex-col justify-center lg:gap-6 max-md:border-t-[1.5px] border-stroke-2 w-full">
         <NotifTypes />

@@ -14,7 +14,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <div className="flex items-start max-md:justify-center md:justify-start container mx-auto max-w-7xl gap-4 my-12 px-4">
+    <div className="flex items-start max-md:justify-center md:justify-start container mx-auto max-w-7xl gap-4 my-12 px-4 mt-48 md:mt-40">
       <UserSidebar />
       {children}
     </div>

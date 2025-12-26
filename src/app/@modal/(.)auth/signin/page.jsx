@@ -9,9 +9,8 @@ function page() {
   const router = useRouter();
   return (
     <Modal
-      toggleOpen={() => router.back()}
+      isOpen={() => router.back()}
       onClose={() => router.back()}
-      signin
     >
       <Signin />
     </Modal>

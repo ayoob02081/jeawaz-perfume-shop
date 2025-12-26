@@ -6,9 +6,9 @@ import Link from "next/link";
 
 function ContactUsPage() {
   return (
-    <div className="mt-8">
+    <div className="mt-48 md:mt-40">
       {/* Contact Us */}
-      <div className="flex flex-col items-center justify-center container mx-auto size-full xl:max-w-7xl bg-[#FEF8FA] sm:px-6 md:p-6 sm:rounded-3xl md:rounded-t-[40px]">
+      <div className="flex flex-col items-center justify-center container mx-auto size-full xl:max-w-7xl bg-[#FEF8FA] sm:px-6 md:p-6 rounded-2.5xl sm:rounded-3xl md:rounded-t-5xl">
         <div className="flex flex-col justify-start gap-6 md:gap-15 w-full p-6 ">
           <span className="flex max-md:flex-col md:flex-row items-center max-md:justify-center md:justify-between max-md:gap-8 md:gap-10 w-full">
             <span className="flex flex-col max-md:items-center md:items-start justify-center font-bold max-md:gap-4 md:gap-6">
@@ -24,7 +24,7 @@ function ContactUsPage() {
               از خرید عطر برای شما فراهم کند
             </p>
           </span>
-          <div className="flex flex-col md:flex-row md:gap-8 md:items-center md:justify-between bg-white max-md:ring-4 md:ring-8 ring-black/5 !rounded-b-none max-md:rounded-[20px] md:rounded-[40px] p-6">
+          <div className="flex flex-col md:flex-row md:gap-8 md:items-center md:justify-between bg-white max-md:ring-4 md:ring-8 ring-black/5 !rounded-b-none max-md:rounded-2.5xl md:rounded-5xl p-6">
             <div className="flex flex-col justify-start gap-8 md:gap-12 ">
               <div className="flex flex-col items-start justify-start gap-4">
                 <div className="flex items-center justify-center bg-grey rounded-xl size-12">

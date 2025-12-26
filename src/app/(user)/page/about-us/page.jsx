@@ -4,7 +4,7 @@ import SupportBox from "@/components/SupportBox";
 
 function AboutUsPage() {
   return (
-    <div className="container mx-auto xl:max-w-7xl my-8">
+    <div className="container mx-auto xl:max-w-7xl mb-8 mt-48 md:mt-40">
       <div className="flex flex-col w-full">
         {/* about us */}
         <div className="flex flex-col items-center w-full gap-6 px-6 mb-20 md:mb-28 lg:mb-36 xl:mb-48">
@@ -53,7 +53,7 @@ function AboutUsPage() {
               className="max-sm:size-6 sm:size-7"
               title="پشتیبانی ۲۴ ساعته"
               discription="پاسخ‌گویی سریع، همیشه آنلاین"
-              direction="flex-col h-full bg-white px-6 py-8 rounded-[20px]"
+              direction="flex-col h-full bg-white px-6 py-8 rounded-2.5xl"
               bg="bg-background-app"
               items="items-center"
             />
@@ -63,7 +63,7 @@ function AboutUsPage() {
               className="max-sm:size-6 sm:size-7"
               title="محصولات منحصر به فرد"
               discription="رایحه‌هایی خاص و کمیاب"
-              direction="flex-col h-full bg-white px-6 py-8 rounded-[20px]"
+              direction="flex-col h-full bg-white px-6 py-8 rounded-2.5xl"
               bg="bg-background-app"
               items="items-center"
             />
@@ -73,7 +73,7 @@ function AboutUsPage() {
               className="max-sm:size-6 sm:size-7"
               title="تضمین کیفیت"
               discription="اصل بودن با ضمانت"
-              direction="flex-col h-full bg-white px-6 py-8 rounded-[20px]"
+              direction="flex-col h-full bg-white px-6 py-8 rounded-2.5xl"
               bg="bg-background-app"
               items="items-center"
             />
@@ -83,7 +83,7 @@ function AboutUsPage() {
               className="max-sm:size-6 sm:size-7"
               title="ارسال به سراسر کشور"
               discription="تحویل سریع، مطمئن، سراسری"
-              direction="flex-col h-full bg-white px-6 py-8 rounded-[20px]"
+              direction="flex-col h-full bg-white px-6 py-8 rounded-2.5xl"
               bg="bg-background-app"
               items="items-center"
             />
