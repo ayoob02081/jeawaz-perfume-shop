@@ -1,14 +1,26 @@
 "use client";
 
+import Error from "@/components/Error";
 import ImageFrame from "@/components/ImageFrame";
 import Loading from "@/components/Loading";
-import { useGetAllGenderCategories } from "@/hooks/useCategories";
+import { useGetAllCategories } from "@/hooks/useCategories";
+import { useGetAllProducts } from "@/hooks/useProducts";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
 function CategoriesLayout() {
-  const { data, isLoading, error } = useGetAllGenderCategories();
+  const { data, isLoading, error } = useGetAllCategories();
+
+  const genders = data?.filter((item) => item.type === "gender");
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <Error />;
+  }
 
   return (
     <div className="flex flex-col justify-between items-center py-4 container mx-auto xl:max-w-7xl">
@@ -25,12 +37,12 @@ function CategoriesLayout() {
         {isLoading ? (
           <Loading />
         ) : (
-          data?.map((category) => (
+          genders?.map((category) => (
             <div key={category.id} className="sm:snap-center">
               <CategoreyCard
                 src={category.imageUrl}
                 alt={category.imageUrl}
-                quantity={category.quantity}
+                value={category.value}
                 label={category.description}
               />
             </div>
@@ -43,8 +55,13 @@ function CategoriesLayout() {
 
 export default CategoriesLayout;
 
-function CategoreyCard({ src, alt, quantity = 0, label }) {
+function CategoreyCard({ src, alt, value, label }) {
+  const { data, isLoading, error } = useGetAllProducts();
+
   const router = useRouter();
+  const product = data?.filter((p) => p.categories.gender === value);
+
+  const quantity = product?.length || 0;
 
   return (
     <div className="flex gap-2 w-[21.6rem] h-24 md:w-[26.3rem] md:h-36 justify-center items-center justify-items-center bg-white rounded-2xl border-[1.5px] border-[#EBEBEB] ">

@@ -20,6 +20,7 @@ function SingleProductPage({ slug }) {
     isLoading: categoriesLoading,
     error: categoriesError,
   } = useGetAllCategories();
+  const currentSlug = data?.find((product) => product.id === Number(slug));
 
   if (isLoading) {
     return <Loading />;
@@ -28,7 +29,6 @@ function SingleProductPage({ slug }) {
   if (error) {
     return <Error />;
   }
-  const currentSlug = data?.find((product) => product.id === Number(slug));
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 w-ful md:p-6 container mx-auto xl:max-w-7xl md:mt-40">

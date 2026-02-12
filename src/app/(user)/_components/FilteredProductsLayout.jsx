@@ -1,14 +1,26 @@
 "use client";
 
+import Error from "@/components/Error";
 import ImageFrame from "@/components/ImageFrame";
 import Loading from "@/components/Loading";
-import { useGetAllAccordCategories } from "@/hooks/useCategories";
+import { useGetAllCategories } from "@/hooks/useCategories";
+import { useGetAllProducts } from "@/hooks/useProducts";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
 function FilteredProductsLayout() {
-  const { data, isLoading, error } = useGetAllAccordCategories();
+  const { data, isLoading, error } = useGetAllCategories();
+
+  const accords = data?.filter((item) => item.type === "accord");
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <Error />;
+  }
 
   return (
     <div className="flex flex-col justify-between items-center container mx-auto xl:max-w-7xl py-4">
@@ -25,12 +37,12 @@ function FilteredProductsLayout() {
         {isLoading ? (
           <Loading />
         ) : (
-          data?.map((accord) => (
+          accords.map((accord) => (
             <FilterCard
               key={accord.id}
               src={accord.imageUrl}
               alt={accord.imageUrl}
-              quantity={accord.quantity}
+              value={accord.value}
               label={accord.title}
             />
           ))
@@ -42,8 +54,13 @@ function FilteredProductsLayout() {
 
 export default FilteredProductsLayout;
 
-function FilterCard({ src, alt, quantity, label }) {
+function FilterCard({ src, alt, value, label }) {
+  const { data, isLoading, error } = useGetAllProducts();
+
   const router = useRouter();
+  const product = data?.filter((p) => p.categories.accords.includes(value));
+
+  const quantity = product?.length || 0;
 
   return (
     <div className="snap-center">

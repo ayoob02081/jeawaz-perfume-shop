@@ -1,4 +1,5 @@
 import ImageFrame from "@/components/ImageFrame";
+import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
 import { useGetAllCategories } from "@/hooks/useCategories";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -7,7 +8,7 @@ import { useEffect, useState } from "react";
 
 function ProductCard({ product }) {
   const router = useRouter();
-  const { data } = useGetAllCategories();
+  const { data, isLoading, error } = useGetAllCategories();
   const [volumeMode, setVolumeMode] = useState("sealed");
 
   const volumes =
@@ -20,18 +21,6 @@ function ProductCard({ product }) {
     : volumes.find((v) => v === 100 || v >= 3);
 
   const [selectedVolume, setSelectedVolume] = useState(defaultVolume);
-
-  const volumeHandler = (e, type) => {
-    const value = e.target.value;
-    if (type) {
-      setVolumeMode(type);
-    } else {
-      const selectedItem = volumes?.filter(
-        (volume) => volume === Number(value),
-      );
-      setSelectedVolume(selectedItem[0]);
-    }
-  };
 
   useEffect(() => {
     setSelectedVolume(
@@ -50,31 +39,37 @@ function ProductCard({ product }) {
 
   const { id, original, enTitle, perTitle, images, categories } = product;
 
-  const productAccords = categories.accords.map((accord) => {
+  const productAccords = categories?.accords.map((accord) => {
     const accords = data?.find((item) => item.value === accord);
     return accords;
   });
 
   const productGender = data?.find((item) => item.value === categories.gender);
 
-  console.log(productGender, productAccords, categories);
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <Error />;
+  }
 
   return (
-    <div className="flex items-center justify-center p-4 min-w-[21.6rem] md:min-w-[19.4rem] h-[13.5rem] md:h-[28.9rem] bg-white rounded-2xl border-[1.5px] border-[#EBEBEB]">
+    <div className="flex items-center justify-center p-4 max-md:pr-0 min-w-[21.6rem] md:min-w-[19.4rem] h-[13.5rem] md:h-[28.9rem] bg-white rounded-2xl border-[1.5px] border-[#EBEBEB]">
       <div className="flex items-start justify-between gap-4 w-full h-full">
         <div className="flex flex-none md:hidden items-center justify-center h-20 w-[4.5rem]">
           <ImageFrame src={images[0]} alt={images[0]} className="size-full" />
         </div>
         <div className="flex grow flex-col w-full h-full">
           <div className="flex flex-none items-center justify-between max-md:mb-4 mb-1">
-            {productAccords?.map((accord) => (
+            {productAccords.map((accord) => (
               <CardIconResponsive
-                key={accord?.id}
+                key={accord.id}
                 accord={accord}
-                src={accord?.iconUrl||"icon"}
-                alt={accord?.iconUrl||"icon"}
-                title={accord?.title}
-                type={accord?.value}
+                src={accord.iconUrl}
+                alt={accord.iconUrl}
+                title={accord.title}
+                type={accord.value}
                 className="max-md:h-8 md:h-10"
                 hoverWidthMaxMd="w-[6.5rem]"
                 hoverWidthMd="w-[8.35rem]"
@@ -82,10 +77,10 @@ function ProductCard({ product }) {
               />
             ))}
             <CardIconResponsive
-              src={productGender?.iconUrl||"icon"}
-              alt={productGender?.iconUrl||"icon"}
-              title={productGender?.title}
-              type={productGender?.value}
+              src={productGender.iconUrl}
+              alt={productGender.iconUrl}
+              title={productGender.title}
+              type={productGender.value}
               className="max-md:h-8 md:h-10"
               hoverWidthMaxMd="w-[5.5rem]"
               hoverWidthMd="w-[4.55rem]"
@@ -108,11 +103,11 @@ function ProductCard({ product }) {
                 />
               )}
             </div>
-            <div className="flex-none flex items-start flex-col gap-1 max-md:pb-5 md:pb-6 font-bold border-b border-[#EBEBEB] ">
+            <div className="flex-none flex items-start flex-col gap-1 max-md:pb-3 md:pb-6 font-bold border-b border-[#EBEBEB] ">
               <p className="max-md:text-base text-lg font-bold">{enTitle}</p>
               <p className="max-md:text-sm text-lg font-bold">{perTitle} </p>
             </div>
-            <div className="flex flex-none items-center justify-between gap-4 w-full pt-2">
+            <div className="flex flex-none items-center md:items-end justify-between gap-4 w-full pt-2">
               {product.stock >= 3 && (
                 <PriceSection
                   volume={selectedVolume}
@@ -122,13 +117,19 @@ function ProductCard({ product }) {
                   OldPricevisibility="block"
                   pricesRow="flex-col-reverse max-md:gap-0"
                   className=""
-                  priceClassName="text-[32px]"
+                  priceClassName="max-md:text-lg md:text-xl lg:text-[32px]"
                   justify="max-md:justify-end md:justify-start"
                 />
               )}
-
-              <div className="text-primary max-md:size-[1.1rem] size-6">
+              {/* <div className="text-primary max-md:size-[1.1rem] size-6">
                 <ArrowLeftIcon />
+              </div> */}
+              <div className="btn btn--primary rounded-lg md:rounded-xl py-1 px-2 md:p-2 border-0 text-wrap">
+                {product.stock < 3 ? (
+                  <p className="text-wrap">موجود شد اطلاع بده!</p>
+                ) : (
+                  <p className="">سفارش</p>
+                )}
               </div>
             </div>
           </button>
