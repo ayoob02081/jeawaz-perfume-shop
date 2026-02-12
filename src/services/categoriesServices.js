@@ -54,7 +54,7 @@ export async function fetchAccordCategories() {
       id: 1,
       value: "floral",
       title: "گلی",
-      quantity: 64,
+      quantity: 54,
       description: "رایحه گلی",
       iconUrl: "/images/accordIcons/flower.png",
       imageUrl: "/images/perfume-1.svg",

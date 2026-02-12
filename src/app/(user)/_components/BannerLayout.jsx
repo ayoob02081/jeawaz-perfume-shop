@@ -24,7 +24,7 @@ export default BannerLayout;
 
 function BannerCard() {
   return (
-    <div className="relative flex items-center justify-center bannerSize border-2 border-primary/10 rounded-xl md:rounded-3xl overflow-hidden ">
+    <div className="relative flex items-center justify-center border-2 border-primary/10 rounded-xl md:rounded-3xl overflow-hidden banner--primary--size">
       <ImageFrame
         src="/images/Banner1 xl.jpg"
         alt="Banner"

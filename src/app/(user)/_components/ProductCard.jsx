@@ -1,24 +1,63 @@
 import ImageFrame from "@/components/ImageFrame";
 import PriceSection from "@/components/PriceSection";
-import { pickClosestTo } from "@/utils/pickClosestTo";
+import { useGetAllCategories } from "@/hooks/useCategories";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 function ProductCard({ product }) {
   const router = useRouter();
+  const { data } = useGetAllCategories();
+  const [volumeMode, setVolumeMode] = useState("sealed");
 
-  const {
-    id,
-    original,
-    enTitle,
-    perTitle,
-    images,
-    accordCategories,
-    genderCategories,
-    brandCategories,
-  } = product;
+  const volumes =
+    (volumeMode === "decant" && product.modes?.decant.availableVolumes) ||
+    (volumeMode === "sealed" &&
+      product.modes?.sealed.variants.map((v) => v.volume));
 
-  const defaultVolume = pickClosestTo(100, product?.volumes);
+  const defaultVolume = volumes.includes(100)
+    ? 100
+    : volumes.find((v) => v === 100 || v >= 3);
+
+  const [selectedVolume, setSelectedVolume] = useState(defaultVolume);
+
+  const volumeHandler = (e, type) => {
+    const value = e.target.value;
+    if (type) {
+      setVolumeMode(type);
+    } else {
+      const selectedItem = volumes?.filter(
+        (volume) => volume === Number(value),
+      );
+      setSelectedVolume(selectedItem[0]);
+    }
+  };
+
+  useEffect(() => {
+    setSelectedVolume(
+      volumes.includes(100) ? 100 : volumes.find((v) => v === 100 || v >= 3),
+    );
+  }, [volumeMode]);
+
+  const decantsPrice = product.modes?.decant.pricePerMl * selectedVolume;
+
+  const sealedPrice = product.modes?.sealed.variants.find(
+    (v) => v.volume === selectedVolume,
+  );
+
+  const price =
+    volumeMode === "decant" ? decantsPrice : sealedPrice?.price || 0;
+
+  const { id, original, enTitle, perTitle, images, categories } = product;
+
+  const productAccords = categories.accords.map((accord) => {
+    const accords = data?.find((item) => item.value === accord);
+    return accords;
+  });
+
+  const productGender = data?.find((item) => item.value === categories.gender);
+
+  console.log(productGender, productAccords, categories);
 
   return (
     <div className="flex items-center justify-center p-4 min-w-[21.6rem] md:min-w-[19.4rem] h-[13.5rem] md:h-[28.9rem] bg-white rounded-2xl border-[1.5px] border-[#EBEBEB]">
@@ -28,11 +67,14 @@ function ProductCard({ product }) {
         </div>
         <div className="flex grow flex-col w-full h-full">
           <div className="flex flex-none items-center justify-between max-md:mb-4 mb-1">
-            {accordCategories?.map((accord) => (
+            {productAccords?.map((accord) => (
               <CardIconResponsive
-                key={accord.id}
+                key={accord?.id}
                 accord={accord}
-                type={accord?.accord}
+                src={accord?.iconUrl||"icon"}
+                alt={accord?.iconUrl||"icon"}
+                title={accord?.title}
+                type={accord?.value}
                 className="max-md:h-8 md:h-10"
                 hoverWidthMaxMd="w-[6.5rem]"
                 hoverWidthMd="w-[8.35rem]"
@@ -40,8 +82,10 @@ function ProductCard({ product }) {
               />
             ))}
             <CardIconResponsive
-              gender={genderCategories[0]}
-              type={genderCategories[0]?.gender}
+              src={productGender?.iconUrl||"icon"}
+              alt={productGender?.iconUrl||"icon"}
+              title={productGender?.title}
+              type={productGender?.value}
               className="max-md:h-8 md:h-10"
               hoverWidthMaxMd="w-[5.5rem]"
               hoverWidthMd="w-[4.55rem]"
@@ -54,7 +98,7 @@ function ProductCard({ product }) {
           <button onClick={() => router.push(`/products/${id}`)}>
             <div className="flex-none flex items-center justify-between mb-2 md:mt-2 h-6">
               <p className="text-text-secondary max-md:text-xs text-base font-bold">
-                {brandCategories?.brand}
+                {product.categories.brand}
               </p>
               {original === true && (
                 <ImageFrame
@@ -69,15 +113,21 @@ function ProductCard({ product }) {
               <p className="max-md:text-sm text-lg font-bold">{perTitle} </p>
             </div>
             <div className="flex flex-none items-center justify-between gap-4 w-full pt-2">
-              <PriceSection
-                pricePerVolume={product.price}
-                offValue={product.offValue}
-                volume={defaultVolume}
-              />
-              <div
-                // onClick={() => router.push(`/products/${id}`)}
-                className="text-primary max-md:size-[1.1rem] size-6"
-              >
+              {product.stock >= 3 && (
+                <PriceSection
+                  volume={selectedVolume}
+                  volumeMode={volumeMode}
+                  price={price}
+                  offValue={product.offValue}
+                  OldPricevisibility="block"
+                  pricesRow="flex-col-reverse max-md:gap-0"
+                  className=""
+                  priceClassName="text-[32px]"
+                  justify="max-md:justify-end md:justify-start"
+                />
+              )}
+
+              <div className="text-primary max-md:size-[1.1rem] size-6">
                 <ArrowLeftIcon />
               </div>
             </div>
@@ -94,101 +144,67 @@ export function CardIconResponsive({
   size,
   className,
   accord,
-  gender,
+  src,
+  alt,
+  title,
   hoverWidthMd,
   hoverWidthMaxMd,
   type,
 }) {
   let bgColor;
-  let src;
-  let alt;
   let textStyle;
-  let title;
 
   switch (type) {
     case "floral":
       bgColor = "bg-orange/10";
       textStyle = "text-orange";
-      src = accord?.iconUrl;
-      alt = accord?.accord;
-      title = accord?.title;
       break;
 
     case "woody":
       bgColor = "bg-dark-brown/10 text-brown";
       textStyle = "text-dark-brown";
-      src = accord?.iconUrl;
-      alt = accord?.accord;
-      title = accord?.title;
       break;
 
     case "aromatic":
       bgColor = "bg-success/10";
       textStyle = "text-success";
-      src = accord?.iconUrl;
-      alt = accord?.accord;
-      title = accord?.title;
       break;
 
     case "citrus":
       bgColor = "bg-orange/10";
       textStyle = "text-orange";
-      src = accord?.iconUrl;
-      alt = accord?.accord;
-      title = accord?.title;
       break;
 
     case "leather":
       bgColor = "bg-dark-brown/10 text-dark-brown";
       textStyle = "text-dark-brown";
-      src = accord?.iconUrl;
-      alt = accord?.accord;
-      title = accord?.title;
       break;
 
     case "chypre":
       bgColor = "bg-success/10";
       textStyle = "text-success";
-      src = accord?.iconUrl;
-      alt = accord?.accord;
-      title = accord?.title;
       break;
 
     case "amber":
       bgColor = "bg-orange/10";
       textStyle = "text-orange";
-      src = accord?.iconUrl;
-      alt = accord?.accord;
-      title = accord?.title;
       break;
 
     case "men":
       bgColor = "bg-blue/20 text-blue";
-      src = gender?.iconUrl;
-      alt = gender?.gender;
-      title = gender?.title;
       break;
 
     case "women":
       bgColor = "bg-primary/10 text-primary";
-      src = gender?.iconUrl;
-      alt = gender?.gender;
-      title = gender?.title;
       break;
 
     case "unisex":
       bgColor = "bg-violet-700/10 text-violet-900 grop-hover:gap-1";
-      src = gender?.iconUrl;
-      alt = gender?.gender;
-      title = gender?.title;
       textStyle = "group-hover:pl-2";
       break;
 
     case "support":
       bgColor = "bg-primary/10";
-      src = "/images/call-ringing-4-primary-icon.svg";
-      alt = "call-ringing-icon";
-      title = "پشتیبانی";
       break;
 
     default:

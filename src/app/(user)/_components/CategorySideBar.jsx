@@ -236,7 +236,7 @@ function CategorySideBar({
                 </SideBarFilterCard>
               </div>
             </div>
-            <div className="flex items-center justify-between flex-row-reverse justify-items-center gap-4 max-xs:w-full w-fit md:w-full h-8">
+            <div className="flex items-center justify-between flex-row-reverse justify-items-center gap-4 max-[30rem]:w-full w-fit md:w-full h-8">
               <button
                 type="button"
                 disabled={!isFilter && !isPriceFilter ? true : false}

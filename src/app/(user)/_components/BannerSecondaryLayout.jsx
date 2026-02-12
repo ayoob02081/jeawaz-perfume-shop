@@ -18,7 +18,7 @@ export default BannerSecondaryLayout;
 
 function BannerCardSecondary() {
   return (
-    <div className="relative bannerSecondarySize rounded-2xl xl:rounded-3xl overflow-hidden ">
+    <div className="relative rounded-2xl xl:rounded-3xl overflow-hidden banner--secondary--size">
       <div className="absolute size-full from-banner-gradient/0 bg-linear-to-r to-banner-gradient"></div>
       <div className="flex flex-col items-center justify-center text-white">
         <img
@@ -38,7 +38,7 @@ function BannerCardSecondary() {
         </span>
         <Link
           href={"/products"}
-          className=" flex items-center bannerBtnSecondary hover:*:last:absolute hover:*:last:-left-7 sm:hover:*:last:-left-8 xl:hover:*:last:-left-9 2xl:hover:*:last:-left-10 hover:*:last:*:size-3 sm:hover:*:last:*:size-4 xl:hover:*:last:*:size-5 hover:*:last:bg-white hover:*:last:text-primary hover:**:duration-200"
+          className=" flex items-center banner--btn--secondary hover:*:last:absolute hover:*:last:-left-7 sm:hover:*:last:-left-8 xl:hover:*:last:-left-9 2xl:hover:*:last:-left-10 hover:*:last:*:size-3 sm:hover:*:last:*:size-4 xl:hover:*:last:*:size-5 hover:*:last:bg-white hover:*:last:text-primary hover:**:duration-200"
         >
           <p className=" px-1.5 lg:px-2.5 py-1 h-full flex items-center bg-white justify-center rounded-4xl duration-200 ">
             مشاهده محصولات

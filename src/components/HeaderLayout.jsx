@@ -247,6 +247,9 @@ function DesktopHeader({ toggleCategory, userFullName, data, categoryOpen }) {
                 <p className="text-primary ">{toPersianNumbers("0918")}</p>
               </div>
               <CardIconResponsive
+                src="/images/call-ringing-4-primary-icon.svg"
+                alt="call-ringing-icon"
+                title="پشتیبانی"
                 type="support"
                 className="max-md:h-8 md:h-10"
                 hoverWidthMaxMd="w-[7.62rem]"

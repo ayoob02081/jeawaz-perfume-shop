@@ -69,8 +69,6 @@
   --radius-2.5xl: 20px;
   --radius-5xl: 40px;
 
-  --breakpoint-2xs: 20rem;
-  --breakpoint-xs: 30rem;
   /* --font-display: "Vazirmatn", "sans-serif"; */
 }
 @layer components {
@@ -80,13 +78,13 @@
   .scrollbar--primary {
     @apply scrollbar scrollbar-thumb-primary scrollbar-thumb-rounded-full scrollbar-track-grey scrollbar-track-rounded-full;
   }
-  .bannerSize {
-    @apply w-[21.564rem] sm:w-[34.47rem]  md:w-[41.36rem] lg:w-[55.15rem] xl:w-[68.94rem] h-56 sm:h-[13.04rem] md:h-[15.65rem] lg:h-[20.86rem] xl:h-[26.8rem];
+  .banner--primary--size {
+    @apply h-56 sm:h-[13.04rem] md:h-[15.65rem] lg:h-[20.86rem] xl:h-[26.8rem] aspect-15/10 sm:aspect-26/10;
   }
-  .bannerSecondarySize {
-    @apply w-[21.56rem] sm:w-[28.91rem] xl:w-[36.14rem] h-[8.8rem] sm:h-[11.66rem] xl:h-[14.58rem];
+  .banner--secondary--size {
+    @apply h-[8.8rem] sm:h-[11.66rem] xl:h-[14.58rem] aspect-27/11;
   }
-  .bannerBtnSecondary {
+  .banner--btn--secondary {
     @apply font-bold text-[8px] sm:text-[10px] xl:text-xs 2xl:text-sm rounded-4xl h-5 sm:h-6 xl:h-8 2xl:h-8 bg-white/10 backdrop-blur-md text-text-primary hover:*:first:text-primary duration-200;
   }
   .mobileHeader {
@@ -94,7 +92,7 @@
   }
 
   .primary--backdrop {
-    @apply flex max-md:items-end inset-0 md:items-center justify-center max-md:pb-6 px-6 xs:px-12 max-md:pt-[20%] mx-auto w-full bg-black/15 h-screen backdrop-blur-md overflow-hidden md:py-[10%];
+    @apply flex max-md:items-end inset-0 md:items-center justify-center max-md:pb-6 px-6 [30rem]:px-12 max-md:pt-[20%] mx-auto w-full bg-black/15 h-screen backdrop-blur-md overflow-hidden md:py-[10%];
   }
   .secondary--backdrop {
     @apply flex items-start justify-center md:justify-start max-md:top-0 md:top-40 inset-0 right-0 left-0 max-md:bottom-0 md:p-6 w-screen h-screen md:bg-black/15 md:backdrop-blur-md max-md:overflow-y-auto scrollbar-none;
@@ -105,7 +103,7 @@
   }
 
   .secondary--modal {
-    @apply flex items-center justify-center bg-white md:rounded-3xl w-screen md:w-xl lg:w-3xl h-fit md:h-auto md:shadow-md md:items-center md:justify-start ;
+    @apply flex items-center justify-center bg-white md:rounded-3xl w-screen md:w-xl lg:w-3xl h-fit md:h-auto md:shadow-md md:items-center md:justify-start;
   }
 
   .btn {
@@ -247,8 +245,8 @@ input[type="number"] {
 
 input[type="radio"] {
   -webkit-appearance: checkbox; /* Chrome, Safari, Opera */
-  -moz-appearance: checkbox;    /* Firefox */
-  -ms-appearance: checkbox;     /* not currently supported */
+  -moz-appearance: checkbox; /* Firefox */
+  -ms-appearance: checkbox; /* not currently supported */
   appearance: none;
 }
 

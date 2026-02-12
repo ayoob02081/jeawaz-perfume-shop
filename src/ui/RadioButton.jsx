@@ -10,6 +10,7 @@ function RadioButton({
   className,
   chevron = "hidden",
   children,
+  disabled,
 }) {
   return (
     <label htmlFor={id} className={`cursor-pointer ${className}`}>
@@ -20,6 +21,7 @@ function RadioButton({
         checked={checked}
         value={value}
         onChange={onChange}
+        disabled={disabled}
       />
       {children}
       {label && <p>{label}</p>}

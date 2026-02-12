@@ -33,7 +33,7 @@ export default function ProductSinglePageLayout({ children }) {
   return (
     <AdaptiveOverlayPage
       isOpen={productPage}
-      label={currentProduct.perTitle}
+      label={currentProduct?.perTitle}
       side="right"
       className="size-6"
       justify="between"
