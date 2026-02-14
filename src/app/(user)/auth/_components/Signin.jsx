@@ -44,7 +44,7 @@ function Signin({ closeBtn }) {
     } catch (error) {
       toast.error(
         signinError?.response?.data?.message ||
-          "خطا در ثبت نام. لطفا دوباره تلاش کنید."
+          "خطا در ثبت نام. لطفا دوباره تلاش کنید.",
       );
     }
   };
@@ -68,7 +68,7 @@ function Signin({ closeBtn }) {
             isRequired
             label="نام"
             name="firstName"
-            className="textField__input textField__authInput w-full"
+            className="textField__input textField__input--2 w-full"
             placeholder="مثال: رضا"
             validationSchema={{ required: true }}
           />
@@ -77,7 +77,7 @@ function Signin({ closeBtn }) {
             isRequired
             label="نام خانوادگی"
             name="lastName"
-            className="textField__input textField__authInput w-full"
+            className="textField__input textField__input--2 w-full"
             validationSchema={{ required: true }}
             placeholder="مثال: جنیدی"
           />
@@ -86,7 +86,7 @@ function Signin({ closeBtn }) {
             isRequired
             label="نام کاربری"
             name="username"
-            className="textField__input textField__authInput w-full"
+            className="textField__input textField__input--2 w-full"
             validationSchema={{ required: true }}
             placeholder="مثال: reza123"
           />
@@ -95,7 +95,7 @@ function Signin({ closeBtn }) {
           isRequired
           label="شماره موبایل"
           name="phoneNumber"
-          className="textField__input textField__authInput w-full"
+          className="textField__input textField__input--2 w-full"
           validationSchema={{ required: true }}
           placeholder="مثال: 09123456789"
         /> */}
@@ -104,7 +104,7 @@ function Signin({ closeBtn }) {
             isRequired
             label="ایمیل"
             name="email"
-            className="textField__input textField__authInput w-full"
+            className="textField__input textField__input--2 w-full"
             validationSchema={{ required: true }}
             placeholder="مثال: example@example.com"
           />
@@ -115,7 +115,7 @@ function Signin({ closeBtn }) {
             name="password"
             register={register}
             validationSchema={{ required: true }}
-            className="textField__input textField__authInput w-full"
+            className="textField__input textField__input--2 w-full"
             placeholder="رمز عبور"
           />
         </div>

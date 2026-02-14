@@ -72,7 +72,7 @@ function Login({ toggleModalOpen, closeBtn }) {
       const { phoneNumber } = e;
       if (step === 1 && phoneNumber.length >= 11) {
         const isPhoneNumberExist = data?.data.find(
-          (user) => user.phoneNumber === phoneNumber
+          (user) => user.phoneNumber === phoneNumber,
         );
         setPhoneNumber(phoneNumber);
         if (isPhoneNumberExist[0] === true) {
@@ -108,7 +108,7 @@ function Login({ toggleModalOpen, closeBtn }) {
         } catch (error) {
           toast.error(
             loginError?.response?.data?.message ||
-              "خطا در ورود به سایت ، لطفا مجددا تلاش کنید"
+              "خطا در ورود به سایت ، لطفا مجددا تلاش کنید",
           );
         }
       }
@@ -132,7 +132,7 @@ function Login({ toggleModalOpen, closeBtn }) {
         } catch (error) {
           toast.error(
             loginError?.response?.data?.message ||
-              "خطا در ورود به سایت ، لطفا مجددا تلاش کنید"
+              "خطا در ورود به سایت ، لطفا مجددا تلاش کنید",
           );
         }
       }
@@ -215,7 +215,7 @@ function Login({ toggleModalOpen, closeBtn }) {
                   name="password"
                   register={register}
                   validationSchema={{ required: true }}
-                  className="textField__input textField__authInput w-full"
+                  className="textField__input textField__input--2 w-full"
                   placeholder="رمز عبور"
                 />
               )}

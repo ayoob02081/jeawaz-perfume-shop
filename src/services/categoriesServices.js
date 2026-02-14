@@ -3,6 +3,9 @@ import http from "./httpService";
 export function getAllCategoriesApi() {
   return http.get(`/categories`).then(({ data }) => data);
 }
+export function getAllBrandsApi() {
+  return http.get(`/brands`).then(({ data }) => data);
+}
 
 export async function fetchGenderCategories() {
   // شبیه‌سازی API call

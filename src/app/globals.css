@@ -164,7 +164,7 @@
   .textField__input {
     @apply flex items-center justify-start px-3 bg-grey rounded-xl py-2 outline-0 focus:bg-white border-[1.5px] border-grey focus:border-primary duration-200;
   }
-  .textField__authInput {
+  .textField__input--2 {
     @apply rounded-full bg-[#f1f1f1] focus-within:bg-white;
   }
   .footerLink {

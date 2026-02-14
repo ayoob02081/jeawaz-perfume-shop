@@ -1,7 +1,7 @@
 import {
   fetchAccordCategories,
-  fetchBrandCategories,
   fetchGenderCategories,
+  getAllBrandsApi,
   getAllCategoriesApi,
 } from "@/services/categoriesServices";
 import { useQuery } from "@tanstack/react-query";
@@ -33,7 +33,7 @@ export const useGetAllAccordCategories = () =>
 export const useGetAllBrandCategories = () =>
   useQuery({
     queryKey: ["get-brandCategories"],
-    queryFn: fetchBrandCategories,
+    queryFn: getAllBrandsApi,
     retry: false,
     refetchOnWindowFocus: true,
   });
