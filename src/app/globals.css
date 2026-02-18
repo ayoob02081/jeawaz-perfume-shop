@@ -149,6 +149,12 @@
   .pagesBtn {
     @apply flex items-center justify-center size-10 text-sm bg-white border border-[#E4E7E9] hover:border hover:border-primary hover:bg-white hover:text-primary active:border active:border-primary active:bg-white active:text-primary  focus-within:bg-primary focus-within:border-0 focus-within:text-white rounded-full duration-200;
   }
+  .table__th{
+    @apply bg-primary text-white py-3
+  }
+  .table__td{
+    @apply text-text py-4 text-ellipsis whitespace-nowrap overflow-y-auto
+  }
   .tdBase {
     @apply flex items-center justify-center text-nowrap;
   }

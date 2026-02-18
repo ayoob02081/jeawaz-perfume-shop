@@ -87,7 +87,6 @@ function Login({ toggleModalOpen, closeBtn }) {
   // console.log(email, phoneNumber);
 
   const handleSubmitForm = async (e) => {
-    console.log(e);
     if (e.email) {
       const { password } = e;
       if (password.length >= 6) {
@@ -97,8 +96,8 @@ function Login({ toggleModalOpen, closeBtn }) {
           password,
         };
         try {
-          const { token } = await loginApifn(userData);
-          if (token && step === 2 && password.length >= 6) {
+          const { accessToken, message } = await loginApifn(userData);
+          if (accessToken && step === 2 && password.length >= 6) {
             router.back();
             setEmail("");
             setPassword("");
@@ -121,8 +120,8 @@ function Login({ toggleModalOpen, closeBtn }) {
           otp,
         };
         try {
-          const { token } = await loginApifn(userData);
-          if (token && step === 2 && otp.length >= 6) {
+          const { accessToken, message } = await loginApifn(userData);
+          if (accessToken && step === 2 && otp.length >= 6) {
             router.back();
             setPhoneNumber("");
             setOtp("");

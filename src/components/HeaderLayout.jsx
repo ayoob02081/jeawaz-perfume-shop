@@ -39,6 +39,7 @@ function HeaderLayout() {
         toggleCategory={toggleCategory}
         data={data}
         userFullName={userFullName}
+        isPending={isPending}
       />
       <MobileHeader
         data={data}
@@ -60,7 +61,13 @@ function HeaderLayout() {
 
 export default HeaderLayout;
 
-function DesktopHeader({ toggleCategory, userFullName, data, categoryOpen }) {
+function DesktopHeader({
+  toggleCategory,
+  userFullName,
+  data,
+  isPending,
+  categoryOpen,
+}) {
   const router = useRouter();
   const pathName = usePathname();
 
@@ -135,7 +142,8 @@ function DesktopHeader({ toggleCategory, userFullName, data, categoryOpen }) {
                     ? () => router.push("/auth/login")
                     : () => router.push("/profile")
                 }
-                className="size-full"
+                disabled={isPending ? true : false}
+                className={`size-full ${isPending ? "blur-x opacity-50" : ""}`}
               >
                 <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2">
                   <p className="text-xs lg:text-sm text-nowrap overflow-x-scroll w-full scrollbar-none">

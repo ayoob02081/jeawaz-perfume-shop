@@ -1,6 +1,6 @@
 function Table({ children, className }) {
   return (
-    <table className={`table-fixed ${className} size-full`}>{children}</table>
+    <table className={`table-auto ${className} size-full`}>{children}</table>
   );
 }
 

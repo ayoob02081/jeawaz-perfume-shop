@@ -6,16 +6,16 @@ import { useState } from "react";
 
 export default function RootLayout({ children }) {
   const pathName = usePathname();
-  const [openAddProduct, setOpenAddProduct] = useState(false);
+  const [openProducts, setOpenProducts] = useState(false);
 
-  if (pathName.startsWith("/admin/products/add") && openAddProduct === false) {
-    setOpenAddProduct(true);
+  if (pathName.startsWith("/admin/products") && openProducts === false) {
+    setOpenProducts(true);
   }
 
   return (
     <AdaptiveOverlayPage
-      isOpen={openAddProduct}
-      label="اضافه کردن محصول"
+      isOpen={openProducts}
+      label="محصولات"
       side="right"
       className="size-4"
       fontStyle="text-base font-normal"
