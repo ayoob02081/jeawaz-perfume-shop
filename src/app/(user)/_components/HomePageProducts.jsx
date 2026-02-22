@@ -1,7 +1,9 @@
 import React from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import RadioButton from "@/ui/RadioButton";
+import { useGetAllCategories } from "@/hooks/useCategories";
+import RHFRadioButton from "@/ui/RHFRadioButton";
+import { useForm } from "react-hook-form";
 
 function HomePageProducts({
   titleOne,
@@ -31,8 +33,8 @@ function HomePageProducts({
             {desc}
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          {genderType ? <GenderType section={section} /> : "Timer"}
+        <div className="flex items-end gap-4">
+          {genderType ? <GenderType /> : "Timer"}
           <Link
             href={"/"}
             className="hidden md:flex items-center justify-between gap-4 pr-3 border-r-[1.5px] border-stroke"
@@ -61,27 +63,40 @@ function HomePageProducts({
 
 export default HomePageProducts;
 
-function GenderType({ section }) {
+function GenderType() {
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { isSubmitting },
+  } = useForm({ genderId: null });
+
+  const { data: categories, isPending, error } = useGetAllCategories();
+  const genderCategories = categories?.filter((c) => c.type === "gender");
+
   return (
     <div className="flex items-center justify-between gap-1">
-      <RadioButton
-        className="btn border-[1.5px] max-sm:w-15 sm:w-20 has-checked:font-bold text-sm border-stroke py-1 px-3 rounded-4xl text-black has-checked:text-primary has-checked:border-primary duration-200"
-        id={`man${section}`}
-        name={`gender${section}`}
-        value="man"
-        label="مردانه"
-        //   onChange=""
-        //   checked=""
-      />
-      <RadioButton
-        className="btn border-[1.5px] max-sm:w-15 sm:w-20 has-checked:font-bold text-sm border-stroke py-1 px-3 rounded-4xl text-black has-checked:text-primary has-checked:border-primary duration-200"
-        id={`woman${section}`}
-        name={`gender${section}`}
-        value="woman"
-        label="زنانه"
-        //   onChange=""
-        //   checked=""
-      />
+      {genderCategories.map((gender) => {
+        const isChecked =
+          Number(watch("genderId")) === gender.id ? true : false;
+        return (
+          <RHFRadioButton
+            key={gender.id}
+            className=""
+            checked={isChecked}
+            value={gender.id}
+            name="genderId"
+            register={register}
+          >
+            <div
+              className={`btn border-[1.5px] max-sm:w-15 sm:w-20 text-sm py-1 px-3 rounded-4xl duration-200 ${isChecked ? " border-primary text-primary font-bold" : "text-black border-stroke"}`}
+            >
+              <p className="duration-200">{gender.title}</p>
+            </div>
+          </RHFRadioButton>
+        );
+      })}
     </div>
   );
 }

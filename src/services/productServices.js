@@ -25,8 +25,3 @@ export function removeProductApi(id) {
 // export function likeProductApi(id) {
 //   return http.post(`/products/${id}`).then(({data}) => data);
 // }
-
-// export function getProductBySlugApi(slug) {
-//   return http.get(`/products/${slug}`).then(({data}) => data);
-// }
-

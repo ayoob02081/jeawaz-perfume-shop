@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import ImageSwiper from "@/ui/ImageSwiper";
 import { useGetAllCategories } from "@/hooks/useCategories";
+import { PencilIcon } from "@heroicons/react/24/outline";
 
 function SingleProductPage({ slug }) {
   const { data, isLoading, error } = useGetAllProducts();
@@ -29,10 +30,11 @@ function SingleProductPage({ slug }) {
   if (error) {
     return <Error />;
   }
+console.log(currentSlug);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 w-ful md:p-6 container mx-auto xl:max-w-7xl md:mt-40">
-      <ImageSwiper images={currentSlug.images} />
+      <ImageSwiper images={currentSlug.images} product={currentSlug} />
       <ProductDes currentSlug={currentSlug} />
       <ProductOptions currentSlug={currentSlug} categories={categories} />
       <ProductDetails currentSlug={currentSlug} />

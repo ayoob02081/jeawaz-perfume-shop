@@ -9,12 +9,16 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronUpIcon,
+  PencilIcon,
 } from "@heroicons/react/24/outline";
 import { scrollTo } from "@/utils/scrollTo";
 import ImageFrame from "@/components/ImageFrame";
+import { useGetUser } from "@/hooks/useUsers";
+import Link from "next/link";
 
-export default function ImageSwiper({ images }) {
+export default function ImageSwiper({ product, images }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const { data } = useGetUser();
 
   const [mainRef, mainApi] = useEmblaCarousel({
     loop: false,
@@ -85,13 +89,24 @@ export default function ImageSwiper({ images }) {
 
           <div className="absolute flex items-center gap-1 top-5 max-md:left-3 md:right-3 max-md:z-50">
             <button className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-white">
-              <ImageFrame 
+              <ImageFrame
                 src="/images/share-icon.svg"
                 alt="share-icon"
                 className="size-5 sm:size-6 md:size-5 xl:size-6"
               />
             </button>
           </div>
+
+          {data?.role === "admin" && (
+            <div className="absolute flex items-center gap-1 top-5 max-md:right-3 md:left-3 max-md:z-50">
+              <Link
+                href={`/admin/products/edit/${product?.id}`}
+                className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-white shadow-md"
+              >
+                <PencilIcon className="text-primary size-5 sm:size-6 md:size-5 xl:size-6" />
+              </Link>
+            </div>
+          )}
 
           <div className="max-md:hidden absolute flex items-center gap-1 bottom-5 right-3">
             <button
@@ -128,7 +143,7 @@ export default function ImageSwiper({ images }) {
                   "relative aspect-square max-[30rem]:size-18 max-md:size-26 md:size-20 lg:size-full *:rounded-xl rounded-xl lg:overflow-hidden border transition",
                   selectedIndex === i
                     ? "border-primary *:bg-white"
-                    : "border-stroke-2 opacity-60 hover:opacity-100"
+                    : "border-stroke-2 opacity-60 hover:opacity-100",
                 )}
               >
                 <Image

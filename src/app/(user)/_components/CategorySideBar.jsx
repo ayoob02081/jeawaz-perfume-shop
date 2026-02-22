@@ -8,9 +8,8 @@ import RadioButton from "@/ui/RadioButton";
 import ImageFrame from "@/components/ImageFrame";
 import { useFilters } from "@/hooks/useFilters";
 import {
-  useGetAllAccordCategories,
   useGetAllBrandCategories,
-  useGetAllGenderCategories,
+  useGetAllCategories,
 } from "@/hooks/useCategories";
 import { volumes } from "@/constants/filterItems";
 import FilterCheckBox from "@/ui/FilterCheckBox";
@@ -52,13 +51,14 @@ function CategorySideBar({
   setCategoryOpen,
   onClose,
 }) {
-  const { data: accordCategories } = useGetAllAccordCategories();
-  const { data: genderCategories } = useGetAllGenderCategories();
+  const { data: categories, isPending, error } = useGetAllCategories();
+  const genderCategories = categories?.filter((c) => c.type === "gender");
+  const accordCategories = categories?.filter((c) => c.type === "accord");
   const { data: brandCategories } = useGetAllBrandCategories();
 
   const { state, dispatch } = useFilters();
   const activeGender = genderCategories?.filter(
-    (g) => g.value === state.draft.gender
+    (g) => g.value === state.draft.gender,
   );
 
   const isFilter =
@@ -145,7 +145,7 @@ function CategorySideBar({
                 <SideBarFilterCard fieldsetId="brand-value" title="برند">
                   {brandCategories?.map((brand) => {
                     const defaultValue = state.draft.brands.filter(
-                      (v) => v == brand.value
+                      (v) => v == brand.value,
                     );
 
                     return (
@@ -167,7 +167,7 @@ function CategorySideBar({
                 <SideBarFilterCard fieldsetId="volume-value" title="حجم">
                   {volumes.map((volume, i) => {
                     const defaultValue = state.draft.volumes.filter(
-                      (v) => v == volume.value
+                      (v) => v == volume.value,
                     );
 
                     return (
@@ -191,7 +191,7 @@ function CategorySideBar({
                 <SideBarFilterCard fieldsetId="scent-type" title="رایحه">
                   {accordCategories?.map((accord) => {
                     const defaultValue = state.draft.accords.filter(
-                      (a) => a === accord.value
+                      (a) => a === accord.value,
                     );
                     return (
                       <FilterCheckBox
@@ -241,7 +241,7 @@ function CategorySideBar({
                 type="button"
                 disabled={!isFilter && !isPriceFilter ? true : false}
                 onClick={() => {
-                  submitFilters("APPLY_FILTERS"), setCategoryOpen(false);
+                  (submitFilters("APPLY_FILTERS"), setCategoryOpen(false));
                 }}
                 className="btn btn--primary border-none px-6 md:px-8 size-full"
               >

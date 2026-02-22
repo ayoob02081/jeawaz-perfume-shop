@@ -10,9 +10,8 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
 function FilteredProductsLayout() {
-  const { data, isLoading, error } = useGetAllCategories();
-
-  const accords = data?.filter((item) => item.type === "accord");
+  const { data: categories, isLoading, error } = useGetAllCategories();
+  const accordCategories = categories?.filter((c) => c.type === "accord");
 
   if (isLoading) {
     return <Loading />;
@@ -37,7 +36,7 @@ function FilteredProductsLayout() {
         {isLoading ? (
           <Loading />
         ) : (
-          accords.map((accord) => (
+          accordCategories.map((accord) => (
             <FilterCard
               key={accord.id}
               src={accord.imageUrl}

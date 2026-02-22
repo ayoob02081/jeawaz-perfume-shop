@@ -2,15 +2,15 @@ import { updateProductApi } from "@/services/productServices";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-export default function useEditProduct(productId) {
+export default function useEditCategory(categoryId) {
   const queryClient = useQueryClient();
 
-  const { isPending: isEditing, mutate: editProduct } = useMutation({
-    mutationFn: (data) => updateProductApi({ productId, data }),
+  const { isPending: isEditing, mutate: editCategory } = useMutation({
+    mutationFn: (data) => updateProductApi({ categoryId, data }),
     onSuccess: (data) => {
       toast.success(data.message);
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      queryClient.invalidateQueries({ queryKey: ["products", productId] });
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["categories", categoryId] });
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "Something went wrong");
@@ -18,5 +18,5 @@ export default function useEditProduct(productId) {
     },
   });
 
-  return { isEditing, editProduct };
+  return { isEditing, editCategory };
 }

@@ -14,6 +14,11 @@ import RHFRadioButton from "@/ui/RHFRadioButton";
 import ImageFrame from "@/components/ImageFrame";
 import RHFCheckBox from "@/ui/RHFCheckBox";
 import useAddProduct from "../products/useCreatePost";
+import useEditProduct from "../products/useEditPost";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRemoveProduct } from "@/hooks/useProducts";
+import { useRouter } from "next/navigation";
+import findCategories from "@/utils/findCategories";
 
 const basicInfoData = [
   {
@@ -98,10 +103,55 @@ function ProductForm({ productToEdit }) {
     isLoading: categoriesLoading,
     error: categoriesError,
   } = useGetAllCategories();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const {
+    id,
+    perTitle,
+    enTitle,
+    description,
+    offValue,
+    stock,
+    original,
+    images,
+    notes,
+    modes,
+    details,
+  } = productToEdit || {};
+
+  const { isDeleting, removeProduct } = useRemoveProduct();
+
+  const { productAccords, productBrand, productGender } = findCategories({
+    product: productToEdit,
+    brands,
+    categories,
+  });
+  const removeProductHandler = async (product) => {
+    const { id, perTitle } = product;
+    try {
+      await removeProduct(id);
+      toast.success(`${perTitle} با موفقیت حذف شد.`);
+      queryClient.invalidateQueries(["products"]);
+      router.back();
+    } catch (error) {
+      toast.error(error?.response?.data?.message);
+    }
+  };
 
   const { AddProduct, isAdding } = useAddProduct();
-
+  const { editProduct, isEditing } = useEditProduct(id);
+  const genderCategories = categories?.filter((c) => c.type === "gender");
+  const accordCategories = categories?.filter((c) => c.type === "accord");
   const seasons = ["بهار", "تابستان", "پاییز", "زمستان"];
+
+  const brandToEdit = Number(productBrand?.id) || null;
+
+  const genderToEdit = Number(productGender?.id) || null;
+
+  const accordIdsToEdit = productAccords?.map((a) => String(a.id)) || [];
+
+  const volumesString = (modes?.decant.availableVolumes || []).join(",");
 
   const {
     register,
@@ -111,14 +161,37 @@ function ProductForm({ productToEdit }) {
     formState: { isSubmitting },
   } = useForm({
     defaultValues: {
-      images: [""],
-      notes: { top: [""], middle: [""], base: [""] },
-      modes: {
-        decant: { pricePerMl: "", availableVolumes: [""] },
-        sealed: { variants: [{ volume: "", price: "" }] },
+      perTitle: perTitle || "",
+      enTitle: enTitle || "",
+      description: description || "",
+      images: images || [""],
+      offValue: offValue || Number(""),
+      stock: stock || Number(""),
+      original: (original === true && "original") || false,
+      notes: {
+        top: notes?.top || [""],
+        middle: notes?.middle || [""],
+        base: notes?.base || [""],
       },
-      details: { seasons: [""] },
-      accordIds: [],
+      modes: {
+        decant: {
+          pricePerMl: modes?.decant.pricePerMl || "",
+          availableVolumes: productToEdit ? volumesString : "",
+        },
+        sealed: {
+          variants: modes?.sealed.variants || [{ volume: "", price: "" }],
+        },
+      },
+      details: {
+        madeIn: details?.madeIn || "",
+        designedIn: details?.designedIn || "",
+        longevity: details?.longevity || "",
+        smelling: details?.smelling || "",
+        seasons: details?.seasons || [""],
+      },
+      accordIds: productToEdit ? accordIdsToEdit : [],
+      genderId: productToEdit ? genderToEdit : null,
+      brandId: productToEdit ? brandToEdit : null,
     },
   });
 
@@ -131,9 +204,6 @@ function ProductForm({ productToEdit }) {
     control,
     name: "images",
   });
-
-  const genderCategories = categories?.filter((c) => c.type === "gender");
-  const accordCategories = categories?.filter((c) => c.type === "accord");
 
   const onSubmit = async (data) => {
     const payload = {
@@ -154,7 +224,7 @@ function ProductForm({ productToEdit }) {
       modes: {
         decant: {
           pricePerMl: Number(data?.modes.decant.pricePerMl),
-          availableVolumes: data.modes.decant.availableVolumes
+          availableVolumes: data?.modes.decant.availableVolumes
             .split(",")
             .map((volume) => Number(volume.trim())),
         },
@@ -177,11 +247,25 @@ function ProductForm({ productToEdit }) {
       brandId: Number(data.brandId),
       categoryIds: [Number(data.genderId), ...data.accordIds.map(Number)],
     };
-    try {
-      await AddProduct(payload);
-      toast.success("Product Created");
-    } catch (error) {
-      toast.error("Product Not Created");
+
+    if (!productToEdit) {
+      try {
+        await AddProduct(payload);
+        toast.success("Product Created");
+        router.back();
+      } catch (error) {
+        toast.error("Product Not Created");
+      }
+    }
+
+    if (!!productToEdit) {
+      try {
+        editProduct(payload);
+        toast.success("Product Updated");
+        router.back();
+      } catch (error) {
+        toast.error("Product Not Updated");
+      }
     }
   };
 
@@ -527,12 +611,38 @@ function ProductForm({ productToEdit }) {
           </div>
         </div>
 
-        <button
-          disabled={isSubmitting}
-          className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50"
-        >
-          {isSubmitting ? "در حال ساخت..." : "ساخت محصول"}
-        </button>
+        {/* Submit Button */}
+        <div className="flex items-center md:items-end flex-col max-md:gap-8 md:gap-6">
+          <div className="flex items-center justify-between max-sm:flex-col gap-4 w-full">
+            <button
+              disabled={isSubmitting || isEditing}
+              className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
+            >
+              {!productToEdit
+                ? isSubmitting
+                  ? "در حال ساخت..."
+                  : "ساخت محصول"
+                : isEditing
+                  ? "در حال ویرایش..."
+                  : "ویرایش محصول"}
+            </button>
+            <button
+              onClick={() => router.back()}
+              className="btn btn--primary--2 border-2 border-primary py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
+            >
+              بازگشت
+            </button>
+          </div>
+          {productToEdit && (
+            <button
+              disabled={isDeleting}
+              onClick={() => removeProductHandler(productToEdit)}
+              className="btn btn--primary border-0 py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
+            >
+              {isDeleting ? "در حال حذف..." : "حذف محصول"}
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );

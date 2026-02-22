@@ -38,7 +38,7 @@ export const userTHeads = [
     id: 2,
     label: "نام کامل",
   },
- 
+
   {
     id: 3,
     label: "شماره موبایل",
@@ -97,7 +97,7 @@ export const productTHeads = [
     id: 3,
     label: "برند",
   },
-   {
+  {
     id: 4,
     label: "جنسیت",
   },
@@ -144,15 +144,15 @@ export const categoryTHeads = [
     label: "توضیحات",
   },
   {
-    id: 5,
-    label: "نوع",
-  },
-  {
     id: 6,
-    label: "تاریخ ایجاد",
+    label: "آیکون",
   },
   {
     id: 7,
+    label: "تعداد محصولات",
+  },
+  {
+    id: 8,
     label: "عملیات",
   },
 ];

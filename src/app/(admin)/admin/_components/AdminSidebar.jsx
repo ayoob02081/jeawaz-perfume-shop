@@ -37,14 +37,6 @@ function AdminSidebar() {
     },
     {
       id: 5,
-      href: "/admin/accord-groups",
-      label: "رایحه‌ها",
-      srcPrimary: "/images/orders-stroke-white-icon.svg",
-      srcSecondary: "/images/orders-stroke-black-icon.svg",
-      alt: "orders-icon",
-    },
-    {
-      id: 6,
       href: "/admin/notifs/all",
       label: "پیام‌ها",
       srcPrimary: "/images/notification-stroke-white-icon.svg",
@@ -52,7 +44,7 @@ function AdminSidebar() {
       alt: "notif-icon",
     },
     {
-      id: 7,
+      id: 6,
       href: "/logout",
       label: "خروج از حساب کاربری",
       srcPrimary: "/images/logout-stroke-black-icon.svg",

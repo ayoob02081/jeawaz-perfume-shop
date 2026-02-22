@@ -126,6 +126,7 @@ function Login({ toggleModalOpen, closeBtn }) {
             setPhoneNumber("");
             setOtp("");
             setStep(1);
+            router.refresh()
             toast.success("به جیاواز خوش آمدید!");
           }
         } catch (error) {

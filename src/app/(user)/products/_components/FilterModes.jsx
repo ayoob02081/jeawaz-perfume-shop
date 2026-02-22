@@ -2,9 +2,8 @@
 
 import { volumes } from "@/constants/filterItems";
 import {
-  useGetAllAccordCategories,
   useGetAllBrandCategories,
-  useGetAllGenderCategories,
+  useGetAllCategories,
 } from "@/hooks/useCategories";
 import { useFilters } from "@/hooks/useFilters";
 import { Badge } from "@/ui/Badge";
@@ -21,9 +20,10 @@ function FilterModes({
   addFilter,
   resetFilter,
 }) {
-  const { data: genderCategories } = useGetAllGenderCategories();
-  const { data: brandsCategories } = useGetAllBrandCategories();
-  const { data: accordsCategories } = useGetAllAccordCategories();
+  const { data: categories, isPending, error } = useGetAllCategories();
+  const genderCategories = categories?.filter((c) => c.type === "gender");
+  const accordCategories = categories?.filter((c) => c.type === "accord");
+  const { data: brandCategories } = useGetAllBrandCategories();
 
   const { state } = useFilters();
 
@@ -66,7 +66,7 @@ function FilterModes({
                 title="برند"
                 description=" انتخاب برند عطر"
                 openFilter={() => setMode("brand")}
-                data={brandsCategories}
+                data={brandCategories}
                 state={state.draft?.brands}
                 addFilter={addFilter}
                 resetFilter={resetFilter}
@@ -77,7 +77,7 @@ function FilterModes({
                 title="رایحه"
                 description=" انتخاب رایحه عطر"
                 openFilter={() => setMode("accord")}
-                data={accordsCategories}
+                data={accordCategories}
                 state={state.draft?.accords}
                 addFilter={addFilter}
                 resetFilter={resetFilter}
@@ -116,7 +116,7 @@ function FilterModes({
         return (
           <div className="flex flex-col justify-between gap-6 bg-white w-full rounded-2.5xl px-4 ">
             <BrandsFilter
-              brands={brandsCategories}
+              brands={brandCategories}
               state={state.draft?.brands}
               addFilter={addFilter}
               type="brands"
@@ -127,7 +127,7 @@ function FilterModes({
         return (
           <div className="flex flex-col justify-between gap-6 bg-white w-full rounded-2.5xl px-4">
             <AccordsFilter
-              accords={accordsCategories}
+              accords={accordCategories}
               state={state.draft?.accords}
               addFilter={addFilter}
               type="accords"
@@ -293,7 +293,7 @@ function BrandsFilter({ state, brands, type, addFilter }) {
   );
 }
 
-function GendersFilter({
+export function GendersFilter({
   data,
   state,
   setMode,

@@ -5,7 +5,7 @@ import {
   removeProductApi,
   updateProductApi,
 } from "@/services/productServices";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useGetAllProducts = () =>
   useQuery({
@@ -22,20 +22,6 @@ export const useGetProductsbyID = (id) =>
     retry: false,
     refetchOnWindowFocus: true,
   });
-
-export function useAddProduct() {
-  const { isPending, mutateAsync } = useMutation({
-    mutationFn: addProductApi,
-  });
-  return { isPending, mutateAsync };
-}
-
-export function useUpdateProduct() {
-  const { isPending, mutateAsync } = useMutation({
-    mutationFn: updateProductApi,
-  });
-  return { isPending, mutateAsync };
-}
 
 export function useRemoveProduct() {
   const { isPending: isDeleting, mutateAsync: removeProduct } = useMutation({
