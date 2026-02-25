@@ -10,8 +10,8 @@ import { usePathname } from "next/navigation";
 
 function UserSidebar() {
   const pathName = usePathname();
-  const { data, isPending, error } = useGetUser();
-  const userRole = data?.role;
+  const { data: user, isLoading, error } = useGetUser();
+  const { email, firstName, lastName, role } = user || {};
   const UserProfileLinks = [
     {
       id: 1,
@@ -46,13 +46,15 @@ function UserSidebar() {
       alt: "logout-icon",
     },
   ];
+
   return (
     <ProfileLayout label="پروفایل کاربری" correctPathName="/profile">
       <ProfileLinks>
         <UserProfileLink
           href={"/profile/me"}
-          label="ایوب محمودیان"
+          label={firstName + " " + lastName}
           phoneNumber="09180522273"
+          isloading={isLoading}
         />
         {UserProfileLinks?.map((link) => (
           <ProfileLink
@@ -64,7 +66,7 @@ function UserSidebar() {
             alt={link.alt}
           />
         ))}
-        {userRole === "admin" && (
+        {role === "admin" && (
           <ProfileLink
             href={"/admin"}
             label="ادمین"

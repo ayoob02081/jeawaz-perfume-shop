@@ -1,18 +1,39 @@
+"use client";
+
+import Error from "@/components/Error";
+import Loading from "@/components/Loading";
+import { useGetUser } from "@/hooks/useUsers";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
+import Link from "next/link";
 
 function ProfileInfo() {
+  const { data: user, isLoading, error } = useGetUser();
+
+  const { email, firstName, lastName } = user || {};
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return <Error />;
+  }
+
   return (
     <div className="w-full border md:border-[1.5px] border-stroke rounded-2xl p-4">
       <div className="flex items-center justify-between w-full pb-4">
         <p className="text-sm md:text-base text-text">اطلاعات کاربری</p>
-        <button className="text-primary hover:text-text active:text-text duration-200">
+        <Link
+          href="/profile/me/edit"
+          className="text-primary hover:text-text active:text-text duration-200"
+        >
           ویرایش اطلاعات
-        </button>
+        </Link>
       </div>
       <div className="flex max-md:flex-col max-md:justify-center md:justify-between md:items-center border-t border-stroke pt-4 max-md:gap-6">
         <InfoSections
           titleOne="نام و نام خانوادگی :"
-          desOne="رضا جنیدی"
+          desOne={firstName + " " + lastName}
           titleTwo="کد ملی :"
           desTwo={toPersianNumbers("0123456789")}
         />
@@ -28,7 +49,7 @@ function ProfileInfo() {
           titleOne="تاریخ تولد  :"
           desOne={"1381/04/12"}
           titleTwo="ایمیل :"
-          desTwo="RezaJoneidi@gmail.com"
+          desTwo={email}
         />
       </div>
     </div>

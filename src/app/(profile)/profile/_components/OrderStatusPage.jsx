@@ -1,6 +1,8 @@
 "use client";
 
+import Error from "@/components/Error";
 import ImageFrame from "@/components/ImageFrame";
+import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
 import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
@@ -42,14 +44,14 @@ export default function OrderStatusPage({ status }) {
   if (isLoading)
     return (
       <div className="flex justify-center items-center h-64 text-gray-500 mx-6">
-        در حال بارگذاری...
+        <Loading />
       </div>
     );
 
   if (error)
     return (
       <div className="text-center text-red-600 mx-6">
-        خطا در دریافت اطلاعات.
+        <Error />
       </div>
     );
 

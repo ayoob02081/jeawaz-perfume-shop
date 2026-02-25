@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ImageFrame from "./ImageFrame";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
+import Loading from "./Loading";
 
 export default function ProfileLinks({ children }) {
   const pathName = usePathname();
@@ -17,7 +18,10 @@ export default function ProfileLinks({ children }) {
   );
 }
 
-export function UserProfileLink({ label, phoneNumber }) {
+export function UserProfileLink({ label, phoneNumber, isloading }) {
+  if (isloading) {
+    return <Loading />;
+  }
   return (
     <div className="flex flex-col items-center justify-center size-full">
       <div className="flex items-center justify-start gap-4 max-lg:py-2 size-full lg:mb-2 lg:py-4 px-4 rounded-3xl">
