@@ -3,8 +3,6 @@ function RHFRadioButton({
   id,
   checked,
   value,
-
-  // label,
   className,
   children,
   disabled,
@@ -23,6 +21,7 @@ function RHFRadioButton({
         {...register(name, validationSchema)}
         {...rest}
         disabled={disabled}
+        className="sr-only size-0"
       />
       {children}
     </label>

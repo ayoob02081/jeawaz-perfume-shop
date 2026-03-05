@@ -1,4 +1,4 @@
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { PencilIcon, PlusIcon } from "@heroicons/react/24/outline";
 
@@ -32,7 +32,7 @@ function FullAddress({ address }) {
   return (
     <span className="md:col-span-2 flex items-center justify-between md:justify-start gap-2 w-full">
       <p className="text-sm md:text-base text-text md:hidden">آدرس :</p>
-      <ImageFrame
+      <AppImage
         className="size-6 max-md:hidden"
         src="/images/map-marker-nearby-icon.svg"
         alt="map marker nearby icon"
@@ -80,7 +80,7 @@ function Address({ name, phoneNumber, province, city, postNo, address }) {
       </div>
       <div className="md:col-start-3 md:row-start-1 flex items-center justify-between md:justify-end gap-4 w-full text-nowrap">
         <button className="flex items-center justify-center gap-2 max-md:h-12  max-md:border max-md:border-stroke text-text hover:text-primary active:text-primary max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200">
-          <ImageFrame
+          <AppImage
             className="size-6"
             src="/images/edit-stroke-icon.svg"
             alt="edit icon"
@@ -88,7 +88,7 @@ function Address({ name, phoneNumber, province, city, postNo, address }) {
           <p>ویرایش</p>
         </button>
         <button className="flex items-center justify-center gap-2 max-md:h-12 max-md:bg-primary/10 max-md:border max-md:border-primary/10 text-primary hover:text-text active:text-text max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200">
-          <ImageFrame
+          <AppImage
             className="size-6"
             src="/images/trash-primary-icon.svg"
             alt="trash icon"

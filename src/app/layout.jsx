@@ -1,6 +1,5 @@
 "use client";
 
-import OptionsFooter from "@/components/OptionsFooter";
 import Header from "./Header";
 import Providers from "./Providers";
 import Footer from "./Footer";
@@ -14,9 +13,10 @@ export default function RootLayout({ children, modal }) {
         <Providers>
           <Toaster />
           <Header />
-          {modal}
-          {children}
-          <OptionsFooter />
+          <main>
+            {modal}
+            {children}
+          </main>
           <Footer />
           <MobilePannel />
         </Providers>

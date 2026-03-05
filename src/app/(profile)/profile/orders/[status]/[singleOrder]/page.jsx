@@ -1,7 +1,7 @@
 "use client";
 
 import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import PriceSection from "@/components/PriceSection";
 import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
 import GoBack from "@/ui/GoBack";
@@ -18,7 +18,7 @@ function SingleOrderPage({ params }) {
   const [openOrder, setOpenOrder] = useState(false);
 
   const { data, isLoading, error } = useGetAllOrdersByStatus(
-    correctParams.status
+    correctParams.status,
   );
 
   const correntOrder =
@@ -130,7 +130,7 @@ function Order({ order, status }) {
             <span className="flex items-center justify-start gap-1">
               <p className="text-gray-600">وضعیت پرداخت :</p>
               <div className="flex items-center justify-center gap-1 text-success ">
-                <ImageFrame
+                <AppImage
                   src="/images/success-stroke-icon.svg"
                   alt="success icon"
                   className="size-5"
@@ -151,7 +151,7 @@ function Order({ order, status }) {
             <div className="flex items-start justify-between w-full mb-5">
               <div className="flex flex-wrap items-center justify-start gap-4">
                 <div className="flex items-center justify-center gap-2">
-                  <ImageFrame
+                  <AppImage
                     src="/images/fast-deliver-icon.svg"
                     alt="deliver icon"
                     className="size-5"
@@ -163,7 +163,7 @@ function Order({ order, status }) {
                 <p className="text-gray-600 text-xs">مرسوله 1 از 1</p>
               </div>
               <button className="flex items-center justify-end gap-2 text-nowrap">
-                <ImageFrame
+                <AppImage
                   src="/images/factor-icon.svg"
                   alt="recipt icon"
                   className="size-5"
@@ -191,7 +191,7 @@ function Order({ order, status }) {
                     <div
                       className={`flex items-center justify-center gap-1 ${statusConfig[status].color} `}
                     >
-                      <ImageFrame
+                      <AppImage
                         src={statusConfig[status].src}
                         alt={statusConfig[status].alt}
                         className="size-5"
@@ -216,7 +216,7 @@ function Order({ order, status }) {
                 >
                   <div className="flex items-center justify-start gap-2 md:gap-4">
                     <div className="flex items-center justify-center max-lg:h-16 lg:size-16 lg:rounded-xl lg:bg-white ">
-                      <ImageFrame
+                      <AppImage
                         src={item.src}
                         alt={item.alt}
                         className="max-lg:size-11 lg:size-9"

@@ -1,4 +1,4 @@
-import ImageFrame from "./ImageFrame";
+import AppImage from "./AppImage";
 
 function FooterDetail({
   src,
@@ -8,6 +8,7 @@ function FooterDetail({
   bg = "bg-white",
   items = "items-start",
   title,
+  width,
   discription,
 }) {
   return (
@@ -15,10 +16,12 @@ function FooterDetail({
       className={`flex ${direction} items-center justify-between gap-4 h-16 min-w-3xs`}
     >
       <div className={`relative ${bg} p-4 rounded-full`}>
-        <ImageFrame
+        <AppImage
           src={src}
-          alt={alt}
-          className={`relative ${className} z-50`}
+          alt={title + "-آیکون"}
+          className={`relative ${className} z-40`}
+          width={width}
+          sizes="10vw"
         />
         <div className="absolute top-4 left-4 bg-primary/50 size-4 rounded-full"></div>
       </div>

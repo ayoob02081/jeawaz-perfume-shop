@@ -9,7 +9,7 @@ function Error({ className }) {
     <div
       className={`flex flex-col items-center justify-center gap-6 ${className}  h-60`}
     >
-      <p className="text-error font-bold text-2xl">خطا در بارگذاری محصولات</p>
+      <p className="text-error font-bold text-2xl">خطا در بارگذاری اطلاعات</p>
       <button
         onClick={() => router.refresh()}
         className="flex items-center justify-center gap-1 btn hover:text-primary active:text-primary duration-200 "

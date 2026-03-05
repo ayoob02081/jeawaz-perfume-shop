@@ -1,4 +1,4 @@
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 
 export function Badge({ title, onClick, error }) {
   return (
@@ -16,10 +16,11 @@ export function Badge({ title, onClick, error }) {
           className="flex items-center justify-center size-4 md:size-7"
           onClick={onClick}
         >
-          <ImageFrame
+          <AppImage
             src="/images/close-icon-red.svg"
-            alt="close icon"
-            className="size-2 md:size-5"
+            alt="close-icon"
+            width="size-4 md:size-5"
+            sizes="10vw"
           />
         </button>
       )}

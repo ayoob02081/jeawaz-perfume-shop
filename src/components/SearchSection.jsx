@@ -1,4 +1,4 @@
-import ImageFrame from "./ImageFrame";
+import AppImage from "./AppImage";
 
 function SearchSection({ placeholder, onClick }) {
   return (
@@ -12,10 +12,11 @@ function SearchSection({ placeholder, onClick }) {
         onClick={onClick}
         className={`absolute flex items-center justify-center gap-1 *:last:hidden *:last:w-0 left-6 top-1/2 -translate-1/2 bg-white rounded-full p-2 duration-200`}
       >
-        <ImageFrame
+        <AppImage
           src="/images/search.svg"
-          alt="search icon"
-          className="size-6"
+          alt="search-icon"
+          width="size-6"
+          sizes="10vw"
         />
         <p
           className={`max-lg:hidden lg:flex text-sm text-text-primary duration-200`}

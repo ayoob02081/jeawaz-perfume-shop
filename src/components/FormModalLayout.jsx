@@ -1,4 +1,4 @@
-import ImageFrame from "./ImageFrame";
+import AppImage from "./AppImage";
 
 function FormModalLayout({ children, handleSubmit, onClose, closeBtn = true }) {
   return (
@@ -8,14 +8,16 @@ function FormModalLayout({ children, handleSubmit, onClose, closeBtn = true }) {
     >
       {closeBtn && (
         <button
-          className="absolute md:left-6 max-md:top-3 md:top-6 btn max-md:border-0 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl max-md:bg-[#F1F1F1]  md:border-[1.5px] border-stroke md:size-10 rounded-full md:p-0"
+          className="absolute md:left-6 max-md:top-3 md:top-6 btn max-md:border-0 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl max-md:bg-stroke md:border-[1.5px] border-stroke md:size-10 rounded-full md:p-0"
           onClick={onClose}
           type="button"
         >
-          <ImageFrame
+          <AppImage
             src="/images/close-simple-icon.svg"
-            alt="close icon"
-            className="size-3.5 max-md:hidden"
+            alt="close-icon"
+            className="max-md:hidden"
+            width="size-3.5"
+            sizes="10vw"
           />
         </button>
       )}

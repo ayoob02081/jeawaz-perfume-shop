@@ -128,7 +128,7 @@ function EditProfileForm() {
     //     router.back();
     //   } catch (error) {
     //     toast.error(`ویرایش اطلاعات حساب کاربری ${data.title} با خطا مواجه شد`);
-    //     console.log(error);
+    //     (error);
     //   }
     // }
   };

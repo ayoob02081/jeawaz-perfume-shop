@@ -59,7 +59,7 @@ function FilterModes({
     switch (mode) {
       case "all":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-white w-full rounded-2.5xl md:pl-3 md:py-">
+          <div className="flex flex-col justify-between gap-6 bg-white w-full rounded-2.5xl md:pl-3">
             <div className="flex flex-col justify-between md:gap-4">
               <FilterMode
                 button

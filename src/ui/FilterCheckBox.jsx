@@ -1,4 +1,4 @@
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import CheckBox from "./CheckBox";
 import { CheckIcon } from "@heroicons/react/24/outline";
 
@@ -29,10 +29,12 @@ function FilterCheckBox({
       {children}
       {imageSrc && (
         <div className={imageClassName}>
-          <ImageFrame
+          <AppImage
             src={imageSrc}
-            alt={`${checkId} icon`}
-            className="size-full mix-blend-multiply"
+            alt={checkId + "-icon"}
+            className="mix-blend-multiply"
+            width="size-full"
+            sizes="20vw"
           />
         </div>
       )}

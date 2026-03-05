@@ -1,14 +1,21 @@
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
-import { useGetAllCategories } from "@/hooks/useCategories";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import {
+  useGetAllBrandCategories,
+  useGetAllCategories,
+} from "@/hooks/useCategories";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 function ProductCard({ product }) {
   const router = useRouter();
-  const { data, isLoading, error } = useGetAllCategories();
+  const { data: allCategories, isLoading, error } = useGetAllCategories();
+  const {
+    data: allBrands,
+    isLoading: brandsLoading,
+    error: brandsError,
+  } = useGetAllBrandCategories();
   const [volumeMode, setVolumeMode] = useState("sealed");
 
   const volumes =
@@ -37,14 +44,23 @@ function ProductCard({ product }) {
   const price =
     volumeMode === "decant" ? decantsPrice : sealedPrice?.price || 0;
 
-  const { id, original, enTitle, perTitle, images, categories } = product;
+  const { id, original, enTitle, perTitle, stock, images, categories } =
+    product || {};
+
+  const isStock = stock > 3;
 
   const productAccords = categories?.accords.map((accord) => {
-    const accords = data?.find((item) => item.value === accord);
+    const accords = allCategories?.find((item) => item.value === accord);
     return accords;
   });
 
-  const productGender = data?.find((item) => item.value === categories.gender);
+  const productGender = allCategories?.find(
+    (item) => item.value === categories.gender,
+  );
+
+  const productBrand = allBrands?.find(
+    (brand) => brand.title === categories?.brand,
+  );
 
   if (isLoading) {
     return <Loading />;
@@ -55,10 +71,17 @@ function ProductCard({ product }) {
   }
 
   return (
-    <div className="flex items-center justify-center p-4 max-md:pr-0 min-w-[21.6rem] md:min-w-[19.4rem] h-[13.5rem] md:h-[28.9rem] bg-white rounded-2xl border-[1.5px] border-[#EBEBEB]">
+    <div
+      className={`flex items-center justify-center p-4 max-md:pr-0 h-[13.5rem] md:h-[28.9rem] aspect-[16/10] md:aspect-[10/15]
+    bg-white rounded-2xl border-[1.5px] border-stroke-2 ${isStock ? "" : "opacity-60"} snap-center`}
+    >
       <div className="flex items-start justify-between gap-4 w-full h-full">
-        <div className="flex flex-none md:hidden items-center justify-center h-20 w-[4.5rem]">
-          <ImageFrame src={images[0]} alt={images[0]} className="size-full" />
+        <div className="flex flex-none md:hidden items-center justify-center !h-20 !w-[4.5rem]">
+          <AppImage
+            src={images[0]}
+            alt={"-عکس" + perTitle}
+            ratio="aspect-[4/5]"
+          />
         </div>
         <div className="flex grow flex-col w-full h-full">
           <div className="flex flex-none items-center justify-between max-md:mb-4 mb-1">
@@ -67,7 +90,7 @@ function ProductCard({ product }) {
                 key={accord.id}
                 accord={accord}
                 src={accord.iconUrl}
-                alt={accord.iconUrl}
+                alt={accord.vlaue + "-icon"}
                 title={accord.title}
                 type={accord.value}
                 className="max-md:h-8 md:h-10"
@@ -78,7 +101,7 @@ function ProductCard({ product }) {
             ))}
             <CardIconResponsive
               src={productGender.iconUrl}
-              alt={productGender.iconUrl}
+              alt={productGender.value + "-icon"}
               title={productGender.title}
               type={productGender.value}
               className="max-md:h-8 md:h-10"
@@ -87,19 +110,26 @@ function ProductCard({ product }) {
               size="max-md:size-4 md:size-6"
             />
           </div>
-          <div className="grow max-md:hidden md:flex items-center justify-center h-[11.7rem] w-[10.65rem] mx-auto">
-            <ImageFrame src={images[0]} alt={images[0]} className="size-full" />
+          <div className="grow max-md:hidden md:flex items-center justify-center !h-[11.7rem] !w-[10.65rem] mx-auto">
+            <AppImage
+              src={images[0]}
+              alt={"-عکس" + perTitle}
+              ratio="aspect-[4/5]"
+            />
           </div>
           <button onClick={() => router.push(`/products/${id}`)}>
             <div className="flex-none flex items-center justify-between mb-2 md:mt-2 h-6">
-              <p className="text-text-secondary max-md:text-xs text-base font-bold">
-                {product.categories.brand}
+              <p className="text-text-secondary text-sm md:text-base md:font-bold">
+                {productBrand?.value}
               </p>
               {original === true && (
-                <ImageFrame
+                <AppImage
                   src="/images/bg-original.svg"
-                  alt="orginal icon"
-                  className="max-md:w-16 justify-center h-full md:w-[4.815rem]"
+                  alt="original-icon"
+                  ratio="aspect-[6/1]"
+                  className="justify-center"
+                  width="max-md:w-16 h-full md:w-[4.815rem]"
+                  sizes="10vw"
                 />
               )}
             </div>
@@ -107,7 +137,9 @@ function ProductCard({ product }) {
               <p className="max-md:text-base text-lg font-bold">{enTitle}</p>
               <p className="max-md:text-sm text-lg font-bold">{perTitle} </p>
             </div>
-            <div className="flex flex-none items-center md:items-end justify-between gap-4 w-full pt-2">
+            <div
+              className={`flex flex-none items-center md:items-end gap-4 w-full pt-2 ${isStock ? "justify-between" : "justify-end"}`}
+            >
               {product.stock >= 3 && (
                 <PriceSection
                   volume={selectedVolume}
@@ -116,19 +148,19 @@ function ProductCard({ product }) {
                   offValue={product.offValue}
                   OldPricevisibility="block"
                   pricesRow="flex-col-reverse max-md:gap-0"
-                  className=""
                   priceClassName="max-md:text-lg md:text-xl lg:text-[32px]"
-                  justify="max-md:justify-end md:justify-start"
+                  justify="justify-start"
                 />
               )}
-              {/* <div className="text-primary max-md:size-[1.1rem] size-6">
-                <ArrowLeftIcon />
-              </div> */}
-              <div className="btn btn--primary rounded-lg md:rounded-xl py-1 px-2 md:p-2 border-0 text-wrap">
-                {product.stock < 3 ? (
-                  <p className="text-wrap">موجود شد اطلاع بده!</p>
+              <div>
+                {isStock ? (
+                  <p className="btn border border-primary text-primary bg-secondary-2 active:bg-primary active:text-white  rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
+                    سفارش
+                  </p>
                 ) : (
-                  <p className="">سفارش</p>
+                  <p className="text-wrap w-full text-primary text-xl font-bold">
+                    ناموجود!
+                  </p>
                 )}
               </div>
             </div>
@@ -217,7 +249,13 @@ export function CardIconResponsive({
       dir="rtl"
       className={`flex items-center group rounded-5xl px-2 md:hover:${hoverWidthMd} max-md:hover:${hoverWidthMaxMd} ${bgColor} ${className} duration-300`}
     >
-      <ImageFrame src={src} alt={alt} className={`text-nowrap ${size}`} />
+      <AppImage
+        src={src}
+        alt={alt}
+        className="text-nowrap"
+        width={size}
+        sizes="10vw"
+      />
       <p
         className={`w-0 transform opacity-0 group-hover:opacity-100 duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pr-2 md:text-sm font-bold ${textStyle}`}
       >
@@ -229,10 +267,12 @@ export function CardIconResponsive({
       dir="ltr"
       className={`flex items-center group rounded-5xl px-2 md:hover:${hoverWidthMd} max-md:hover:${hoverWidthMaxMd} ${bgColor} ${className} duration-300`}
     >
-      <ImageFrame
+      <AppImage
         src={src}
         alt={alt}
-        className={`text-nowrap justify-end ${size}`}
+        className="text-nowrap justify-end"
+        width={size}
+        sizes="10vw"
       />
       <p
         className={`w-0 opacity-0 group-hover:opacity-100 duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pr-2 md:text-sm font-bold ${textStyle}`}

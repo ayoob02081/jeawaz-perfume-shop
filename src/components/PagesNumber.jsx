@@ -3,7 +3,7 @@ import Link from "next/link";
 
 function PagesNumber() {
   return (
-    <div className="flex items-center justify-between flex-row-reverse gap-4">
+    <section className="flex items-center justify-between flex-row-reverse gap-4">
       <div>
         <ArrowLeftIcon className="size-6 text-text-primary hover:text-primary" />
       </div>
@@ -22,7 +22,7 @@ function PagesNumber() {
       <div>
         <ArrowRightIcon className="size-6 text-text-primary hover:text-primary" />
       </div>
-    </div>
+    </section>
   );
 }
 

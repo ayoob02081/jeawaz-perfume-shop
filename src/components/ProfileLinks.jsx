@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import ImageFrame from "./ImageFrame";
+import AppImage from "./AppImage";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import Loading from "./Loading";
 
@@ -31,10 +31,11 @@ export function UserProfileLink({ label, phoneNumber, isloading }) {
             className="flex items-center justify-between max-lg:gap-2 lg:gap-4"
           >
             <div className="flex items-center justify-center max-lg:siz-11 lg: size-14 bg-secondary lg:bg-white lg: rounded-xl">
-              <ImageFrame
+              <AppImage
                 src="/images/user-stroke-black-icon.svg"
                 alt="user-icon"
-                className="size-7 "
+                width="size-7 "
+                sizes="10vw"
               />
             </div>
             <span className="flex flex-col items-start justify-between gap-2 ">
@@ -45,10 +46,11 @@ export function UserProfileLink({ label, phoneNumber, isloading }) {
             </span>
           </Link>
           <button className="flex items-center justify-center">
-            <ImageFrame
+            <AppImage
               src="/images/edit-stroke-icon.svg"
               alt="edit-icon"
-              className="size-6"
+              width="size-6"
+              sizes="10vw"
             />
           </button>
         </div>
@@ -67,6 +69,7 @@ export function ProfileLink({
   href,
 }) {
   const pathName = usePathname();
+  const isPathName = pathName.startsWith(href);
 
   return (
     <div className="flex flex-col items-center justify-center size-full">
@@ -77,7 +80,7 @@ export function ProfileLink({
         href={href}
         className={`flex items-center justify-start gap-4
             ${
-              label && pathName.startsWith(href)
+              label && isPathName
                 ? "bg-dark-brown text-white"
                 : "hover:bg-stroke-2 hover:*:*:*:last:*:last:duration-200"
             }
@@ -98,10 +101,11 @@ export function ProfileLink({
                   : "max-lg:size-11 lg:size-14 lg:bg-white lg:rounded-xl"
               }`}
             >
-              <ImageFrame
-                src={pathName.startsWith(href) ? srcPrimary : srcSecondary}
+              <AppImage
+                src={isPathName ? srcPrimary : srcSecondary}
                 alt={alt}
-                className="size-7"
+                width="size-7"
+                sizes="10vw"
               />
             </div>
             {label && <p>{label}</p>}
@@ -110,10 +114,11 @@ export function ProfileLink({
           {label ? (
             <div></div>
           ) : (
-            <ImageFrame
+            <AppImage
               src="/images/edit-stroke-icon.svg"
               alt="edit-icon"
-              className="size-6"
+              width="size-6"
+              sizes="10vw"
             />
           )}
         </div>

@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { UserIcon as UserIconFill } from "@heroicons/react/24/solid";
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import { useGetUser } from "@/hooks/useUsers";
 
 function MobilePannel() {
@@ -12,7 +12,7 @@ function MobilePannel() {
   const { data, isPending, error } = useGetUser();
 
   return (
-    <div className="fixed flex items-center justify-center bottom-3 right-0 h-[83px] w-full md:hidden z-[70]">
+    <nav className="fixed flex items-center justify-center bottom-3 right-0 h-[83px] w-full md:hidden z-[70]">
       <ul className="grid grid-cols-4 justify-items-center gap-x-5 h-full w-[95%] shadow-2xl shadow-black rounded-2xl bg-white px-5">
         <li className="flex items-center justify-center ">
           <button
@@ -20,14 +20,15 @@ function MobilePannel() {
             onClick={() => router.push("/")}
           >
             <div className="size-7">
-              <ImageFrame
-                className="size-7"
+              <AppImage
+                width="size-7"
                 src={
                   pathname === "/"
                     ? "/images/home-fill-primary-icon.svg"
                     : "/images/home-stroke-sec-icon.svg"
                 }
-                alt="home icon"
+                alt="home-icon"
+                sizes="20vw"
               />
             </div>
             <p
@@ -45,14 +46,15 @@ function MobilePannel() {
             onClick={() => router.push("/products")}
           >
             <div className="size-7">
-              <ImageFrame
-                className="size-7"
+              <AppImage
+                width="size-7"
                 src={
                   pathname.startsWith("/products")
                     ? "/images/products-fill-primary-icon.svg"
                     : "/images/products-stroke-sec-icon.svg"
                 }
-                alt="products icon"
+                alt="products-icon"
+                sizes="20vw"
               />
             </div>
             <p
@@ -76,14 +78,15 @@ function MobilePannel() {
             }
           >
             <div className="size-7">
-              <ImageFrame
-                className="size-7"
+              <AppImage
+                width="size-7"
                 src={
                   pathname.startsWith("/cart")
                     ? "/images/bag-fill-primary-icon.svg"
                     : "/images/bag-stroke-sec-icon.svg"
                 }
-                alt="cart icon"
+                alt="cart-icon"
+                sizes="20vw"
               />
             </div>
             <p
@@ -125,7 +128,7 @@ function MobilePannel() {
           </button>
         </li>
       </ul>
-    </div>
+    </nav>
   );
 }
 

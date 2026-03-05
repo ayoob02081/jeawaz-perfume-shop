@@ -17,7 +17,7 @@ function LoginForm({
   closeBtn,
 }) {
   const phoneNumberLength = isEmailType
-    ? email.length >= 11
+    ? email.length >= 14
     : phoneNumber.length === 11;
   const OTPLength = isEmailType ? password.length >= 6 : otp.length === 5;
 

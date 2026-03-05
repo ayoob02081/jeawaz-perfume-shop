@@ -1,7 +1,7 @@
 "use client";
 
 import Error from "@/components/Error";
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import Loading from "@/components/Loading";
 import { useGetAllCategories } from "@/hooks/useCategories";
 import { useGetAllProducts } from "@/hooks/useProducts";
@@ -9,7 +9,7 @@ import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
-function CategoriesLayout() {
+function GenderCategoriesLayout() {
   const { data, isLoading, error } = useGetAllCategories();
 
   const genders = data?.filter((item) => item.type === "gender");
@@ -23,13 +23,15 @@ function CategoriesLayout() {
   }
 
   return (
-    <div className="flex flex-col justify-between items-center py-4 container mx-auto xl:max-w-7xl">
+    <section className="flex flex-col justify-between items-center py-4 container mx-auto xl:max-w-7xl">
       <div className="flex justify-center items-center gap-1 w-full px-6 mb-6 text-base sm:text-[28px] font-bold">
         <h2 className="text-primary">دسته‌بندی</h2>
-        <ImageFrame
+        <AppImage
           src="/images/star-8-icon.svg"
-          alt="star icon"
-          className="max-sm:size-4 text-icon-black sm:size-9"
+          alt="star-icon"
+          className="text-icon-black"
+          width="max-sm:size-4 sm:size-9"
+          sizes="10vw"
         />
         <h2 className="text-text-primary">محصولات ما</h2>
       </div>
@@ -41,19 +43,19 @@ function CategoriesLayout() {
             <div key={category.id} className="sm:snap-center">
               <CategoreyCard
                 src={category.imageUrl}
-                alt={category.imageUrl}
+                alt={category.value + "-image"}
                 value={category.value}
-                label={category.description}
+                label={category.title}
               />
             </div>
           ))
         )}
       </div>
-    </div>
+    </section>
   );
 }
 
-export default CategoriesLayout;
+export default GenderCategoriesLayout;
 
 function CategoreyCard({ src, alt, value, label }) {
   const { data, isLoading, error } = useGetAllProducts();
@@ -64,19 +66,25 @@ function CategoreyCard({ src, alt, value, label }) {
   const quantity = product?.length || 0;
 
   return (
-    <div className="flex gap-2 w-[21.6rem] h-24 md:w-[26.3rem] md:h-36 justify-center items-center justify-items-center bg-white rounded-2xl border-[1.5px] border-[#EBEBEB] ">
+    <div className="flex h-24 md:h-[140px] aspect-[7/2] md:aspect-[9/3] justify-center items-center justify-items-center bg-white rounded-2xl border-[1.5px] border-[#EBEBEB] ">
       <div className="h-full self-start justify-self-start px-4">
-        <div className="flex items-center justify-center h-20 w-16 md:w-[5.25rem] md:h-28 rounded-b-xl bg-grey">
-          <ImageFrame
+        <div className="relative flex items-center justify-center aspect-[8/10] md:aspect-[10/13] w-16 md:w-[5.25rem] p-3 rounded-b-xl bg-grey">
+          <AppImage
             src={src}
             alt={alt}
-            className="h-14 w-9 grow max-md:size-9 justify-center md:size-14"
+            className="grow justify-center -rotate-12"
+            objectFit="cover"
+            sizes="10vw"
           />
+          <div className="absolute bottom-1/6 blur-md w-2/3 h-1 md:h-1.5 bg-text-secondary rounded-full"></div>
         </div>
       </div>
       <div className="grow flex flex-col gap-1 p-4">
-        <p className="font-bold text-sm sm:text-xl">{label}</p>
-        <p className="text-text-secondary text-sm sm:text-xl">
+        <span className="flex items-center justify-start gap-1 font-bold text-sm sm:text-xl">
+          <p className="text-text">عطرهای</p>
+          <p className="text-primary">{label}</p>
+        </span>
+        <p className="text-text-secondary text-sm sm:text-lg md:font-bold">
           {toPersianNumbers(quantity)} محصول
         </p>
       </div>
@@ -84,7 +92,7 @@ function CategoreyCard({ src, alt, value, label }) {
         onClick={() => router.push("/products")}
         className="justify-self-end self-end p-4"
       >
-        <ArrowLeftIcon className="size-4 sm:size-5 text-primary" />
+        <ArrowLeftIcon className="size-5 sm:size-6 text-primary" />
       </button>
     </div>
   );

@@ -90,20 +90,25 @@
   .mobileHeader {
     @apply grid grid-cols-3 p-2 gap-x-10 gap-y-5;
   }
-
-  .primary--backdrop {
-    @apply flex max-md:items-end inset-0 md:items-center justify-center max-md:pb-6 px-6 [30rem]:px-12 max-md:pt-[20%] mx-auto w-full bg-black/15 h-screen backdrop-blur-md overflow-hidden md:py-[10%];
+  .backdrop {
+    @apply h-screen w-screen bg-black/15 backdrop-blur-md;
   }
-  .secondary--backdrop {
-    @apply flex items-start justify-center md:justify-start max-md:top-0 md:top-40 inset-0 right-0 left-0 max-md:bottom-0 md:p-6 w-screen h-screen md:bg-black/15 md:backdrop-blur-md max-md:overflow-y-auto scrollbar-none;
+  .backdrop--primary {
+    @apply flex max-md:items-end inset-0 md:items-center justify-center max-md:pb-6 px-6 [30rem]:px-12 max-md:pt-[20%] mx-auto overflow-hidden md:py-[10%] z-[90];
+  }
+  .backdrop--secondary {
+    @apply flex items-start justify-center md:justify-start top-0 inset-0 right-0 left-0 max-md:bottom-0 md:p-6 md:pt-44 max-md:overflow-y-auto scrollbar-none z-[80];
+  }
+  .modal {
+    @apply flex items-center justify-center bg-white;
   }
 
-  .primary--modal {
-    @apply flex items-center justify-center w-full sm:w-[33.8rem] bg-white overflow-hidden h-full rounded-3xl shadow-md;
+  .modal--primary {
+    @apply sm:w-[33.8rem] overflow-hidden size-full rounded-3xl shadow-md z-[100];
   }
 
-  .secondary--modal {
-    @apply flex items-center justify-center bg-white md:rounded-3xl w-screen md:w-xl lg:w-3xl h-fit md:h-auto md:shadow-md md:items-center md:justify-start;
+  .modal--secondary {
+    @apply md:rounded-3xl w-screen md:w-xl lg:w-3xl md:h-auto md:shadow-md md:justify-start z-[90];
   }
 
   .btn {
@@ -137,23 +142,23 @@
   .badge--secondary--2 {
     @apply bg-white text-text border border-stroke;
   }
-  .profileLink {
-    @apply flex items-center gap-2 border-t border-stroke py-5 text-xs;
+  .profile__link {
+    @apply flex items-center gap-2 px-6 text-xs;
   }
-  .profileTitle {
-    @apply text-xs text-text-primary;
+  .profile__title {
+    @apply flex items-center gap-2 py-4 w-full text-xs text-text-primary border-t border-stroke;
   }
-  .profileLinkSecond {
-    @apply flex items-center justify-between gap-2 border-t border-stroke py-5 text-sm;
+  .profile__link--2 {
+    @apply flex items-center justify-between gap-2 px-6 text-sm;
   }
   .pagesBtn {
     @apply flex items-center justify-center size-10 text-sm bg-white border border-[#E4E7E9] hover:border hover:border-primary hover:bg-white hover:text-primary active:border active:border-primary active:bg-white active:text-primary  focus-within:bg-primary focus-within:border-0 focus-within:text-white rounded-full duration-200;
   }
-  .table__th{
-    @apply bg-primary text-white py-3
+  .table__th {
+    @apply bg-primary text-white py-3;
   }
-  .table__td{
-    @apply text-text py-4 text-ellipsis whitespace-nowrap overflow-y-auto
+  .table__td {
+    @apply text-text py-4 text-ellipsis whitespace-nowrap overflow-y-auto;
   }
   .tdBase {
     @apply flex items-center justify-center text-nowrap;

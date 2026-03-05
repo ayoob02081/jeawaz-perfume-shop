@@ -3,7 +3,7 @@
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 import { useGetAllProducts } from "@/hooks/useProducts";
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import CardEvents from "@/components/CardEvents";
 import RadioButton from "@/ui/RadioButton";
 import PriceSection from "@/components/PriceSection";
@@ -11,11 +11,17 @@ import Accordion from "@/ui/Accordion";
 import { useEffect, useState } from "react";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import ImageSwiper from "@/ui/ImageSwiper";
-import { useGetAllCategories } from "@/hooks/useCategories";
+import {
+  useGetAllBrandCategories,
+  useGetAllCategories,
+} from "@/hooks/useCategories";
 import { PencilIcon } from "@heroicons/react/24/outline";
+import BreadCrumbBase from "@/ui/BreadCrumbBase";
+import BreadCrumb from "@/ui/BreadCrumb";
 
 function SingleProductPage({ slug }) {
   const { data, isLoading, error } = useGetAllProducts();
+
   const {
     data: categories,
     isLoading: categoriesLoading,
@@ -30,22 +36,44 @@ function SingleProductPage({ slug }) {
   if (error) {
     return <Error />;
   }
-console.log(currentSlug);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 w-ful md:p-6 container mx-auto xl:max-w-7xl md:mt-40">
-      <ImageSwiper images={currentSlug.images} product={currentSlug} />
-      <ProductDes currentSlug={currentSlug} />
-      <ProductOptions currentSlug={currentSlug} categories={categories} />
-      <ProductDetails currentSlug={currentSlug} />
-    </div>
+    <main className=" container mx-auto xl:max-w-7xl md:mt-40">
+      <article className="px-6">
+        <section className="max-md:hidden">
+          <BreadCrumbBase>
+            <BreadCrumb href={"/"} label={"فروشگاه"} />
+            <BreadCrumb href={"/products"} label={"محصولات"} chevron />
+            <BreadCrumb
+              href={`/products/${currentSlug.id}`}
+              label={currentSlug.perTitle}
+              className="!text-primary font-bold"
+              chevron
+            />
+          </BreadCrumbBase>
+        </section>
+      </article>
+      <article className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 w-ful md:p-6">
+        <ImageSwiper images={currentSlug.images} product={currentSlug} />
+        <ProductDes currentSlug={currentSlug} />
+        <ProductOptions currentSlug={currentSlug} categories={categories} />
+        <ProductDetails currentSlug={currentSlug} />
+      </article>
+    </main>
   );
 }
 
 export default SingleProductPage;
 
 function ProductDes({ currentSlug }) {
-  const productBrand = currentSlug.categories.brand;
+  const {
+    data: allBrands,
+    isLoading: brandsLoading,
+    error: brandsError,
+  } = useGetAllBrandCategories();
+  const productBrand = allBrands?.find(
+    (brand) => brand.title === currentSlug?.categories.brand,
+  );
 
   const [volumeMode, setVolumeMode] = useState("sealed");
 
@@ -88,71 +116,94 @@ function ProductDes({ currentSlug }) {
     volumeMode === "decant" ? decantsPrice : sealedPrice?.price || 0;
 
   return (
-    <div className="grid grid-cols-1 w-full gap-y-4 xl:gap-y-10 max-md:p-6 h-fit justify-items-start">
-      <div className="flex flex-col gap-2 items-start justify-start w-full">
-        <span className="flex items-start max-md:justify-between gap-2 md:justify-start w-full">
-          <p className="font-bold lg:text-[28px]">{currentSlug.perTitle}</p>
-          <p className="md:hidden">{productBrand}</p>
+    <article className="grid grid-cols-1 w-full gap-y-4 xl:gap-y-10 max-md:p-6 h-fit justify-items-start">
+      <section className="flex flex-col gap-2 items-start justify-start w-full">
+        <span className="flex items-center max-md:justify-between gap-2 md:justify-start w-full">
+          <p className="font-bold text-wrap text-[28px] w-full">
+            {currentSlug.perTitle}
+          </p>
+          <div className="md:hidden">
+            <AppImage
+              src={productBrand.iconUrl}
+              alt={productBrand.value + "-icon"}
+              className="justify-center h-full"
+              width="max-md:w-20 md:w-[4.815rem]"
+              sizes="10vw"
+            />
+          </div>
         </span>
-        <p className="text-xs lg:text-lg text-text-secondary">
+        <p className="text-base text-wrap text-text-secondary w-full">
           {currentSlug.enTitle}
         </p>
-      </div>
-      <div className="flex flex-col items-star justify-between gap-2 w-full max-md:border-t border-stroke-2 pt-4 md:row-start-3 h-full overflow-hidden">
-        <div className="flex flex-col items-start justify-start gap-3">
-          <p className="">نوع محصول:</p>
-          <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
-            <RadioButton
-              id="productVolumeModeDecant"
-              name="productVolumeMode"
-              value="decant"
-              onChange={(e) => volumeHandler(e, "decant")}
-              checked={volumeMode === "decant"}
-              className=" badge badge--secondary--2 hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white duration-200 "
-            >
-              <p className="text-nowrap">دکانت</p>
-            </RadioButton>
-            <RadioButton
-              id="productVolumeModeSealed"
-              name="productVolumeMode"
-              value="sealed"
-              onChange={(e) => volumeHandler(e, "sealed")}
-              checked={volumeMode === "sealed"}
-              className=" badge badge--secondary--2 hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white duration-200 "
-            >
-              <p className="text-nowrap">شیشه پلمپ</p>
-            </RadioButton>
+      </section>
+      <section className="flex items-center justify-between w-full max-md:border-t border-stroke-2 pt-4 ">
+        <div className="flex flex-col items-star justify-between gap-2 w-full md:row-start-3 h-full overflow-hidden">
+          <div className="flex flex-col items-start justify-start gap-3">
+            <p className="">نوع محصول:</p>
+            <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
+              <RadioButton
+                id="productVolumeModeDecant"
+                name="productVolumeMode"
+                value="decant"
+                onChange={(e) => volumeHandler(e, "decant")}
+                checked={volumeMode === "decant"}
+                className=" badge badge--secondary--2 hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white duration-200 "
+              >
+                <p className="text-nowrap">دکانت</p>
+              </RadioButton>
+              <RadioButton
+                id="productVolumeModeSealed"
+                name="productVolumeMode"
+                value="sealed"
+                onChange={(e) => volumeHandler(e, "sealed")}
+                checked={volumeMode === "sealed"}
+                className=" badge badge--secondary--2 hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white duration-200 "
+              >
+                <p className="text-nowrap">شیشه پلمپ</p>
+              </RadioButton>
+            </div>
+          </div>
+          <div className="flex flex-col items-start justify-start gap-3">
+            <p className="">انتخاب حجم:</p>
+            <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
+              {volumes?.map((volume, index) => {
+                const isDisabled = currentSlug.stock >= volume ? false : true;
+                return (
+                  <RadioButton
+                    key={volumeMode + index}
+                    id={volumeMode + index}
+                    name={`single-product-volume` + currentSlug.id}
+                    value={volume}
+                    disabled={isDisabled}
+                    onChange={volumeHandler}
+                    checked={selectedVolume === volume}
+                    className={` badge badge--secondary--2  ${
+                      isDisabled
+                        ? "opacity-60 !cursor-not-allowed"
+                        : "hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white"
+                    } duration-200`}
+                  >
+                    <p className="text-nowrap">
+                      {toPersianNumbers(volume)} میل
+                    </p>
+                  </RadioButton>
+                );
+              })}
+            </div>
           </div>
         </div>
-        <div className="flex flex-col items-start justify-start gap-3">
-          <p className="">انتخاب حجم:</p>
-          <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
-            {volumes?.map((volume, index) => {
-              const isDisabled = currentSlug.stock >= volume ? false : true;
-              return (
-                <RadioButton
-                  key={volumeMode + index}
-                  id={volumeMode + index}
-                  name={`single-product-volume` + currentSlug.id}
-                  value={volume}
-                  disabled={isDisabled}
-                  onChange={volumeHandler}
-                  checked={selectedVolume === volume}
-                  className={` badge badge--secondary--2  ${
-                    isDisabled
-                      ? "opacity-60 !cursor-not-allowed"
-                      : "hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white"
-                  } duration-200`}
-                >
-                  <p className="text-nowrap">{toPersianNumbers(volume)} میل</p>
-                </RadioButton>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+        {currentSlug.original === true && (
+          <AppImage
+            src="/images/bg-original.svg"
+            alt="original-icon"
+            ratio="aspect-[5/2]"
+            width="max-sm:w-36 w-44"
+            sizes="10vw"
+          />
+        )}
+      </section>
       <div className="flex items-center md:justify-between max-md:justify-end w-full md:row-start-2">
-        {currentSlug.stock >= 3 && (
+        {currentSlug.stock >= 3 ? (
           <PriceSection
             volume={selectedVolume}
             volumeMode={volumeMode}
@@ -164,18 +215,27 @@ function ProductDes({ currentSlug }) {
             priceClassName="text-[32px]"
             justify="max-md:justify-end md:justify-start"
           />
-        )}
-        <p className="max-md:hidden">{productBrand}</p>
-      </div>
-      <div className="flex items-center justify-between w-full gap-4">
-        {currentSlug.stock >= 3 ? (
-          <button className=" btn btn--success w-full h-12 px-2">
-            افزودن به سبد خرید
-          </button>
         ) : (
           <p className="text-primary font-bold max-md: md: text-3xl">
             ناموجود!
           </p>
+        )}
+        <div className="max-md:hidden">
+          <AppImage
+            src={productBrand.iconUrl}
+            alt={productBrand.value + "-icon"}
+            className="justify-center h-full w"
+            width="max-md:w-16 md:w-20 xl:w-28"
+            ratio="aspect-[4/1]"
+            sizes="10vw"
+          />
+        </div>
+      </div>
+      <div className="flex items-center justify-between w-full gap-4">
+        {currentSlug.stock >= 3 && (
+          <button className=" btn btn--success w-full h-12 px-2">
+            افزودن به سبد خرید
+          </button>
         )}
         <div className=" flex-none">
           {currentSlug.stock >= 3 && (
@@ -195,7 +255,7 @@ function ProductDes({ currentSlug }) {
           {currentSlug.description}
         </p>
       </Accordion>
-    </div>
+    </article>
   );
 }
 
@@ -208,29 +268,40 @@ function ProductOptions({ currentSlug, categories }) {
   const { details, modes } = currentSlug;
 
   return (
-    <div className="grow flex flex-col items-center justify-start gap-6 w-full max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:p-6 md:p-4 border-stroke-2 ">
-      <span className="flex items-center justify-start gap-2 w-full">
-        <ImageFrame
-          src="/images/menu-icon.svg"
-          alt="menu-icon"
-          className="size-6"
-        />
-        <p className="font-bold">ویژگی های محصول</p>
-      </span>
-      <div className="grid max-sm:grid-cols-3 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-3 gap-x-4 w-full px-2">
-        <ProductOption title="کشور تولید کننده" value={details.madeIn} />
-        <ProductOption title="عطر ساز" value={details.designedIn} />
-        <ProductOption title="پخش بو" value={details.smelling} />
-        <ProductOption title="ماندگاری" value={details.longevity} />
-        <ProductOption
-          title="حجم شیشه پلمپ"
-          volumes
-          data={modes.sealed.variants}
-        />
-        <ProductOption title="گروه‌‌بندی رایحه" data={productAccords} accords />
-        <ProductOption title="مناسب برای فصل" data={details.seasons} accords />
-      </div>
-    </div>
+    <article className="grow w-full  max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:p-6 md:p-4 border-stroke-2 ">
+      <section className=" flex flex-col items-center justify-start gap-6 w-full">
+        <span className="flex items-center justify-start gap-2 w-full">
+          <AppImage
+            src="/images/menu-icon.svg"
+            alt="menu-icon"
+            width="size-6"
+            sizes="10vw"
+          />
+          <p className="font-bold">ویژگی های محصول</p>
+        </span>
+        <div className="grid max-sm:grid-cols-3 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-3 gap-x-4 w-full px-2">
+          <ProductOption title="کشور تولید کننده" value={details.madeIn} />
+          <ProductOption title="عطر ساز" value={details.designedIn} />
+          <ProductOption title="پخش بو" value={details.smelling} />
+          <ProductOption title="ماندگاری" value={details.longevity} />
+          <ProductOption
+            title="حجم شیشه پلمپ"
+            volumes
+            data={modes.sealed.variants}
+          />
+          <ProductOption
+            title="گروه‌‌بندی رایحه"
+            data={productAccords}
+            accords
+          />
+          <ProductOption
+            title="مناسب برای فصل"
+            data={details.seasons}
+            accords
+          />
+        </div>
+      </section>
+    </article>
   );
 }
 
@@ -272,10 +343,11 @@ function ProductDetails({ currentSlug }) {
     <div className="grow flex flex-col items-center justify-between gap-6 w-full max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl p-6 border-stroke-2  ">
       <div className="flex flex-col items-start justify-between gap-2">
         <span className="flex items-center justify-start gap-2">
-          <ImageFrame
+          <AppImage
             src="/images/square-list-icon.svg"
             alt="square-list-icon"
-            className="size-6"
+            width="size-6"
+            sizes="10vw"
           />
           <p className="font-bold">ترکیبات محصول</p>
         </span>
@@ -296,15 +368,15 @@ function ProductDetails({ currentSlug }) {
 function Notes({ type, top, middle, base }) {
   return (
     <div className="relative flex flex-col items-center justify-center gap-2 text-nowrap whitespace-nowrap">
-      <ImageFrame
+      <AppImage
         src={`/images/scent-background-${base ? "1" : middle ? "2" : "3"}.svg`}
-        alt="shape background"
-        className={
+        alt="shape-background"
+        width={
           base
-            ? "w-[60px] h-[53.3px]"
+            ? "!w-[60px] !h-[53.3px]"
             : middle
-              ? "w-[152.46px] h-[66.02px]"
-              : "w-[310px] h-[134.23px]"
+              ? "!w-[152.46px] !h-[66.02px]"
+              : "!w-[310px] !h-[134.23px]"
         }
       />
       <span className="absolute flex flex-col items-center justify-center gap-1 z-20">

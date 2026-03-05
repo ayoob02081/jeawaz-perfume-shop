@@ -12,7 +12,7 @@ function page() {
     <Modal
       isOpen={() => router.back()}
       onClose={() => {router.back()}}
-      className="max-md:h-80 md:h-[30rem]"
+      className="max-md:h-80 md:h-[30rem] justify-end"
     >
       <Login toggleModalOpen={() => router.back()} />
     </Modal>

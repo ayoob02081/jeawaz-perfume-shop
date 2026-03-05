@@ -7,8 +7,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import ImageFrame from "./ImageFrame";
-import Logo from "./Logo";
+import AppImage from "./AppImage";
 import { useState } from "react";
 import SearchSection from "./SearchSection";
 import CategorySideBar from "@/app/(user)/_components/CategorySideBar";
@@ -21,9 +20,9 @@ import { useGetUser } from "@/hooks/useUsers";
 function HeaderLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
-  const { data, isPending, error } = useGetUser();
+  const { data: user, isPending, error } = useGetUser();
 
-  const userFullName = data?.firstName + " " + data?.lastName;
+  const userFullName = user?.firstName + " " + user?.lastName;
 
   const toggleCategory = () => {
     setCategoryOpen((prevState) => !prevState);
@@ -37,12 +36,12 @@ function HeaderLayout() {
     <>
       <DesktopHeader
         toggleCategory={toggleCategory}
-        data={data}
+        user={user}
         userFullName={userFullName}
         isPending={isPending}
       />
       <MobileHeader
-        data={data}
+        user={user}
         toggleSideBar={toggleSideBar}
         toggleCategory={toggleCategory}
         sidebarOpen={sidebarOpen}
@@ -64,7 +63,7 @@ export default HeaderLayout;
 function DesktopHeader({
   toggleCategory,
   userFullName,
-  data,
+  user,
   isPending,
   categoryOpen,
 }) {
@@ -72,14 +71,19 @@ function DesktopHeader({
   const pathName = usePathname();
 
   return (
-    <nav className="max-md:hidden md:fixed inset-0 top-0 right-0 left-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-50 bg-white shadow-md">
+    <nav className="max-md:hidden md:fixed inset-0 top-0 right-0 left-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-90 bg-white shadow-md">
       <ul className="flex flex-col justify-between gap-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex grow items-center justify-betwee gap-4">
             <div className="flex grow items-center justify-between">
               <li className=" justify-items-center">
                 <Link className="block p-2" href="/">
-                  <Logo width="w-[5.75rem] h-12" />
+                  <AppImage
+                    src="/images/Jeaawaz-Logo-red-v5.0.webp"
+                    alt="jeawaz-brand-icon"
+                    width="w-18 h-10"
+                    sizes="20vw"
+                  />
                 </Link>
               </li>
               <li className="flex relative grow col-span-3 ">
@@ -134,45 +138,54 @@ function DesktopHeader({
               </li>
             </div>
           </div>
-          <div className="flex flex-none items-center justify-between gap-2 lg:gap-4">
-            <li className="w-28 lg:w-36 h-10 lg:h-12 btn btn--secondary py-0">
+          <div className="flex flex-none items-center justify-between gap-3">
+            <li
+              className={`w-fit lg: max-w-36 h-10 lg:h-12 btn bg-white active:bg-dark-brown py-0 pl-1 pr-2 ${user?.email && "border-0 ring-1 ring-dark-brown/10"} duration-200`}
+            >
               <button
                 onClick={
-                  !data?.email || data?.email === undefined
+                  !user?.email || user?.email === undefined
                     ? () => router.push("/auth/login")
                     : () => router.push("/profile")
                 }
                 disabled={isPending ? true : false}
-                className={`size-full ${isPending ? "blur-x opacity-50" : ""}`}
+                className={`size-full ${isPending && "blur-x opacity-50"} duration-200`}
               >
-                <div className="flex items-center justify-center px-1.5 lg:px-4 size-full gap-2">
-                  <p className="text-xs lg:text-sm text-nowrap overflow-x-scroll w-full scrollbar-none">
-                    {data?.email ? userFullName : "ورود | ثبت نام"}
+                <span
+                  className={`flex flex-row-reverse items-center gap-1 size-full${user?.email ? "justify-between text-dark-brown font-bold " : "justify-center"}`}
+                >
+                  <div
+                    className={`${user?.email && "bg-dark-brown text-white"} rounded-full p-2`}
+                  >
+                    <UserIcon className="size-4 stroke-2" />
+                  </div>
+                  <p className=" text-xs lg:text-sm text-nowrap overflow-x-scroll scrollbar-none size-full active:text-white">
+                    {user?.email ? userFullName : "ورود | ثبت نام"}
                   </p>
-                  <UserIcon className="size-5" />
-                </div>
+                </span>
               </button>
             </li>
             <li>
               <button
-                className="flex items-center justify-between w-32 lg:w-[8.8rem]"
+                className="flex items-center justify-between gap-2"
                 onClick={
                   !userFullName || userFullName === undefined
                     ? () => router.push("/auth/login")
                     : () => router.push("/cart")
                 }
               >
-                <div className="size-12 px-2 py-2 rounded-full border-4 border-grey bg-[#2F0D0C]">
-                  <ImageFrame
+                <div className="flex items-center justify-center size-8 lg:size-10 p-1 rounded-full ring-4 ring-dark-brown/10 bg-dark-brown">
+                  <AppImage
                     src="/images/card stroke white.svg"
-                    alt="card icon"
-                    className="size-6"
+                    alt="card-icon"
+                    width="size-6"
+                    sizes="10vw"
                   />
                 </div>
                 <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem]">
                   <p className="text-xs lg:text-sm">سبد خرید شما</p>
                   <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2 py-0.5 px-2 lg:px-3 rounded-3xl bg-grey">
+                    <div className="flex items-center gap-2 py-0.5 px-2 lg:px-3 rounded-3xl bg-dark-brown/10">
                       <p className="text-xs lg:text-sm">۴</p>
                       <p className="text-xs lg:text-sm">کالا</p>
                     </div>
@@ -203,10 +216,11 @@ function DesktopHeader({
                   className="text-text-primary hover:text-primary duration-200"
                 >
                   <div className="flex items-center justify-center gap-2 ">
-                    <ImageFrame
+                    <AppImage
                       src="/images/warranty-check-icon.svg"
-                      alt="tag icon"
-                      className="size-5"
+                      alt="popular-icon"
+                      width="size-5"
+                      sizes="10vw"
                     />
                     <p className="text-sm">پرفروش ترین ها</p>
                   </div>
@@ -218,10 +232,11 @@ function DesktopHeader({
                   className="text-text-primary hover:text-primary duration-200"
                 >
                   <div className="flex items-center justify-center gap-2 ">
-                    <ImageFrame
+                    <AppImage
                       src="/images/two-tag-icon.svg"
-                      alt="tag icon"
-                      className="size-5"
+                      alt="tag-icon"
+                      width="size-5"
+                      sizes="10vw"
                     />
                     <p className="text-sm">جدیدترین ها</p>
                   </div>
@@ -233,10 +248,11 @@ function DesktopHeader({
                   className="text-text-primary hover:text-primary duration-200"
                 >
                   <div className="flex items-center justify-center gap-2 ">
-                    <ImageFrame
+                    <AppImage
                       src="/images/special-offer-2-icon.svg"
-                      alt="offer icon"
-                      className="size-5"
+                      alt="offer-icon"
+                      width="size-5"
+                      sizes="10vw"
                     />
                     <p className="text-sm">تخفیف دار</p>
                   </div>
@@ -271,7 +287,7 @@ function DesktopHeader({
     </nav>
   );
 }
-function MobileHeader({ toggleSideBar, toggleCategory, sidebarOpen, data }) {
+function MobileHeader({ toggleSideBar, toggleCategory, sidebarOpen, user }) {
   const router = useRouter();
 
   return (
@@ -282,33 +298,40 @@ function MobileHeader({ toggleSideBar, toggleCategory, sidebarOpen, data }) {
             className="text-2xl focus:outline-none block p-3 rounded-full border-2 border-primary/10"
             onClick={toggleSideBar}
           >
-            <ImageFrame
+            <AppImage
               src="/images/category.svg"
               alt="category icon"
-              className="size-6"
+              width="size-6"
+              sizes="10vw"
             />
           </button>
         </li>
         <li className=" justify-items-center">
           <Link className="block p-2" href="/">
-            <Logo width="h-[2.65rem] w-[5.15rem]" />
+            <AppImage
+              src="/images/Jeaawaz-Logo-red-v5.0.webp"
+              alt="jeawaz-brand-icon"
+              width="h-[2.65rem] w-[5.15rem]"
+              sizes="20vw"
+            />
           </Link>
         </li>
         <li className=" justify-items-end">
           <button
             onClick={
-              !data?.email || data?.email === undefined
+              !user?.email || user?.email === undefined
                 ? () => router.push("/auth/login")
                 : () => router.push("/cart")
             }
-            className="relative block p-3 rounded-full border-2 border-primary/10"
+            className="relative block p-3 rounded-full border-2 border-dark-brown/10"
           >
-            <ImageFrame
+            <AppImage
               src="/images/card stroke.svg"
-              alt="cart icon"
-              className="size-[1.15rem]"
+              alt="cart-icon"
+              width="size-[1.15rem]"
+              sizes="10vw"
             />
-            {data?.email && (
+            {user?.email && (
               <p className="absolute -top-1 -right-1 px-1.5 pt-[1.5px] rounded-full bg-primary text-white text-[12px]">
                 ۴
               </p>

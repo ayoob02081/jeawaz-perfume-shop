@@ -1,16 +1,17 @@
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import SupportBox from "@/components/SupportBox";
 import Accordion from "@/ui/Accordion";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import Link from "next/link";
+import ContactUsForm from "../_components/ContactUsForm";
 
 function ContactUsPage() {
   return (
-    <div className="mt-48 md:mt-40">
+    <main className="mt-48 md:mt-40">
       {/* Contact Us */}
-      <div className="flex flex-col items-center justify-center container mx-auto size-full xl:max-w-7xl bg-[#FEF8FA] sm:px-6 md:p-6 rounded-2.5xl sm:rounded-3xl md:rounded-t-5xl">
-        <div className="flex flex-col justify-start gap-6 md:gap-15 w-full p-6 ">
-          <span className="flex max-md:flex-col md:flex-row items-center max-md:justify-center md:justify-between max-md:gap-8 md:gap-10 w-full">
+      <article className="flex flex-col items-end justify-center container mx-auto size-full xl:max-w-7xl bg-[#FEF8FA] sm:px-6 md:pt-6 rounded-t-2.5xl sm:rounded-t-3xl md:rounded-t-5xl">
+        <div className="flex flex-col justify-start gap-6 md:gap-15 w-full px-6 pt-6">
+          <section className="flex max-md:flex-col md:flex-row items-center max-md:justify-center md:justify-between max-md:gap-8 md:gap-10 w-full">
             <span className="flex flex-col max-md:items-center md:items-start justify-center font-bold max-md:gap-4 md:gap-6">
               <h1 className="text-xs md:text-base text-primary ">تماس با ما</h1>
               <span className="flex items-center justify-center gap-1 max-md:text-2xl md:text-[2rem] text-text text-nowrap">
@@ -23,22 +24,23 @@ function ContactUsPage() {
               تا با پاسخ‌گویی دقیق و به‌موقع، تجربه‌ای مطمئن، دل‌پذیر و حرفه‌ای
               از خرید عطر برای شما فراهم کند
             </p>
-          </span>
-          <div className="flex flex-col md:flex-row md:gap-8 md:items-center md:justify-between bg-white max-md:ring-4 md:ring-8 ring-black/5 !rounded-b-none max-md:rounded-2.5xl md:rounded-5xl p-6">
-            <div className="flex flex-col justify-start gap-8 md:gap-12 ">
+          </section>
+          <div className="flex flex-col md:flex-row md:gap-8 md:items-start md:justify-between bg-white !border-b-0 max-md:border-4 md:border-8 border-black/5 !rounded-b-none max-md:rounded-2.5xl md:rounded-5xl p-6 size-full">
+            <section className="grow flex flex-col justify-start gap-8 md:gap-12 h-full max-md:w-full md:w-1/2">
               <div className="flex flex-col items-start justify-start gap-4">
                 <div className="flex items-center justify-center bg-grey rounded-xl size-12">
-                  <ImageFrame
+                  <AppImage
                     src="/images/map-marker-nearby-2-icon.svg"
                     alt="map-marker-nearby"
-                    className="size-6"
+                    width="size-6"
+                    sizes="10vw"
                   />
                 </div>
-                <span className="flex flex-col items-start justify-start gap-2">
+                <span className="flex flex-col items-start justify-start gap-2 text-wrap">
                   <p className="max-md:text-xs md:text-sm text-text-secondary font-bold">
                     آدرس فروشگاه
                   </p>
-                  <p className="max-md:text-sm md:text-base text-text font-bold leading-7">
+                  <p className="max-md:text-sm md:text-base text-text text-wrap font-bold leading-7">
                     کردستان، بانه، بلوار ورزش، مجتمع تجاری آربابا، طبقه اول،
                     پلاک ۵۹ و ۶۰
                   </p>
@@ -46,10 +48,11 @@ function ContactUsPage() {
               </div>
               <div className="flex flex-col items-start justify-start gap-4">
                 <div className="flex items-center justify-center bg-grey rounded-xl size-12">
-                  <ImageFrame
+                  <AppImage
                     src="/images/call-ringing-4-primary-2-icon.svg"
                     alt="call-ringing"
-                    className="size-6"
+                    width="size-6"
+                    sizes="10vw"
                   />
                 </div>
                 <span className="flex flex-col items-start justify-start gap-4">
@@ -84,10 +87,11 @@ function ContactUsPage() {
               </div>
               <div className="flex flex-col items-start justify-start gap-4">
                 <div className="flex items-center justify-center bg-grey rounded-xl size-12">
-                  <ImageFrame
+                  <AppImage
                     src="/images/social-earth-icon.svg"
                     alt="social-earth"
-                    className="size-6"
+                    width="size-6"
+                    sizes="10vw"
                   />
                 </div>
                 <span className="flex flex-col items-start justify-start gap-4 w-full">
@@ -99,10 +103,11 @@ function ContactUsPage() {
                       href="https://t.me/jeaawazperfume"
                       className="flex items-center justify-center gap-2 px-4 h-12 w-full rounded-full border border-stroke-2 max-w-36 md:max-w-40"
                     >
-                      <ImageFrame
+                      <AppImage
                         src="/images/telegram-icon.svg"
                         alt="telegram-icon"
-                        className="size-6"
+                        width="size-6"
+                        sizes="10vw"
                       />
                       <p className="text-sm text-dark-brown font-bold">
                         تلگرام
@@ -112,10 +117,11 @@ function ContactUsPage() {
                       href="https://www.instagram.com/jeawaz_perfume/"
                       className="flex items-center justify-center gap-2 px-4 h-12 w-full rounded-full border border-stroke-2 max-w-36 md:max-w-40"
                     >
-                      <ImageFrame
+                      <AppImage
                         src="/images/instagram-icon.svg"
                         alt="instagram-icon"
-                        className="size-6"
+                        width="size-6"
+                        sizes="10vw"
                       />
                       <p className="text-sm text-dark-brown font-bold">
                         اینستاگرام
@@ -124,36 +130,82 @@ function ContactUsPage() {
                   </div>
                 </span>
               </div>
-            </div>
-            <div className="max-md:hidden md:flex ">Form</div>
+            </section>
+            <section className="grow max-md:hidden md:flex items-start h-full w-1/2">
+              <ContactUsForm />
+            </section>
+          </div>
+        </div>
+      </article>
+      <div className="relative w-full bg-white z-10">
+        <div className="!mx-auto container xl:max-w-7xl max-md:hidden w-full">
+          <div className="relative size-full">
+            <AppImage
+              src="/images/rounde-border-lg.svg"
+              alt="rounde-border"
+              className=""
+              ratio="aspect-[26/1]"
+              width="w-full"
+              sizes="100vw"
+            />
+          </div>
+          <div className="absolute top-0 right-1/2 translate-x-1/2">
+            <AppImage
+              src="/images/Jeaawaz-Logo-red-v5.0.webp"
+              alt="jeawaz-brand-logo"
+              className=""
+              ratio="aspect-[5/2]"
+              width="md:w-10 lg:w-16"
+              sizes="20vw"
+            />
+          </div>
+        </div>
+        <div className="!mx-auto container xl:max-w-7xl md:hidden">
+          <div className="relative size-full">
+            <AppImage
+              src="/images/rounde-border.svg"
+              alt="rounde-border"
+              className=""
+              ratio="aspect-[17/2]"
+              width="w-full"
+              sizes="100vw"
+            />
+          </div>
+          <div className="absolute top-0 right-1/2 translate-x-1/2">
+            <AppImage
+              src="/images/Jeaawaz-Logo-red-v5.0.webp"
+              alt="jeawaz-brand-logo"
+              className=""
+              ratio="aspect-[5/2]"
+              width="w-20"
+              sizes="20vw"
+            />
           </div>
         </div>
       </div>
       {/* Support */}
-      <div className="relative w-full max-md:h-36 md:h-48 bg-white z-10">
-        <div className="absolute max-md:bottom-8 md:bottom-13 size-full bg-white -z-1"></div>
-        <div className="h-fit flex flex-col items-center justify-center container mx-auto w-full xl:max-w-7xl p-6">
-          <SupportBox />
-          <div></div>
-        </div>
+      <div className="h-fit flex flex-col items-center justify-center container mx-auto w-full xl:max-w-7xl p-6 mt-6">
+        <SupportBox />
       </div>
       {/* FAQ */}
-      <div className="p-6 container mx-auto xl:max-w-7xl max-md:mt-8">
+      <article className="p-6 container mx-auto xl:max-w-7xl max-md:mt-8">
         <div className="flex items-start justify-between gap-4 w-full mb-6">
           <span className="flex flex-col items-start justify-start gap-4">
-            <p className="text-text font-bold text-xl md:text-2xl">
+            <h2 className="text-text font-bold text-xl md:text-2xl">
               سوالات متداول
-            </p>
+            </h2>
             <p className="text-text-cap-2 text-xs md:text-sm ">
               برای پاسخ به پرسش‌های رایج شما، مجموعه‌ای از سؤالات متداول را
               آماده کرده‌ایم تا تجربه خریدی ساده‌تر، شفاف‌تر و سریع‌تر داشته
               باشید.
             </p>
           </span>
-          <ImageFrame
+          <AppImage
             src="/images/star-8-icon.svg"
             alt="star-icon"
-            className="size-[18px] md:size-10 rotate-6"
+            className="rotate-6"
+            width="size-[18px] md:size-10"
+            sizes="10vw"
           />
         </div>
         <div className="flex flex-col gap-6">
@@ -163,9 +215,9 @@ function ContactUsPage() {
             plus
           >
             <p className="leading-7 text-text-secondary border-t-[1.5px] border-stroke-2 pt-6">
-              در فروشگاه جیاواز دو نوع محصول — اورجینال و مستر کوالیتی — ارائه
-              می‌شود. تمامی کالاها با ذکر دقیق نوع کیفیت (اورجینال یا مستر
-              کوالیتی) در صفحه محصول مشخص شده‌اند تا مشتری با آگاهی کامل انتخاب
+              در فروشگاه جیاواز دو نوع محصول — اورجینال و سفارش اروپا — ارائه
+              می‌شود. تمامی کالاها با ذکر دقیق نوع کیفیت ( اورجینال یا سفارش
+              اروپا ) در صفحه محصول مشخص شده‌اند تا مشتری با آگاهی کامل انتخاب
               کند. هدف ما ارائه گزینه‌های متنوع با سطح کیفیت و قیمت متفاوت است
               تا هر مشتری بتواند مطابق نیاز و بودجه خود خریدی مطمئن و رضایت‌بخش
               داشته باشد.
@@ -177,8 +229,8 @@ function ContactUsPage() {
             plus
           >
             <p className="leading-7 text-text-secondary border-t-[1.5px] border-stroke-2 pt-6">
-              پخش بو و ماندگاری عطرها بسته به نوع رایحه، غلظت (مانند ادوپرفیوم
-              یا ادوتویلت)، کیفیت اسانس و حتی نوع پوست افراد متفاوت است. در
+              پخش بو و ماندگاری عطرها بسته به نوع رایحه، غلظت ( مانند ادوپرفیوم
+              یا ادوتویلت )، کیفیت اسانس و حتی نوع پوست افراد متفاوت است. در
               فروشگاه جیاواز، برای هر محصول میزان پخش و ماندگاری به‌صورت دقیق و
               واقعی در بخش توضیحات درج شده است تا مشتری بتواند با اطمینان کامل
               انتخاب کند. <br /> بر اساس منابع تخصصی عطر، غلظت عطر یکی از
@@ -220,8 +272,8 @@ function ContactUsPage() {
             </p>
           </Accordion>
         </div>
-      </div>
-    </div>
+      </article>
+    </main>
   );
 }
 

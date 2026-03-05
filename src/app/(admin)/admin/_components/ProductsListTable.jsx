@@ -1,7 +1,7 @@
 "use client";
 
 import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import { productTHeads } from "@/constants/tableHeads";
 import {
   useGetAllBrandCategories,
@@ -45,8 +45,6 @@ function ProductsListTable({ products }) {
     }
   };
 
- 
-
   return (
     <div className="w-full overflow-x-auto pb-0.5 rounded-xl shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-track-grey/0">
       <Table className="overflow-auto">
@@ -72,10 +70,12 @@ function ProductsListTable({ products }) {
                   </td>
                   <td className="table__td px-2 max-w-[280px] truncate">
                     <div className="flex items-center justify-center flex-col gap-2 text-xs">
-                      <ImageFrame
+                      <AppImage
                         src={productBrand?.iconUrl || "/brand-icon"}
-                        alt={`${productBrand?.value} icon` || "brand-icon"}
-                        className="w-16"
+                        alt={`${productBrand?.value}-icon` || "brand-icon"}
+                        ratio="aspect-[4/1]"
+                        width="w-16"
+                        sizes="10vw"
                       />
                       <p className="text-text-secondary">
                         {productBrand?.title}
@@ -86,13 +86,14 @@ function ProductsListTable({ products }) {
                     <div className="flex items-center justify-start gap-2 h-full w-fit">
                       <CardIconResponsive
                         src={productGender?.iconUrl || "/gender-icon"}
-                        alt={`${productGender?.value} icon` || "gender-icon"}
+                        alt={`${productGender?.value}-icon` || "gender-icon"}
                         title={productGender?.title}
                         type={productGender?.value}
                         className="max-md:h-8 md:h-10"
                         hoverWidthMaxMd="w-[5.5rem]"
                         hoverWidthMd="w-[4.55rem]"
                         size="max-md:size-4 md:size-6"
+                        accord
                       />
                     </div>
                   </td>
@@ -104,7 +105,7 @@ function ProductsListTable({ products }) {
                             key={accord.id}
                             accord={accord}
                             src={accord.iconUrl || "/accord-icon"}
-                            alt={`${accord?.value} icon` || "accord-icon"}
+                            alt={`${accord?.value}-icon` || "accord-icon"}
                             title={accord.title}
                             type={accord.value}
                             className="max-md:h-8 md:h-10"

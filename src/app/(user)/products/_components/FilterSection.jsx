@@ -1,6 +1,6 @@
 "use client";
 
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import { Badge } from "@/ui/Badge";
 import BreadCrumbBase from "@/ui/BreadCrumbBase";
 import BreadCrumb from "@/ui/BreadCrumb";
@@ -82,22 +82,21 @@ function FilterSection() {
     submitFilters("RESET_ALL_APPLY");
   }
 
-  // console.log(brandsFilter);
-
   return (
-    <div>
+    <article>
       <div className="border-b border-stroke">
-        <div className="flex flex-col items-start justify-between size-full gap-6 py-4">
+        <section className="flex flex-col items-start justify-between size-full gap-6 py-4">
           <div className="w-full ">
-            <div className="flex items-center justify-start gap-2 snap-x overflow-x-scroll scrollbar-none w-full">
+            <section className="flex items-center justify-start gap-2 snap-x overflow-x-scroll scrollbar-none w-full">
               <button
                 onClick={ToggleModal}
                 className="flex items-center justify-between gap-2 rounded-5xl border-[1.5px] border-stroke max-md:min-w-[6.625rem] md:min-w-[8.315rem] max-md:h-8 md:h-11 snap-center px-4"
               >
-                <ImageFrame
+                <AppImage
                   src="images/filter-icon.svg"
-                  alt="filter icon"
-                  className="size-5"
+                  alt="filter-icon"
+                  width="size-5"
+                  sizes="10vw"
                 />
                 <p className="max-md:text-xs">فیلتر ها</p>
               </button>
@@ -137,7 +136,7 @@ function FilterSection() {
                   error
                 />
               )}
-            </div>
+            </section>
           </div>
           {brandsLoading ? (
             <Loading />
@@ -145,20 +144,24 @@ function FilterSection() {
             <BrandsFilter
               brands={brands}
               OnChange={OnChange}
-              handeleScroll={handeleScroll}
               ref={brandsRef}
               state={state.draft?.brands}
               addFilter={addFilter}
               applyFilter={applyFilter}
             />
           )}
-          <div className="max-md:hidden pb-4">
+          <section className="max-md:hidden pb-4">
             <BreadCrumbBase>
-              <BreadCrumb href={"/"} label={"home"} />
-              <BreadCrumb href={"/products"} label={"products"} chevron />
+              <BreadCrumb href={"/"} label={"فروشگاه"} />
+              <BreadCrumb
+                href={"/products"}
+                label={"محصولات"}
+                chevron
+                className="!text-primary font-bold"
+              />
             </BreadCrumbBase>
-          </div>
-        </div>
+          </section>
+        </section>
         <Modal isOpen={isModalOpen} onClose={CloseModal}>
           <FormModalLayout
             handleSubmit={HandlefilterData}
@@ -177,7 +180,7 @@ function FilterSection() {
           </FormModalLayout>
         </Modal>
       </div>
-      <div className="w-full flex items-center justify-between py-6">
+      <section className="w-full flex items-center justify-between py-6">
         <div className=" flex items-center justify-center gap-2">
           <div className="bg-primary h-3 w-[3px] rounded-full"></div>
           <p className="text-xl font-bold">عطر های مردانه</p>
@@ -185,21 +188,14 @@ function FilterSection() {
         <div>
           <SortSection />
         </div>
-      </div>
-    </div>
+      </section>
+    </article>
   );
 }
 
 export default FilterSection;
 
-function BrandsFilter({
-  brands,
-  handeleScroll,
-  ref,
-  state,
-  addFilter,
-  applyFilter,
-}) {
+function BrandsFilter({ brands, ref, state, addFilter, applyFilter }) {
   return (
     <form className="relative max-md:hidden flex items-center gap-2 w-full h-14 lg:h-[72px] overflow-hidden">
       <div className=" flex items-center justify-center border border-primary/10 bg-secondary-2 rounded-full text-primary lg:text-lg font-bold h-full aspect-square">

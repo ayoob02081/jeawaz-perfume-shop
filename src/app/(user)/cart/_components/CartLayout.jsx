@@ -11,7 +11,7 @@ import TextField from "@/ui/TextField";
 import TextAreaField from "@/ui/TextAreaField";
 import RadioButton from "@/ui/RadioButton";
 import { CheckIcon, PlusIcon } from "@heroicons/react/24/outline";
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import CartSummery from "./CartSummery";
 import CartOrders from "./CartOrders";
 import PriceSection from "@/components/PriceSection";
@@ -25,8 +25,6 @@ function CartLayout() {
   const [cartOpen, setCartOpen] = useState(false);
   const { data, isLoading, error } = useGetAllOrdersByStatus("succeed");
   const firstOrder = data && data[0];
-  // console.log(data);
-  // console.log(firstOrder);
 
   const toggleCart = () => {
     setCartOpen((prevState) => !prevState);
@@ -158,10 +156,11 @@ function CardStepsIcon({ productValue, className, step, setStep }) {
             step === 1 ? "bg-text-primary" : "bg-text-primary/20"
           } `}
         >
-          <ImageFrame
+          <AppImage
             src={`/images/bag-fill-level-${step === 1 ? "2" : "3"}-icon.svg`}
             alt="bag-fill-icon"
-            className="size-6"
+            width="size-6"
+            sizes="20vw"
           />
         </div>
         <p className="text-xs md:text-base max-md:text-text-primary md:text-icon-brown font-semibold">
@@ -181,16 +180,17 @@ function CardStepsIcon({ productValue, className, step, setStep }) {
             step === 1
               ? "bg-white"
               : step === 2
-              ? "bg-text-primary"
-              : "bg-text-primary/20"
+                ? "bg-text-primary"
+                : "bg-text-primary/20"
           } `}
         >
-          <ImageFrame
+          <AppImage
             src={`/images/user-level-${
               step === 3 ? "3" : step === 2 ? "2" : "1"
             }-icon.svg`}
             alt="user-icon"
-            className="size-6"
+            width="size-6"
+            sizes="20vw"
           />
         </div>
         <p className="text-xs md:text-base max-md:text-text-primary md:text-icon-brown font-semibold text-center max-sm:max-h-4">
@@ -210,10 +210,11 @@ function CardStepsIcon({ productValue, className, step, setStep }) {
             step === 3 ? "bg-text-primary" : "bg-white"
           } `}
         >
-          <ImageFrame
+          <AppImage
             src={`/images/checked-level-${step === 3 ? "2" : "1"}-icon.svg`}
             alt="checked-icon"
-            className="size-6"
+            width="size-6"
+            sizes="20vw"
           />
         </div>
         <p className="text-xs md:text-base max-md:text-text-primary md:text-icon-brown font-semibold">
@@ -472,10 +473,11 @@ function CartLastStep({ items, date, totalPrice }) {
     <div className="flex flex-col items-center justify-center gap-6 size-full">
       <div className="flex flex-col md:flex-row items-center md:items-start justify-between size-full">
         <div className="flex flex-col md:flex-row items-center md:items-start justify-start gap-2 size-full">
-          <ImageFrame
+          <AppImage
             src="/images/success-badge-icon.svg"
             alt="success-badge-icon"
-            className="max-md:size-12 md:size-16"
+            width="max-md:size-12 md:size-16"
+            sizes="30vw"
           />
           <div className="flex flex-col items-center md:items-start justify-between gap-4 md:gap-2">
             <p className="md:text-lg font-bold">

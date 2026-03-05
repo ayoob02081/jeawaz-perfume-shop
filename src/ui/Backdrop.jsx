@@ -23,14 +23,12 @@ function Backdrop({
   }, [isOpen]);
 
   return (
-    <div
+    <article
       className={`${isOpen ? `${openForm}` : `${closeForm} `} 
-    ${
-      category === true ? "fixed" : "fixed"
-    } z-[80] max-md:duration-200 ${className}`}
+    ${category === true ? "fixed" : "fixed"} max-md:duration-200 ${className}`}
     >
       {children}
-    </div>
+    </article>
   );
 }
 

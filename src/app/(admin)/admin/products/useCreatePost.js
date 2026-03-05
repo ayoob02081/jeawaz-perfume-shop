@@ -13,7 +13,9 @@ export default function useAddProduct() {
         queryKey: ["products"],
       });
     },
-    onError: (err) => toast.error(err?.response?.data?.message),
+    onError: (err) => {
+      toast.error(err?.response?.data?.message);
+    },
   });
 
   return { isAdding, AddProduct };

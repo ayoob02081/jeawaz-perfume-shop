@@ -1,5 +1,5 @@
 import CardEvents from "@/components/CardEvents";
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import PriceSection from "@/components/PriceSection";
 import Table from "@/ui/Table";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
@@ -57,7 +57,12 @@ function MobileCard({ src, alt, price, offValue, enTitle, perTitle }) {
     <div className="flex items-center justify-center p-3 gap-4 border-[0.094rem] border-stroke shadow-xs rounded-2xl w-full ">
       <div className="flex items-center justify-start gap-4 size-full">
         <div className="flex items-start justify-center h-full">
-          <ImageFrame src={src} alt={alt} className="size-16" />
+          <AppImage
+            src={src}
+            alt={enTitle + "-image"}
+            width="size-16"
+            sizes="30vw"
+          />
         </div>
         <div className="flex flex-col gap-3 size-full">
           <CardTitle enTitle={enTitle} perTitle={perTitle} brand />
@@ -88,7 +93,12 @@ function DeskCard({ src, alt, price, offValue, enTitle, perTitle }) {
       <td className="text-right">
         <div className="tdBase">
           <div className="flex items-start justify-center h-full">
-            <ImageFrame src={src} alt={alt} className="size-[5.65rem]" />
+            <AppImage
+              src={src}
+              alt={enTitle + "-image"}
+              width="size-[5.65rem]"
+              sizes="30vw"
+            />
           </div>
           <CardTitle enTitle={enTitle} perTitle={perTitle} />
         </div>
@@ -124,7 +134,7 @@ function SuccessedOrderCard({ src, alt, price, offValue, enTitle, perTitle }) {
       />
       <div className="max-md:flex md:hidden items-center justify-start gap-4 size-full">
         <div className="flex items-start justify-center h-full">
-          <ImageFrame src={src} alt={alt} className="size-16" />
+          <AppImage src={src} alt={alt} className="size-16" />
         </div>
         <div className="flex flex-col gap-3 size-full">
           <CardTitle enTitle={enTitle} perTitle={perTitle} />
@@ -151,7 +161,7 @@ function DeskSuccessedOrderCard({
   return (
     <div className="md:flex max-md:hidden items-center justify-between w-full">
       <div className="flex items-start justify-center h-full">
-        <ImageFrame src={src} alt={alt} className="size-24" />
+        <AppImage src={src} alt={enTitle + "-image"} width="size-24" />
       </div>
       <div className="flex flex-col gap-3 size-full">
         <CardTitle enTitle={enTitle} perTitle={perTitle} />
@@ -185,10 +195,11 @@ function SummeryCard({ src, alt, price, offValue, enTitle, perTitle }) {
     <div className="flex items-center justify-center p-3 gap-4 border-t border-stroke shadow-xs w-full ">
       <div className="flex items-center justify-start md:gap-2 lg:gap-4 size-full">
         <div className="flex items-center justify-center md:size-28 lg:size-[7.5rem] rounded-xl bg-white">
-          <ImageFrame
+          <AppImage
             src={src}
-            alt={alt}
-            className="max-lg:size-20 lg:size-[5.65rem]"
+            alt={enTitle + "-image"}
+            width="max-lg:size-20 lg:size-[5.65rem]"
+            sizes="30vw"
           />
         </div>
         <div className="flex flex-col gap-3 size-full">

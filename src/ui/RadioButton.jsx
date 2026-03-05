@@ -22,13 +22,14 @@ function RadioButton({
         value={value}
         onChange={onChange}
         disabled={disabled}
+        className="sr-only"
       />
       {children}
       {label && <p>{label}</p>}
-      {chevron === "block" && (
-        <div className={`w-8 ${chevron}`}>
-          <ChevronLeftIcon className="max-md:hidden size-3" />
-        </div>
+      {chevron && (
+        <span className={`max-md:!hidden ${chevron}`}>
+          <ChevronLeftIcon className="size-full" />
+        </span>
       )}
     </label>
   );

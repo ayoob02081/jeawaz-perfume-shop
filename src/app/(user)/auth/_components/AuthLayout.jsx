@@ -21,11 +21,16 @@ function AuthLayout({
       router.push("/page/terms");
     }, 0);
   };
+  const isLoginDisabled = phoneNumberLength ? false : true;
+  const isLoginPassDisabled = OTPLength ? false : true;
+  const isSigninDisabled = isAllFieldesSet ? false : true;
+
   return (
     <>
       <div className="flex flex-col items-center justify-between gap-2 md:gap-4">
-        <span className="md:text-2xl text-text-primary font-bold">
-          به وبسایت <span className="text-primary">عطر جیاواز</span> خوش آمدید!
+        <span className="max-md:text-lg md:text-2xl text-text-primary font-bold">
+          به وبسایت <span className="text-primary">جیاواز پرفیوم</span> خوش
+          آمدید!
         </span>
         {login ? (
           <p className="text-xs md:text-sm text-text-secondary">
@@ -41,22 +46,20 @@ function AuthLayout({
       {login && step === 1 && (
         <button
           onClick={toggleLoginType}
-          className=" text-xs text-primary font-bold  cursor-pointer"
+          className=" text-xs text-primary font-bold cursor-pointer"
         >
           وارد شدن با {isEmailType === true ? "شماره موبایل" : "ایمیل"}
         </button>
       )}
       {children}
       <button
-        // type="submit"
+        type="submit"
         disabled={
           login
-            ? phoneNumberLength
-              ? false
-              : true
-            : isAllFieldesSet === true
-            ? false
-            : true
+            ? step === 1
+              ? isLoginDisabled
+              : isLoginPassDisabled
+            : isSigninDisabled
         }
         className=" btn btn--primary w-full h-12 md:h-14 border-0 "
       >
@@ -80,10 +83,10 @@ function AuthLayout({
       >
         {login ? "حساب کاربری ندارید؟" : "حساب کاربری دارید؟"}
       </button>
-      <div className="max-md:hidden text-text-primary pt-4">
+      <div className="max-md:hidden text-text-primary pt-">
         <span className="*:text-primary flex items-center justify-center gap-1.5 flex-wrap">
-          {login ? "ورود" : "ثبت‌نام"} شما به معنای پذیرش{" "}
-          <button onClick={RouteToTerms}> شرایط عطر جیاواز </button> و
+          {login ? "ورود" : "ثبت‌نام"} شما به معنای پذیرش
+          <button onClick={RouteToTerms}> شرایط جیاواز پرفیوم</button> و
           <button onClick={RouteToTerms}> قوانین حریم خصوصی </button> است
         </span>
       </div>

@@ -25,7 +25,7 @@ function ProfileInfo() {
         <p className="text-sm md:text-base text-text">اطلاعات کاربری</p>
         <Link
           href="/profile/me/edit"
-          className="text-primary hover:text-text active:text-text duration-200"
+          className="text-primary hover:text-success active:text-success duration-200"
         >
           ویرایش اطلاعات
         </Link>

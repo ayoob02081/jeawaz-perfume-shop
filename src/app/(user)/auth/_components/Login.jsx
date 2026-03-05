@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import LoginForm from "./LoginForm";
-import LoginField from "@/ui/LoginField";
 import { loginApi } from "@/services/authServices";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -12,20 +11,26 @@ import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import OTPInput from "react-otp-input";
 import PassInput from "@/ui/PassInput";
 import { useForm } from "react-hook-form";
+import RHFLoginField from "@/ui/RHFLoginField";
 
 const RESEND_TIME = 90;
 
 function Login({ toggleModalOpen, closeBtn }) {
-  const [phoneNumber, setPhoneNumber] = useState(""); //?
-  const [email, setEmail] = useState(""); //?
-  const [password, setPassword] = useState(""); //?
+  const {
+    register,
+    watch,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const [otp, setOtp] = useState(""); //?
-
+  const email = watch("email") || "";
+  const phoneNumber = watch("phoneNumber") || "";
   const [step, setStep] = useState(1);
   const [isEmailType, setIsEmailType] = useState(true); // 'email' or 'phone'
   const [time, setTime] = useState(RESEND_TIME);
   const router = useRouter();
-  const { isLoading, data } = useGetAllUsers();
+  const { isLoading: isGetting, data: users } = useGetAllUsers();
 
   const {
     data: loginData,
@@ -36,61 +41,42 @@ function Login({ toggleModalOpen, closeBtn }) {
     mutationFn: loginApi,
   });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  const setState = (e) => {
-    const value = e.target.value;
-    if (isEmailType) {
-      setEmail(value);
-    } else {
-      setPhoneNumber(value);
-    }
-  };
-
   const toggleLoginType = () => {
     setIsEmailType((prevState) => !prevState);
   };
 
   const PasswordHandler = async (e) => {
+    const { email, phoneNumber } = e;
     if (e.email) {
-      const { email } = e;
       if (step === 1 && email.length >= 11) {
-        const isEmailExist = data?.data.find((user) => user.email === email);
-        setEmail(email);
+        const isEmailExist = users?.data.find((user) => user.email === email);
         if (isEmailExist?.email === email) {
           setStep(2);
         } else {
           toast.error("ایمیل وارد شده وجود ندارد");
-          setEmail("");
+          reset();
         }
       }
     } else {
-      const { phoneNumber } = e;
       if (step === 1 && phoneNumber.length >= 11) {
-        const isPhoneNumberExist = data?.data.find(
+        const isPhoneNumberExist = users?.data.find(
           (user) => user.phoneNumber === phoneNumber,
         );
-        setPhoneNumber(phoneNumber);
-        if (isPhoneNumberExist[0] === true) {
+
+        if (isPhoneNumberExist === true) {
           setStep(2);
         } else {
           toast.error("شماره موبایل وارد شده وجود ندارد");
-          setPhoneNumber("");
+          reset();
         }
       }
     }
   };
-  // console.log(email, phoneNumber);
 
   const handleSubmitForm = async (e) => {
-    if (e.email) {
-      const { password } = e;
+    const { email, password, phoneNumber, otp } = e;
+    if (email) {
       if (password.length >= 6) {
-        setPassword(password);
         const userData = {
           email,
           password,
@@ -99,8 +85,7 @@ function Login({ toggleModalOpen, closeBtn }) {
           const { accessToken, message } = await loginApifn(userData);
           if (accessToken && step === 2 && password.length >= 6) {
             router.back();
-            setEmail("");
-            setPassword("");
+            reset();
             setStep(1);
             toast.success("به جیاواز خوش آمدید!");
           }
@@ -112,7 +97,6 @@ function Login({ toggleModalOpen, closeBtn }) {
         }
       }
     } else {
-      const { otp } = e;
       if (otp.length === 6) {
         setOtp(otp);
         const userData = {
@@ -123,10 +107,10 @@ function Login({ toggleModalOpen, closeBtn }) {
           const { accessToken, message } = await loginApifn(userData);
           if (accessToken && step === 2 && otp.length >= 6) {
             router.back();
-            setPhoneNumber("");
+            reset();
             setOtp("");
             setStep(1);
-            router.refresh()
+            router.refresh();
             toast.success("به جیاواز خوش آمدید!");
           }
         } catch (error) {
@@ -141,8 +125,7 @@ function Login({ toggleModalOpen, closeBtn }) {
 
   const MoveBack = () => {
     setStep(1);
-    setEmail("");
-    setPassword("");
+    reset();
   };
 
   const renderSteps = () => {
@@ -152,7 +135,7 @@ function Login({ toggleModalOpen, closeBtn }) {
           <LoginForm
             toggleLoginType={toggleLoginType}
             isEmailType={isEmailType}
-            password={password}
+            password={watch("password") || ""}
             otp={otp}
             step={step}
             MoveBack={MoveBack}
@@ -163,7 +146,7 @@ function Login({ toggleModalOpen, closeBtn }) {
             closeBtn={closeBtn}
             // isGetting={isGetting}
           >
-            <LoginField
+            <RHFLoginField
               step={step}
               register={register}
               isRequired
@@ -171,7 +154,6 @@ function Login({ toggleModalOpen, closeBtn }) {
               errors={errors}
               email={email}
               phoneNumber={phoneNumber}
-              onChange={setState}
             />
           </LoginForm>
         );
@@ -180,7 +162,7 @@ function Login({ toggleModalOpen, closeBtn }) {
         return (
           <LoginForm
             isEmailType={isEmailType}
-            password={password}
+            password={watch("password") || ""}
             otp={otp}
             step={step}
             MoveBack={MoveBack}

@@ -1,6 +1,6 @@
 "use client";
 
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import { categoryTHeads } from "@/constants/tableHeads";
 import { useRemoveBrand, useRemoveCategory } from "@/hooks/useCategories";
 import { useGetAllProducts } from "@/hooks/useProducts";
@@ -75,10 +75,12 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
                   </td>
                   <td className="table__td px-2 max-w-[280px] truncate">
                     <div className="flex items-center justify-center flex-col gap-2 text-xs">
-                      <ImageFrame
-                        src={category?.iconUrl || "/category-icon"}
-                        alt={`${category?.value} icon` || "category-icon"}
-                        className="w-16"
+                      <AppImage
+                        src={category?.iconUrl}
+                        alt={`${category?.value}-icon` || "category-icon"}
+                        ratio={brands ? "aspect-[4/1]" : "aspect-square"}
+                        width={brands ? "w-16" : "w-7"}
+                        sizes="10vw"
                       />
                     </div>
                   </td>

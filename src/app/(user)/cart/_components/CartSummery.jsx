@@ -1,5 +1,5 @@
 import GoBack from "@/ui/GoBack";
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import {
   toPersianNumbers,
   toPersianNumbersWithComma,
@@ -74,10 +74,11 @@ function CartSummeryAccept({ items, date, totalPrice, step, setStep }) {
     <div className="flex flex-col items-start justify-between gap-6 max-md:bg-secondary md:bg-grey p-4 rounded-xl size-full">
       <div className="flex items-center justify-start gap-4 size-full">
         <div className="flex items-center justify-center size-14 rounded-xl bg-white">
-          <ImageFrame
+          <AppImage
             src="/images/cart-order-icon.svg"
-            alt="cart order icon"
-            className="size-7"
+            alt="cart-order-icon"
+            width="size-7"
+            sizes="10vw"
           />
         </div>
         <span className="flex flex-col items-start justify-between gap-2">
@@ -89,10 +90,11 @@ function CartSummeryAccept({ items, date, totalPrice, step, setStep }) {
       </div>
       <div className="flex flex-col items-start justify-between gap-4 size-full border-t-[1.5px] border-dashed border-text-secondary-light pt-3">
         <div className="flex items-center gap-2">
-          <ImageFrame
+          <AppImage
             src="/images/percent-badge-icon.svg"
-            alt="percent badge icon"
-            className="size-6"
+            alt="percent-badge-icon"
+             width="size-6"
+            sizes="10vw"
           />
           <span className="text-sm">اگر کد تخفیف دارید وارد کنید</span>
         </div>
@@ -195,10 +197,11 @@ function CartSummeryPay({ items, date, totalPrice, step, setStep }) {
       </div>
       <div className="flex items-center justify-start gap-4 size-full p-4 bg-white rounded-xl">
         <div className="size-12 flex items-center justify-center">
-          <ImageFrame
+          <AppImage
             src="/images/zarinpal-icon.svg"
-            alt="zarinpal icon"
-            className="size-12"
+            alt="zarinpal-icon"
+            width="size-12"
+            sizes="20vw"
           />
         </div>
         <span className="text-xs text-text-primary w-full flex items-center justify-start gap-1">

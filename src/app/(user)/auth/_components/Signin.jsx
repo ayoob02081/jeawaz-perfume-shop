@@ -9,6 +9,40 @@ import { useForm } from "react-hook-form";
 import RHFTextField from "@/ui/RHFTextField";
 import PassInput from "@/ui/PassInput";
 
+const formData = [
+  {
+    id: 1,
+    label: "نام",
+    name: "firstName",
+    placeholder: "مثال: رضا",
+  },
+  {
+    id: 2,
+    label: "نام خانوادگی",
+    name: "lastName",
+    placeholder: "مثال: جنیدی",
+  },
+
+  {
+    id: 3,
+    label: "نام کاربری",
+    name: "username",
+    placeholder: "مثال: reza123",
+  },
+  // {
+  //   id: 4,
+  //   label: "شماره موبایل",
+  //   name: "phoneNumber",
+  //   placeholder: "مثال: 09123456789",
+  // },
+  {
+    id: 5,
+    label: "ایمیل",
+    name: "email",
+    placeholder: "مثال: example@example.com",
+  },
+];
+
 function Signin({ closeBtn }) {
   const router = useRouter();
 
@@ -24,8 +58,26 @@ function Signin({ closeBtn }) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm();
+
+  const userData = {
+    firstName: watch("firstName"),
+    lastName: watch("lastName"),
+    username: watch("username"),
+    // phoneNumber: watch("phoneNumber"),
+    email: watch("email"),
+    password: watch("password"),
+  };
+
+  const isAllFieldesSet =
+    userData.firstName?.length >= 3 &&
+    userData.lastName?.length >= 3 &&
+    userData.username?.length >= 4 &&
+    // userData.phoneNumber?.length === 11 &&
+    userData.email?.length >= 14 &&
+    userData.password?.length >= 6;
 
   const handleSubmitForm = async (e) => {
     const { firstName, lastName, username, email, password } = e;
@@ -36,9 +88,9 @@ function Signin({ closeBtn }) {
       email,
       password,
     };
+
     try {
       const data = await signinApifn(userData);
-      console.log(data);
       toast.success("ثبت نام با موفقیت انجام شد!");
       router.back();
     } catch (error) {
@@ -50,7 +102,7 @@ function Signin({ closeBtn }) {
   };
 
   return (
-    <div className="relative size-full p-6 md:p-10 md:px-14">
+    <div className="relative size-full p-6 md:p-10">
       <SigninForm
         closeBtn={closeBtn}
         handleSubmit={() => handleSubmit(handleSubmitForm)}
@@ -60,54 +112,21 @@ function Signin({ closeBtn }) {
         toggleModalOpen={() => {
           router.back();
         }}
-        isAllFieldesSet={true}
+        isAllFieldesSet={isAllFieldesSet}
       >
-        <div className="flex flex-col w-full justify-between gap-10 overflow-auto scrollbar--primary scrollbar-w-2 p-4">
-          <RHFTextField
-            register={register}
-            isRequired
-            label="نام"
-            name="firstName"
-            className="textField__input textField__input--2 w-full"
-            placeholder="مثال: رضا"
-            validationSchema={{ required: true }}
-          />
-          <RHFTextField
-            register={register}
-            isRequired
-            label="نام خانوادگی"
-            name="lastName"
-            className="textField__input textField__input--2 w-full"
-            validationSchema={{ required: true }}
-            placeholder="مثال: جنیدی"
-          />
-          <RHFTextField
-            register={register}
-            isRequired
-            label="نام کاربری"
-            name="username"
-            className="textField__input textField__input--2 w-full"
-            validationSchema={{ required: true }}
-            placeholder="مثال: reza123"
-          />
-          {/* <RHFTextField
-          register={register}
-          isRequired
-          label="شماره موبایل"
-          name="phoneNumber"
-          className="textField__input textField__input--2 w-full"
-          validationSchema={{ required: true }}
-          placeholder="مثال: 09123456789"
-        /> */}
-          <RHFTextField
-            register={register}
-            isRequired
-            label="ایمیل"
-            name="email"
-            className="textField__input textField__input--2 w-full"
-            validationSchema={{ required: true }}
-            placeholder="مثال: example@example.com"
-          />
+        <div className="flex flex-col w-full justify-between gap-10 overflow-auto scrollbar--primary scrollbar-w-2 px-4 py-1">
+          {formData.map((item) => (
+            <RHFTextField
+              key={item.id}
+              register={register}
+              isRequired
+              label={item.label}
+              name={item.name}
+              placeholder={item.placeholder}
+              validationSchema={{ required: true }}
+              className="textField__input textField__input--2 w-full"
+            />
+          ))}
           <PassInput
             RHForm
             isRequired

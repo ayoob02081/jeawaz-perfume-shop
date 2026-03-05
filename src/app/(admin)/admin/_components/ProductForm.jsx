@@ -11,7 +11,7 @@ import Error from "@/components/Error";
 import RHFTextField from "@/ui/RHFTextField";
 import RHFTextAreaField from "@/ui/RHFTextAreaField";
 import RHFRadioButton from "@/ui/RHFRadioButton";
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import RHFCheckBox from "@/ui/RHFCheckBox";
 import useAddProduct from "../products/useCreatePost";
 import useEditProduct from "../products/useEditPost";
@@ -38,12 +38,14 @@ const basicInfoData = [
     label: "موجودی محصول(بر حسب میل)",
     name: "stock",
     placeholder: "۳۰۰",
+    type: "number",
   },
   {
     id: 4,
     label: "مقدار تخفیف(بر حسب درصد)",
     name: "offValue",
     placeholder: "۵",
+    type: "number",
   },
 ];
 
@@ -279,13 +281,13 @@ function ProductForm({ productToEdit }) {
   return (
     <div className="max-w-6xl mx-auto p-10">
       <Toaster />
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
         {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {basicInfoData.map((item) => (
             <RHFTextField
               key={item.name}
+              type={item.type}
               register={register}
               isRequired
               label={item.label}
@@ -307,7 +309,6 @@ function ProductForm({ productToEdit }) {
         />
 
         {/* Original */}
-
         <RHFCheckBox
           value="original"
           id="original"
@@ -381,12 +382,14 @@ function ProductForm({ productToEdit }) {
                   register={register}
                 >
                   <div
-                    className={`flex items-center justify-center ${isChecked ? "border-2 border-primary" : "opacity-70"} px-2 h-10 lg:h-12 w-32 rounded-full duration-200 `}
+                    className={`flex items-center justify-center border-primary ${isChecked ? "border-2" : "opacity-70"} px-2 py-1 h-10 lg:h-12 rounded-full duration-200 `}
                   >
-                    <ImageFrame
-                      className="size-full"
+                    <AppImage
+                      width="size-full"
+                      sizes="25vw"
+                      ratio="aspect-[4/1]"
                       src={brand.iconUrl}
-                      alt={brand.value}
+                      alt={brand.value + "-icon"}
                     />
                   </div>
                 </RHFRadioButton>
@@ -451,10 +454,11 @@ function ProductForm({ productToEdit }) {
                   >
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-xl">{accord.title}</p>
-                      <ImageFrame
-                        className="size-9"
+                      <AppImage
+                        width="size-9"
+                        sizes="15vw"
                         src={accord.iconUrl}
-                        alt={accord.value}
+                        alt={accord.value + "-icon"}
                       />
                     </div>
                   </div>
@@ -499,6 +503,7 @@ function ProductForm({ productToEdit }) {
           </h3>
           <div className="flex flex-col items-start justify-start gap-4">
             <RHFTextField
+              type="number"
               register={register}
               label="قیمت هر میل(تومان)"
               name="modes.decant.pricePerMl"
@@ -536,6 +541,7 @@ function ProductForm({ productToEdit }) {
           {sealedFields.fields.map((field, i) => (
             <div key={field.id} className="flex items-end gap-4 mb-2 h-full">
               <RHFTextField
+                type="number"
                 register={register}
                 name={`modes.sealed.variants.${i}.volume`}
                 className="textField__input textField__input--2 rounded-xl w-full"
@@ -543,6 +549,7 @@ function ProductForm({ productToEdit }) {
                 placeholder="حجم"
               />
               <RHFTextField
+                type="number"
                 register={register}
                 name={`modes.sealed.variants.${i}.price`}
                 className="textField__input textField__input--2 rounded-xl w-full"

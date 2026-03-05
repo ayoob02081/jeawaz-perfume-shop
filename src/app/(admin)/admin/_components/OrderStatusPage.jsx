@@ -1,6 +1,6 @@
 "use client";
 
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import PriceSection from "@/components/PriceSection";
 import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
@@ -84,7 +84,7 @@ function StatusOrderCard({ order, title, color, src, alt }) {
       <div
         className={`flex items-center justify-center gap-1 h-11 w-36 rounded-5xl ${color}`}
       >
-        <ImageFrame src={src} alt={alt} className="size-7" />
+        <AppImage src={src} alt={alt} className="size-7" />
         <p className="text-xs font-bold">{title}</p>
       </div>
       <div className="flex max-sm:flex-col sm:flex-row sm:items-end justify-between w-full">
@@ -116,7 +116,7 @@ function StatusOrderCard({ order, title, color, src, alt }) {
               className="flex items-center justify-center bg-white border-6 border-grey size-20 rounded-xl z-10"
               key={item.src}
             >
-              <ImageFrame src={item.src} alt={item.alt} className="size-10 " />
+              <AppImage src={item.src} alt={item.alt} className="size-10 " />
             </div>
           ))}
         </div>

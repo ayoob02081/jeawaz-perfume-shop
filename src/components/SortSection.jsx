@@ -1,6 +1,5 @@
 "use client";
 
-import SelectOption from "@/ui/SelectOption";
 import SelectOptionGroup from "@/ui/SelectOptionGroup";
 import { useState } from "react";
 
@@ -19,3 +18,15 @@ function SortSection() {
 }
 
 export default SortSection;
+
+function SelectOption({ label, value, onClick }) {
+  return (
+    <li
+      value={value}
+      onClick={onClick}
+      className="flex items-center justify-start hover:bg-grey size-full px-1 md:py-2 rounded-md"
+    >
+      {label}
+    </li>
+  );
+}

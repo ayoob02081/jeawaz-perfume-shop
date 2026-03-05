@@ -24,7 +24,7 @@ const basicInfoData = [
     placeholder: "floral",
   },
   {
-    id: 2,
+    id: 3,
     label: "توضیحات",
     name: "description",
     placeholder: "رایحه گلی",

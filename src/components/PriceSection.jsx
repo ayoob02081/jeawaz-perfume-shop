@@ -34,14 +34,14 @@ function PriceSection({
           <div
             className={`flex grow items-center ${justify} gap-1 w-full h-full text-text-secondary`}
           >
-            <p className="max-md:absolute -right-7 badge badge--primary bg-primary text-white px-1.5">
+            <p className="max-md:absolute aspect-square -right-7 badge badge--primary bg-primary text-white px-1 py-3 size-5 md:size-6">
               {toPersianNumbers(offValue)}٪
             </p>
             <span className={`flex gap-1 strikeThrough ${OldPricevisibility} `}>
               <p className=" text-xs font-bold">
                 {toPersianNumbersWithComma(price)}
               </p>
-              <p className="text-[0.625rem] font-bold">تومان</p>
+              <p className="text-[10px] font-bold">تومان</p>
             </span>
           </div>
         )}

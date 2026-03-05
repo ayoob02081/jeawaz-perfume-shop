@@ -1,6 +1,6 @@
 "use client";
 
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { usePathname, useRouter } from "next/navigation";
@@ -65,7 +65,7 @@ function Status({ count, status }) {
       <div
         className={`flex items-center justify-center rounded-xl ${statusConfig[status].color} size-14`}
       >
-        <ImageFrame
+        <AppImage
           src={statusConfig[status].src}
           alt={statusConfig[status].alt}
           className="size-7"

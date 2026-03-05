@@ -16,8 +16,8 @@ function HomePageProducts({
   section,
 }) {
   return (
-    <div
-      className={`flex flex-col items-center py-2 container mx-auto xl:max-w-7xl gap-6 ${bgColor}`}
+    <section
+      className={`flex flex-col items-center py-2 container mx-auto xl:max-w-7xl gap-6 snap-x ${bgColor}`}
     >
       <div className="flex justify-between items-center w-full px-6">
         <div className="flex flex-col items-start justify-center md:items-start gap-2 w-full">
@@ -57,7 +57,7 @@ function HomePageProducts({
           <ArrowLeftIcon />
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -77,7 +77,7 @@ function GenderType() {
 
   return (
     <div className="flex items-center justify-between gap-1">
-      {genderCategories.map((gender) => {
+      {genderCategories?.map((gender) => {
         const isChecked =
           Number(watch("genderId")) === gender.id ? true : false;
         return (

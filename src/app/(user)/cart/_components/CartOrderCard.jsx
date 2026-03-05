@@ -1,5 +1,5 @@
 import CardEvents from "@/components/CardEvents";
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import PriceSection from "@/components/PriceSection";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 
@@ -8,10 +8,11 @@ function CartOrderCard() {
     <div className="flex items-center justify-center p-3 gap-4 border border-stroke rounded-2xl w-full ">
       <div className="flex items-center justify-start gap-4 size-full">
         <div className="flex items-start justify-center h-full">
-          <ImageFrame
+          <AppImage
             src="/images/perfume-1.svg"
             alt="perfume"
-            className="size-16"
+            width="size-16"
+            sizes="30vw"
           />
         </div>
         <div className="flex flex-col gap-3 size-full">

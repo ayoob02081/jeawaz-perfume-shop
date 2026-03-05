@@ -20,7 +20,6 @@ function UsersListTable({ users }) {
         <Table.body>
           {users &&
             users?.map((user, index) => {
-              // console.log(user);
               return (
                 <Table.Row key={user.id} className="even:bg-primary/5">
                   <td className="table__td font-bold px-2">

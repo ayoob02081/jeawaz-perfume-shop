@@ -1,10 +1,10 @@
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 
 function NotifTypePage({ type, className, text }) {
   return (
     <div className={`flex items-start justify-center gap-2 py-4 ${className}`}>
       <div className="flex items-center justify-center bg-red/10 max-md:size-10 md:size-9 rounded-lg max-md:min-w-10 md:min-w-9">
-        <ImageFrame
+        <AppImage
           alt={"bolt-icon"}
           className="md:size-4 max-md:size-5"
           src={"/images/bolt-icon.svg"}

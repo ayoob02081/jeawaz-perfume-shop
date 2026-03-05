@@ -46,17 +46,17 @@ function ProductsLayout() {
   // }, [state.applied]);
 
   return (
-    <div className="container mx-auto xl:max-w-7xl py-2 px-4 w-full mt-40 md:mt-32">
+    <main className="container mx-auto xl:max-w-7xl py-2 px-4 w-full mt-40 md:mt-32">
       <FilterSection />
-      <div className=" w-auto flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-3 md:gap-6 py-6 ">
+      <section className=" w-auto flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-3 md:gap-6 py-6 ">
         {products?.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
-      </div>
+      </section>
       <div className="flex items-center justify-center h-20">
         <PagesNumber />
       </div>
-    </div>
+    </main>
   );
 }
 

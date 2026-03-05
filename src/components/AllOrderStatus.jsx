@@ -1,6 +1,6 @@
 "use client";
 
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { usePathname, useRouter } from "next/navigation";
@@ -59,7 +59,7 @@ function Status({ count, status }) {
           `/${
             (pathName.startsWith("/profile") && "profile") ||
             (pathName.startsWith("/admin") && "admin")
-          }/orders/${status}`
+          }/orders/${status}`,
         )
       }
       className={`flex items-center justify-start gap-4 max-md:p-6 md:p-4 rounded-2xl max-md:max-w-56 md:max-w-52 w-full h-full max-lg:max-h-20 lg:max-h-28
@@ -72,10 +72,11 @@ function Status({ count, status }) {
       <div
         className={`flex items-center justify-center rounded-xl ${statusConfig[status].color} size-14`}
       >
-        <ImageFrame
+        <AppImage
           src={statusConfig[status].src}
           alt={statusConfig[status].alt}
-          className="size-7"
+          width="size-7"
+          sizes="20vw"
         />
       </div>
       <span className="flex flex-col items-center justify-start max-md:gap-1 md:gap-2">

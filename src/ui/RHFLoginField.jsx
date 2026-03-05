@@ -3,7 +3,7 @@ import {
   EnvelopeIcon,
 } from "@heroicons/react/24/outline";
 
-function LoginField({
+function RHFLoginField({
   isEmailType,
   email,
   phoneNumber,
@@ -32,7 +32,7 @@ function LoginField({
           placeholder={isEmailType ? "ایمیل شما" : "شماره همراه شما"}
           {...register(name, validationSchema)}
           {...rest}
-          onChange={onChange}
+          // onChange={onChange}
         />
         {errors && errors[name] && (
           <span className="text-error block text-xs mt-2">
@@ -44,4 +44,4 @@ function LoginField({
   );
 }
 
-export default LoginField;
+export default RHFLoginField;

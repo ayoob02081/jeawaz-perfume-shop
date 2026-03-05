@@ -47,13 +47,13 @@ function PassInput({
           {...register(name, validationSchema)}
           {...rest}
         />
-        <button onClick={ShowPasswordHandler}>
+        <div onClick={ShowPasswordHandler}>
           {passwordVisible === "password" ? (
             <EyeSlashIcon className=" size-5" />
           ) : (
             <EyeIcon className=" size-5" />
           )}
-        </button>
+        </div>
       </div>
       {errors && errors[name] && (
         <span className="text-error block text-xs mt-2">
@@ -74,13 +74,13 @@ function PassInput({
         placeholder={placeholder}
         onChange={onChange}
       />
-      <button onClick={ShowPasswordHandler}>
+      <div onClick={ShowPasswordHandler}>
         {passwordVisible === "password" ? (
           <EyeSlashIcon className=" size-5" />
         ) : (
           <EyeIcon className=" size-5" />
         )}
-      </button>
+      </div>
     </div>
   );
 }

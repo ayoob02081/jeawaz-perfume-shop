@@ -36,8 +36,9 @@ function CategoriesLayout() {
             اضافه کردن برند
           </Link>
         </div>
-        {isBrandsPending && <Loading />}
-        {brandCategoriess && brandCategoriess?.length > 0 && (
+        {isBrandsPending ? (
+          <Loading />
+        ) : (
           <CategoriesListTable categories={brandCategoriess} brands />
         )}
         {brandCategoriess && brandCategoriess?.length === 0 && (
@@ -56,8 +57,9 @@ function CategoriesLayout() {
             اضافه کردن رایحه
           </Link>
         </div>
-        {isCategoriesPending && <Loading />}
-        {accordCategories && accordCategories?.length > 0 && (
+        {isCategoriesPending ? (
+          <Loading />
+        ) : (
           <CategoriesListTable categories={accordCategories} accords />
         )}
         {accordCategories && accordCategories?.length === 0 && (
@@ -76,8 +78,9 @@ function CategoriesLayout() {
             اضافه کردن جنسیت
           </Link>
         </div>
-        {isCategoriesPending && <Loading />}
-        {genderCategories && genderCategories?.length > 0 && (
+        {isCategoriesPending ? (
+          <Loading />
+        ) : (
           <CategoriesListTable categories={genderCategories} genders />
         )}
         {genderCategories && genderCategories?.length === 0 && (

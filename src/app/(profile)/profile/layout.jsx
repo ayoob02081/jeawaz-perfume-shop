@@ -1,10 +1,4 @@
 import "../../globals.css";
-
-import OptionsFooter from "@/components/OptionsFooter";
-import Providers from "../../Providers";
-import Header from "@/app/Header";
-import Footer from "@/app/Footer";
-import MobilePannel from "@/app/MobilePannel";
 import UserSidebar from "./_components/UserSidebar";
 
 export const metadata = {

@@ -1,41 +1,65 @@
-import ImageFrame from "@/components/ImageFrame";
+import AppImage from "@/components/AppImage";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
-import { PencilIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 
-function AddressInfo() {
+const addressData = [
+  {
+    id: 1,
+    address: "تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵",
+    name: "رضا جنیدی",
+    phoneNumber: "09123456789",
+    province: "تهران",
+    city: "تهران",
+    postNo: "3919856324",
+  },
+  {
+    id: 2,
+    address: "بانه، کوی فرهنگیان، کوچه البرز ۱۰",
+    name: "ایوب محمودیان",
+    phoneNumber: "09180522273",
+    province: "کردستان",
+    city: "بانه",
+    postNo: "6691963617",
+  },
+];
+
+function AddressLayout() {
   return (
-    <div className="w-full border md:border-[1.5px] border-stroke rounded-2xl p-4">
+    <div className="flex flex-col items-cente justify-start gap-3 w-full border md:border-[1.5px] border-stroke rounded-2xl p-4">
       <div className="flex items-center justify-between w-full pb-4">
         <p className="text-sm md:text-base text-text">لیست آدرس ها</p>
-        <button className="flex items-center justify-center gap-2 text-primary hover:text-text active:text-text duration-200">
+        <button className="flex items-center justify-center gap-2 text-primary hover:text-blue active:text-blue duration-200">
           <PlusIcon className="size-4" />
           <p>افزودن آدرس جدید</p>
         </button>
       </div>
-      <div>
+      {addressData.map((item) => (
         <Address
-          address="تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵"
-          name="رضا جنیدی"
-          phoneNumber="09123456789"
-          province="تهران"
-          city="تهران"
-          postNo="3919856324"
+          key={item.id}
+          address={item.address}
+          name={item.name}
+          phoneNumber={item.phoneNumber}
+          province={item.province}
+          city={item.city}
+          postNo={item.postNo}
         />
-      </div>
+      ))}
     </div>
   );
 }
 
-export default AddressInfo;
+export default AddressLayout;
 
 function FullAddress({ address }) {
   return (
     <span className="md:col-span-2 flex items-center justify-between md:justify-start gap-2 w-full">
       <p className="text-sm md:text-base text-text md:hidden">آدرس :</p>
-      <ImageFrame
-        className="size-6 max-md:hidden"
+      <AppImage
         src="/images/map-marker-nearby-icon.svg"
-        alt="map marker nearby icon"
+        alt="map-marker-nearby-icon"
+        className="max-md:hidden"
+        width="size-6"
+        sizes="10vw"
       />
       <p className="text-sm text-text">{address}</p>
     </span>
@@ -79,20 +103,15 @@ function Address({ name, phoneNumber, province, city, postNo, address }) {
         />
       </div>
       <div className="md:col-start-3 md:row-start-1 flex items-center justify-between md:justify-end gap-4 w-full text-nowrap">
-        <button className="flex items-center justify-center gap-2 max-md:h-12  max-md:border max-md:border-stroke text-text hover:text-primary active:text-primary max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200">
-          <ImageFrame
-            className="size-6"
-            src="/images/edit-stroke-icon.svg"
-            alt="edit icon"
-          />
+        <button className="flex items-center justify-center gap-1 max-md:h-12 max-md:border max-md:border-stroke text-text hover:text-success active:text-success max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200">
+          <div className="flex flex-col items-center justify-center gap-0.5 size-5">
+            <PencilIcon className="-rotate-[8de]" />
+            <span className="border w-4/5 rounded-full"></span>
+          </div>
           <p>ویرایش</p>
         </button>
-        <button className="flex items-center justify-center gap-2 max-md:h-12 max-md:bg-primary/10 max-md:border max-md:border-primary/10 text-primary hover:text-text active:text-text max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200">
-          <ImageFrame
-            className="size-6"
-            src="/images/trash-primary-icon.svg"
-            alt="trash icon"
-          />
+        <button className="flex items-center justify-center gap-1 max-md:h-12 max-md:bg-primary/10 max-md:border max-md:border-primary/10 text-primary hover:text-text active:text-text max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200">
+          <TrashIcon className="size-5" />
           <p>حذف</p>
         </button>
       </div>
