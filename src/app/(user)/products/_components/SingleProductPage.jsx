@@ -117,9 +117,11 @@ function ProductDes({ currentSlug }) {
 
   return (
     <article className="grid grid-cols-1 w-full gap-y-4 xl:gap-y-10 max-md:p-6 h-fit justify-items-start">
+
+      {/* Product Name */}
       <section className="flex flex-col gap-2 items-start justify-start w-full">
         <span className="flex items-center max-md:justify-between gap-2 md:justify-start w-full">
-          <p className="font-bold text-wrap text-[28px] w-full">
+          <p className="font-bold text-wrap text-[28px] w-full text-text">
             {currentSlug.perTitle}
           </p>
           <div className="md:hidden">
@@ -136,10 +138,12 @@ function ProductDes({ currentSlug }) {
           {currentSlug.enTitle}
         </p>
       </section>
+
+      {/* Product Type */}
       <section className="flex items-center justify-between w-full max-md:border-t border-stroke-2 pt-4 ">
         <div className="flex flex-col items-star justify-between gap-2 w-full md:row-start-3 h-full overflow-hidden">
           <div className="flex flex-col items-start justify-start gap-3">
-            <p className="">نوع محصول:</p>
+            <p className="text-text">نوع محصول:</p>
             <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
               <RadioButton
                 id="productVolumeModeDecant"
@@ -164,7 +168,7 @@ function ProductDes({ currentSlug }) {
             </div>
           </div>
           <div className="flex flex-col items-start justify-start gap-3">
-            <p className="">انتخاب حجم:</p>
+            <p className="text-text">انتخاب حجم:</p>
             <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
               {volumes?.map((volume, index) => {
                 const isDisabled = currentSlug.stock >= volume ? false : true;
@@ -202,6 +206,8 @@ function ProductDes({ currentSlug }) {
           />
         )}
       </section>
+
+      {/* Price Section */}
       <div className="flex items-center md:justify-between max-md:justify-end w-full md:row-start-2">
         {currentSlug.stock >= 3 ? (
           <PriceSection
@@ -231,6 +237,8 @@ function ProductDes({ currentSlug }) {
           />
         </div>
       </div>
+
+      {/* Buttons */}
       <div className="flex items-center justify-between w-full gap-4">
         {currentSlug.stock >= 3 && (
           <button className=" btn btn--success w-full h-12 px-2">
@@ -246,8 +254,10 @@ function ProductDes({ currentSlug }) {
           )}
         </div>
       </div>
+
+      {/* Description */}
       <Accordion
-        titleStyle="font-bold"
+        titleStyle="font-bold text-text"
         className="max-md:hidden md:flex  "
         label="توضیحات تکمیلی"
       >
@@ -277,7 +287,7 @@ function ProductOptions({ currentSlug, categories }) {
             width="size-6"
             sizes="10vw"
           />
-          <p className="font-bold">ویژگی های محصول</p>
+          <p className="font-bold text-text">ویژگی های محصول</p>
         </span>
         <div className="grid max-sm:grid-cols-3 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-3 gap-x-4 w-full px-2">
           <ProductOption title="کشور تولید کننده" value={details.madeIn} />
@@ -349,9 +359,9 @@ function ProductDetails({ currentSlug }) {
             width="size-6"
             sizes="10vw"
           />
-          <p className="font-bold">ترکیبات محصول</p>
+          <p className="font-bold text-text">ترکیبات محصول</p>
         </span>
-        <p className="text-xs">
+        <p className="text-xs text-text">
           لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
           استفاده از طراحان گرافیک است،.
         </p>

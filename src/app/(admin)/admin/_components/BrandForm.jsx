@@ -14,19 +14,19 @@ const basicInfoData = [
     id: 1,
     label: "عنوان فارسی",
     name: "title",
-    placeholder: "گلی",
+    placeholder: "دیور",
   },
   {
     id: 2,
     label: "عنوان انگلیسی",
     name: "value",
-    placeholder: "floral",
+    placeholder: "Dior",
   },
   {
     id: 3,
     label: "توضیحات",
     name: "description",
-    placeholder: "رایحه گلی",
+    placeholder: "برند دیور",
   },
 ];
 
@@ -79,6 +79,7 @@ function BrandForm({ brandToEdit }) {
       try {
         await AddBrand(payload);
         toast.success(`برند ${data.title} با موفقیت ساخته شد`);
+        queryClient.invalidateQueries(["brands"]);
         router.back();
       } catch (error) {
         toast.error(`ساخت برند با خطا مواجه شد`);
@@ -87,8 +88,9 @@ function BrandForm({ brandToEdit }) {
 
     if (!!brandToEdit) {
       try {
-        editBrand(payload);
+        await editBrand(payload);
         toast.success(`برند ${data.title} با موفقیت ویرایش شد`);
+        queryClient.invalidateQueries(["brands"]);
         router.back();
       } catch (error) {
         toast.error(`ویرایش برند ${data.title} با خطا مواجه شد`);
@@ -101,7 +103,7 @@ function BrandForm({ brandToEdit }) {
     <div className="max-w-6xl mx-auto p-10">
       <Toaster />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {basicInfoData.map((item) => (
@@ -111,6 +113,7 @@ function BrandForm({ brandToEdit }) {
               isRequired
               label={item.label}
               name={item.name}
+              textClassName="font-bold"
               className="textField__input textField__input--2 rounded-xl w-full"
               validationSchema={{ required: true }}
               placeholder={`مثال: ${item.placeholder}`}
@@ -121,7 +124,7 @@ function BrandForm({ brandToEdit }) {
         {/* IconUrl */}
         <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
           <div className="flex items-center justify-between mb-4 w-full">
-            <h3 className="text-text font-bold">
+            <h3 className="text-text font-bold max-md:text-base text-lg">
               آیکون برند
               <span className="text-error">*</span>
             </h3>
@@ -138,60 +141,11 @@ function BrandForm({ brandToEdit }) {
           </div>
         </div>
 
-        {/* ImageUrl
-        <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
-          <div className="flex items-center justify-between mb-4 w-full">
-            <h3 className="text-text font-bold">
-              عکس‌ برند
-              <span className="text-error">*</span>
-            </h3>
-          </div>
-          <div className="flex flex-wrap items-center justify-start gap-4">
-            <div className="flex items-center justify-start gap-2 mb-2 h-full">
-              <input
-                dir="ltr"
-                {...register(`imageUrl`)}
-                placeholder="/images/product.png"
-                className="textField__input textField__input--2 rounded-2xl w-full"
-              />
-            </div>
-          </div>
-        </div> */}
-
-        {/* Type */}
-        {/* <div>
-          <h3 className="font-bold ">
-            انتخاب نوع
-            <span className="text-error">*</span>
-          </h3>
-          <div className="flex  max-sm:flex-co max-[29rem]:flex-wrap items-center justify-center sm:justify-start sm: gap-4 w-full">
-            {typesData.map((type) => {
-              const isChecked = watch("type") === type.value ? true : false;
-              return (
-                <RHFRadioButton
-                  key={type.id}
-                  className=""
-                  checked={isChecked}
-                  value={type.value}
-                  validationSchema={{ required: true }}
-                  name="type"
-                  register={register}
-                >
-                  <div
-                    className={`flex items-center justify-center text-lg border-2 duration-200 ${isChecked ? " border-primary text-primary font-bold" : "text-text-secondary border-secondary opacity-70"} px-2 h-12 w-32 rounded-full `}
-                  >
-                    <p className="duration-200">{type.description}</p>
-                  </div>
-                </RHFRadioButton>
-              );
-            })}
-          </div>
-        </div> */}
-
         {/* Submit Button */}
         <div className="flex items-center md:items-end flex-col max-md:gap-8 md:gap-6">
           <div className="flex items-center justify-between max-sm:flex-col gap-4 w-full">
             <button
+              type="submit"
               disabled={isSubmitting || isEditing}
               className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
             >
@@ -204,6 +158,7 @@ function BrandForm({ brandToEdit }) {
                   : "ویرایش برند"}
             </button>
             <button
+              type="button"
               onClick={() => router.back()}
               className="btn btn--primary--2 border-2 border-primary py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
             >
@@ -212,6 +167,7 @@ function BrandForm({ brandToEdit }) {
           </div>
           {brandToEdit && (
             <button
+              type="submit"
               disabled={isDeleting}
               onClick={() => removeCategoryHandler(brandToEdit)}
               className="btn btn--primary border-0 py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"

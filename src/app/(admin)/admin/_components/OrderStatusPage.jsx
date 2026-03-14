@@ -1,6 +1,8 @@
 "use client";
 
+import Error from "@/components/Error";
 import AppImage from "@/components/AppImage";
+import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
 import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
@@ -42,14 +44,14 @@ export default function OrderStatusPage({ status }) {
   if (isLoading)
     return (
       <div className="flex justify-center items-center h-64 text-gray-500 mx-6">
-        در حال بارگذاری...
+        <Loading />
       </div>
     );
 
   if (error)
     return (
       <div className="text-center text-red-600 mx-6">
-        خطا در دریافت اطلاعات.
+        <Error />
       </div>
     );
 
@@ -82,20 +84,20 @@ function StatusOrderCard({ order, title, color, src, alt }) {
   return (
     <div className="flex flex-col justify-between gap-6 w-full max-lg:border-t border-text/10 p-6 lg:border lg:rounded-2xl">
       <div
-        className={`flex items-center justify-center gap-1 h-11 w-36 rounded-5xl ${color}`}
+        className={`flex items-center justify-start gap-1 h-11 w-fit px-2 rounded-5xl ${color}`}
       >
-        <AppImage src={src} alt={alt} className="size-7" />
+        <AppImage src={src} alt={alt} width="size-7" sizes="10vw" />
         <p className="text-xs font-bold">{title}</p>
       </div>
       <div className="flex max-sm:flex-col sm:flex-row sm:items-end justify-between w-full">
         <div className="flex max-md:flex-col items-start justify-center max-md:gap-2 md:gap-6">
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">تاریخ تحویل سفارش :</p>
-            <p className="font-bold">{order.date}</p>
+            <p className="font-bold text-text">{order.date}</p>
           </span>
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">کد سفارش :</p>
-            <p className="font-bold">{toPersianNumbers(order.id)}</p>
+            <p className="font-bold text-text">{toPersianNumbers(order.id)}</p>
           </span>
         </div>
         <div className="max-sm:w-full flex items-center max-sm:justify-end  sm:justify-center">

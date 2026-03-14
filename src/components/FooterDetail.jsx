@@ -26,7 +26,7 @@ function FooterDetail({
         <div className="absolute top-4 left-4 bg-primary/50 size-4 rounded-full"></div>
       </div>
       <div className={`grow flex flex-col ${items} justify-between gap-1 `}>
-        <p className="font-bold">{title}</p>
+        <p className="font-bold text-text">{title}</p>
         <p className="text-text-secondary text-xs">{discription}</p>
       </div>
     </div>

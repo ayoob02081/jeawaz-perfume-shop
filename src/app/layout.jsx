@@ -9,11 +9,14 @@ import { Toaster } from "react-hot-toast";
 export default function RootLayout({ children, modal }) {
   return (
     <html lang="fa" dir="rtl">
-      <body dir="rtl" className="font-display antialiased scrollbar-none">
+      <body
+        dir="rtl"
+        className="font-display antialiased scrollbar-none !bg-white"
+      >
         <Providers>
           <Toaster />
           <Header />
-          <main>
+          <main className="bg-white">
             {modal}
             {children}
           </main>

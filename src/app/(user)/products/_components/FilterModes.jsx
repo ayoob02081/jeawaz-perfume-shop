@@ -167,7 +167,7 @@ function FilterModes({
   return (
     <div className=" flex flex-col max-md:py-4 md:p-6 size-full max-md:gap-4 gap-6">
       <div className="flex items-center justify-between border-b-[1.5px] border-stroke-2 max-md:px-4 pb-6">
-        <p className="md:text-xl font-bold ">{modeTitle(mode)}</p>
+        <p className="md:text-xl font-bold text-text">{modeTitle(mode)}</p>
         <button
           disabled={isFilter || isPriceFilter ? false : true}
           type="button"
@@ -194,7 +194,7 @@ function FilterModes({
           onClick={mode === "all" ? onClose : () => setMode("all")}
           className="btn btn--secondary--2 px-6 h-full w-1/2 "
         >
-          <p className="text-sm sm:text-base ">
+          <p className="text-sm sm:text-base text-text">
             {mode === "all" ? "انصراف" : "بازگشت"}
           </p>
         </button>
@@ -219,7 +219,7 @@ function FilterMode({
 }) {
   return (
     <div className="flex flex-col items-start justify-start gap-4 p-4 max-md:border-b md:border border-stroke md:rounded-2xl">
-      <p className="hidden md:flex font-bold">{title}</p>
+      <p className="hidden md:flex font-bold text-text">{title}</p>
       {button ? (
         <div className="flex flex-col justify-start gap-2 w-full">
           <div className="flex items-center justify-between gap-2 w-full ">

@@ -280,7 +280,7 @@ function CategorySideBar({
                       onClick={() => setCategoryOpen(false)}
                       className="btn btn--secondary--2 bg-white border-white px-6 h-full w-1/2 disabled:bg-amber-50"
                     >
-                      <p className="text-sm sm:text-xs ">انصراف</p>
+                      <p className="text-sm sm:text-xs text-text">انصراف</p>
                     </button>
                   </div>
                 </div>

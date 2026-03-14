@@ -3,7 +3,7 @@ import CategoryForm from "../../../_components/CategoryForm";
 function page() {
   return (
     <div>
-      <CategoryForm />
+      <CategoryForm accord="accord" />
     </div>
   );
 }

@@ -27,7 +27,7 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
         await removeBrand(id);
       }
       toast.success(`${title} با موفقیت حذف شد.`);
-      queryClient.invalidateQueries(["categories"]);
+      queryClient.invalidateQueries(["categories", "brands"]);
     } catch (error) {
       toast.error(error?.response?.data?.message);
     }
@@ -38,7 +38,7 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
       <Table className="overflow-auto">
         <Table.Header className="">
           {categoryTHeads.map((item) => (
-            <th className="whitespace-nowrap table__th" key={item.id}>
+            <th className="whitespace-nowrap table__th px-2" key={item.id}>
               {item.label}
             </th>
           ))}
@@ -84,7 +84,7 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
                       />
                     </div>
                   </td>
-                  <td className="table__td px-2">
+                  <td className="table__td px-6">
                     <p className="badge badge--primary font-bold">
                       {accords && toPersianNumbers(accordsQuantity)}
                       {brands && toPersianNumbers(brandsQuantity)}

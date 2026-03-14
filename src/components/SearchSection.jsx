@@ -4,7 +4,7 @@ function SearchSection({ placeholder, onClick }) {
   return (
     <div className="flex items-center justify-center focus-within:border-[1.5px] lg:hover:*:left-12 lg:hover:*:*:last:w-auto lg:hover:*:last:*:last:block focus-within:*:last:*:last:w-auto focus-within:*:last:*:last:block focus-within:*:last:left-12 focus-within:*:last:bg-grey border-primary size-full h-12 rounded-[48px] bg-grey focus-within:bg-white ">
       <input
-        className="p-4 outline-0 w-full"
+        className="p-4 outline-0 w-full text-text"
         type="search"
         placeholder={placeholder}
       />

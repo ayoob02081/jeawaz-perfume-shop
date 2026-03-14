@@ -98,7 +98,7 @@ function FilterSection() {
                   width="size-5"
                   sizes="10vw"
                 />
-                <p className="max-md:text-xs">فیلتر ها</p>
+                <p className="max-md:text-xs text-text">فیلتر ها</p>
               </button>
               {state.draft.priceRange[1] !== 300000000 && (
                 <Badge
@@ -183,7 +183,7 @@ function FilterSection() {
       <section className="w-full flex items-center justify-between py-6">
         <div className=" flex items-center justify-center gap-2">
           <div className="bg-primary h-3 w-[3px] rounded-full"></div>
-          <p className="text-xl font-bold">عطر های مردانه</p>
+          <p className="text-xl font-bold text-text">عطر های مردانه</p>
         </div>
         <div>
           <SortSection />

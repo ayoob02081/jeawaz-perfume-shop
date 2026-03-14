@@ -1,4 +1,4 @@
-import AllOrderStatus from "../../../../components/AllOrderStatus";
+import AllOrderStatus from "@/components/AllOrderStatus";
 import OrderStatusPage from "./OrderStatusPage";
 
 function OrdersLayout({ status }) {

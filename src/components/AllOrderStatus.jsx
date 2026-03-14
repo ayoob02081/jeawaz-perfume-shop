@@ -83,9 +83,11 @@ function Status({ count, status }) {
         <p className="text-sm text-text-secondary text-nowrap font-bold">
           {statusConfig[status].title}
         </p>
-        <span className="flex items-center justify-start gap-2">
-          <p className="text-2xl">{toPersianNumbers(allOrdersLength)}</p>
-          <p>سفارش</p>
+        <span className="flex items-center justify-start gap-2 text-text">
+          <p className="text-2xl text-text">
+            {toPersianNumbers(allOrdersLength)}
+          </p>
+          <p className="text-text">سفارش</p>
         </span>
       </span>
     </button>

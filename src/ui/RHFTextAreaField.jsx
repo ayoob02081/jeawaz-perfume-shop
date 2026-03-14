@@ -2,6 +2,7 @@ function RHFTextAreaField({
   name,
   label,
   register,
+  textClassName,
   dir = "rtl",
   isRequired,
   className = "",
@@ -11,7 +12,10 @@ function RHFTextAreaField({
 }) {
   return (
     <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
-      <label htmlFor={name} className="text-text mb-4">
+      <label
+        htmlFor={name}
+        className={`text-text mb-4 max-md:text-base text-lg ${textClassName}`}
+      >
         {label}
         {isRequired && <span className="text-error">*</span>}
       </label>

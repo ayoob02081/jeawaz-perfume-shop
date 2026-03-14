@@ -140,7 +140,7 @@ function DesktopHeader({
           </div>
           <div className="flex flex-none items-center justify-between gap-3">
             <li
-              className={`w-fit lg: max-w-36 h-10 lg:h-12 btn bg-white active:bg-dark-brown py-0 pl-1 pr-2 ${user?.email && "border-0 ring-1 ring-dark-brown/10"} duration-200`}
+              className={`w-fit lg: max-w-36 h-10 lg:h-12 btn bg-white active:bg-dark-brown py-0 pl-1 pr-2 ${user?.email ? "border-0 ring-1 ring-dark-brown/10" : "border border-stroke-2"} duration-200`}
             >
               <button
                 onClick={
@@ -183,13 +183,13 @@ function DesktopHeader({
                   />
                 </div>
                 <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem]">
-                  <p className="text-xs lg:text-sm">سبد خرید شما</p>
+                  <p className="text-xs lg:text-sm text-text">سبد خرید شما</p>
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center gap-2 py-0.5 px-2 lg:px-3 rounded-3xl bg-dark-brown/10">
-                      <p className="text-xs lg:text-sm">۴</p>
-                      <p className="text-xs lg:text-sm">کالا</p>
+                      <p className="text-xs lg:text-sm text-text">۴</p>
+                      <p className="text-xs lg:text-sm text-text">کالا</p>
                     </div>
-                    <ArrowLeftIcon className=" size-3 lg:size-4" />
+                    <ArrowLeftIcon className="text-text size-3 lg:size-4" />
                   </div>
                 </div>
               </button>
@@ -276,8 +276,6 @@ function DesktopHeader({
                 title="پشتیبانی"
                 type="support"
                 className="max-md:h-8 md:h-10"
-                hoverWidthMaxMd="w-[7.62rem]"
-                hoverWidthMd="w-24"
                 size="max-md:size-4 md:size-6"
               />
             </Link>

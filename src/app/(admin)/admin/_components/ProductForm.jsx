@@ -134,7 +134,7 @@ function ProductForm({ productToEdit }) {
     try {
       await removeProduct(id);
       toast.success(`${perTitle} با موفقیت حذف شد.`);
-      queryClient.invalidateQueries(["products"]);
+      queryClient.invalidateQueries(["get-products"]);
       router.back();
     } catch (error) {
       toast.error(error?.response?.data?.message);
@@ -254,6 +254,7 @@ function ProductForm({ productToEdit }) {
       try {
         await AddProduct(payload);
         toast.success("Product Created");
+        queryClient.invalidateQueries(["get-products"]);
         router.back();
       } catch (error) {
         toast.error("Product Not Created");
@@ -264,12 +265,17 @@ function ProductForm({ productToEdit }) {
       try {
         editProduct(payload);
         toast.success("Product Updated");
+        queryClient.invalidateQueries(["get-products"]);
         router.back();
       } catch (error) {
         toast.error("Product Not Updated");
       }
     }
   };
+
+  !watch(`notes.top`).includes("") && watch(`notes.top`).push("");
+  !watch(`notes.middle`).includes("") && watch(`notes.middle`).push("");
+  !watch(`notes.base`).includes("") && watch(`notes.base`).push("");
 
   if (brandsLoading || categoriesLoading) {
     return <Loading />;
@@ -279,53 +285,43 @@ function ProductForm({ productToEdit }) {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-10">
+    <div className="max-w-6xl mx-auto max-md:p-6 p-10">
       <Toaster />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
         {/* Basic Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {basicInfoData.map((item) => (
-            <RHFTextField
-              key={item.name}
-              type={item.type}
-              register={register}
-              isRequired
-              label={item.label}
-              name={item.name}
-              className="textField__input textField__input--2 rounded-xl w-full"
-              validationSchema={{ required: true }}
-              placeholder={`مثال: ${item.placeholder}`}
-            />
-          ))}
-        </div>
-        <RHFTextAreaField
-          name="description"
-          isRequired
-          label="توضیحات محصول"
-          register={register}
-          placeholder="توضیحات محصول"
-          validationSchema={{ required: true }}
-          className="textField__input textField__input--2 rounded-2xl w-full"
-        />
-
-        {/* Original */}
-        <RHFCheckBox
-          value="original"
-          id="original"
-          name="original"
-          register={register}
-        >
-          <div
-            className={`flex items-center justify-center border-2 ${watch("original") === "original" ? " border-primary font-bold text-primary " : "border-secondary text-text-secondary opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
-          >
-            <p className="text-xl">اورجینال</p>
+        <div className="flex flex-col items-start justify-center gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            {basicInfoData.map((item) => (
+              <RHFTextField
+                textClassName="font-bold"
+                key={item.name}
+                type={item.type}
+                register={register}
+                isRequired
+                label={item.label}
+                name={item.name}
+                className="textField__input textField__input--2 rounded-xl w-full"
+                validationSchema={{ required: true }}
+                placeholder={`مثال: ${item.placeholder}`}
+              />
+            ))}
           </div>
-        </RHFCheckBox>
+          <RHFTextAreaField
+            name="description"
+            textClassName="font-bold"
+            isRequired
+            label="توضیحات محصول"
+            register={register}
+            placeholder="توضیحات محصول"
+            validationSchema={{ required: true }}
+            className="textField__input textField__input--2 rounded-2xl w-full"
+          />
+        </div>
 
         {/* Images */}
         <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
           <div className="flex items-center justify-between mb-4 w-full">
-            <h3 className="text-text font-bold">
+            <h3 className="text-text font-bold max-md:text-base text-lg">
               عکس‌های محصول
               <span className="text-error">*</span>
             </h3>
@@ -363,7 +359,7 @@ function ProductForm({ productToEdit }) {
 
         {/* Brand */}
         <div>
-          <h3 className="font-bold mb-4">
+          <h3 className="font-bold mb-4 text-text max-md:text-base text-lg">
             انتخاب برند
             <span className="text-error">*</span>
           </h3>
@@ -400,11 +396,11 @@ function ProductForm({ productToEdit }) {
 
         {/* Gender */}
         <div>
-          <h3 className="font-bold ">
+          <h3 className="font-bold mb-4 text-text max-md:text-base text-lg">
             انتخاب جنسیت
             <span className="text-error">*</span>
           </h3>
-          <div className="flex  max-sm:flex-co max-[29rem]:flex-wrap items-center justify-center sm:justify-start sm: gap-4 w-full">
+          <div className="flex max-[29rem]:flex-wrap items-center justify-center sm:justify-start gap-4 w-full">
             {genderCategories.map((gender) => {
               const isChecked =
                 Number(watch("genderId")) === gender.id ? true : false;
@@ -429,13 +425,34 @@ function ProductForm({ productToEdit }) {
           </div>
         </div>
 
+        {/* Original */}
+        <div className="flex flex-col items-start jussta">
+          <h3 className="font-bold mb-4 text-text max-md:text-base text-lg">
+            اصالت
+          </h3>
+          <div className="flex max-[29rem]:flex-wrap items-center justify-center sm:justify-start gap-4 w-full">
+            <RHFCheckBox
+              value="original"
+              id="original"
+              name="original"
+              register={register}
+            >
+              <div
+                className={`flex items-center justify-center border-2 ${watch("original") === "original" ? " border-primary font-bold text-primary " : "border-secondary text-text-secondary opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
+              >
+                <p className="text-xl">اورجینال</p>
+              </div>
+            </RHFCheckBox>
+          </div>
+        </div>
+
         {/* Accord */}
         <div>
-          <h3 className="font-bold mb-4">
+          <h3 className="font-bold mb-4 text-text max-md:text-base text-lg">
             انتخاب رایحه
             <span className="text-error">*</span>
           </h3>
-          <div className="flex items-center justify-start flex-wrap gap-4">
+          <div className="flex items-center max-sm:justify-center justify-start flex-wrap gap-4">
             {accordCategories.map((accord) => {
               const isChecked = watch("accordIds").includes(String(accord.id))
                 ? true
@@ -469,31 +486,25 @@ function ProductForm({ productToEdit }) {
         </div>
 
         {/* Notes */}
-        {notesData.map((type) => (
-          <div key={type.id}>
-            <div className="flex items-center justify-between gap-4">
-              <h3 className="font-bold mb-4">
-                {type.description}
-                <span className="text-error">*</span>
-              </h3>
-              <button
-                type="button"
-                onClick={() => watch(`notes.${type.value}`).push("")}
-                className="btn btn--success text-sm py-1.5 px-2.5 rounded-xl mb-4"
-              >
-                اضافه کردن نت
-              </button>
-            </div>
-            {watch(`notes.${type.value}`).map((_, i) => (
-              <div key={i} className="flex gap-3 mb-2">
-                <input
-                  {...register(`notes.${type.value}.${i}`)}
-                  className="textField__input textField__input--2 rounded-2xl w-full"
-                />
+        <div className="flex items-start justify-start gap-6 w-full">
+          {notesData.map((type) => (
+            <div className="max-sm: w-full" key={type.id}>
+              <div className="flex items-center justify-between gap-4">
+                <h3 className="font-bold mb-4 text-text max-md:text-base text-lg">
+                  {type.description}
+                </h3>
               </div>
-            ))}
-          </div>
-        ))}
+              {watch(`notes.${type.value}`).map((_, i) => (
+                <div key={i} className="flex gap-3 mb-2">
+                  <input
+                    {...register(`notes.${type.value}.${i}`)}
+                    className="textField__input textField__input--2 rounded-2xl w-full"
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
 
         {/* Decant */}
         <div>
@@ -501,8 +512,9 @@ function ProductForm({ productToEdit }) {
             حجم‌های دکانت موجود
             <span className="text-error">*</span>
           </h3>
-          <div className="flex flex-col items-start justify-start gap-4">
+          <div className="flex flex-wra items-center justify-center gap-4 w-full">
             <RHFTextField
+              textClassName="font-bold"
               type="number"
               register={register}
               label="قیمت هر میل(تومان)"
@@ -513,6 +525,7 @@ function ProductForm({ productToEdit }) {
             />
 
             <RHFTextField
+              textClassName="font-bold"
               register={register}
               label="حجم‌ها"
               name="modes.decant.availableVolumes"
@@ -541,6 +554,7 @@ function ProductForm({ productToEdit }) {
           {sealedFields.fields.map((field, i) => (
             <div key={field.id} className="flex items-end gap-4 mb-2 h-full">
               <RHFTextField
+                textClassName="font-bold"
                 type="number"
                 register={register}
                 name={`modes.sealed.variants.${i}.volume`}
@@ -549,6 +563,7 @@ function ProductForm({ productToEdit }) {
                 placeholder="حجم"
               />
               <RHFTextField
+                textClassName="font-bold"
                 type="number"
                 register={register}
                 name={`modes.sealed.variants.${i}.price`}
@@ -570,10 +585,13 @@ function ProductForm({ productToEdit }) {
 
         {/* Details */}
         <div>
-          <h3 className="font-bold mb-4">جزئیات محصول</h3>
+          <h3 className="font-bold mb-6 text-text max-md:text-base text-lg">
+            جزئیات محصول
+          </h3>
           <div className="grid grid-cols-2 gap-6">
             {detailInfoData.map((item) => (
               <RHFTextField
+                textClassName="font-bold"
                 key={item.name}
                 register={register}
                 isRequired
@@ -589,7 +607,7 @@ function ProductForm({ productToEdit }) {
 
         {/* Sesons */}
         <div>
-          <h3 className="font-bold mb-4">
+          <h3 className="font-bold mb-4 text-text max-md:text-base text-lg">
             انتخاب فصل مناسب استفاده
             <span className="text-error">*</span>
           </h3>
@@ -622,6 +640,7 @@ function ProductForm({ productToEdit }) {
         <div className="flex items-center md:items-end flex-col max-md:gap-8 md:gap-6">
           <div className="flex items-center justify-between max-sm:flex-col gap-4 w-full">
             <button
+              type="submit"
               disabled={isSubmitting || isEditing}
               className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
             >
@@ -634,6 +653,7 @@ function ProductForm({ productToEdit }) {
                   : "ویرایش محصول"}
             </button>
             <button
+              type="button"
               onClick={() => router.back()}
               className="btn btn--primary--2 border-2 border-primary py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
             >
@@ -642,6 +662,7 @@ function ProductForm({ productToEdit }) {
           </div>
           {productToEdit && (
             <button
+              type="submit"
               disabled={isDeleting}
               onClick={() => removeProductHandler(productToEdit)}
               className="btn btn--primary border-0 py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"

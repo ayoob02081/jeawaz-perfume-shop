@@ -149,10 +149,10 @@
     @apply flex items-center gap-2 py-4 w-full text-xs text-text-primary border-t border-stroke;
   }
   .profile__link--2 {
-    @apply flex items-center justify-between gap-2 px-6 text-sm;
+    @apply flex items-center justify-between gap-2 px-6 text-sm text-text;
   }
-  .pagesBtn {
-    @apply flex items-center justify-center size-10 text-sm bg-white border border-[#E4E7E9] hover:border hover:border-primary hover:bg-white hover:text-primary active:border active:border-primary active:bg-white active:text-primary  focus-within:bg-primary focus-within:border-0 focus-within:text-white rounded-full duration-200;
+  .pages--btn {
+    @apply flex items-center justify-center size-10 aspect-square text-sm bg-white border border-stroke-2 hover:border hover:border-primary hover:bg-white hover:text-primary active:border active:border-primary active:bg-white active:text-primary *:text-text  focus-within:*:text-primary focus-within:*:font-bold focus-within:border-primary rounded-full duration-200;
   }
   .table__th {
     @apply bg-primary text-white py-3;
@@ -176,7 +176,7 @@
     @apply flex items-center justify-start px-3 bg-grey rounded-xl py-2 outline-0 focus:bg-white border-[1.5px] border-grey focus:border-primary duration-200;
   }
   .textField__input--2 {
-    @apply rounded-full bg-[#f1f1f1] focus-within:bg-white;
+    @apply rounded-full text-text bg-[#f1f1f1] focus-within:bg-white;
   }
   .footerLink {
     @apply grid gap-x-6 gap-y-1 text-base text-nowrap text-text-secondary *:hover:text-primary *:active:text-primary *:duration-200;

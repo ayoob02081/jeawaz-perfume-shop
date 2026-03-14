@@ -94,8 +94,6 @@ function ProductCard({ product }) {
                 title={accord.title}
                 type={accord.value}
                 className="max-md:h-8 md:h-10"
-                hoverWidthMaxMd="w-[6.5rem]"
-                hoverWidthMd="w-[8.35rem]"
                 size="max-md:size-4 md:size-6"
               />
             ))}
@@ -105,8 +103,6 @@ function ProductCard({ product }) {
               title={productGender.title}
               type={productGender.value}
               className="max-md:h-8 md:h-10"
-              hoverWidthMaxMd="w-[5.5rem]"
-              hoverWidthMd="w-[4.55rem]"
               size="max-md:size-4 md:size-6"
             />
           </div>
@@ -134,8 +130,8 @@ function ProductCard({ product }) {
               )}
             </div>
             <div className="flex-none flex items-start flex-col gap-1 max-md:pb-3 md:pb-6 font-bold border-b border-[#EBEBEB] ">
-              <p className="max-md:text-base text-lg font-bold">{enTitle}</p>
-              <p className="max-md:text-sm text-lg font-bold">{perTitle} </p>
+              <p className="max-md:text-base text-lg font-bold text-text">{enTitle}</p>
+              <p className="max-md:text-sm text-lg font-bold text-text">{perTitle} </p>
             </div>
             <div
               className={`flex flex-none items-center md:items-end gap-4 w-full pt-2 ${isStock ? "justify-between" : "justify-end"}`}
@@ -180,8 +176,6 @@ export function CardIconResponsive({
   src,
   alt,
   title,
-  hoverWidthMd,
-  hoverWidthMaxMd,
   type,
 }) {
   let bgColor;
@@ -238,6 +232,7 @@ export function CardIconResponsive({
 
     case "support":
       bgColor = "bg-primary/10";
+      textStyle = "text-text";
       break;
 
     default:
@@ -247,7 +242,7 @@ export function CardIconResponsive({
   return accord ? (
     <div
       dir="rtl"
-      className={`flex items-center group rounded-5xl px-2 md:hover:${hoverWidthMd} max-md:hover:${hoverWidthMaxMd} ${bgColor} ${className} duration-300`}
+      className={`flex items-center group rounded-5xl px-2 ${bgColor} ${className} duration-300`}
     >
       <AppImage
         src={src}
@@ -257,7 +252,7 @@ export function CardIconResponsive({
         sizes="10vw"
       />
       <p
-        className={`w-0 transform opacity-0 group-hover:opacity-100 duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pr-2 md:text-sm font-bold ${textStyle}`}
+        className={`w-0 opacity-0 group-hover:opacity-100 group-hover:duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pr-2 md:text-sm font-bold ${textStyle}`}
       >
         {title}
       </p>
@@ -265,7 +260,7 @@ export function CardIconResponsive({
   ) : (
     <div
       dir="ltr"
-      className={`flex items-center group rounded-5xl px-2 md:hover:${hoverWidthMd} max-md:hover:${hoverWidthMaxMd} ${bgColor} ${className} duration-300`}
+      className={`flex items-center group rounded-5xl px-2 ${bgColor} ${className} duration-300`}
     >
       <AppImage
         src={src}
@@ -275,7 +270,7 @@ export function CardIconResponsive({
         sizes="10vw"
       />
       <p
-        className={`w-0 opacity-0 group-hover:opacity-100 duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pr-2 md:text-sm font-bold ${textStyle}`}
+        className={`w-0 opacity-0 group-hover:opacity-100 group-hover:duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pr-2 md:text-sm font-bold ${textStyle}`}
       >
         {title}
       </p>

@@ -11,7 +11,6 @@ import {
   ChevronUpIcon,
   PencilIcon,
 } from "@heroicons/react/24/outline";
-import { scrollTo } from "@/utils/scrollTo";
 import AppImage from "@/components/AppImage";
 import { useGetUser } from "@/hooks/useUsers";
 import Link from "next/link";
@@ -69,6 +68,7 @@ export default function ImageSwiper({ product, images }) {
       {/* MAIN */}
       <div className="flex-1">
         <div ref={mainRef} className="relative overflow-hidden md:rounded-2xl">
+          {/* Images */}
           <div className="flex">
             {images?.map((src, i) => (
               <div
@@ -87,6 +87,7 @@ export default function ImageSwiper({ product, images }) {
             ))}
           </div>
 
+          {/* Share Btn */}
           <div className="absolute flex items-center gap-1 top-5 max-md:left-3 md:right-3 max-md:z-50">
             <button className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-white">
               <AppImage
@@ -98,6 +99,7 @@ export default function ImageSwiper({ product, images }) {
             </button>
           </div>
 
+          {/* Edit Btn */}
           {data?.role === "admin" && (
             <div className="absolute flex items-center gap-1 top-5 max-md:right-3 md:left-3 max-md:z-50">
               <Link
@@ -109,20 +111,21 @@ export default function ImageSwiper({ product, images }) {
             </div>
           )}
 
+          {/* Swiper Btn */}
           <div className="max-md:hidden absolute flex items-center gap-1 bottom-5 right-3">
             <button
               onClick={scrollPrev}
               disabled={selectedIndex === 0 ? true : false}
               className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-white disabled:opacity-60"
             >
-              <ChevronLeftIcon className="size-4 stroke-2" />
+              <ChevronLeftIcon className="size-4 stroke-2 text-text" />
             </button>
             <button
               onClick={scrollNext}
               disabled={selectedIndex === images.length - 1 ? true : false}
               className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-white disabled:opacity-60"
             >
-              <ChevronRightIcon className="size-4 stroke-2" />
+              <ChevronRightIcon className="size-4 stroke-2 text-text" />
             </button>
           </div>
         </div>
@@ -157,6 +160,8 @@ export default function ImageSwiper({ product, images }) {
             ))}
           </div>
         </div>
+
+        {/* Swiper Btn */}
         <div className="max-lg:hidden lg:h-28 lg:w-full lg:flex lg:flex-col lg:gap-1 lg:items-center lg:pt-4 lg:justify-start">
           <button
             onClick={scrollPrev}
@@ -176,17 +181,6 @@ export default function ImageSwiper({ product, images }) {
               <ChevronDownIcon className="size-4 stroke-2 text-text-primary " />
             )}
           </button>
-          {/* <button
-            onClick={() => scrollTo(thumbRef, "y", -100)}
-            className="lg:flex lg:items-center lg:justify-center lg:bg-grey lg:size-8 xl:size-10 lg:rounded-full"
-          >
-          </button>{" "}
-          <button
-            onClick={() => scrollTo(thumbRef, "y", 100)}
-            className="lg:flex lg:items-center lg:justify-center lg:bg-grey lg:size-8 xl:size-10 lg:rounded-full"
-          >
-           
-          </button> */}
         </div>
       </div>
     </div>

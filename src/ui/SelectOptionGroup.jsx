@@ -9,9 +9,9 @@ function SelectOptionGroup({ children, className, onClick, dropOpen }) {
         className="flex justify-between items-center w-full md:h-12 gap-3 md:bg-grey focus-within:bg-white focus-within:border-[1.5px] border-stroke rounded-4xl outline-0 border-0 duration-200 px-3 md:px-8 py-1"
         onClick={onClick}
       >
-        <p className="text-xs md:text-sm">مرتب سازی</p>
+        <p className="text-xs md:text-sm text-text">مرتب سازی</p>
         <ChevronDownIcon
-          className={`size-4 ${dropOpen && "rotate-180"} duration-200`}
+          className={`size-4 ${dropOpen && "rotate-180"} text-text duration-200`}
         />
       </button>
 

@@ -30,7 +30,7 @@ export function UserProfileLink({ label, phoneNumber, isloading }) {
             href={"/profile/me"}
             className="flex items-center justify-between max-lg:gap-2 lg:gap-4"
           >
-            <div className="flex items-center justify-center max-lg:siz-11 lg: size-14 bg-secondary lg:bg-white lg: rounded-xl">
+            <div className="flex items-center justify-center max-lg:siz-11 size-14 bg-secondary lg:bg-white rounded-xl">
               <AppImage
                 src="/images/user-stroke-black-icon.svg"
                 alt="user-icon"
@@ -39,7 +39,7 @@ export function UserProfileLink({ label, phoneNumber, isloading }) {
               />
             </div>
             <span className="flex flex-col items-start justify-between gap-2 ">
-              <p className="max-lg:font-bold ">{label}</p>
+              <p className="max-lg:font-bold text-text">{label}</p>
               <p className="text-text/40 duration-200">
                 {toPersianNumbers(phoneNumber)}
               </p>
@@ -82,7 +82,7 @@ export function ProfileLink({
             ${
               label && isPathName
                 ? "bg-dark-brown text-white"
-                : "hover:bg-stroke-2 hover:*:*:*:last:*:last:duration-200"
+                : "hover:bg-stroke-2 hover:*:*:*:last:*:last:duration-200 text-text"
             }
             max-lg:py-2 lg:py-2 size-full ${
               label ? "px-2 rounded-[44px]" : "lg:mb-2 lg:py-4 px-4 rounded-3xl"

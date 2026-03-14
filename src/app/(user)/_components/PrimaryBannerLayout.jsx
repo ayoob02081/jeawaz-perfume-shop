@@ -104,7 +104,7 @@ function BannerCard({ srcLg, srcSm, url, urlLabel }) {
               sizes="10vw"
             />
           </button>
-          <p className="text-xs sm:text-[10px] lg:text-xs xl:text-base text-whie font-bold">
+          <p className="text-xs sm:text-[10px] lg:text-xs xl:text-base text-whie font-bold text-text">
             دریافت مشاوره
           </p>
         </Link>

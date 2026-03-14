@@ -90,8 +90,6 @@ function ProductsListTable({ products }) {
                         title={productGender?.title}
                         type={productGender?.value}
                         className="max-md:h-8 md:h-10"
-                        hoverWidthMaxMd="w-[5.5rem]"
-                        hoverWidthMd="w-[4.55rem]"
                         size="max-md:size-4 md:size-6"
                         accord
                       />
@@ -109,8 +107,6 @@ function ProductsListTable({ products }) {
                             title={accord.title}
                             type={accord.value}
                             className="max-md:h-8 md:h-10"
-                            hoverWidthMaxMd="w-[6.5rem]"
-                            hoverWidthMd="w-[8.35rem]"
                             size="max-md:size-4 md:size-6"
                           />
                         ))}

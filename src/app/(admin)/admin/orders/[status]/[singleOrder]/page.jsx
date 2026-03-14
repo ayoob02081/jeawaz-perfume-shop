@@ -85,36 +85,40 @@ function Order({ order, status }) {
         <GoBack
           label="جزئیات سفارش"
           side="right"
-          className="size-6"
+          className="size-6 text-text"
           fontStyle="text-xl font-bold"
           justify="between"
         />
       </div>
+
+      {/* Order Details */}
       <div className="flex flex-col justify-center items-start w-full max-lg:p-4 max-lg:border-[1.5px] border-stroke max-lg:rounded-2.5xl">
         <div className="flex flex-wrap w-full max-md:gap-4 md:gap-6 py-6">
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">تاریخ تحویل سفارش :</p>
-            <p className="font-bold">{date}</p>
+            <p className="font-bold text-text">{date}</p>
           </span>
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">کد پیگیری سفارش :</p>
-            <p className="font-bold">{toPersianNumbers(id)}</p>
+            <p className="font-bold text-text">{toPersianNumbers(id)}</p>
           </span>
         </div>
         <div className="flex w-full flex-wrap py-6 border-t border-stroke-2 max-md:gap-4 md:gap-6">
           <div className="flex max-md:flex-col items-start justify-center max-md:gap-4 md:gap-6">
             <span className="flex items-center justify-start gap-1">
               <p className="text-gray-600">تحویل گیرنده :</p>
-              <p className="font-bold">احمد رضایی</p>
+              <p className="font-bold text-text">احمد رضایی</p>
             </span>
             <span className="flex items-center justify-start gap-1">
               <p className="text-gray-600">شماره تماس :</p>
-              <p className="font-bold">{toPersianNumbers(912345789)}</p>
+              <p className="font-bold text-text">
+                {toPersianNumbers(912345789)}
+              </p>
             </span>
           </div>
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">آدرس ارسال مرسوله :</p>
-            <p className="font-bold">
+            <p className="font-bold text-text">
               تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵
             </p>
           </span>
@@ -123,7 +127,7 @@ function Order({ order, status }) {
           <div className="flex max-sm:flex-col items-start justify-center max-md:gap-4 md:gap-6">
             <span className="flex items-center justify-start gap-1">
               <p className="text-gray-600">مبلغ کل :</p>
-              <p className="font-bold">
+              <p className="font-bold text-text">
                 {toPersianNumbersWithComma(1450000)} تومان
               </p>
             </span>
@@ -133,19 +137,22 @@ function Order({ order, status }) {
                 <AppImage
                   src="/images/success-stroke-icon.svg"
                   alt="success icon"
-                  className="size-5"
+                  width="size-5"
+                  sizes="10vw"
                 />
-                <p className="font-bold">موفق</p>
+                <p className="font-bold text-text">موفق</p>
               </div>
             </span>
           </div>
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">هزینه بسته بندی و ارسال :</p>
-            <p className="font-bold">
+            <p className="font-bold text-text">
               {toPersianNumbersWithComma(50000)} تومان
             </p>
           </span>
         </div>
+
+        {/* Factor */}
         <div className="bg-grey rounded-2xl p-4 md:p-5 w-full">
           <div className="w-full">
             <div className="flex items-start justify-between w-full mb-5">
@@ -154,9 +161,10 @@ function Order({ order, status }) {
                   <AppImage
                     src="/images/fast-deliver-icon.svg"
                     alt="deliver icon"
-                    className="size-5"
+                    width="size-5"
+                    sizes="10vw"
                   />
-                  <p className="text-sm md:text-base font-bold">
+                  <p className="text-sm md:text-base font-bold text-text">
                     مشخصات مرسوله
                   </p>
                 </div>
@@ -166,7 +174,8 @@ function Order({ order, status }) {
                 <AppImage
                   src="/images/factor-icon.svg"
                   alt="recipt icon"
-                  className="size-5"
+                  width="size-5"
+                  sizes="10vw"
                 />
                 <p className="text-sm md:text-base font-bold text-primary">
                   مشاهده فاکتور
@@ -177,14 +186,16 @@ function Order({ order, status }) {
               <div className="flex flex-wrap max-md:items-start justify-start gap-4 w-full mb-4">
                 <span className="flex items-center justify-start gap-1">
                   <p className="text-gray-600">زمان ارسال مرسوله :</p>
-                  <p className="font-bold">
+                  <p className="font-bold text-text">
                     یکشنبه ، 1403/05/24 ، ساعت 15 تا 18
                   </p>
                 </span>
                 <div className="flex max-sm:flex-col xl:flex-row items-start justify-center md:justify-start gap-4">
                   <span className="flex items-center justify-start gap-1">
                     <p className="text-gray-600">کد پیگیری سفارش :</p>
-                    <p className="font-bold">{toPersianNumbers(id)}</p>
+                    <p className="font-bold text-text">
+                      {toPersianNumbers(id)}
+                    </p>
                   </span>
                   <span className="flex items-center justify-start gap-1">
                     <p className="text-gray-600">وضعیت مرسوله :</p>
@@ -194,16 +205,19 @@ function Order({ order, status }) {
                       <AppImage
                         src={statusConfig[status].src}
                         alt={statusConfig[status].alt}
-                        className="size-5"
+                        width="size-5"
+                        sizes="10vw"
                       />
-                      <p className="font-bold"> {statusConfig[status].title}</p>
+                      <p className="font-bold text-text">
+                        {statusConfig[status].title}
+                      </p>
                     </div>
                   </span>
                 </div>
               </div>
               <span className="flex items-center justify-start gap-1">
                 <p className="text-gray-600">مبلغ مرسوله :</p>
-                <p className="font-bold">
+                <p className="font-bold text-text">
                   {toPersianNumbersWithComma(5000000)} تومان
                 </p>
               </span>
@@ -219,14 +233,15 @@ function Order({ order, status }) {
                       <AppImage
                         src={item.src}
                         alt={item.alt}
-                        className="max-lg:size-11 lg:size-9"
+                        width="max-lg:size-11 lg:size-9"
+                        sizes="30vw"
                       />
                     </div>
                     <div className="flex flex-col items-start justify-center gap-2">
-                      <p className="max-md:text-base text-lg font-bold">
+                      <p className="max-md:text-base text-lg font-bold text-text">
                         Tiziana Terenzi
                       </p>
-                      <p className="max-md:text-sm text-lg font-bold">
+                      <p className="max-md:text-sm text-lg font-bold text-text">
                         شنل اگویست پلاتینیوم
                       </p>
                     </div>

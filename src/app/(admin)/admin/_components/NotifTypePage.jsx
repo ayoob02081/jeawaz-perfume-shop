@@ -12,7 +12,7 @@ function NotifTypePage({ type, className, text }) {
       </div>
       <div className="flex flex-col items-start justify-start gap-3 ">
         <div className="flex items-center justify-start gap-2">
-          <div className="max-md:text-sm">آخرین محصولات تخفیف خورده سال</div>
+          <div className="max-md:text-sm text-text">آخرین محصولات تخفیف خورده سال</div>
           <div className="text-text-secondary-light max-md:text-xs md:text-sm">
             1404/02/25
           </div>
