@@ -15,7 +15,7 @@ export const useGetAllProducts = () =>
     refetchOnWindowFocus: true,
   });
 
-export const useGetProductsbyID = (id) =>
+export const useGetProductsbyId = (id) =>
   useQuery({
     queryKey: ["get-product", id],
     queryFn: () => getProductByIdApi(id),

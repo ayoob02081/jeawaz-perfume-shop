@@ -1,6 +1,11 @@
 import AppImage from "@/components/AppImage";
 import Accordion from "@/ui/Accordion";
 
+export const metadata = {
+  title: "قوانین و مقررات",
+  description: "درباره قوانین و مقررات ما بدانید",
+};
+
 function TermsPage() {
   return (
     <main className="mb-8 mt-48 md:mt-40">

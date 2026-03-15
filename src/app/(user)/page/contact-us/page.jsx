@@ -5,6 +5,11 @@ import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import Link from "next/link";
 import ContactUsForm from "../_components/ContactUsForm";
 
+export const metadata = {
+  title: "تماس با ما",
+  description: "برای مشاوره و نظرات خود با ما تماس بگیرید",
+};
+
 function ContactUsPage() {
   return (
     <main className="mt-48 md:mt-40">
@@ -20,7 +25,7 @@ function ContactUsPage() {
             </span>
             <p className="text-text-secondary leading-7">
               در صورت وجود هرگونه سؤال، ابهام، پیشنهاد یا بازخورد، با کمال میل
-              منتظر شنیدن صدای شما هستیم. تیم پشتیبانی جیواز همواره در تلاش است
+              منتظر شنیدن صدای شما هستیم. تیم پشتیبانی جیاواز همواره در تلاش است
               تا با پاسخ‌گویی دقیق و به‌موقع، تجربه‌ای مطمئن، دل‌پذیر و حرفه‌ای
               از خرید عطر برای شما فراهم کند
             </p>

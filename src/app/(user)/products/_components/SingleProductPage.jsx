@@ -2,7 +2,7 @@
 
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
-import { useGetAllProducts } from "@/hooks/useProducts";
+import { useGetProductsbyId } from "@/hooks/useProducts";
 import AppImage from "@/components/AppImage";
 import CardEvents from "@/components/CardEvents";
 import RadioButton from "@/ui/RadioButton";
@@ -15,19 +15,17 @@ import {
   useGetAllBrandCategories,
   useGetAllCategories,
 } from "@/hooks/useCategories";
-import { PencilIcon } from "@heroicons/react/24/outline";
 import BreadCrumbBase from "@/ui/BreadCrumbBase";
 import BreadCrumb from "@/ui/BreadCrumb";
 
 function SingleProductPage({ slug }) {
-  const { data, isLoading, error } = useGetAllProducts();
+  const { data: product, isLoading, error } = useGetProductsbyId(slug);
 
   const {
     data: categories,
     isLoading: categoriesLoading,
     error: categoriesError,
   } = useGetAllCategories();
-  const currentSlug = data?.find((product) => product.id === Number(slug));
 
   if (isLoading) {
     return <Loading />;
@@ -45,8 +43,8 @@ function SingleProductPage({ slug }) {
             <BreadCrumb href={"/"} label={"فروشگاه"} />
             <BreadCrumb href={"/products"} label={"محصولات"} chevron />
             <BreadCrumb
-              href={`/products/${currentSlug.id}`}
-              label={currentSlug.perTitle}
+              href={`/products/${product.id}`}
+              label={product.perTitle}
               className="!text-primary font-bold"
               chevron
             />
@@ -54,10 +52,10 @@ function SingleProductPage({ slug }) {
         </section>
       </article>
       <article className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 w-ful md:p-6">
-        <ImageSwiper images={currentSlug.images} product={currentSlug} />
-        <ProductDes currentSlug={currentSlug} />
-        <ProductOptions currentSlug={currentSlug} categories={categories} />
-        <ProductDetails currentSlug={currentSlug} />
+        <ImageSwiper images={product.images} product={product} />
+        <ProductDes product={product} />
+        <ProductOptions product={product} categories={categories} />
+        <ProductDetails product={product} />
       </article>
     </main>
   );
@@ -65,22 +63,22 @@ function SingleProductPage({ slug }) {
 
 export default SingleProductPage;
 
-function ProductDes({ currentSlug }) {
+function ProductDes({ product }) {
   const {
     data: allBrands,
     isLoading: brandsLoading,
     error: brandsError,
   } = useGetAllBrandCategories();
   const productBrand = allBrands?.find(
-    (brand) => brand.title === currentSlug?.categories.brand,
+    (brand) => brand.title === product?.categories.brand,
   );
 
   const [volumeMode, setVolumeMode] = useState("sealed");
 
   const volumes =
-    (volumeMode === "decant" && currentSlug.modes?.decant.availableVolumes) ||
+    (volumeMode === "decant" && product.modes?.decant.availableVolumes) ||
     (volumeMode === "sealed" &&
-      currentSlug.modes?.sealed.variants.map((v) => v.volume));
+      product.modes?.sealed.variants.map((v) => v.volume));
 
   const defaultVolume = volumes.includes(100)
     ? 100
@@ -106,9 +104,9 @@ function ProductDes({ currentSlug }) {
     );
   }, [volumeMode]);
 
-  const decantsPrice = currentSlug.modes?.decant.pricePerMl * selectedVolume;
+  const decantsPrice = product.modes?.decant.pricePerMl * selectedVolume;
 
-  const sealedPrice = currentSlug.modes?.sealed.variants.find(
+  const sealedPrice = product.modes?.sealed.variants.find(
     (v) => v.volume === selectedVolume,
   );
 
@@ -117,12 +115,11 @@ function ProductDes({ currentSlug }) {
 
   return (
     <article className="grid grid-cols-1 w-full gap-y-4 xl:gap-y-10 max-md:p-6 h-fit justify-items-start">
-
       {/* Product Name */}
       <section className="flex flex-col gap-2 items-start justify-start w-full">
         <span className="flex items-center max-md:justify-between gap-2 md:justify-start w-full">
           <p className="font-bold text-wrap text-[28px] w-full text-text">
-            {currentSlug.perTitle}
+            {product.perTitle}
           </p>
           <div className="md:hidden">
             <AppImage
@@ -135,7 +132,7 @@ function ProductDes({ currentSlug }) {
           </div>
         </span>
         <p className="text-base text-wrap text-text-secondary w-full">
-          {currentSlug.enTitle}
+          {product.enTitle}
         </p>
       </section>
 
@@ -171,12 +168,12 @@ function ProductDes({ currentSlug }) {
             <p className="text-text">انتخاب حجم:</p>
             <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
               {volumes?.map((volume, index) => {
-                const isDisabled = currentSlug.stock >= volume ? false : true;
+                const isDisabled = product.stock >= volume ? false : true;
                 return (
                   <RadioButton
                     key={volumeMode + index}
                     id={volumeMode + index}
-                    name={`single-product-volume` + currentSlug.id}
+                    name={`single-product-volume` + product.id}
                     value={volume}
                     disabled={isDisabled}
                     onChange={volumeHandler}
@@ -196,7 +193,7 @@ function ProductDes({ currentSlug }) {
             </div>
           </div>
         </div>
-        {currentSlug.original === true && (
+        {product.original === true && (
           <AppImage
             src="/images/bg-original.svg"
             alt="original-icon"
@@ -209,12 +206,12 @@ function ProductDes({ currentSlug }) {
 
       {/* Price Section */}
       <div className="flex items-center md:justify-between max-md:justify-end w-full md:row-start-2">
-        {currentSlug.stock >= 3 ? (
+        {product.stock >= 3 ? (
           <PriceSection
             volume={selectedVolume}
             volumeMode={volumeMode}
             price={price}
-            offValue={currentSlug.offValue}
+            offValue={product.offValue}
             OldPricevisibility="block"
             pricesRow="flex-col-reverse max-md:gap-0"
             className=""
@@ -240,13 +237,13 @@ function ProductDes({ currentSlug }) {
 
       {/* Buttons */}
       <div className="flex items-center justify-between w-full gap-4">
-        {currentSlug.stock >= 3 && (
+        {product.stock >= 3 && (
           <button className=" btn btn--success w-full h-12 px-2">
             افزودن به سبد خرید
           </button>
         )}
         <div className=" flex-none">
-          {currentSlug.stock >= 3 && (
+          {product.stock >= 3 && (
             <CardEvents
               btnStyle="max-lg:size-8 lg:size-12 not-active:bg-grey "
               quantityStyle="max-lg:size-12 lg:size-12 max-lg:text-lg lg:text-lg"
@@ -262,20 +259,20 @@ function ProductDes({ currentSlug }) {
         label="توضیحات تکمیلی"
       >
         <p className="text-text-secondary text-sm pt-4 border-t border-stroke leading-8 ">
-          {currentSlug.description}
+          {product.description}
         </p>
       </Accordion>
     </article>
   );
 }
 
-function ProductOptions({ currentSlug, categories }) {
-  const productAccords = currentSlug.categories.accords.map((accord) => {
+function ProductOptions({ product, categories }) {
+  const productAccords = product.categories.accords.map((accord) => {
     const accords = categories?.find((item) => item.value === accord);
     return accords?.title;
   });
 
-  const { details, modes } = currentSlug;
+  const { details, modes } = product;
 
   return (
     <article className="grow w-full  max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:p-6 md:p-4 border-stroke-2 ">
@@ -346,8 +343,8 @@ function ProductOption({ title, value, data, accords, volumes }) {
   );
 }
 
-function ProductDetails({ currentSlug }) {
-  const { notes } = currentSlug;
+function ProductDetails({ product }) {
+  const { notes } = product;
 
   return (
     <div className="grow flex flex-col items-center justify-between gap-6 w-full max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl p-6 border-stroke-2  ">

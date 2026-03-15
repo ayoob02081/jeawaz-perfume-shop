@@ -17,7 +17,7 @@ function PagesNumber() {
         <ArrowLeftIcon className="size-6 text-text-primary hover:text-shadow-primary" />
       </div>
       {pagesNumber.map((item) => (
-        <Link href={item.url} className="pages--btn">
+        <Link key={item.id} href={item.url} className="pages--btn">
           <p>{toPersianNumbers(item.value)}</p>
         </Link>
       ))}

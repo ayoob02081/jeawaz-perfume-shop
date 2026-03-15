@@ -2,6 +2,11 @@ import FooterDetail from "@/components/FooterDetail";
 import AppImage from "@/components/AppImage";
 import SupportBox from "@/components/SupportBox";
 
+export const metadata = {
+  title: "درباره ما",
+  description: "کمی درباره ما بدانید",
+};
+
 function AboutUsPage() {
   return (
     <main className="container mx-auto xl:max-w-7xl mb-8 mt-48 md:mt-40">
