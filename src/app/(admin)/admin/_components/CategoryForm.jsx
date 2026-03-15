@@ -43,9 +43,9 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
     const { id, title } = category;
     try {
       await removeCategory(id);
-      toast.success(`${title} با موفقیت حذف شد.`);
-      queryClient.invalidateQueries(["categories"]);
+      queryClient.invalidateQueries(["get-categories"]);
       router.back();
+      toast.success(`${title} با موفقیت حذف شد.`);
     } catch (error) {
       toast.error(error?.response?.data?.message);
     }
@@ -82,9 +82,9 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
     if (!categoryToEdit) {
       try {
         await AddCategory(payload);
-        toast.success("Category Created");
-        queryClient.invalidateQueries(["categories"]);
+        queryClient.invalidateQueries(["get-categories"]);
         router.back();
+        toast.success("Category Created");
       } catch (error) {
         toast.error("Category Not Created");
       }
@@ -93,12 +93,11 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
     if (!!categoryToEdit) {
       try {
         await editCategory(payload);
-        toast.success("Category Updated");
-        queryClient.invalidateQueries(["categories"]);
+        queryClient.invalidateQueries(["get-categories"]);
         router.back();
+        toast.success("Category Updated");
       } catch (error) {
         toast.error("Category Not Updated");
-        console.log(error);
       }
     }
   };

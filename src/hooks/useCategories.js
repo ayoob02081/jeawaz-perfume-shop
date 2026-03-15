@@ -10,7 +10,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useGetAllCategories = () =>
   useQuery({
-    queryKey: ["categories"],
+    queryKey: ["get-categories"],
     queryFn: getAllCategoriesApi,
     retry: false,
     refetchOnWindowFocus: true,
@@ -18,7 +18,7 @@ export const useGetAllCategories = () =>
 
 export const useGetAllBrandCategories = () =>
   useQuery({
-    queryKey: ["brands"],
+    queryKey: ["get-brands"],
     queryFn: getAllBrandsApi,
     retry: false,
     refetchOnWindowFocus: true,

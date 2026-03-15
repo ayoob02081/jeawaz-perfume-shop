@@ -42,9 +42,9 @@ function BrandForm({ brandToEdit }) {
     const { id, title } = category;
     try {
       await removeBrand(id);
-      toast.success(`${title} با موفقیت حذف شد.`);
-      queryClient.invalidateQueries(["brands"]);
+      queryClient.invalidateQueries(["get-brands"]);
       router.back();
+      toast.success(`${title} با موفقیت حذف شد.`);
     } catch (error) {
       toast.error(error?.response?.data?.message);
     }
@@ -78,9 +78,9 @@ function BrandForm({ brandToEdit }) {
     if (!brandToEdit) {
       try {
         await AddBrand(payload);
-        toast.success(`برند ${data.title} با موفقیت ساخته شد`);
-        queryClient.invalidateQueries(["brands"]);
+        queryClient.invalidateQueries(["get-brands"]);
         router.back();
+        toast.success(`برند ${data.title} با موفقیت ساخته شد`);
       } catch (error) {
         toast.error(`ساخت برند با خطا مواجه شد`);
       }
@@ -88,13 +88,12 @@ function BrandForm({ brandToEdit }) {
 
     if (!!brandToEdit) {
       try {
-        await editBrand(payload);
-        toast.success(`برند ${data.title} با موفقیت ویرایش شد`);
-        queryClient.invalidateQueries(["brands"]);
+        editBrand(payload);
+        queryClient.invalidateQueries(["get-brands"]);
         router.back();
+        toast.success(`برند ${data.title} با موفقیت ویرایش شد`);
       } catch (error) {
         toast.error(`ویرایش برند ${data.title} با خطا مواجه شد`);
-        console.log(error);
       }
     }
   };

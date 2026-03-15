@@ -44,8 +44,8 @@ function UsersListTable({ users }) {
                   </td>
 
                   <td className="table__td px-2">
-                    <div className="flex flex-col gap-y-2 items-start">
-                      {
+                    <div className="flex flex-col items-center justify-center gap-y-2 badge badge--primary ">
+                      {toPersianNumbers(
                         user?.Products?.length >= 1
                           ? user.Products?.map((product, index) => (
                               <div
@@ -55,9 +55,8 @@ function UsersListTable({ users }) {
                                 {product.title}
                               </div>
                             ))
-                          : ""
-                        // toPersianNumbers(user?.Products.length)
-                      }
+                          : 0,
+                      )}
                     </div>
                   </td>
 
@@ -71,10 +70,10 @@ function UsersListTable({ users }) {
                       {user?.role}
                     </p>
                   </td>
-                  <td className="table__td px-3">
+                  <td className="table__td fle px-3">
                     <Link
                       href={`/admin/users/${user?.id}`}
-                      className="text-blue/70 hover:text-blue duration-200"
+                      className="flex items-center justify-center text-blue/70 hover:text-blue duration-200"
                     >
                       <EyeIcon className="size-4" />
                     </Link>

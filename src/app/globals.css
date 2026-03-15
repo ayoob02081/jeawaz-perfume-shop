@@ -155,7 +155,7 @@
     @apply flex items-center justify-center size-10 aspect-square text-sm bg-white border border-stroke-2 hover:border hover:border-primary hover:bg-white hover:text-primary active:border active:border-primary active:bg-white active:text-primary *:text-text  focus-within:*:text-primary focus-within:*:font-bold focus-within:border-primary rounded-full duration-200;
   }
   .table__th {
-    @apply bg-primary text-white py-3;
+    @apply bg-primary text-white py-3 px-2;
   }
   .table__td {
     @apply text-text py-4 text-ellipsis whitespace-nowrap overflow-y-auto;

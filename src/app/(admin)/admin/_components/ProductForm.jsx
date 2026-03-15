@@ -253,9 +253,9 @@ function ProductForm({ productToEdit }) {
     if (!productToEdit) {
       try {
         await AddProduct(payload);
-        toast.success("Product Created");
         queryClient.invalidateQueries(["get-products"]);
         router.back();
+        toast.success("Product Created");
       } catch (error) {
         toast.error("Product Not Created");
       }
@@ -264,9 +264,9 @@ function ProductForm({ productToEdit }) {
     if (!!productToEdit) {
       try {
         editProduct(payload);
-        toast.success("Product Updated");
         queryClient.invalidateQueries(["get-products"]);
         router.back();
+        toast.success("Product Updated");
       } catch (error) {
         toast.error("Product Not Updated");
       }

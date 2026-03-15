@@ -16,7 +16,6 @@ export default function useEditCategory(categoryId) {
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "Something went wrong");
-      console.log(err);
     },
   });
 
