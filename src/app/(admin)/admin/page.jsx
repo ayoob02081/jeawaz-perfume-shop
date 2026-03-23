@@ -1,5 +1,4 @@
 import ProfileInfoLayout from "@/components/ProfileInfoLayout";
-import ProfileInfo from "./_components/ProfileInfo";
 
 export default function Home() {
   return (

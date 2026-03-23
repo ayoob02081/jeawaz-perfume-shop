@@ -21,7 +21,7 @@ function Footer() {
             />
             <p className="text-sm">جیاواز، دنیای رایحه‌های خاصه</p>
           </Link>
-          <div className="flex flex-col items-center justify-evenly gap-2 text-text-secondary text-xs">
+          <div className="flex flex-col items-center justify-evenly gap-2 text-stroke-600 dark:text-stroke-600/50 text-xs">
             <p>
               ما اینجاییم تا کمک کنیم عطری رو پیدا کنی که با شخصیتت هم‌صدا باشه.
             </p>
@@ -41,7 +41,7 @@ function Footer() {
                 <li>
                   <h4 className="text-lg">عطر فروشی</h4>
                 </li>
-                <div className="footerLink grid-cols-2">
+                <div className="footer--link grid-cols-2">
                   <li>
                     <Link href={"/page/about-us"}>درباره ما</Link>
                   </li>
@@ -62,7 +62,7 @@ function Footer() {
                 <li>
                   <h4 className="text-lg">فروشگاه</h4>
                 </li>
-                <div className="footerLink grid-cols-3 *:even:col-span-2">
+                <div className="footer--link grid-cols-3 *:even:col-span-2">
                   <li>
                     <Link href={"/products"}>جدیدترین</Link>
                   </li>
@@ -89,7 +89,7 @@ function Footer() {
                   <p className="text-3xl text-primary ">
                     {toPersianNumbers("052")}
                   </p>
-                  <p className="text-xl text-text-cap ">
+                  <p className="text-xl text-stroke-450 ">
                     {toPersianNumbers("0918")}
                   </p>
                 </Link>
@@ -100,14 +100,14 @@ function Footer() {
                   <p className="text-3xl text-primary ">
                     {toPersianNumbers("052")}
                   </p>
-                  <p className="text-xl text-text-cap ">
+                  <p className="text-xl text-stroke-450 ">
                     {toPersianNumbers("0918")}
                   </p>
                 </Link>
               </div>
               <span className="flex items-center text-sm gap-0.5">
-                <p className="font-bold">منتظر صدای گرم شما هستیم!! </p>
-                <p className="text-text-mokamel font-semibod">
+                <p className="font-bold ">منتظر صدای گرم شما هستیم!! </p>
+                <p className="text-stroke-550 dark:text-stroke-200 font-semibod">
                   اگر سوالی داشتید با ما تماس بگیرید
                 </p>
               </span>
@@ -135,7 +135,7 @@ function Footer() {
             </section>
           </article>
         </div>
-        <section className="flex items-center justify-between w-full pt-6 border-t border-text-secondary/60">
+        <section className="flex items-center justify-between w-full pt-6 border-t border-stroke-600/60">
           <p className="text-white">
             تمامی حقوق مادی و معنوی برای جیاواز محفوظ می‌باشد
           </p>

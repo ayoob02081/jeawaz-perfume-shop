@@ -18,14 +18,14 @@ export default function HamburgerMenu({ children }) {
   };
 
   return (
-    <div className={`flex flex-col items-start bg-white`}>
+    <div className={`flex flex-col items-start bg-stroke-0`}>
       <div
         className={`${open ? "border-b" : ""} ${
           pathName.startsWith("/admin") && "sm:justify-center"
         } flex items-center justify-between w-full p-4 container`}
       >
         <button
-          className="flex sm:hidden items-center justify-center text-2xl focus:outline-none text-secondary-900"
+          className="flex sm:hidden items-center justify-center text-2xl focus:outline-none text-secndary-900"
           onClick={toggle}
         >
           <HamMenuIcon open={open} className="size-8" />
@@ -36,7 +36,7 @@ export default function HamburgerMenu({ children }) {
             className={` headerLink justify-center relative`}
             href={"/cart"}
           >
-            <span className="flex flex-col items-center justify-center bg-primary-900 size-5 text-white rounded-full absolute top-1 -right-1">
+            <span className="flex flex-col items-center justify-center bg-primary-900 size-5 text-stroke-0 rounded-full absolute top-1 -right-1">
               <p className="text-xs pt-0.5">
                 {cart
                   ? toPersianNumbers(data.cart.payDetail.orderItems.length)

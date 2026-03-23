@@ -12,9 +12,9 @@ const pagesNumber = [
 
 function PagesNumber() {
   return (
-    <section className="flex items-center justify-between flex-row-reverse gap-4">
+    <section className="flex items-center justify-between flex-row-reverse gap-4 overflow-auto scrollbar-none">
       <div>
-        <ArrowLeftIcon className="size-6 text-text-primary hover:text-shadow-primary" />
+        <ArrowLeftIcon className="size-6 text-stroke-800 hover:text-shadow-primary" />
       </div>
       {pagesNumber.map((item) => (
         <Link key={item.id} href={item.url} className="pages--btn">
@@ -22,7 +22,7 @@ function PagesNumber() {
         </Link>
       ))}
       <div>
-        <ArrowRightIcon className="size-6 text-text-primary hover:text-primary" />
+        <ArrowRightIcon className="size-6 text-stroke-800 hover:text-primary" />
       </div>
     </section>
   );

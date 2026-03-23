@@ -85,14 +85,13 @@ function Login({ toggleModalOpen, closeBtn }) {
           const { accessToken, message } = await loginApifn(userData);
           if (accessToken && step === 2 && password.length >= 6) {
             router.back();
-            reset();
-            setStep(1);
             toast.success("به جیاواز خوش آمدید!");
+            reset();
           }
         } catch (error) {
           toast.error(
             loginError?.response?.data?.message ||
-              "خطا در ورود به سایت ، لطفا مجددا تلاش کنید",
+              "رمز نادرست است، لطفا مجددا تلاش کنید",
           );
         }
       }
@@ -107,16 +106,12 @@ function Login({ toggleModalOpen, closeBtn }) {
           const { accessToken, message } = await loginApifn(userData);
           if (accessToken && step === 2 && otp.length >= 6) {
             router.back();
-            reset();
-            setOtp("");
-            setStep(1);
-            router.refresh();
             toast.success("به جیاواز خوش آمدید!");
           }
         } catch (error) {
           toast.error(
             loginError?.response?.data?.message ||
-              "خطا در ورود به سایت ، لطفا مجددا تلاش کنید",
+              "کد نادرست است، لطفا مجددا تلاش کنید",
           );
         }
       }
@@ -184,8 +179,8 @@ function Login({ toggleModalOpen, closeBtn }) {
                   onChange={setOtp}
                   numInputs={5}
                   renderSeparator={<span> </span>}
-                  inputStyle="flex items-center justify-center pl-4 md:pl-5.5 pt-1 max-md:size-11 md:size-14 bg-[#F1F1F1] rounded-full outline-0 text-text-primary max-md:text-lg md:text-xl duration-200"
-                  containerStyle="flex max-md:gap-1 md:gap-2 items-center justify-center w-full focus-within:*:[input]:bg-white focus-within:*:[input]:border focus-within:*:border-primary duration-200"
+                  inputStyle="flex items-center justify-center pl-4 md:pl-5.5 pt-1 max-md:size-11 md:size-14 bg-[#F1F1F1] rounded-full outline-0 text-stroke-800 max-md:text-lg md:text-xl duration-200"
+                  containerStyle="flex max-md:gap-1 md:gap-2 items-center justify-center w-full focus-within:*:[input]:bg-stroke-0 focus-within:*:[input]:border focus-within:*:border-primary duration-200"
                   renderInput={(props) => <input {...props} />}
                   skipDefaultStyles
                 />

@@ -5,8 +5,8 @@ export function Badge({ title, onClick, error }) {
     <div
       className={`flex items-center justify-center max-md:gap-3 md:gap-4 px-3 w-fit max-md:h-8 md:h-11 rounded-full ${
         error
-          ? "bg-secondary-2 border border-primary/10 text-primary"
-          : " bg-secondary text-text-secondary"
+          ? "bg-stroke-50 dark:bg-stroke-800/5 border border-primary/10 dark:border-primary/40 text-primary"
+          : " bg-stroke-150 text-stroke-600"
       } snap-center`}
     >
       <p className="max-md:text-xs text-nowrap w-ful">{title}</p>

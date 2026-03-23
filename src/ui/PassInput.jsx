@@ -28,12 +28,12 @@ function PassInput({
 
   return RHForm ? (
     <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
-      <label htmlFor={name} className="text-text mb-4">
+      <label htmlFor={name} className="text-stroke-800 mb-4">
         {label}
         {isRequired && <span className="text-error">*</span>}
       </label>
       <div
-        className={`flex items-center justify-between gap-2 size-full px-3 py-2 rounded-5xl bg-[#f1f1f1] focus-within:*:text-text-primary  focus-within:bg-white focus-within:border-[1.5px] border-primary`}
+        className={`flex items-center justify-between gap-2 size-full px-3 py-2 rounded-5xl bg-stroke-100 text-stroke-800  focus-within:bg-stroke-0 focus-within:border-[1.5px] border-primary`}
       >
         <input
           className={`outline-0 size-full ${
@@ -63,7 +63,7 @@ function PassInput({
     </div>
   ) : (
     <div
-      className={`flex items-center justify-center gap-2 size-full px-5 py-1.5 rounded-5xl ${className} text-text-secondary focus-within:*:text-text-primary  focus-within:bg-white focus-within:border border-primary`}
+      className={`flex items-center justify-center gap-2 size-full px-5 py-1.5 rounded-5xl ${className} text-stroke-600 focus-within:*:text-stroke-800  focus-within:bg-stroke-0 focus-within:border border-primary`}
     >
       <input
         className="outline-0 size-full"

@@ -85,18 +85,22 @@ function CategorySideBar({
 
   return (
     <Modal isOpen={categoryOpen} onClose={onClose} category>
-      <div className="size-full max-md:h-screen max-md:overflow-auto md:overflow-hidden bg-grey">
-        <div className="flex items-center justify-between px-4 w-full py-6 md:hidden md:h-0 bg-white">
+      <div className="size-full max-md:h-screen max-md:overflow-auto md:overflow-hidden bg-stroke-100">
+        {/* Mobile Category Button */}
+        <div className="flex items-center justify-between px-4 w-full py-6 md:hidden md:h-0 bg-stroke-0">
           <button className="size-6" onClick={toggleCategory}>
-            <ArrowRightIcon className="size-5" />
+            <ArrowRightIcon className="size-5 text-stroke-800" />
           </button>
-          <span className="text-text-primary font-bold">دسته بندی محصولات</span>
+          <span className="text-stroke-800 font-bold">دسته بندی محصولات</span>
           <div className="size-5"></div>
         </div>
+
+        {/* Category Form */}
         {isPending && <Loading />}
         {!isPending && (
-          <form className="flex max-md:flex-col justify-start md:justify-between md:items-stretch h-full md:h-[470px] max-md:w-full bg-grey">
-            <SideBarCategoryCard fieldsetId="category-section">
+          <form className="flex max-md:flex-col justify-start md:justify-between md:items-stretch h-full md:h-[470px] max-md:w-full bg-stroke-100">
+            {/* Gender Categories */}
+            <GenderCategoriesFilter fieldsetId="category-section">
               <div
                 className={`flex flex-col justify-between h-full md:p-4 ${state.draft.gender ? "md:pl-0 items-start" : "items-center"} duration-200`}
               >
@@ -108,9 +112,9 @@ function CategorySideBar({
                       <RadioButton
                         key={gender.id}
                         className="flex max-md:flex-col md:flex-row items-center justify-between max-md:h-full w-full md:w-56 max-sm:text-xs
-                    border-primary md:text-sm max-md:rounded-b-lg md:rounded-r-lg p-2 text-text-primary *:[div]:bg-white
+                    border-primary md:text-sm max-md:rounded-b-lg md:rounded-r-lg p-2 text-stroke-800 *:[div]:bg-stroke-0
                       has-checked:border max-md:has-checked:border-t-0 md:has-checked:border-l-0 has-checked:font-bold
-                    has-checked:bg-white has-checked:*:[div]:bg-grey duration-200"
+                    has-checked:bg-stroke-0 has-checked:*:[div]:bg-stroke-100 duration-200"
                         id={gender.value}
                         name={"gender"}
                         value={gender.value}
@@ -144,9 +148,9 @@ function CategorySideBar({
                   sizes="20vw"
                 />
               </div>
-            </SideBarCategoryCard>
+            </GenderCategoriesFilter>
             {state.draft.gender && (
-              <div className="md:hidden bg-white rounded-2xl m-4">
+              <div className="md:hidden bg-stroke-0 rounded-2xl m-4">
                 <Link
                   href={"/"}
                   className="flex items-center justify-between p-6 text-primary "
@@ -156,14 +160,19 @@ function CategorySideBar({
                 </Link>
               </div>
             )}
+
+            {/* Other Categories */}
             {state.draft.gender && (
-              <div className="flex flex-col gap-6 md:gap-4 w-full h-ful max-md:p-4 md:py-4 md:pl-4 max-md:border-t border-stroke ">
-                <div className="size-full rounded-2xl bg-white py-4 overflow-hidden">
+              <div className="flex flex-col gap-6 md:gap-4 w-full h-ful max-md:p-4 md:py-4 md:pl-4 max-md:border-t border-stroke-200 ">
+                {/* Categories */}
+                <div className="size-full rounded-2xl bg-stroke-0 py-4 overflow-hidden">
                   <div
                     dir="ltr"
                     className="flex flex-wrap flex-row-reverse items-start justify-start size-full overflow-y-auto scrollbar-none gap-6 pr-4 scroll-smooth **:scroll-smooth"
                   >
-                    <SideBarFilterCard fieldsetId="brand-value" title="برند">
+
+                    {/* Brands Filter */}
+                    <CategriesFilter fieldsetId="brand-value" title="برند">
                       {brandCategories?.map((brand) => {
                         const defaultValue = state.draft.brands.filter(
                           (v) => v == brand.value,
@@ -171,7 +180,7 @@ function CategorySideBar({
 
                         return (
                           <FilterCheckBox
-                            className="flex flex-col items-end justify-start size-full text-xs text-text-secondary has-checked:text-primary has-checked:font-bold duration-200"
+                            className="flex flex-col items-end justify-start size-full text-xs has-checked:font-bold duration-200"
                             textClassName="py-2"
                             key={brand.id}
                             checkId={brand.value}
@@ -186,8 +195,10 @@ function CategorySideBar({
                           />
                         );
                       })}
-                    </SideBarFilterCard>
-                    <SideBarFilterCard fieldsetId="volume-value" title="حجم">
+                    </CategriesFilter>
+                    
+                    {/* Volumes Filter */}
+                    <CategriesFilter fieldsetId="volume-value" title="حجم">
                       {volumes.map((volume, i) => {
                         const defaultValue = state.draft.volumes.filter(
                           (v) => v == volume.value,
@@ -195,7 +206,7 @@ function CategorySideBar({
 
                         return (
                           <FilterCheckBox
-                            className="flex flex-col items-end justify-start size-full text-xs text-text-secondary has-checked:text-primary has-checked:font-bold duration-200"
+                            className="flex flex-col items-end justify-start size-full text-xs has-checked:font-bold duration-200"
                             textClassName="py-2"
                             key={volume.id}
                             checkId={volume.value}
@@ -210,15 +221,17 @@ function CategorySideBar({
                           />
                         );
                       })}
-                    </SideBarFilterCard>
-                    <SideBarFilterCard fieldsetId="scent-type" title="رایحه">
+                    </CategriesFilter>
+                  
+                    {/* Accords Filter */}
+                    <CategriesFilter fieldsetId="scent-type" title="رایحه">
                       {accordCategories?.map((accord) => {
                         const defaultValue = state.draft.accords.filter(
                           (a) => a === accord.value,
                         );
                         return (
                           <FilterCheckBox
-                            className="flex flex-col items-end justify-start size-full text-xs text-text-secondary has-checked:text-primary has-checked:font-bold duration-200"
+                            className="flex flex-col items-end justify-start size-full text-xs has-checked:font-bold duration-200"
                             textClassName="py-2"
                             key={accord.id}
                             checkId={accord.value}
@@ -233,10 +246,13 @@ function CategorySideBar({
                           />
                         );
                       })}
-                    </SideBarFilterCard>
-                    <SideBarFilterCard
+                    </CategriesFilter>
+                   
+                    {/* Price Filter */}
+                    <CategriesFilter
                       fieldsetId="price-range"
                       title="محدوده قیمت"
+                      className="md:pl-4"
                     >
                       {priceRanges.map((price) => {
                         const isExisted =
@@ -259,9 +275,11 @@ function CategorySideBar({
                           />
                         );
                       })}
-                    </SideBarFilterCard>
+                    </CategriesFilter>
                   </div>
                 </div>
+
+                {/* Categories Submit Button */}
                 <div className="flex items-center justify-start md:justify-end w-full">
                   <div className="flex items-center justify-between  justify-items-center gap-4 max-[30rem]:w-full w-fit md:-full h-8">
                     <button
@@ -278,9 +296,11 @@ function CategorySideBar({
                     <button
                       type="button"
                       onClick={() => setCategoryOpen(false)}
-                      className="btn btn--secondary--2 bg-white border-white px-6 h-full w-1/2 disabled:bg-amber-50"
+                      className="btn btn--secondary--2 bg-stroke-0 border-stroke-0 px-6 h-full w-1/2 disabled:bg-amber-50"
                     >
-                      <p className="text-sm sm:text-xs text-text">انصراف</p>
+                      <p className="text-sm sm:text-xs text-stroke-800">
+                        انصراف
+                      </p>
                     </button>
                   </div>
                 </div>
@@ -295,7 +315,7 @@ function CategorySideBar({
 
 export default CategorySideBar;
 
-function SideBarFilterCard({ title, fieldsetId, children, className }) {
+function CategriesFilter({ title, fieldsetId, children, className }) {
   return (
     <div
       dir="rtl"
@@ -308,7 +328,7 @@ function SideBarFilterCard({ title, fieldsetId, children, className }) {
           width="size-4"
           sizes="10vw"
         />
-        <h5 className="text-text-primary">{title}</h5>
+        <h5 className="text-stroke-800">{title}</h5>
       </div>
       <fieldset
         dir="ltr"
@@ -321,10 +341,10 @@ function SideBarFilterCard({ title, fieldsetId, children, className }) {
   );
 }
 
-function SideBarCategoryCard({ fieldsetId, children }) {
+function GenderCategoriesFilter({ fieldsetId, children }) {
   return (
     <fieldset id={fieldsetId} className="md:rounded-r-3xl md:overflow-hidden">
-      <div className="md:h-full max-md:border-t border-stroke-3 md:pt-4 max-sm:h-[5.45rem] sm:h-28">
+      <div className="md:h-full max-md:border-t border-stroke-300 md:pt-4 max-sm:h-[5.45rem] sm:h-28">
         {children}
       </div>
     </fieldset>
@@ -335,7 +355,7 @@ function FilterRadioBtn({ radioId, name, label, onChange, defaultValue }) {
   const checked = defaultValue === radioId ? true : false;
   return (
     <RadioButton
-      className="flex flex-col items-end justify-start size-full text-xs text-text-secondary has-checked:text-primary has-checked:font-bold duration-200"
+      className="flex flex-col items-end justify-start size-full text-xs text-stroke-600 dark:text-stroke-500 has-checked:text-primary has-checked:font-bold duration-200"
       id={radioId}
       name={name}
       value={radioId}
@@ -346,7 +366,7 @@ function FilterRadioBtn({ radioId, name, label, onChange, defaultValue }) {
         <p className="py-2">{label}</p>
         <div
           className={`h-2 w-0.5 rounded-full ${
-            checked ? "bg-primary" : "bg-secondary-2"
+            checked ? "bg-primary" : "bg-stroke-50"
           } duration-200`}
         ></div>
       </span>

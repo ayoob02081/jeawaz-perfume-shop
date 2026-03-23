@@ -63,7 +63,7 @@ export default function ImageSwiper({ product, images }) {
   return (
     <div
       dir="ltr"
-      className="flex flex-col lg:flex-row lg:aspect-6/5 lg:pr-4 gap-4 max-sm:rounded-2xl max-md:rounded-3xl max-md:mx-4 max-md:bg-secondary overflow-hidden"
+      className="flex flex-col lg:flex-row lg:aspect-6/5 lg:pr-4 gap-4 max-sm:rounded-2xl max-md:rounded-3xl max-md:mx-4 max-md:bg-stroke-150 max-md:dark:bg-stroke-50 overflow-hidden"
     >
       {/* MAIN */}
       <div className="flex-1">
@@ -73,7 +73,7 @@ export default function ImageSwiper({ product, images }) {
             {images?.map((src, i) => (
               <div
                 key={i}
-                className="flex-[0_0_100%] relative aspect-square md:bg-secondary"
+                className="flex-[0_0_100%] relative aspect-square md:bg-stroke-150 md:dark:bg-stroke-50"
               >
                 <Image
                   src={src}
@@ -89,7 +89,7 @@ export default function ImageSwiper({ product, images }) {
 
           {/* Share Btn */}
           <div className="absolute flex items-center gap-1 top-5 max-md:left-3 md:right-3 max-md:z-50">
-            <button className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-white">
+            <button className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-stroke-0">
               <AppImage
                 src="/images/share-icon.svg"
                 alt="share-icon"
@@ -104,7 +104,7 @@ export default function ImageSwiper({ product, images }) {
             <div className="absolute flex items-center gap-1 top-5 max-md:right-3 md:left-3 max-md:z-50">
               <Link
                 href={`/admin/products/edit/${product?.id}`}
-                className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-white shadow-md"
+                className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-stroke-0 shadow-md"
               >
                 <PencilIcon className="text-primary size-5 sm:size-6 md:size-5 xl:size-6" />
               </Link>
@@ -116,16 +116,16 @@ export default function ImageSwiper({ product, images }) {
             <button
               onClick={scrollPrev}
               disabled={selectedIndex === 0 ? true : false}
-              className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-white disabled:opacity-60"
+              className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-stroke-0 disabled:opacity-60"
             >
-              <ChevronLeftIcon className="size-4 stroke-2 text-text" />
+              <ChevronLeftIcon className="size-4 stroke-2 text-stroke-800" />
             </button>
             <button
               onClick={scrollNext}
               disabled={selectedIndex === images.length - 1 ? true : false}
-              className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-white disabled:opacity-60"
+              className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-stroke-0 disabled:opacity-60"
             >
-              <ChevronRightIcon className="size-4 stroke-2 text-text" />
+              <ChevronRightIcon className="size-4 stroke-2 text-stroke-800" />
             </button>
           </div>
         </div>
@@ -146,15 +146,15 @@ export default function ImageSwiper({ product, images }) {
                 className={clsx(
                   "relative aspect-square max-[30rem]:size-18 max-md:size-26 md:size-20 lg:size-full *:rounded-xl rounded-xl lg:overflow-hidden border transition",
                   selectedIndex === i
-                    ? "border-primary *:bg-white"
-                    : "border-stroke-2 opacity-60 hover:opacity-100",
+                    ? "border-primary md:*:bg-stroke-0 *:dark:bg-stroke-50"
+                    : "border-stroke-250 opacity-60 dark:opacity-30 hover:opacity-100 bg-stroke-0 md:bg-stroke-150 md:dark:bg-stroke-100",
                 )}
               >
                 <Image
                   src={src}
                   alt={product.enTitle + "-image"}
                   fill
-                  className="object-contain bg-white md:bg-secondary"
+                  className="object-contain "
                 />
               </button>
             ))}
@@ -166,19 +166,19 @@ export default function ImageSwiper({ product, images }) {
           <button
             onClick={scrollPrev}
             disabled={selectedIndex === 0 ? true : false}
-            className={`${selectedIndex === 0 ? "bg-transparent" : "lg:bg-grey"} lg:flex lg:items-center lg:justify-center lg:size-8 xl:size-10 lg:rounded-full`}
+            className={`${selectedIndex === 0 ? "bg-transparent" : "lg:bg-stroke-100"} lg:flex lg:items-center lg:justify-center lg:size-8 xl:size-10 lg:rounded-full`}
           >
             {selectedIndex !== 0 && (
-              <ChevronUpIcon className="size-4 stroke-2 text-text-primary " />
+              <ChevronUpIcon className="size-4 stroke-2 text-stroke-800 " />
             )}
           </button>
           <button
             onClick={scrollNext}
             disabled={selectedIndex === images.length - 1 ? true : false}
-            className={`${selectedIndex === images.length - 1 ? "bg-transparent" : "lg:bg-grey "} lg:flex lg:items-center lg:justify-center lg:size-8 xl:size-10 lg:rounded-full`}
+            className={`${selectedIndex === images.length - 1 ? "bg-transparent" : "lg:bg-stroke-100 "} lg:flex lg:items-center lg:justify-center lg:size-8 xl:size-10 lg:rounded-full`}
           >
             {selectedIndex !== images.length - 1 && (
-              <ChevronDownIcon className="size-4 stroke-2 text-text-primary " />
+              <ChevronDownIcon className="size-4 stroke-2 text-stroke-800 " />
             )}
           </button>
         </div>

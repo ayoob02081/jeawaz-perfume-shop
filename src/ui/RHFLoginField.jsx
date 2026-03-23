@@ -18,14 +18,14 @@ function RHFLoginField({
 
   return (
     <div className="flex items-center justify-center gap-2 w-full h-12 ">
-      <div className="flex items-center justify-center gap-2 size-full px-5 py-1.5 rounded-5xl bg-[#F1F1F1] text-text-secondary focus-within:*:text-text-primary  focus-within:bg-white  focus-within:border border-primary">
+      <div className="flex items-center justify-center gap-2 size-full px-5 py-1.5 rounded-5xl bg-stroke-100  text-stroke-600 focus-within:*:text-stroke-800  focus-within:bg-stroke-0  focus-within:border border-primary">
         {isEmailType ? (
           <EnvelopeIcon className="size-5" />
         ) : (
           <DevicePhoneMobileIcon className="size-5" />
         )}
         <input
-          className="outline-0 size-full text-text"
+          className="outline-0 size-full"
           dir="rtl"
           type={isEmailType ? "email" : "tel"}
           id={name}

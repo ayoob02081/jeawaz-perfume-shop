@@ -28,17 +28,17 @@ function AuthLayout({
   return (
     <>
       <div className="flex flex-col items-center justify-between gap-2 md:gap-4">
-        <span className="max-md:text-lg md:text-2xl text-text-primary font-bold">
+        <span className="max-md:text-lg md:text-2xl text-stroke-800 font-bold">
           به وبسایت <span className="text-primary">جیاواز پرفیوم</span> خوش
           آمدید!
         </span>
         {login ? (
-          <p className="text-xs md:text-sm text-text-secondary">
+          <p className="text-xs md:text-sm text-stroke-600">
             برای ورود در سایت {isEmailType ? "ایمیل" : "شماره موبایل"} خود را
             وارد کنید
           </p>
         ) : (
-          <p className="text-xs md:text-sm text-text-secondary">
+          <p className="text-xs md:text-sm text-stroke-600">
             برای عضویت در سایت اطلاعات خود را وارد کنید
           </p>
         )}
@@ -83,7 +83,7 @@ function AuthLayout({
       >
         {login ? "حساب کاربری ندارید؟" : "حساب کاربری دارید؟"}
       </button>
-      <div className="max-md:hidden text-text-primary pt-">
+      <div className="max-md:hidden text-stroke-800 pt-">
         <span className="*:text-primary flex items-center justify-center gap-1.5 flex-wrap">
           {login ? "ورود" : "ثبت‌نام"} شما به معنای پذیرش
           <button onClick={RouteToTerms}> شرایط جیاواز پرفیوم</button> و

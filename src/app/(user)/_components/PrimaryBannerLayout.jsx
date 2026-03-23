@@ -1,6 +1,9 @@
 import AppImage from "@/components/AppImage";
 import Link from "next/link";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowLeftIcon,
+  ChatBubbleLeftRightIcon,
+} from "@heroicons/react/24/outline";
 
 const bannerData = [
   {
@@ -71,19 +74,20 @@ function BannerCard({ srcLg, srcSm, url, urlLabel }) {
         className="max-sm:hidden"
         objectFit="cover"
         width="size-full"
-        loading="eager"
+        sizes="80vw"
       />
       <AppImage
         src={srcSm}
         alt="Banner-image"
-        className=" sm:hidden"
+        className="sm:hidden"
         objectFit="cover"
         width="size-full"
+        sizes="80vw"
       />
       <div className="absolute bottom-7 md:bottom-9 lg:bottom-12 right-5 md:right-6 lg:right-7 flex items-center justify-start gap-4">
         <Link
           href={url}
-          className="h-8 sm:h-[2.03rem] xl:h-[2.6rem] 2xl:h-12 flex items-center justify-between gap-2 px-3.5 sm:px-3 py-2 sm:py-2 text-white bg-primary hover:text-primary hover:bg-white hover:ring-primary ring-4 sm:ring-2 ring-primary/10 rounded-4xl duration-300"
+          className="h-8 sm:h-8 xl:h-10 2xl:h-12 flex items-center justify-between gap-2 px-3.5 sm:px-3 py-2 sm:py-2 text-white bg-primary hover:text-primary hover:bg-white hover:ring-primary active:text-primary active:bg-white active:ring-primary ring-4 sm:ring-2 ring-primary/10 rounded-4xl duration-300"
         >
           <p className="text-xs sm:text-[10px] lg:text-xs xl:text-base font-bold">
             {urlLabel}
@@ -94,17 +98,12 @@ function BannerCard({ srcLg, srcSm, url, urlLabel }) {
         </Link>
         <Link
           href={"tel:+989180522273"}
-          className="flex items-center justify-between gap-2 max-sm:hidden"
+          className="flex items-center justify-between gap-2 max-sm:hidden group hover:bg-white/60 active:bg-white/60 rounded-full h-8 sm:h-8 xl:h-10 2xl:h-12 pl-2 duration-200"
         >
-          <button className="btn h-8 sm:h-[2.03rem] xl:h-[2.6rem] 2xl:h-12 rounded-full py-1 px-2 xl:px-2.5 2xl:px-3.5 ring-4 sm:ring-2 ring-primary/10 border-0 text-white bg-orange-950 hover:text-orange-950  hover:bg-white hover:ring-orange-950 duration-300">
-            <AppImage
-              src="/images/headphone-1-white-icon.svg"
-              alt="headphone-icon"
-              width="max-xl:size-4 xl:size-5"
-              sizes="10vw"
-            />
+          <button className="btn rounded-full h-full ring-4 sm:ring-2 ring-primary/10 border-0 text-white bg-stroke-900 group-hover:text-stroke-900  group-hover:bg-white group-hover:ring-stroke-900 group-active:text-stroke-900  group-active:bg-white group-active:ring-stroke-900 aspect-square duration-300">
+            <ChatBubbleLeftRightIcon className="max-xl:size-4 xl:size-6" />
           </button>
-          <p className="text-xs sm:text-[10px] lg:text-xs xl:text-base text-whie font-bold text-text">
+          <p className="text-xs sm:text-[10px] lg:text-xs xl:text-base text-whie font-bold text-stroke-950 group-hover:text-stroke-900 group-active:text-stroke-900">
             دریافت مشاوره
           </p>
         </Link>

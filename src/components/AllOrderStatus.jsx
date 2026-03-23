@@ -38,7 +38,7 @@ function Status({ count, status }) {
     },
     returned: {
       title: "مرجوعی",
-      color: "bg-text/10",
+      color: "bg-stroke-800/10",
       src: "/images/returned-icon.svg",
       alt: "returned-icon",
     },
@@ -66,7 +66,7 @@ function Status({ count, status }) {
         ${
           pathName.endsWith(status)
             ? "border-[1.5px] border-primary"
-            : "border border-stroke-2"
+            : "border border-stroke-250"
         } snap-center`}
     >
       <div
@@ -80,14 +80,14 @@ function Status({ count, status }) {
         />
       </div>
       <span className="flex flex-col items-center justify-start max-md:gap-1 md:gap-2">
-        <p className="text-sm text-text-secondary text-nowrap font-bold">
+        <p className="text-sm text-stroke-600 text-nowrap font-bold">
           {statusConfig[status].title}
         </p>
-        <span className="flex items-center justify-start gap-2 text-text">
-          <p className="text-2xl text-text">
+        <span className="flex items-center justify-start gap-2 text-stroke-800">
+          <p className="text-2xl text-stroke-800">
             {toPersianNumbers(allOrdersLength)}
           </p>
-          <p className="text-text">سفارش</p>
+          <p className="text-stroke-800">سفارش</p>
         </span>
       </span>
     </button>

@@ -22,7 +22,7 @@ function RadioButton({
         value={value}
         onChange={onChange}
         disabled={disabled}
-        className="sr-only"
+        className="sr-only size-0"
       />
       {children}
       {label && <p>{label}</p>}

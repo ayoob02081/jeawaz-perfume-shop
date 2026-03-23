@@ -16,10 +16,10 @@ function AboutUsPage() {
           <h1 className="text-xs md:text-base text-primary font-bold">
             کمی درباره ما بدانید ...
           </h1>
-          <h2 className="text-center text-2xl md:text-3xl font-bold text-text ">
+          <h2 className="text-center text-2xl md:text-3xl font-bold text-stroke-800 ">
             چطور شروع کردیم و چرا به دنیای عطر علاقه‌مند شدیم؟
           </h2>
-          <p className="leading-7 text-xs md:text-sm text-text-secondary text-center ">
+          <p className="leading-7 text-xs md:text-sm text-stroke-600 text-center ">
             همه چیز از یک حس شروع شد، نه یک تصمیم جدی یا برنامه‌ریزی دقیق، فقط
             یک حس عمیق نسبت به رایحه‌ها؛ اون لحظه‌ای که بوی یک عطر ما رو برای
             چند ثانیه برد به گذشته، به یک آدم، به یک خاطره‌ی گمشده. همون‌جا
@@ -30,7 +30,7 @@ function AboutUsPage() {
             ازمون مشورت می‌خواستن !
           </p>
         </section>
-        <div className="relative aspect-3/1 h-1/2 mt-24 md:mt-28 lg:mt-36 w-full px-6 bg-background-app sm:rounded-t-xl">
+        <div className="relative aspect-3/1 h-1/2 mt-24 md:mt-28 lg:mt-36 w-full px-6 bg-secondary dark:bg-stroke-50/70 sm:rounded-t-xl">
           <AppImage
             src="/images/caucasian-woman-applying-perfume-her-neck.webp"
             alt="caucasian-woman-applying-perfume-her-neck"
@@ -41,12 +41,12 @@ function AboutUsPage() {
           />
         </div>
         {/* why us */}
-        <section className="flex flex-col items-center justify-center gap-16 bg-background-app sm:rounded-b-3xl pb-16">
+        <section className="flex flex-col items-center justify-center gap-16 bg-secondary dark:bg-stroke-50/70 sm:rounded-b-3xl pb-16">
           <div className="flex flex-col items-center w-full gap-6 px-6 md:mt-8 ">
-            <h2 className="text-center text-xl md:text-2xl font-bold text-text">
+            <h2 className="text-center text-xl md:text-2xl font-bold text-stroke-800">
               چرا ما را انتخاب می کنید؟
             </h2>
-            <p className="leading-7 text-xs md:text-sm text-text-secondary text-center ">
+            <p className="leading-7 text-xs md:text-sm text-stroke-600 text-center ">
               تنوع فوق‌العاده، قیمت‌های رقابتی، ارسال سریع و ضمانت اصالت کالا؛
               این‌ها تنها بخشی از دلایلی‌ست که مشتریان ما را به دوستان وفادارمان
               تبدیل کرده است.
@@ -59,8 +59,8 @@ function AboutUsPage() {
               width="max-sm:size-6 sm:size-7"
               title="پشتیبانی ۲۴ ساعته"
               discription="پاسخ‌گویی سریع، همیشه آنلاین"
-              direction="flex-col h-full bg-white px-6 py-8 rounded-2.5xl"
-              bg="bg-background-app"
+              direction="flex-col h-full bg-stroke-0 px-6 py-8 rounded-2.5xl"
+              bg="bg-secondary dark:bg-secondary/50"
               items="items-center"
             />
             <FooterDetail
@@ -69,8 +69,8 @@ function AboutUsPage() {
               width="max-sm:size-6 sm:size-7"
               title="محصولات منحصر به فرد"
               discription="رایحه‌هایی خاص و کمیاب"
-              direction="flex-col h-full bg-white px-6 py-8 rounded-2.5xl"
-              bg="bg-background-app"
+              direction="flex-col h-full bg-stroke-0 px-6 py-8 rounded-2.5xl"
+              bg="bg-secondary dark:bg-secondary/50"
               items="items-center"
             />
             <FooterDetail
@@ -79,8 +79,8 @@ function AboutUsPage() {
               width="max-sm:size-6 sm:size-7"
               title="تضمین کیفیت"
               discription="اصل بودن با ضمانت"
-              direction="flex-col h-full bg-white px-6 py-8 rounded-2.5xl"
-              bg="bg-background-app"
+              direction="flex-col h-full bg-stroke-0 px-6 py-8 rounded-2.5xl"
+              bg="bg-secondary dark:bg-secondary/50"
               items="items-center"
             />
             <FooterDetail
@@ -89,15 +89,15 @@ function AboutUsPage() {
               width="max-sm:size-6 sm:size-7"
               title="ارسال به سراسر کشور"
               discription="تحویل سریع، مطمئن، سراسری"
-              direction="flex-col h-full bg-white px-6 py-8 rounded-2.5xl"
-              bg="bg-background-app"
+              direction="flex-col h-full bg-stroke-0 px-6 py-8 rounded-2.5xl"
+              bg="bg-secondary dark:bg-secondary/50"
               items="items-center"
             />
           </section>
         </section>
         {/* our mission */}
         <article className="flex flex-col items-center justify-center gap-6 p-6 pt-16">
-          <h3 className="flex justify-center items-center gap-1 w-full px-6 mb-6 text-base sm:text-[28px] font-bold text-text">
+          <h3 className="flex justify-center items-center gap-1 w-full px-6 mb-6 text-base sm:text-[28px] font-bold text-stroke-800">
             <p className="">جایی که عطر</p>
             <AppImage
               src="/images/star-8-primary-icon.svg"
@@ -118,11 +118,11 @@ function AboutUsPage() {
                     sizes="10vw"
                   />
                 </div>
-                <p className="text-lg md:text-[27px] font-bold text-text">
+                <p className="text-lg md:text-[27px] font-bold text-stroke-800">
                   رسالت ما
                 </p>
               </h4>
-              <p className="max-md:text-xs text-text-secondary">
+              <p className="max-md:text-xs text-stroke-600">
                 ما به شما کمک می‌کنیم تا رایحه‌ای را پیدا کنید که کاملاً با
                 شخصیت شما هماهنگ باشد. کیفیت و اصالت عطرها، ارزشمندترین رسالت
                 ماست و به همین دلیل، فقط بهترین‌ها را انتخاب می‌کنیم.
@@ -138,11 +138,11 @@ function AboutUsPage() {
                     sizes="10vw"
                   />
                 </div>
-                <p className="text-lg md:text-[27px] font-bold text-text">
+                <p className="text-lg md:text-[27px] font-bold text-stroke-800">
                   رسالت ما
                 </p>
               </h4>
-              <p className="max-md:text-xs text-text-secondary">
+              <p className="max-md:text-xs text-stroke-600">
                 از مشاوره‌ی رایگان قبل از خرید تا بسته‌بندی شیک و ارسال به عنوان
                 هدیه، تمام جزئیات برای ما مهمه. ما فقط عطر نمی‌فروشیم؛ کنار شما
                 هستیم تا مطمئن شیم تجربه‌ای که از خرید دارید، دقیقاً همون چیزی

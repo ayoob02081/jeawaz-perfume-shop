@@ -28,7 +28,7 @@ function CategoriesLayout() {
       {/* Brands */}
       <div className="w-full px-6">
         <div className="flex items-center gap-4 justify-between pb-6 w-full">
-          <h1 className="font-bold text-text text-xl">برند‌ها</h1>
+          <h1 className="font-bold text-stroke-800 text-xl">برند‌ها</h1>
           <Link
             href="/admin/categories/brands/add"
             className="btn btn--primary py-1.5 px-3"
@@ -49,7 +49,7 @@ function CategoriesLayout() {
       {/* Accords */}
       <div className="w-full px-6">
         <div className="flex items-center gap-4 justify-between pb-6 w-full">
-          <h1 className="font-bold text-text text-xl">رایحه‌ها</h1>
+          <h1 className="font-bold text-stroke-800 text-xl">رایحه‌ها</h1>
           <Link
             href="/admin/categories/accords/add"
             className="btn btn--primary py-1.5 px-3"
@@ -70,7 +70,7 @@ function CategoriesLayout() {
       {/* Genders */}
       <div className="w-full px-6">
         <div className="flex items-center gap-4 justify-between pb-6 w-full">
-          <h1 className="font-bold text-text text-xl">جنسیت</h1>
+          <h1 className="font-bold text-stroke-800 text-xl">جنسیت</h1>
           <Link
             href="/admin/categories/genders/add"
             className="btn btn--primary py-1.5 px-3"

@@ -321,7 +321,7 @@ function ProductForm({ productToEdit }) {
         {/* Images */}
         <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
           <div className="flex items-center justify-between mb-4 w-full">
-            <h3 className="text-text font-bold max-md:text-base text-lg">
+            <h3 className="text-stroke-800 font-bold max-md:text-base text-lg">
               عکس‌های محصول
               <span className="text-error">*</span>
             </h3>
@@ -348,7 +348,7 @@ function ProductForm({ productToEdit }) {
                 <button
                   type="button"
                   onClick={() => imageFields.remove(i)}
-                  className="flex items-center justify-center bg-primary text-white text-xl py-1 px-3 h-full rounded-full"
+                  className="flex items-center justify-center bg-primary text-stroke-0 text-xl py-1 px-3 h-full rounded-full"
                 >
                   ×
                 </button>
@@ -359,7 +359,7 @@ function ProductForm({ productToEdit }) {
 
         {/* Brand */}
         <div>
-          <h3 className="font-bold mb-4 text-text max-md:text-base text-lg">
+          <h3 className="font-bold mb-4 text-stroke-800 max-md:text-base text-lg">
             انتخاب برند
             <span className="text-error">*</span>
           </h3>
@@ -370,7 +370,7 @@ function ProductForm({ productToEdit }) {
               return (
                 <RHFRadioButton
                   key={brand.id}
-                  className={"text-text-secondary"}
+                  className={"text-stroke-600"}
                   checked={isChecked}
                   value={brand.id}
                   validationSchema={{ required: true }}
@@ -396,7 +396,7 @@ function ProductForm({ productToEdit }) {
 
         {/* Gender */}
         <div>
-          <h3 className="font-bold mb-4 text-text max-md:text-base text-lg">
+          <h3 className="font-bold mb-4 text-stroke-800 max-md:text-base text-lg">
             انتخاب جنسیت
             <span className="text-error">*</span>
           </h3>
@@ -415,7 +415,7 @@ function ProductForm({ productToEdit }) {
                   register={register}
                 >
                   <div
-                    className={`flex items-center justify-center text-lg border-2 duration-200 ${isChecked ? " border-primary text-primary font-bold" : "text-text-secondary border-secondary opacity-70"} px-2 h-12 w-32 rounded-full `}
+                    className={`flex items-center justify-center text-lg border-2 duration-200 ${isChecked ? " border-primary text-primary font-bold" : "text-stroke-600 border-stroke-150 opacity-70"} px-2 h-12 w-32 rounded-full `}
                   >
                     <p className="duration-200">{gender.title}</p>
                   </div>
@@ -427,7 +427,7 @@ function ProductForm({ productToEdit }) {
 
         {/* Original */}
         <div className="flex flex-col items-start jussta">
-          <h3 className="font-bold mb-4 text-text max-md:text-base text-lg">
+          <h3 className="font-bold mb-4 text-stroke-800 max-md:text-base text-lg">
             اصالت
           </h3>
           <div className="flex max-[29rem]:flex-wrap items-center justify-center sm:justify-start gap-4 w-full">
@@ -438,7 +438,7 @@ function ProductForm({ productToEdit }) {
               register={register}
             >
               <div
-                className={`flex items-center justify-center border-2 ${watch("original") === "original" ? " border-primary font-bold text-primary " : "border-secondary text-text-secondary opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
+                className={`flex items-center justify-center border-2 ${watch("original") === "original" ? " border-primary font-bold text-primary " : "border-stroke-150 text-stroke-600 opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
               >
                 <p className="text-xl">اورجینال</p>
               </div>
@@ -448,7 +448,7 @@ function ProductForm({ productToEdit }) {
 
         {/* Accord */}
         <div>
-          <h3 className="font-bold mb-4 text-text max-md:text-base text-lg">
+          <h3 className="font-bold mb-4 text-stroke-800 max-md:text-base text-lg">
             انتخاب رایحه
             <span className="text-error">*</span>
           </h3>
@@ -467,7 +467,7 @@ function ProductForm({ productToEdit }) {
                   register={register}
                 >
                   <div
-                    className={`flex items-center justify-center border-2 ${isChecked ? "border-primary font-bold text-primary" : "border-secondary text-text-secondary opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
+                    className={`flex items-center justify-center border-2 ${isChecked ? "border-primary font-bold text-primary" : "border-stroke-150 text-stroke-600 opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-xl">{accord.title}</p>
@@ -490,7 +490,7 @@ function ProductForm({ productToEdit }) {
           {notesData.map((type) => (
             <div className="max-sm: w-full" key={type.id}>
               <div className="flex items-center justify-between gap-4">
-                <h3 className="font-bold mb-4 text-text max-md:text-base text-lg">
+                <h3 className="font-bold mb-4 text-stroke-800 max-md:text-base text-lg">
                   {type.description}
                 </h3>
               </div>
@@ -508,7 +508,7 @@ function ProductForm({ productToEdit }) {
 
         {/* Decant */}
         <div>
-          <h3 className="text-text font-bold mb-4">
+          <h3 className="text-stroke-800 font-bold mb-4">
             حجم‌های دکانت موجود
             <span className="text-error">*</span>
           </h3>
@@ -539,7 +539,7 @@ function ProductForm({ productToEdit }) {
         {/* Sealed Variants */}
         <div>
           <div className="flex items-center justify-between mb-4 w-full">
-            <h3 className="text-text font-bold">
+            <h3 className="text-stroke-800 font-bold">
               حجم‌های پلمپ موجود
               <span className="text-error">*</span>
             </h3>
@@ -575,7 +575,7 @@ function ProductForm({ productToEdit }) {
               <button
                 type="button"
                 onClick={() => sealedFields.remove(i)}
-                className="flex items-center justify-center bg-primary text-white text-xl py-1 px-3 h-full rounded-full"
+                className="flex items-center justify-center bg-primary text-stroke-0 text-xl py-1 px-3 h-full rounded-full"
               >
                 ×
               </button>
@@ -585,7 +585,7 @@ function ProductForm({ productToEdit }) {
 
         {/* Details */}
         <div>
-          <h3 className="font-bold mb-6 text-text max-md:text-base text-lg">
+          <h3 className="font-bold mb-6 text-stroke-800 max-md:text-base text-lg">
             جزئیات محصول
           </h3>
           <div className="grid grid-cols-2 gap-6">
@@ -607,7 +607,7 @@ function ProductForm({ productToEdit }) {
 
         {/* Sesons */}
         <div>
-          <h3 className="font-bold mb-4 text-text max-md:text-base text-lg">
+          <h3 className="font-bold mb-4 text-stroke-800 max-md:text-base text-lg">
             انتخاب فصل مناسب استفاده
             <span className="text-error">*</span>
           </h3>
@@ -626,7 +626,7 @@ function ProductForm({ productToEdit }) {
                   register={register}
                 >
                   <div
-                    className={`flex items-center justify-center border-2 ${isChecked ? "border-primary font-bold text-primary" : "border-secondary text-text-secondary opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
+                    className={`flex items-center justify-center border-2 ${isChecked ? "border-primary font-bold text-primary" : "border-stroke-150 text-stroke-600 opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
                   >
                     <p className="text-xl">{season}</p>
                   </div>

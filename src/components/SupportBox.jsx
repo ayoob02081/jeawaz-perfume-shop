@@ -9,7 +9,7 @@ function SupportBox() {
       </p>
       <Link
         href={"tel:+989180522273"}
-        className="flex items-center gap-2 hover:*:first:bg-white/80 hover:*:last:text-white/80 "
+        className="flex items-center gap-2 hover:*:first:bg-white/80 hover:*:last:text-white/80 active:*:first:bg-white/80 active:*:last:text-white/80 "
       >
         <div className="flex items-center justify-center ring-4 ring-white/25 bg-white rounded-full size-6 md:size-8 lg:size-12 duration-200">
           <AppImage

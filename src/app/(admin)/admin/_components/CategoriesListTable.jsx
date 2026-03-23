@@ -34,7 +34,7 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
   };
 
   return (
-    <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-w-1 scrollbar-track-grey/0">
+    <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-w-1 scrollbar-track-stroke-100/0">
       <Table className="overflow-auto">
         <Table.Header className="">
           {categoryTHeads.map((item) => (

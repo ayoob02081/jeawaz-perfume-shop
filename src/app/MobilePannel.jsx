@@ -13,7 +13,7 @@ function MobilePannel() {
 
   return (
     <nav className="fixed flex items-center justify-center bottom-3 right-0 h-[83px] w-full md:hidden z-[70]">
-      <ul className="grid grid-cols-4 justify-items-center gap-x-5 h-full w-[95%] shadow-2xl shadow-black rounded-2xl bg-white px-5">
+      <ul className="grid grid-cols-4 justify-items-center gap-x-5 h-full w-[95%] shadow-2xl shadow-black rounded-2xl bg-stroke-0 px-5">
         <li className="flex items-center justify-center ">
           <button
             className="flex flex-col justify-center items-center gap-2"
@@ -33,7 +33,7 @@ function MobilePannel() {
             </div>
             <p
               className={`text-xs text-nowrap font-bold ${
-                pathname === "/" ? "text-text" : "text-text-secondary"
+                pathname === "/" ? "text-stroke-800" : "text-stroke-600"
               }`}
             >
               خانه
@@ -60,8 +60,8 @@ function MobilePannel() {
             <p
               className={`text-xs text-nowrap font-bold ${
                 pathname.startsWith("/products")
-                  ? "text-text"
-                  : "text-text-secondary"
+                  ? "text-stroke-800"
+                  : "text-stroke-600"
               }`}
             >
               فروشگاه
@@ -92,8 +92,8 @@ function MobilePannel() {
             <p
               className={`text-xs text-nowrap font-bold ${
                 pathname.startsWith("/cart")
-                  ? "text-text"
-                  : "text-text-secondary"
+                  ? "text-stroke-800"
+                  : "text-stroke-600"
               }`}
             >
               سبد خرید
@@ -119,8 +119,8 @@ function MobilePannel() {
             <p
               className={`text-xs text-nowrap font-bold ${
                 pathname.startsWith("/profile")
-                  ? "text-text"
-                  : "text-text-secondary"
+                  ? "text-stroke-800"
+                  : "text-stroke-600"
               }`}
             >
               پروفایل

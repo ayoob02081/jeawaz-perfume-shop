@@ -118,29 +118,30 @@ function ProductDes({ product }) {
       {/* Product Name */}
       <section className="flex flex-col gap-2 items-start justify-start w-full">
         <span className="flex items-center max-md:justify-between gap-2 md:justify-start w-full">
-          <p className="font-bold text-wrap text-[28px] w-full text-text">
+          <p className="font-bold text-wrap text-[28px] w-full text-stroke-800">
             {product.perTitle}
           </p>
-          <div className="md:hidden">
+          <div className="md:hidden bg-white p-2 rounded-full">
             <AppImage
               src={productBrand.iconUrl}
               alt={productBrand.value + "-icon"}
               className="justify-center h-full"
               width="max-md:w-20 md:w-[4.815rem]"
+              ratio="aspect-[5/2]"
               sizes="10vw"
             />
           </div>
         </span>
-        <p className="text-base text-wrap text-text-secondary w-full">
+        <p className="text-base text-wrap text-stroke-600 w-full">
           {product.enTitle}
         </p>
       </section>
 
       {/* Product Type */}
-      <section className="flex items-center justify-between w-full max-md:border-t border-stroke-2 pt-4 ">
+      <section className="flex items-center justify-between w-full max-md:border-t border-stroke-250 pt-4 ">
         <div className="flex flex-col items-star justify-between gap-2 w-full md:row-start-3 h-full overflow-hidden">
           <div className="flex flex-col items-start justify-start gap-3">
-            <p className="text-text">نوع محصول:</p>
+            <p className="text-stroke-800">نوع محصول:</p>
             <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
               <RadioButton
                 id="productVolumeModeDecant"
@@ -148,7 +149,7 @@ function ProductDes({ product }) {
                 value="decant"
                 onChange={(e) => volumeHandler(e, "decant")}
                 checked={volumeMode === "decant"}
-                className=" badge badge--secondary--2 hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white duration-200 "
+                className="badge btn--type duration-200 "
               >
                 <p className="text-nowrap">دکانت</p>
               </RadioButton>
@@ -158,14 +159,14 @@ function ProductDes({ product }) {
                 value="sealed"
                 onChange={(e) => volumeHandler(e, "sealed")}
                 checked={volumeMode === "sealed"}
-                className=" badge badge--secondary--2 hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white duration-200 "
+                className="badge btn--type duration-200 "
               >
                 <p className="text-nowrap">شیشه پلمپ</p>
               </RadioButton>
             </div>
           </div>
           <div className="flex flex-col items-start justify-start gap-3">
-            <p className="text-text">انتخاب حجم:</p>
+            <p className="text-stroke-800">انتخاب حجم:</p>
             <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
               {volumes?.map((volume, index) => {
                 const isDisabled = product.stock >= volume ? false : true;
@@ -178,10 +179,10 @@ function ProductDes({ product }) {
                     disabled={isDisabled}
                     onChange={volumeHandler}
                     checked={selectedVolume === volume}
-                    className={` badge badge--secondary--2  ${
+                    className={`badge ${
                       isDisabled
-                        ? "opacity-60 !cursor-not-allowed"
-                        : "hover:bg-dark-brown/30 has-checked:bg-dark-brown has-checked:text-white"
+                        ? "opacity-60 dark:opacity-40 !cursor-not-allowed"
+                        : "btn--type"
                     } duration-200`}
                   >
                     <p className="text-nowrap">
@@ -223,7 +224,7 @@ function ProductDes({ product }) {
             ناموجود!
           </p>
         )}
-        <div className="max-md:hidden">
+        <div className="max-md:hidden bg-white py-2 rounded-full">
           <AppImage
             src={productBrand.iconUrl}
             alt={productBrand.value + "-icon"}
@@ -238,14 +239,14 @@ function ProductDes({ product }) {
       {/* Buttons */}
       <div className="flex items-center justify-between w-full gap-4">
         {product.stock >= 3 && (
-          <button className=" btn btn--success w-full h-12 px-2">
+          <button className="btn btn--success w-full h-12 px-2">
             افزودن به سبد خرید
           </button>
         )}
         <div className=" flex-none">
           {product.stock >= 3 && (
             <CardEvents
-              btnStyle="max-lg:size-8 lg:size-12 not-active:bg-grey "
+              btnStyle="max-lg:size-8 lg:size-12 not-active:bg-stroke-100 dark:not-active:bg-stroke-50"
               quantityStyle="max-lg:size-12 lg:size-12 max-lg:text-lg lg:text-lg"
             />
           )}
@@ -254,11 +255,11 @@ function ProductDes({ product }) {
 
       {/* Description */}
       <Accordion
-        titleStyle="font-bold text-text"
+        titleStyle="font-bold text-stroke-800"
         className="max-md:hidden md:flex  "
         label="توضیحات تکمیلی"
       >
-        <p className="text-text-secondary text-sm pt-4 border-t border-stroke leading-8 ">
+        <p className="text-stroke-600 text-sm pt-4 border-t border-stroke-200 leading-8 ">
           {product.description}
         </p>
       </Accordion>
@@ -275,7 +276,7 @@ function ProductOptions({ product, categories }) {
   const { details, modes } = product;
 
   return (
-    <article className="grow w-full  max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:p-6 md:p-4 border-stroke-2 ">
+    <article className="grow w-full  max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:p-6 md:p-4 border-stroke-250 ">
       <section className=" flex flex-col items-center justify-start gap-6 w-full">
         <span className="flex items-center justify-start gap-2 w-full">
           <AppImage
@@ -284,7 +285,7 @@ function ProductOptions({ product, categories }) {
             width="size-6"
             sizes="10vw"
           />
-          <p className="font-bold text-text">ویژگی های محصول</p>
+          <p className="font-bold text-stroke-800">ویژگی های محصول</p>
         </span>
         <div className="grid max-sm:grid-cols-3 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-3 gap-x-4 w-full px-2">
           <ProductOption title="کشور تولید کننده" value={details.madeIn} />
@@ -315,15 +316,15 @@ function ProductOptions({ product, categories }) {
 function ProductOption({ title, value, data, accords, volumes }) {
   return (
     <>
-      <p className="text-nowrap col-span-1 text-sm text-text-secondary py-3">
+      <p className="text-nowrap col-span-1 text-sm text-stroke-600 py-3">
         {title}
       </p>
       {!data ? (
-        <p className="text-nowrap max-sm:col-span-2 sm:col-span-3 md:col-span-1 lg:col-span-2 text-sm text-text font-bold w-full border-b border-stroke py-3">
+        <p className="text-nowrap max-sm:col-span-2 sm:col-span-3 md:col-span-1 lg:col-span-2 text-sm text-stroke-800 font-bold w-full border-b border-stroke-200 py-3">
           {value}
         </p>
       ) : (
-        <span className="flex items-start gap-2 text-nowrap max-sm:col-span-2 sm:col-span-3 md:col-span-1 lg:col-span-2 text-sm text-text font-bold w-full border-b border-stroke py-3">
+        <span className="flex items-start gap-2 text-nowrap max-sm:col-span-2 sm:col-span-3 md:col-span-1 lg:col-span-2 text-sm text-stroke-800 font-bold w-full border-b border-stroke-200 py-3">
           {data.map((item, index) =>
             volumes ? (
               <p key={index}>
@@ -347,7 +348,7 @@ function ProductDetails({ product }) {
   const { notes } = product;
 
   return (
-    <div className="grow flex flex-col items-center justify-between gap-6 w-full max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl p-6 border-stroke-2  ">
+    <div className="grow flex flex-col items-center justify-between gap-6 w-full max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl p-6 border-stroke-250  ">
       <div className="flex flex-col items-start justify-between gap-2">
         <span className="flex items-center justify-start gap-2">
           <AppImage
@@ -356,9 +357,9 @@ function ProductDetails({ product }) {
             width="size-6"
             sizes="10vw"
           />
-          <p className="font-bold text-text">ترکیبات محصول</p>
+          <p className="font-bold text-stroke-800">ترکیبات محصول</p>
         </span>
-        <p className="text-xs text-text">
+        <p className="text-xs text-stroke-800">
           لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
           استفاده از طراحان گرافیک است،.
         </p>
@@ -387,25 +388,25 @@ function Notes({ type, top, middle, base }) {
         }
       />
       <span className="absolute flex flex-col items-center justify-center gap-1 z-20">
-        <p className="text-xs text-text font-bold">
+        <p className="text-xs text-stroke-800 font-bold">
           {base ? "نت‌های آغازین" : middle ? "نت‌های میانی" : "نت‌های پایانی"}
         </p>
         <div className="flex items-center justify-between gap-2">
           {base &&
             type?.map((s, index) => (
-              <p key={s + index} className="**:text-xs text-text-secondary ">
+              <p key={s + index} className="**:text-xs text-stroke-600 ">
                 {type.length > 1 ? s + " - " : s}
               </p>
             ))}
           {middle &&
             type?.map((s, index) => (
-              <p key={s + index} className="**:text-xs text-text-secondary ">
+              <p key={s + index} className="**:text-xs text-stroke-600 ">
                 {type.length > 1 ? s + " - " : s}
               </p>
             ))}
           {top &&
             type?.map((s, index) => (
-              <p key={s + index} className="**:text-xs text-text-secondary ">
+              <p key={s + index} className="**:text-xs text-stroke-600 ">
                 {type.length > 1 ? s + " - " : s}
               </p>
             ))}

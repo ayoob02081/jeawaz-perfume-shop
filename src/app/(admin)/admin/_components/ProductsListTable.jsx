@@ -46,7 +46,7 @@ function ProductsListTable({ products }) {
   };
 
   return (
-    <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-w-1 scrollbar-track-grey/0">
+    <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-w-1 scrollbar-track-stroke-100/0">
       <Table className="overflow-auto">
         <Table.Header className="">
           {productTHeads.map((item) => (
@@ -77,9 +77,7 @@ function ProductsListTable({ products }) {
                         width="w-16"
                         sizes="10vw"
                       />
-                      <p className="text-text-secondary">
-                        {productBrand?.title}
-                      </p>
+                      <p className="text-stroke-600">{productBrand?.title}</p>
                     </div>
                   </td>
                   <td className="table__td px-2 max-w-[280px] truncate">
@@ -130,7 +128,7 @@ function ProductsListTable({ products }) {
                         key={i}
                         className="flex items-center justify-center gap-2 py-1 text-xs rounded-full badge bg-blue/10 text-blue font-bold"
                       >
-                        <p className=" text-text">
+                        <p className=" text-stroke-800">
                           {toPersianNumbers(p.volume)} میل
                         </p>
                         <p>{toPersianNumbersWithComma(p.price)}</p>

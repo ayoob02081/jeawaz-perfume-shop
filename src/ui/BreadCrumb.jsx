@@ -5,12 +5,8 @@ function BreadCrumb({ href, label, className, chevron }) {
   const currentHref = href;
   return (
     <div className="flex items-center justify-center gap-2 text-sm">
-      {chevron ? (
-        <ChevronLeftIcon className="size-2.5 text-text-secondary" />
-      ) : (
-        ""
-      )}
-      <Link href={href} className={`text-text-secondary ${className}`}>
+      {chevron ? <ChevronLeftIcon className="size-2.5 text-stroke-600" /> : ""}
+      <Link href={href} className={`text-stroke-600 ${className}`}>
         {label}
       </Link>
     </div>

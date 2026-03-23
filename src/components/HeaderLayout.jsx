@@ -3,12 +3,15 @@
 import {
   ArrowLeftIcon,
   ChevronDownIcon,
+  ShoppingBagIcon,
   Squares2X2Icon,
   UserIcon,
+  MoonIcon,
+  SunIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import AppImage from "./AppImage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchSection from "./SearchSection";
 import CategorySideBar from "@/app/(user)/_components/CategorySideBar";
 import SideBar from "./SideBar";
@@ -21,8 +24,12 @@ function HeaderLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const { data: user, isPending, error } = useGetUser();
+  const [dark, setDark] = useState(false);
 
   const userFullName = user?.firstName + " " + user?.lastName;
+  const toggleTheme = () => {
+    setDark((prev) => !prev);
+  };
 
   const toggleCategory = () => {
     setCategoryOpen((prevState) => !prevState);
@@ -32,6 +39,10 @@ function HeaderLayout() {
     setSidebarOpen((prevState) => !prevState);
   };
 
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+  }, [dark]);
+
   return (
     <>
       <DesktopHeader
@@ -39,6 +50,8 @@ function HeaderLayout() {
         user={user}
         userFullName={userFullName}
         isPending={isPending}
+        toggleTheme={toggleTheme}
+        dark={dark}
       />
       <MobileHeader
         user={user}
@@ -47,6 +60,8 @@ function HeaderLayout() {
         sidebarOpen={sidebarOpen}
         userFullName={userFullName}
         categoryOpen={categoryOpen}
+        toggleTheme={toggleTheme}
+        dark={dark}
       />
       <CategorySideBar
         toggleCategory={toggleCategory}
@@ -66,12 +81,14 @@ function DesktopHeader({
   user,
   isPending,
   categoryOpen,
+  toggleTheme,
+  dark,
 }) {
   const router = useRouter();
   const pathName = usePathname();
 
   return (
-    <nav className="max-md:hidden md:fixed inset-0 top-0 right-0 left-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-90 bg-white shadow-md">
+    <nav className="max-md:hidden md:fixed inset-0 top-0 right-0 left-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-90 bg-stroke-0 shadow-md duration-200">
       <ul className="flex flex-col justify-between gap-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex grow items-center justify-betwee gap-4">
@@ -90,6 +107,25 @@ function DesktopHeader({
                 <SearchSection placeholder="نام ادکلن ، دسته بندی ، برند و ..." />
               </li>
             </div>
+            <li className="flex items-center justify-center">
+              {!!dark ? (
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="text-stroke-800"
+                >
+                  <SunIcon className="max-md:size-6 size-5 text-warning" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="text-stroke-800"
+                >
+                  <MoonIcon className="max-md:size-5 size-4 text-blue-900" />
+                </button>
+              )}
+            </li>
             <div className="flex flex-none items-center justify-between gap-4">
               <li className="relative flex items-center justify-center">
                 <Link
@@ -97,7 +133,7 @@ function DesktopHeader({
                   className={`duration-200 ${
                     pathName.endsWith("/terms")
                       ? "text-primary font-bold"
-                      : "text-text-primary hover:text-primary "
+                      : "text-stroke-800 hover:text-primary "
                   }`}
                 >
                   <p className="text-xs lg:text-sm">قوانین و مقررات</p>
@@ -112,7 +148,7 @@ function DesktopHeader({
                   className={`duration-200 ${
                     pathName.endsWith("/about-us")
                       ? "text-primary font-bold"
-                      : "text-text-primary hover:text-primary "
+                      : "text-stroke-800 hover:text-primary "
                   }`}
                 >
                   <p className="text-xs lg:text-sm">درباره ما</p>
@@ -127,7 +163,7 @@ function DesktopHeader({
                   className={`duration-200 ${
                     pathName.endsWith("/contact-us")
                       ? "text-primary font-bold"
-                      : "text-text-primary hover:text-primary"
+                      : "text-stroke-800 hover:text-primary"
                   }`}
                 >
                   <p className="text-xs lg:text-sm">تماس با ما</p>
@@ -140,7 +176,7 @@ function DesktopHeader({
           </div>
           <div className="flex flex-none items-center justify-between gap-3">
             <li
-              className={`w-fit lg: max-w-36 h-10 lg:h-12 btn bg-white active:bg-dark-brown py-0 pl-1 pr-2 ${user?.email ? "border-0 ring-1 ring-dark-brown/10" : "border border-stroke-2"} duration-200`}
+              className={`w-fit group max-w-36 h-10 lg:h-12 btn bg-stroke-0 active:bg-stroke-900 dark:active:bg-stroke-150 py-0 pl-1 pr-2 ${user?.email ? "border-0 ring-1 ring-stroke-900/10 dark:ring-stroke-800/10" : "border border-stroke-250"} duration-200`}
             >
               <button
                 onClick={
@@ -152,14 +188,14 @@ function DesktopHeader({
                 className={`size-full ${isPending && "blur-x opacity-50"} duration-200`}
               >
                 <span
-                  className={`flex flex-row-reverse items-center gap-1 size-full${user?.email ? "justify-between text-dark-brown font-bold " : "justify-center"}`}
+                  className={`flex flex-row-reverse items-center gap-1 size-full${user?.email ? "justify-between text-stroke-900 dark:text-stroke-800 font-bold " : "justify-center text-stroke-800"}`}
                 >
                   <div
-                    className={`${user?.email && "bg-dark-brown text-white"} rounded-full p-2`}
+                    className={`${user?.email && "bg-stroke-900 dark:bg-stroke-150 text-stroke-0 dark:text-stroke-800"} rounded-full p-2`}
                   >
                     <UserIcon className="size-4 stroke-2" />
                   </div>
-                  <p className=" text-xs lg:text-sm text-nowrap overflow-x-scroll scrollbar-none size-full active:text-white">
+                  <p className=" text-xs lg:text-sm text-nowrap overflow-x-scroll scrollbar-none size-full group-active:text-stroke-0 dark:group-active:text-stroke-800">
                     {user?.email ? userFullName : "ورود | ثبت نام"}
                   </p>
                 </span>
@@ -167,29 +203,24 @@ function DesktopHeader({
             </li>
             <li>
               <button
-                className="flex items-center justify-between gap-2"
+                className="flex items-center justify-between gap-2 group"
                 onClick={
                   !userFullName || userFullName === undefined
                     ? () => router.push("/auth/login")
                     : () => router.push("/cart")
                 }
               >
-                <div className="flex items-center justify-center size-8 lg:size-10 p-1 rounded-full ring-4 ring-dark-brown/10 bg-dark-brown">
-                  <AppImage
-                    src="/images/card stroke white.svg"
-                    alt="card-icon"
-                    width="size-6"
-                    sizes="10vw"
-                  />
+                <div className="flex items-center justify-center size-8 lg:size-10 p-1 rounded-full ring-4 ring-stroke-900/10 bg-stroke-900 group-active:bg-stroke-0 group-active:ring-stroke-900/20 dark:bg-stroke-50 dark:ring-stroke-800/5 dark:group-active:ring-stroke-800/5 duration-200">
+                  <ShoppingBagIcon className="size-6 text-white" />
                 </div>
-                <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem]">
-                  <p className="text-xs lg:text-sm text-text">سبد خرید شما</p>
+                <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem] text-xs lg:text-sm text-stroke-800">
+                  <p>سبد خرید شما</p>
                   <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2 py-0.5 px-2 lg:px-3 rounded-3xl bg-dark-brown/10">
-                      <p className="text-xs lg:text-sm text-text">۴</p>
-                      <p className="text-xs lg:text-sm text-text">کالا</p>
-                    </div>
-                    <ArrowLeftIcon className="text-text size-3 lg:size-4" />
+                    <span className="flex items-center gap-2 pt-0.5 px-2 lg:px-3 rounded-3xl bg-stroke-900/10 dark:bg-stroke-800/5 text-xs lg:text-sm text-stroke-800">
+                      <p>۴</p>
+                      <p>کالا</p>
+                    </span>
+                    <ArrowLeftIcon className="text-stroke-800 group-active:text-stroke-800/70 size-3 lg:size-4" />
                   </div>
                 </div>
               </button>
@@ -213,7 +244,7 @@ function DesktopHeader({
               <li className="">
                 <Link
                   href={"/products"}
-                  className="text-text-primary hover:text-primary duration-200"
+                  className="text-stroke-800 hover:text-primary duration-200"
                 >
                   <div className="flex items-center justify-center gap-2 ">
                     <AppImage
@@ -229,7 +260,7 @@ function DesktopHeader({
               <li className="">
                 <Link
                   href={"/products"}
-                  className="text-text-primary hover:text-primary duration-200"
+                  className="text-stroke-800 hover:text-primary duration-200"
                 >
                   <div className="flex items-center justify-center gap-2 ">
                     <AppImage
@@ -245,7 +276,7 @@ function DesktopHeader({
               <li className="">
                 <Link
                   href={"/products"}
-                  className="text-text-primary hover:text-primary duration-200"
+                  className="text-stroke-800 hover:text-primary duration-200"
                 >
                   <div className="flex items-center justify-center gap-2 ">
                     <AppImage
@@ -265,9 +296,9 @@ function DesktopHeader({
               href={"tel:+989180522273"}
               className="flex items-center justify-between gap-4"
             >
-              <div className="flex items-center justify-center text-xl pl-4 border-l-[1.5px] border-stroke">
-                <p className="text-text ">{toPersianNumbers("2273")}</p>
-                <p className="text-text ">{toPersianNumbers("052")}</p>
+              <div className="flex items-center justify-center text-xl pl-4 border-l-[1.5px] border-stroke-200">
+                <p className="text-stroke-800 ">{toPersianNumbers("2273")}</p>
+                <p className="text-stroke-800 ">{toPersianNumbers("052")}</p>
                 <p className="text-primary ">{toPersianNumbers("0918")}</p>
               </div>
               <CardIconResponsive
@@ -285,23 +316,26 @@ function DesktopHeader({
     </nav>
   );
 }
-function MobileHeader({ toggleSideBar, toggleCategory, sidebarOpen, user }) {
+function MobileHeader({
+  toggleSideBar,
+  toggleCategory,
+  sidebarOpen,
+  user,
+  toggleTheme,
+  dark,
+}) {
   const router = useRouter();
 
   return (
-    <nav className="md:hidden fixed inset-0 top-0 right-0 left-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-50 bg-white shadow-md">
+    <nav className="md:hidden fixed inset-0 top-0 right-0 left-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-50 bg-stroke-0 shadow-md duration-200">
       <ul className="mobileHeader relative">
         <li className="justify-items-start">
           <button
-            className="text-2xl focus:outline-none block p-3 rounded-full border-2 border-primary/10"
+            type="button"
+            className="text-2xl  block p-3 rounded-full border-2 border-primary/10 active:bg-stroke-50 dark:bg-stroke-50 active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-primary active:text-primary/80 dark:text-stroke-800 dark:active:text-stroke-800/70 duration-200"
             onClick={toggleSideBar}
           >
-            <AppImage
-              src="/images/category.svg"
-              alt="category icon"
-              width="size-6"
-              sizes="10vw"
-            />
+            <Squares2X2Icon className="size-7" />
           </button>
         </li>
         <li className=" justify-items-center">
@@ -321,16 +355,12 @@ function MobileHeader({ toggleSideBar, toggleCategory, sidebarOpen, user }) {
                 ? () => router.push("/auth/login")
                 : () => router.push("/cart")
             }
-            className="relative block p-3 rounded-full border-2 border-dark-brown/10"
+            className="relative block p-3 rounded-full border-2 border-primary/10 active:bg-stroke-50 active:border-stroke-900/20 dark:bg-stroke-50 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-stroke-800 active:text-stroke-800/70 duration-200"
           >
-            <AppImage
-              src="/images/card stroke.svg"
-              alt="cart-icon"
-              width="size-[1.15rem]"
-              sizes="10vw"
-            />
+            <ShoppingBagIcon className="size-6" />
+
             {user?.email && (
-              <p className="absolute -top-1 -right-1 px-1.5 pt-[1.5px] rounded-full bg-primary text-white text-[12px]">
+              <p className="absolute -top-1 -right-1 px-1.5 pt-[1.5px] rounded-full bg-primary text-stroke-0 text-[12px]">
                 ۴
               </p>
             )}
@@ -344,6 +374,8 @@ function MobileHeader({ toggleSideBar, toggleCategory, sidebarOpen, user }) {
         toggleSideBar={toggleSideBar}
         toggleCategory={toggleCategory}
         sidebarOpen={sidebarOpen}
+        toggleTheme={toggleTheme}
+        dark={dark}
       />
     </nav>
   );

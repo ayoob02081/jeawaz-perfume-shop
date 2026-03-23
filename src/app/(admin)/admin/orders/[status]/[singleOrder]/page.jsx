@@ -67,7 +67,7 @@ function Order({ order, status }) {
     },
     returned: {
       title: "مرجوع شده",
-      color: "text-text",
+      color: "text-stroke-800",
       src: "/images/returned-icon.svg",
       alt: "returned-icon",
     },
@@ -80,54 +80,54 @@ function Order({ order, status }) {
   };
 
   return (
-    <div className="max-lg:px-4 lg:p-6 flex flex-col items-start justify-start lg:border border-stroke lg:rounded-2.5xl">
+    <div className="max-lg:px-4 lg:p-6 flex flex-col items-start justify-start lg:border border-stroke-200 lg:rounded-2.5xl">
       <div className="max-lg:hidden">
         <GoBack
           label="جزئیات سفارش"
           side="right"
-          className="size-6 text-text"
+          className="size-6 text-stroke-800"
           fontStyle="text-xl font-bold"
           justify="between"
         />
       </div>
 
       {/* Order Details */}
-      <div className="flex flex-col justify-center items-start w-full max-lg:p-4 max-lg:border-[1.5px] border-stroke max-lg:rounded-2.5xl">
+      <div className="flex flex-col justify-center items-start w-full max-lg:p-4 max-lg:border-[1.5px] border-stroke-200 max-lg:rounded-2.5xl">
         <div className="flex flex-wrap w-full max-md:gap-4 md:gap-6 py-6">
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">تاریخ تحویل سفارش :</p>
-            <p className="font-bold text-text">{date}</p>
+            <p className="font-bold text-stroke-800">{date}</p>
           </span>
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">کد پیگیری سفارش :</p>
-            <p className="font-bold text-text">{toPersianNumbers(id)}</p>
+            <p className="font-bold text-stroke-800">{toPersianNumbers(id)}</p>
           </span>
         </div>
-        <div className="flex w-full flex-wrap py-6 border-t border-stroke-2 max-md:gap-4 md:gap-6">
+        <div className="flex w-full flex-wrap py-6 border-t border-stroke-250 max-md:gap-4 md:gap-6">
           <div className="flex max-md:flex-col items-start justify-center max-md:gap-4 md:gap-6">
             <span className="flex items-center justify-start gap-1">
               <p className="text-gray-600">تحویل گیرنده :</p>
-              <p className="font-bold text-text">احمد رضایی</p>
+              <p className="font-bold text-stroke-800">احمد رضایی</p>
             </span>
             <span className="flex items-center justify-start gap-1">
               <p className="text-gray-600">شماره تماس :</p>
-              <p className="font-bold text-text">
+              <p className="font-bold text-stroke-800">
                 {toPersianNumbers(912345789)}
               </p>
             </span>
           </div>
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">آدرس ارسال مرسوله :</p>
-            <p className="font-bold text-text">
+            <p className="font-bold text-stroke-800">
               تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵
             </p>
           </span>
         </div>
-        <div className="flex w-full flex-wrap py-6 border-t border-stroke-2 max-md:gap-4 md:gap-6">
+        <div className="flex w-full flex-wrap py-6 border-t border-stroke-250 max-md:gap-4 md:gap-6">
           <div className="flex max-sm:flex-col items-start justify-center max-md:gap-4 md:gap-6">
             <span className="flex items-center justify-start gap-1">
               <p className="text-gray-600">مبلغ کل :</p>
-              <p className="font-bold text-text">
+              <p className="font-bold text-stroke-800">
                 {toPersianNumbersWithComma(1450000)} تومان
               </p>
             </span>
@@ -140,20 +140,20 @@ function Order({ order, status }) {
                   width="size-5"
                   sizes="10vw"
                 />
-                <p className="font-bold text-text">موفق</p>
+                <p className="font-bold text-stroke-800">موفق</p>
               </div>
             </span>
           </div>
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">هزینه بسته بندی و ارسال :</p>
-            <p className="font-bold text-text">
+            <p className="font-bold text-stroke-800">
               {toPersianNumbersWithComma(50000)} تومان
             </p>
           </span>
         </div>
 
         {/* Factor */}
-        <div className="bg-grey rounded-2xl p-4 md:p-5 w-full">
+        <div className="bg-stroke-100 rounded-2xl p-4 md:p-5 w-full">
           <div className="w-full">
             <div className="flex items-start justify-between w-full mb-5">
               <div className="flex flex-wrap items-center justify-start gap-4">
@@ -164,7 +164,7 @@ function Order({ order, status }) {
                     width="size-5"
                     sizes="10vw"
                   />
-                  <p className="text-sm md:text-base font-bold text-text">
+                  <p className="text-sm md:text-base font-bold text-stroke-800">
                     مشخصات مرسوله
                   </p>
                 </div>
@@ -186,14 +186,14 @@ function Order({ order, status }) {
               <div className="flex flex-wrap max-md:items-start justify-start gap-4 w-full mb-4">
                 <span className="flex items-center justify-start gap-1">
                   <p className="text-gray-600">زمان ارسال مرسوله :</p>
-                  <p className="font-bold text-text">
+                  <p className="font-bold text-stroke-800">
                     یکشنبه ، 1403/05/24 ، ساعت 15 تا 18
                   </p>
                 </span>
                 <div className="flex max-sm:flex-col xl:flex-row items-start justify-center md:justify-start gap-4">
                   <span className="flex items-center justify-start gap-1">
                     <p className="text-gray-600">کد پیگیری سفارش :</p>
-                    <p className="font-bold text-text">
+                    <p className="font-bold text-stroke-800">
                       {toPersianNumbers(id)}
                     </p>
                   </span>
@@ -208,7 +208,7 @@ function Order({ order, status }) {
                         width="size-5"
                         sizes="10vw"
                       />
-                      <p className="font-bold text-text">
+                      <p className="font-bold text-stroke-800">
                         {statusConfig[status].title}
                       </p>
                     </div>
@@ -217,7 +217,7 @@ function Order({ order, status }) {
               </div>
               <span className="flex items-center justify-start gap-1">
                 <p className="text-gray-600">مبلغ مرسوله :</p>
-                <p className="font-bold text-text">
+                <p className="font-bold text-stroke-800">
                   {toPersianNumbersWithComma(5000000)} تومان
                 </p>
               </span>
@@ -225,11 +225,11 @@ function Order({ order, status }) {
             <div className="w-full flex flex-col justify-center max-lg:gap-4">
               {items?.map((item) => (
                 <div
-                  className="flex items-center justify-between gap-1 lg:border-t border-[#D1D1D1] max-lg:bg-white p-4 max-lg:rounded-xl"
+                  className="flex items-center justify-between gap-1 lg:border-t border-[#D1D1D1] max-lg:bg-stroke-0 p-4 max-lg:rounded-xl"
                   key={item.src}
                 >
                   <div className="flex items-center justify-start gap-2 md:gap-4">
-                    <div className="flex items-center justify-center max-lg:h-16 lg:size-16 lg:rounded-xl lg:bg-white ">
+                    <div className="flex items-center justify-center max-lg:h-16 lg:size-16 lg:rounded-xl lg:bg-stroke-0 ">
                       <AppImage
                         src={item.src}
                         alt={item.alt}
@@ -238,10 +238,10 @@ function Order({ order, status }) {
                       />
                     </div>
                     <div className="flex flex-col items-start justify-center gap-2">
-                      <p className="max-md:text-base text-lg font-bold text-text">
+                      <p className="max-md:text-base text-lg font-bold text-stroke-800">
                         Tiziana Terenzi
                       </p>
-                      <p className="max-md:text-sm text-lg font-bold text-text">
+                      <p className="max-md:text-sm text-lg font-bold text-stroke-800">
                         شنل اگویست پلاتینیوم
                       </p>
                     </div>

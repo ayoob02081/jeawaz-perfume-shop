@@ -11,7 +11,7 @@ function TextField({
 }) {
   return (
     <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
-      <label htmlFor={name} className="text-text mb-4">
+      <label htmlFor={name} className="text-stroke-800 mb-4">
         {label}
         {isRequired && <span className="text-error">*</span>}
       </label>

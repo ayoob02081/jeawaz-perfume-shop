@@ -29,8 +29,8 @@ function NotifType({ type }) {
       className={`flex items-center justify-center px-4 max-md:rounded-lg md:rounded-3xl w-fit h-9
         ${
           pathName.endsWith(type)
-            ? "md:border md:border-primary max-md:bg-primary md:bg-white max-md:text-white md:font-bold md:text-primary"
-            : "md:border md:border-stroke-2 max-md:bg-primary/10 md:bg-grey text-text"
+            ? "md:border md:border-primary max-md:bg-primary md:bg-stroke-0 max-md:text-stroke-0 md:font-bold md:text-primary"
+            : "md:border md:border-stroke-250 max-md:bg-primary/10 md:bg-stroke-100 dark:md:bg-stroke-50 text-stroke-800"
         } snap-center`}
     >
       <p className="text-sm text-nowrap font-bold">{types[type].title}</p>

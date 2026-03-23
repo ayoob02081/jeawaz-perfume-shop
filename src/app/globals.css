@@ -4,7 +4,6 @@
   preferredstrategy: "pseudoelements";
 }
 
-/* @import "animate.css"; */
 @font-face {
   font-family: "Vazirmatn";
   src: url("/fonts/vazir/Vazirmatn-Regular.woff2") format("woff2");
@@ -15,9 +14,25 @@
 
 @font-face {
   font-family: "Vazirmatn";
+  src: url("/fonts/vazir/Vazirmatn-SemiBold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Vazirmatn";
   src: url("/fonts/vazir/Vazirmatn-Bold.woff2") format("woff2");
   font-style: normal;
   font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Vazirmatn";
+  src: url("/fonts/vazir/Vazirmatn-Black.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 900;
   font-display: swap;
 }
 
@@ -30,53 +45,81 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-display: "Vazirmatn", "sans-serif";
-  /* --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono); */
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  --color-background-app: rgb(254, 248, 250);
-  --color-banner-gradient: rgb(33, 30, 26);
   --color-primary: rgb(204, 49, 45);
-  --color-secondary: rgb(245, 245, 247);
-  --color-secondary-2: rgb(255, 244, 248);
-  --color-secondary-3: rgb(255, 255, 255);
-  --color-stroke: rgb(240, 240, 240);
-  --color-stroke-2: rgb(235, 235, 235);
-  --color-stroke-3: rgb(230, 230, 230);
-  --color-grey: rgb(247, 247, 247);
+  --color-secondary: rgb(254, 248, 250);
+  --color-stroke-0: rgb(255, 255, 255);
+  --color-stroke-50: rgb(255, 244, 248);
+  --color-stroke-100: rgb(247, 247, 247);
+  --color-stroke-150: rgb(245, 245, 247);
+  --color-stroke-200: rgb(240, 240, 240);
+  --color-stroke-250: rgb(235, 235, 235);
+  --color-stroke-300: rgb(230, 230, 230);
+  --color-stroke-400: rgb(168, 168, 168);
+  --color-stroke-450: rgb(164, 168, 186);
+  --color-stroke-500: rgb(127, 127, 136);
+  --color-stroke-550: rgb(95, 112, 134);
+  --color-stroke-600: rgb(96, 96, 96);
+  --color-stroke-750: rgb(33, 30, 26);
+  --color-stroke-800: rgb(40, 42, 57);
+  --color-stroke-850: rgb(25, 26, 38);
+  --color-stroke-900: rgb(47, 13, 12);
+  --color-stroke-950: rgb(4, 4, 4);
   --color-success: rgb(41, 182, 119);
   --color-green: rgb(27, 172, 68);
   --color-warning: rgb(242, 194, 62);
   --color-orange: rgb(245, 130, 32);
-  --color-dark-brown: rgb(47, 13, 12);
+  --color-dark-orange: rgb(164, 92, 29);
   --color-error: rgb(210, 48, 45);
   --color-red: rgb(240, 64, 85);
   --color-blue: rgb(68, 140, 249);
   --color-brown: rgb(95, 54, 53);
-  --color-purple: rgb(50, 22, 89);
-  --color-yellow: rgb(231, 180, 40);
-  --color-text: rgb(25, 26, 38);
-  --color-text-primary: rgb(26, 24, 20);
-  --color-text-secondary-light: rgb(168, 168, 168);
-  --color-text-secondary: rgb(96, 96, 96);
-  --color-text-mokamel: rgb(95, 112, 134);
-  --color-text-cap: rgb(164, 168, 186);
-  --color-text-cap-2: rgb(127, 127, 136);
-  --color-icon-black: rgb(4, 4, 4);
-  --color-icon-brown: rgb(47, 13, 12);
 
   --radius-2.5xl: 20px;
   --radius-5xl: 40px;
-
-  /* --font-display: "Vazirmatn", "sans-serif"; */
 }
+
+@variant dark {
+  --color-primary: rgb(204, 49, 45);
+  --color-secondary: rgb(254, 248, 250);
+  --color-stroke-850: rgb(255, 255, 255);
+  --color-stroke-800: rgb(255, 244, 248);
+  --color-stroke-750: rgb(247, 247, 247);
+  --color-stroke-600: rgb(245, 245, 247);
+  --color-stroke-550: rgb(240, 240, 240);
+  --color-stroke-500: rgb(235, 235, 235);
+  --color-stroke-450: rgb(230, 230, 230);
+  --color-stroke-400: rgb(168, 168, 168);
+  --color-stroke-300: rgb(164, 168, 186);
+  --color-stroke-250: rgb(127, 127, 136);
+  --color-stroke-200: rgb(95, 112, 134);
+  --color-stroke-150: rgb(96, 96, 96);
+  --color-stroke-100: rgb(40, 42, 57);
+  --color-stroke-50: rgb(40, 42, 57);
+  --color-stroke-0: rgb(25, 26, 38);
+  --color-stroke-900: rgb(47, 13, 12);
+  --color-stroke-950: rgb(4, 4, 4);
+  --color-success: rgb(41, 182, 119);
+  --color-green: rgb(27, 172, 68);
+  --color-warning: rgb(242, 194, 62);
+  --color-orange: rgb(245, 130, 32);
+  --color-dark-orange: rgb(164, 92, 29);
+  --color-error: rgb(210, 48, 45);
+  --color-red: rgb(240, 64, 85);
+  --color-blue: rgb(68, 140, 249);
+  --color-brown: rgb(95, 54, 53);
+}
+
 @layer components {
   .scroll--x {
-    @apply overflow-y-hidden overflow-x-scroll snap-x snap-mandatory scrollbar-none [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary  dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500;
+    @apply overflow-y-hidden overflow-x-scroll snap-x snap-mandatory scrollbar-none [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full;
   }
   .scrollbar--primary {
-    @apply scrollbar scrollbar-thumb-primary scrollbar-thumb-rounded-full scrollbar-track-grey scrollbar-track-rounded-full;
+    @apply scrollbar scrollbar-thumb-primary scrollbar-thumb-rounded-full scrollbar-track-stroke-100 dark:scrollbar-track-stroke-800 scrollbar-track-rounded-full;
   }
   .banner--primary--size {
     @apply h-56 sm:h-[13.04rem] md:h-[15.65rem] lg:h-[20.86rem] xl:h-[26.8rem] aspect-15/10 sm:aspect-26/10;
@@ -85,13 +128,13 @@
     @apply h-[8.8rem] sm:h-[11.66rem] xl:h-[14.58rem] aspect-27/11;
   }
   .banner--btn--secondary {
-    @apply font-bold text-[8px] sm:text-[10px] xl:text-xs 2xl:text-sm rounded-4xl h-5 sm:h-6 xl:h-8 2xl:h-8 bg-white/10 backdrop-blur-md text-text-primary hover:*:first:text-primary duration-200;
+    @apply font-bold text-[8px] sm:text-[10px] xl:text-xs 2xl:text-sm rounded-4xl h-5 sm:h-6 xl:h-8 2xl:h-8 bg-stroke-0/10 backdrop-blur-md text-stroke-800 hover:*:first:text-primary duration-200;
   }
   .mobileHeader {
     @apply grid grid-cols-3 p-2 gap-x-10 gap-y-5;
   }
   .backdrop {
-    @apply h-screen w-screen bg-black/15 backdrop-blur-md;
+    @apply h-screen w-screen bg-stroke-950/15 backdrop-blur-md duration-200;
   }
   .backdrop--primary {
     @apply flex max-md:items-end inset-0 md:items-center justify-center max-md:pb-6 px-6 [30rem]:px-12 max-md:pt-[20%] mx-auto overflow-hidden md:py-[10%] z-[90];
@@ -100,65 +143,65 @@
     @apply flex items-start justify-center md:justify-start top-0 inset-0 right-0 left-0 max-md:bottom-0 md:p-6 md:pt-44 max-md:overflow-y-auto scrollbar-none z-[80];
   }
   .modal {
-    @apply flex items-center justify-center bg-white;
+    @apply flex items-center justify-center bg-stroke-0 duration-200;
   }
 
   .modal--primary {
     @apply sm:w-[33.8rem] overflow-hidden size-full rounded-3xl shadow-md z-[100];
   }
-
   .modal--secondary {
     @apply md:rounded-3xl w-screen md:w-xl lg:w-3xl md:h-auto md:shadow-md md:justify-start z-[90];
   }
-
   .btn {
     @apply flex items-center justify-center rounded-full;
   }
-
   .btn--primary {
-    @apply border-4 border-grey bg-primary text-grey active:bg-grey active:**:text-primary active:text-primary active:border active:border-primary disabled:bg-primary/30 disabled:text-white duration-200;
+    @apply border-4 border-stroke-100 dark:border-stroke-0 bg-primary text-stroke-100 dark:text-stroke-800 active:bg-stroke-100 active:**:text-primary active:text-primary active:border active:border-primary disabled:bg-primary/30 disabled:text-white duration-200;
   }
   .btn--primary--2 {
-    @apply text-primary border-primary active:text-primary/70 active:border-primary/70 disabled:border-text-secondary duration-200;
+    @apply text-primary border-primary active:text-primary/70 active:border-primary/70 disabled:border-stroke-600 duration-200;
   }
   .btn--secondary {
-    @apply border border-text-secondary active:bg-primary active:text-grey active:border-grey duration-200;
+    @apply border border-stroke-600 active:bg-primary active:text-stroke-100 active:border-stroke-100 duration-200;
   }
   .btn--secondary--2 {
-    @apply border border-secondary bg-secondary active:bg-white active:text-primary active:border-primary duration-200;
+    @apply border border-stroke-150 bg-stroke-150 active:bg-white text-stroke-800 active:text-primary active:border-primary duration-200;
   }
   .btn--success {
-    @apply border bg-success  border-grey text-grey active:text-success active:bg-white active:**:text-success active:border duration-200;
+    @apply border bg-success border-stroke-100 text-white active:text-success active:bg-white active:**:text-success active:border-success duration-200;
+  }
+  .btn--type {
+    @apply bg-stroke-0 text-stroke-800 border border-stroke-250 dark:has-checked:border-primary hover:bg-stroke-900/30 has-checked:bg-stroke-900 has-checked:text-stroke-0 dark:hover:bg-primary/40 dark:bg-stroke-50 dark:has-checked:bg-primary dark:has-checked:text-stroke-800;
   }
   .badge {
-    @apply flex items-center justify-center px-3 py-1 text-xs md:text-sm bg-grey text-primary rounded-full;
+    @apply flex items-center justify-center px-3 py-1 text-xs md:text-sm rounded-full;
   }
   .badge--primary {
     @apply bg-primary/10 text-primary;
   }
   .badge--secondary {
-    @apply bg-grey text-text-secondary;
+    @apply bg-stroke-100 text-stroke-600;
   }
   .badge--secondary--2 {
-    @apply bg-white text-text border border-stroke;
+    @apply bg-stroke-0 text-stroke-800 border border-stroke-250;
   }
   .profile__link {
     @apply flex items-center gap-2 px-6 text-xs;
   }
   .profile__title {
-    @apply flex items-center gap-2 py-4 w-full text-xs text-text-primary border-t border-stroke;
+    @apply flex items-center gap-2 py-4 w-full text-xs text-stroke-800;
   }
   .profile__link--2 {
-    @apply flex items-center justify-between gap-2 px-6 text-sm text-text;
+    @apply flex items-center justify-between gap-2 px-6 text-sm text-stroke-800;
   }
   .pages--btn {
-    @apply flex items-center justify-center size-10 aspect-square text-sm bg-white border border-stroke-2 hover:border hover:border-primary hover:bg-white hover:text-primary active:border active:border-primary active:bg-white active:text-primary *:text-text  focus-within:*:text-primary focus-within:*:font-bold focus-within:border-primary rounded-full duration-200;
+    @apply flex items-center justify-center size-10 aspect-square text-sm bg-stroke-0 border border-stroke-150 hover:border hover:border-primary hover:bg-stroke-0 hover:text-primary active:border active:border-primary active:bg-stroke-0 active:*:text-primary *:text-stroke-800  focus-within:*:text-primary focus-within:*:font-bold focus-within:border-primary rounded-full duration-200;
   }
   .table__th {
     @apply bg-primary text-white py-3 px-2;
   }
   .table__td {
-    @apply text-text py-4 text-ellipsis whitespace-nowrap overflow-y-auto;
+    @apply text-stroke-800 py-4 text-ellipsis whitespace-nowrap overflow-y-auto;
   }
   .tdBase {
     @apply flex items-center justify-center text-nowrap;
@@ -170,40 +213,40 @@
     @apply active:bg-error text-error active:text-white;
   }
   .btn-card-event--success {
-    @apply active:bg-success text-text-primary active:text-white;
+    @apply active:bg-success text-stroke-800 active:text-white;
   }
   .textField__input {
-    @apply flex items-center justify-start px-3 bg-grey rounded-xl py-2 outline-0 focus:bg-white border-[1.5px] border-grey focus:border-primary duration-200;
+    @apply flex items-center justify-start px-3 bg-stroke-100 rounded-xl py-2 outline-0 focus:bg-stroke-0 border-[1.5px] border-stroke-100 focus:border-primary text-stroke-800 duration-200;
   }
   .textField__input--2 {
-    @apply rounded-full text-text bg-[#f1f1f1] focus-within:bg-white;
+    @apply rounded-full text-stroke-800 bg-stroke-50 focus-within:bg-stroke-0 duration-200;
   }
-  .footerLink {
-    @apply grid gap-x-6 gap-y-1 text-base text-nowrap text-text-secondary *:hover:text-primary *:active:text-primary *:duration-200;
+  .footer--link {
+    @apply grid gap-x-6 gap-y-1 text-base text-nowrap text-stroke-600 dark:text-stroke-600/50 *:hover:text-primary *:active:text-primary *:duration-200;
   }
 
   @media (hover: none) {
     .btn--primary:hover {
-      @apply bg-grey **:text-primary text-primary border border-primary active:bg-grey;
+      @apply bg-stroke-100 **:text-primary text-primary border border-primary active:bg-stroke-100;
     }
-    /* .btn--primary--2:hover {
-      @apply bg-primary text-grey border-grey;
-    } */
-    .btn--secondary:hover {
-      @apply bg-error text-grey border-grey;
+    .btn--primary--2:hover {
+      @apply bg-primary text-stroke-100 border-stroke-100;
     }
     .btn--secondary:hover {
-      @apply bg-white text-primary border-primary;
+      @apply bg-error text-stroke-100 border-stroke-100;
+    }
+    .btn--secondary:hover {
+      @apply bg-stroke-0 text-primary border-primary;
     }
     .btn--success:hover {
-      @apply border-success text-success bg-white **:text-success border active:border-success;
+      @apply border-success text-success bg-stroke-0 **:text-success border active:border-success;
     }
 
     .btn-card-event--error:hover {
-      @apply bg-primary text-white;
+      @apply bg-primary text-stroke-0;
     }
     .btn-card-event--success:hover {
-      @apply bg-success text-white;
+      @apply bg-success text-stroke-0;
     }
   }
 }
@@ -221,7 +264,7 @@ body {
   margin: 0;
   min-height: 100vh;
   user-select: none;
-  background-color: var(--background-app-rgb);
+  background-color: var(--secondary-rgb);
   background: var(--background);
   color: var(--foreground);
   font-family: "Vazirmatn", sans-serif;

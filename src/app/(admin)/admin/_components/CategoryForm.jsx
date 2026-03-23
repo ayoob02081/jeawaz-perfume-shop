@@ -126,7 +126,7 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
         {/* IconUrl */}
         <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
           <div className="flex items-center justify-between mb-4 w-full">
-            <h3 className="text-text font-bold max-md:text-base text-lg">
+            <h3 className="text-stroke-800 font-bold max-md:text-base text-lg">
               {accord ? "آیکون رایحه" : "آیکون جنسیت"}
               <span className="text-error">*</span>
             </h3>
@@ -146,7 +146,7 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
         {/* ImageUrl */}
         <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
           <div className="flex items-center justify-between mb-4 w-full">
-            <h3 className="text-text font-bold max-md:text-base text-lg">
+            <h3 className="text-stroke-800 font-bold max-md:text-base text-lg">
               {accord ? "عکس‌ رایحه" : "عکس‌ جنسیت"}
               <span className="text-error">*</span>
             </h3>

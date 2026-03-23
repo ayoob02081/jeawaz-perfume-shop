@@ -59,7 +59,7 @@ function FilterModes({
     switch (mode) {
       case "all":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-white w-full rounded-2.5xl md:pl-3">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl md:pl-3">
             <div className="flex flex-col justify-between md:gap-4">
               <FilterMode
                 button
@@ -114,7 +114,7 @@ function FilterModes({
 
       case "brand":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-white w-full rounded-2.5xl px-4 ">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl px-4 ">
             <BrandsFilter
               brands={brandCategories}
               state={state.draft?.brands}
@@ -125,7 +125,7 @@ function FilterModes({
         );
       case "accord":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-white w-full rounded-2.5xl px-4">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl px-4">
             <AccordsFilter
               accords={accordCategories}
               state={state.draft?.accords}
@@ -136,7 +136,7 @@ function FilterModes({
         );
       case "volume":
         return (
-          <div className="flex items-center justify-start gap-6 bg-white w-full rounded-2.5xl px-4">
+          <div className="flex items-center justify-start gap-6 bg-stroke-0 w-full rounded-2.5xl px-4">
             <VolumesFilter
               volumes={volumes}
               state={state.draft?.volumes}
@@ -147,7 +147,7 @@ function FilterModes({
         );
       case "gender":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-white w-full rounded-2.5xl px-4">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl px-4">
             <GendersFilter
               data={genderCategories}
               description={"انتخاب جنسیت عطر"}
@@ -166,13 +166,15 @@ function FilterModes({
 
   return (
     <div className=" flex flex-col max-md:py-4 md:p-6 size-full max-md:gap-4 gap-6">
-      <div className="flex items-center justify-between border-b-[1.5px] border-stroke-2 max-md:px-4 pb-6">
-        <p className="md:text-xl font-bold text-text">{modeTitle(mode)}</p>
+      <div className="flex items-center justify-between border-b-[1.5px] border-stroke-250 max-md:px-4 pb-6">
+        <p className="md:text-xl font-bold text-stroke-800">
+          {modeTitle(mode)}
+        </p>
         <button
           disabled={isFilter || isPriceFilter ? false : true}
           type="button"
           onClick={resetAllFilters}
-          className="btn btn--primary--2 disabled:text-text-secondary border-[1.5px] flex items-center justify-center h-8 md:h-12 gap-2 px-4 text-xs md:text-lg"
+          className="btn btn--primary--2 disabled:text-stroke-600 border-[1.5px] flex items-center justify-center h-8 md:h-12 gap-2 px-4 text-xs md:text-lg"
         >
           حذف فیلتر ها
         </button>
@@ -194,7 +196,7 @@ function FilterModes({
           onClick={mode === "all" ? onClose : () => setMode("all")}
           className="btn btn--secondary--2 px-6 h-full w-1/2 "
         >
-          <p className="text-sm sm:text-base text-text">
+          <p className="text-sm sm:text-base text-stroke-800">
             {mode === "all" ? "انصراف" : "بازگشت"}
           </p>
         </button>
@@ -218,8 +220,8 @@ function FilterMode({
   type,
 }) {
   return (
-    <div className="flex flex-col items-start justify-start gap-4 p-4 max-md:border-b md:border border-stroke md:rounded-2xl">
-      <p className="hidden md:flex font-bold text-text">{title}</p>
+    <div className="flex flex-col items-start justify-start gap-4 p-4 max-md:border-b md:border border-stroke-200 md:rounded-2xl">
+      <p className="hidden md:flex font-bold text-stroke-800">{title}</p>
       {button ? (
         <div className="flex flex-col justify-start gap-2 w-full">
           <div className="flex items-center justify-between gap-2 w-full ">
@@ -239,7 +241,7 @@ function FilterMode({
               onClick={openFilter}
               className="flex items-center justify-end w-full"
             >
-              <ChevronLeftIcon className="size-5 text-text" />
+              <ChevronLeftIcon className="size-5 text-stroke-800" />
             </button>
           </div>
           <div className="w-full flex flex-wrap items-center justify-start gap-2 ">
@@ -269,7 +271,7 @@ function FilterMode({
 
 function BrandsFilter({ state, brands, type, addFilter }) {
   return (
-    <div className="flex flex-col justify-between gap-6 size-full overflow-auto scrollbar-none">
+    <div className="flex flex-col justify-between gap-6 dark:py-3 dark:pl-4 size-full overflow-auto scrollbar-none">
       {brands?.map((brand, index) => {
         const isChecked = state.includes(brand.value);
 
@@ -282,8 +284,8 @@ function BrandsFilter({ state, brands, type, addFilter }) {
             name={"brandFilter2"}
             onChange={() => addFilter("SET_ITEMS", type, brand.value)}
             checked={isChecked}
-            className="flex flex-row-reverse justify-between text-text-primary size-full "
-            imageClassName=" h-6 md:h-8 lg:h-12 w-20 md:w-26 lg:w-32 duration-200"
+            className="flex flex-row-reverse justify-between text-stroke-800 size-full"
+            imageClassName="h-6 md:h-8 lg:h-12 w-20 md:w-26 lg:w-32 duration-200"
             textClassName="text-base text-wrap"
             checkbox
           />
@@ -316,7 +318,7 @@ export function GendersFilter({
             } flex items-center justify-center px-3 text-sm  h-9 w-full rounded-full duration-200 ${
               defaultValue === true
                 ? "border-[1.5px] border-primary text-primary font-bold"
-                : "text-text-secondary bg-secondary"
+                : "text-stroke-600 bg-stroke-150"
             }`}
             onChange={() => addFilter("SET_ITEM", "gender", item.value)}
           >
@@ -342,7 +344,7 @@ export function GendersFilter({
           onClick={() => setMode("gender")}
           className={`flex items-center justify-end gap-2 w-full `}
         >
-          <ChevronLeftIcon className="size-5 text-text" />
+          <ChevronLeftIcon className="size-5 text-stroke-800" />
         </div>
       </div>
     </div>
@@ -364,7 +366,7 @@ function AccordsFilter({ state, accords, type, addFilter }) {
             name={"accordFilter2"}
             onChange={() => addFilter("SET_ITEMS", type, accord.value)}
             checked={isChecked}
-            className="flex flex-row-reverse justify-between text-nowrap text-text-primary size-full  "
+            className="flex flex-row-reverse justify-between text-nowrap text-stroke-800 size-full  "
             imageClassName="flex items-center justify-end py-1 lg:py-2 rounded-full wfull size-12 duration-200"
             textClassName="text-base"
             checkbox
@@ -386,11 +388,10 @@ function VolumesFilter({ state, volumes, type, addFilter }) {
             key={volume.id}
             checkId={volume.value + index + index}
             label={volume.title}
-            // imageSrc={volume.iconUrl}
             name="volumeFilter2"
             onChange={() => addFilter("SET_ITEMS", type, volume.value)}
             checked={isChecked}
-            className="flex flex-row-reverse justify-between text-nowrap text-text-primary size-full  "
+            className="flex flex-row-reverse justify-between text-nowrap text-stroke-800 size-full  "
             imageClassName="flex items-center justify-end py-1 lg:py-2 rounded-full wfull size-12 duration-200"
             textClassName="text-base"
             checkbox

@@ -8,7 +8,7 @@ import SecondaryBannerLayout from "./_components/SecondaryBannerLayout";
 
 export default function Home() {
   return (
-    <div className="flex flex-col justify-between gap-14 mt-40 md:mt-32 scrollbar--primary scrollbar-w-2">
+    <div className="flex flex-col justify-between gap-14 mt-40 md:mt-32 scrollbar--primary scrollbar-w-2 md:pb-10">
       <PrimaryBannerLayout />
       <GenderCategoriesLayout />
       <RecentProducts />

@@ -25,7 +25,7 @@ const statusConfig = {
   },
   returned: {
     title: "مرجوعی",
-    color: "bg-text/10 text-text",
+    color: "bg-stroke-800/10 text-stroke-800",
     src: "/images/returned-icon.svg",
     alt: "returned-icon",
   },
@@ -82,7 +82,7 @@ function StatusOrderCard({ order, title, color, src, alt }) {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col justify-between gap-6 w-full max-lg:border-t border-text/10 p-6 lg:border lg:rounded-2xl">
+    <div className="flex flex-col justify-between gap-6 w-full max-lg:border-t border-stroke-800/10 p-6 lg:border lg:rounded-2xl">
       <div
         className={`flex items-center justify-start gap-1 h-11 w-fit px-2 rounded-5xl ${color}`}
       >
@@ -93,11 +93,13 @@ function StatusOrderCard({ order, title, color, src, alt }) {
         <div className="flex max-md:flex-col items-start justify-center max-md:gap-2 md:gap-6">
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">تاریخ تحویل سفارش :</p>
-            <p className="font-bold text-text">{order.date}</p>
+            <p className="font-bold text-stroke-800">{order.date}</p>
           </span>
           <span className="flex items-center justify-start gap-1">
             <p className="text-gray-600">کد سفارش :</p>
-            <p className="font-bold text-text">{toPersianNumbers(order.id)}</p>
+            <p className="font-bold text-stroke-800">
+              {toPersianNumbers(order.id)}
+            </p>
           </span>
         </div>
         <div className="max-sm:w-full flex items-center max-sm:justify-end  sm:justify-center">
@@ -110,12 +112,12 @@ function StatusOrderCard({ order, title, color, src, alt }) {
       </div>
       <button
         onClick={() => router.push(pathName + "/" + order.id)}
-        className="flex items-center justify-between p-6 bg-grey rounded-2xl h-28"
+        className="flex items-center justify-between p-6 bg-stroke-100 dark:bg-stroke-50 rounded-2xl h-28"
       >
         <div className=" flex items-center justify-start *:not-first:-mr-8">
           {order.items.map((item) => (
             <div
-              className="flex items-center justify-center bg-white border-6 border-grey size-20 rounded-xl z-10"
+              className="flex items-center justify-center bg-stroke-0 border-6 border-stroke-100 dark:border-stroke-50 size-20 rounded-xl z-10"
               key={item.src}
             >
               <AppImage src={item.src} alt={item.alt} className="size-10 " />

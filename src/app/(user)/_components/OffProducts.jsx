@@ -23,7 +23,7 @@ function OffProducts() {
       titleTwo={"محصولات"}
       desc={"پرتخفیف ترین رایحه ها ، همین‌جاست."}
       className={""}
-      bgColor="bg-[#FFF4F8] rounded-2xl py-6"
+      bgColor="bg-stroke-50 dark:bg-stroke-50/50 rounded-2xl py-6"
     >
       {products?.map((product) => (
         <ProductCard key={product.id} product={product} />

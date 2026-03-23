@@ -28,11 +28,11 @@ function AccordCategoriesLayout() {
         <AppImage
           src="/images/star-8-icon.svg"
           alt="star-icon"
-          className="text-icon-black"
+          className="text-stroke-950"
           width="max-sm:size-4 sm:size-9"
           sizes="10vw"
         />
-        <h2 className="text-text-primary">دنیایی متفاوت</h2>
+        <h2 className="text-stroke-800">دنیایی متفاوت</h2>
       </div>
       <div className="flex gap-4 justify-between items-center w-full px-16 my-6 scroll--x rounded-2xl">
         {isLoading ? (
@@ -65,25 +65,27 @@ function FilterCard({ src, alt, value, label }) {
 
   return (
     <div className="snap-center">
-      <div className="flex h-24 sm:!h-[7.5rem] aspect-[9/3] sm:aspect-[5/2] justify-between items-center gap- px-3 bg-white rounded-2xl border-[1.5px] border-[#EBEBEB] ">
+      <div className="flex h-24 sm:!h-[7.5rem] aspect-[9/3] sm:aspect-[5/2] justify-between items-center px-3 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ">
         <div className="relative flex items-center justify-center h-full px-4">
           <div className=" flex items-center justify-center aspect-square h-16 md:h-20 rounded-xl">
             <AppImage
               src={src}
               alt={alt}
-              className=" justify-center -rotate-12"
+              className=" justify-center -rotate-12 z-10"
               objectFit="cover"
               sizes="10vw"
             />
           </div>
-          <div className="absolute bottom-1/6 blur-[10px] w-1/2 h-1 sm:h-1.5 bg-text-secondary rounded-full"></div>
+          <div className="absolute bottom-1/6 blur-[10px] w-1/2 h-1 sm:h-1.5 bg-stroke-600 rounded-full"></div>
         </div>
         <div className="grow flex flex-col gap-2 py-4 justify-self-start">
           <span className="flex items-center justify-start gap-1">
-            <p className="text-text-secondary text-xs sm:text-sm">رایحه</p>
-            <p className="font-bold text-text text-base sm:text-lg">{label}</p>
+            <p className="text-stroke-600 text-xs sm:text-sm">رایحه</p>
+            <p className="font-bold text-stroke-800 text-base sm:text-lg">
+              {label}
+            </p>
           </span>
-          <p className="text-text-secondary text-xs sm:text-sm">
+          <p className="text-stroke-600 text-xs sm:text-sm">
             {toPersianNumbers(quantity)} محصول
           </p>
         </div>
@@ -91,7 +93,7 @@ function FilterCard({ src, alt, value, label }) {
           onClick={() => router.push("/products")}
           className="flex-none justify-self-end self-end px-2 pb-5"
         >
-          <ArrowLeftIcon className="size-5 text-black" />
+          <ArrowLeftIcon className="size-5 text-stroke-800" />
         </button>
       </div>
     </div>

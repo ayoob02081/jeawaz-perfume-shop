@@ -23,19 +23,19 @@ function GenderCategoriesLayout() {
   }
 
   return (
-    <section className="flex flex-col justify-between items-center py-4 container mx-auto xl:max-w-7xl">
+    <section className="flex flex-col justify-between items-center py-4 container mx-auto xl:max-w-7xl ">
       <div className="flex justify-center items-center gap-1 w-full px-6 mb-6 text-base sm:text-[28px] font-bold">
         <h2 className="text-primary">دسته‌بندی</h2>
         <AppImage
           src="/images/star-8-icon.svg"
           alt="star-icon"
-          className="text-icon-black"
+          className="text-stroke-950"
           width="max-sm:size-4 sm:size-9"
           sizes="10vw"
         />
-        <h2 className="text-text-primary">محصولات ما</h2>
+        <h2 className="text-stroke-800">محصولات ما</h2>
       </div>
-      <div className="mx-6 flex flex-col sm:w-full sm:px-36 md:px-6 md:flex-row gap-4 sm:gap-6 items-center justify-between scroll--x overflow-hidden sm:overflow-x-auto rounded-2xl">
+      <div className="mx-6 flex flex-col w-full sm:px-36 md:px-6 md:flex-row gap-4 sm:gap-6 items-center justify-between overflow-x-auto scrollbar-none sm:rounded-2xl">
         {isLoading ? (
           <Loading />
         ) : (
@@ -66,25 +66,25 @@ function CategoreyCard({ src, alt, value, label }) {
   const quantity = product?.length || 0;
 
   return (
-    <div className="flex h-24 md:h-[140px] aspect-[7/2] md:aspect-[9/3] justify-center items-center justify-items-center bg-white rounded-2xl border-[1.5px] border-[#EBEBEB] ">
+    <div className="flex h-24 md:h-[140px] max-[365px]:aspect-[6/2] aspect-[7/2] md:aspect-[9/3] justify-center items-center justify-items-center bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ">
       <div className="h-full self-start justify-self-start px-4">
-        <div className="relative flex items-center justify-center aspect-[8/10] md:aspect-[10/13] w-16 md:w-[5.25rem] p-3 rounded-b-xl bg-grey">
+        <div className="relative flex items-center justify-center aspect-[8/10] md:aspect-[10/13] w-16 md:w-[5.25rem] p-3 rounded-b-xl bg-stroke-200">
           <AppImage
             src={src}
             alt={alt}
-            className="grow justify-center -rotate-12"
+            className="grow justify-center -rotate-12 z-10"
             objectFit="cover"
             sizes="10vw"
           />
-          <div className="absolute bottom-1/6 blur-md w-2/3 h-1 md:h-1.5 bg-text-secondary rounded-full"></div>
+          <div className="absolute bottom-1/6 blur-md w-2/3 h-1 md:h-1.5 bg-stroke-600 rounded-full"></div>
         </div>
       </div>
       <div className="grow flex flex-col gap-1 p-4">
         <span className="flex items-center justify-start gap-1 font-bold text-sm sm:text-xl">
-          <p className="text-text">عطرهای</p>
+          <p className="text-stroke-800">عطرهای</p>
           <p className="text-primary">{label}</p>
         </span>
-        <p className="text-text-secondary text-sm sm:text-lg md:font-bold">
+        <p className="text-stroke-600 text-sm sm:text-lg md:font-bold">
           {toPersianNumbers(quantity)} محصول
         </p>
       </div>

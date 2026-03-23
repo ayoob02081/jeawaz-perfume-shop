@@ -36,9 +36,11 @@ export default function ContactUsForm() {
       <Toaster />
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col items-start justify-between gap-2 p-6 border border-stroke-2 rounded-2xl size-full"
+        className="flex flex-col items-start justify-between gap-2 p-6 border border-stroke-250 rounded-2xl size-full"
       >
-        <h3 className="font-bold text-text text-xl pb-6">ارسال پیام یا سوال</h3>
+        <h3 className="font-bold text-stroke-800 text-xl pb-6">
+          ارسال پیام یا سوال
+        </h3>
         <div className="flex flex-col items-center justify-between gap-6 size-full">
           {textFieldData.map((item) => (
             <RHFTextField

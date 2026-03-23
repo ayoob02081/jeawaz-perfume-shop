@@ -1,71 +1,69 @@
+"use client";
+
 import ProfileLayout from "@/components/ProfileLayout";
-import ProfileLinks, { ProfileLink } from "@/components/ProfileLinks";
+import ProfileLinks, {
+  ProfileLink,
+  UserProfileLink,
+} from "@/components/ProfileLinks";
+import { useGetUser } from "@/hooks/useUsers";
 
 function AdminSidebar() {
+  const { data: user, isLoading, error } = useGetUser();
+  const { email, firstName, lastName, role } = user || {};
   const AdminProfileLinks = [
     {
       id: 1,
       href: "/admin/orders",
+      baseHref: "/admin/orders",
       label: "همه سفارش‌ها",
-      srcPrimary: "/images/orders-stroke-white-icon.svg",
-      srcSecondary: "/images/orders-stroke-black-icon.svg",
-      alt: "orders-icon",
     },
     {
       id: 2,
       href: "/admin/users",
+      baseHref: "/admin/users",
       label: "همه حساب‌ها",
-      srcPrimary: "/images/user-serach-stroke-white-icon.svg",
-      srcSecondary: "/images/user-serach-stroke-black-icon.svg",
-      alt: "user-icon",
     },
     {
       id: 3,
       href: "/admin/products",
+      baseHref: "/admin/products",
       label: "محصولات",
-      srcPrimary: "/images/category.svg",
-      srcSecondary: "/images/category.svg",
-      alt: "products-icon",
     },
     {
       id: 4,
       href: "/admin/categories",
+      baseHref: "/admin/categories",
       label: "دسته‌بندی‌ها",
-      srcPrimary: "/images/orders-stroke-white-icon.svg",
-      srcSecondary: "/images/orders-stroke-black-icon.svg",
-      alt: "orders-icon",
     },
     {
       id: 5,
       href: "/admin/notifs/all",
+      baseHref: "/admin/notifs",
       label: "پیام‌ها",
-      srcPrimary: "/images/notification-stroke-white-icon.svg",
-      srcSecondary: "/images/notification-stroke-black-icon.svg",
-      alt: "notif-icon",
     },
     {
       id: 6,
       href: "/logout",
+      baseHref: "/logout",
       label: "خروج از حساب کاربری",
-      srcPrimary: "/images/logout-stroke-black-icon.svg",
-      srcSecondary: "/images/logout-stroke-black-icon.svg",
-      alt: "logout-icon",
     },
   ];
 
   return (
     <ProfileLayout label="پروفایل ادمین" correctPathName="/admin">
       <ProfileLinks>
-        {/* <UserProfileLink
-          href={"/admin/me"}
-          label="ایوب محمودیان"
-          phoneNumber="09180522273"
-        /> */}
+        <UserProfileLink
+          href={"/profile/me"}
+          label={firstName + " " + lastName}
+          phoneNumber={email}
+          isloading={isLoading}
+        />
         {AdminProfileLinks?.map((link) => (
           <ProfileLink
             key={link.id}
             href={link.href}
             label={link.label}
+            baseHref={link.baseHref}
             srcPrimary={link.srcPrimary}
             srcSecondary={link.srcSecondary}
             alt={link.alt}

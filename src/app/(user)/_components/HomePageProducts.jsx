@@ -13,50 +13,55 @@ function HomePageProducts({
   children,
   className,
   bgColor,
-  section,
 }) {
   return (
     <section
       className={`flex flex-col items-center py-2 container mx-auto xl:max-w-7xl gap-6 snap-x ${bgColor}`}
     >
-      <div className="flex justify-between items-center w-full px-6">
-        <div className="flex flex-col items-start justify-center md:items-start gap-2 w-full">
+      {/* Info */}
+      <section className="flex justify-between items-center gap-2 w-full px-6">
+        {/* Title */}
+        <div className="flex flex-col items-start justify-center md:items-start gap-2 w-full text-nowrap">
           <div className="flex items-center gap-1">
             <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-primary">
               {titleOne}
             </h2>
-            <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-text-primary">
+            <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-stroke-800">
               {titleTwo}
             </h2>
           </div>
-          <p className="text-xs sm:text-sm md:text-lg text-text-secondary">
+          <p className="text-xs sm:text-sm md:text-lg text-stroke-600">
             {desc}
           </p>
         </div>
-        <div className="flex items-end gap-4">
+
+        {/* Gender Type */}
+        <div className="flex items-end gap-4 max-sm:overflow-x-scroll scrollbar-none max-sm:w-full">
           {genderType ? <GenderType /> : "Timer"}
           <Link
-            href={"/"}
-            className="hidden md:flex items-center justify-between gap-4 pr-3 border-r-[1.5px] border-stroke"
+            href="/products"
+            className="hidden md:flex items-center justify-between gap-4 pr-3 border-r-[1.5px] border-stroke-200 text-primary hover:text-primary/70 active:text-primary/70 duration-200"
           >
-            <div className="text-lg text-primary text-nowrap">مشاهده همه</div>
-            <div className="text-primary max-md:size-[1.1rem] size-6">
-              <ArrowLeftIcon />
-            </div>
+            <p className="text-lg text-nowrap">مشاهده همه</p>
+            <ArrowLeftIcon className=" max-md:size-[1.1rem] size-6" />
           </Link>
         </div>
-      </div>
-      <div
+      </section>
+
+      {/* Products */}
+      <section
         className={`flex items-center w-full scroll--x px-10 snap-x gap-4 md:gap-6 ${className}`}
       >
         {children}
-      </div>
-      <div className="flex items-center justify-between gap-4 p-6 md:hidden">
-        <div className="text-primary">مشاهده همه</div>
-        <div className="text-primary max-md:size-[1.1rem] size-6">
-          <ArrowLeftIcon />
-        </div>
-      </div>
+      </section>
+
+      <Link
+        href="/products"
+        className="flex items-center justify-between gap-4 p-6 text-primary md:hidden hover:text-primary/70 active:text-primary/70 duration-200"
+      >
+        <p>مشاهده همه</p>
+        <ArrowLeftIcon className="max-md:size-[1.1rem] size-6" />
+      </Link>
     </section>
   );
 }
@@ -76,7 +81,7 @@ function GenderType() {
   const genderCategories = categories?.filter((c) => c.type === "gender");
 
   return (
-    <div className="flex items-center justify-between gap-1">
+    <div className="flex items-center max-[432px]:justify-between justify-end gap-1 max-sm:w-full">
       {genderCategories?.map((gender) => {
         const isChecked =
           Number(watch("genderId")) === gender.id ? true : false;
@@ -90,7 +95,7 @@ function GenderType() {
             register={register}
           >
             <div
-              className={`btn border-[1.5px] max-sm:w-15 sm:w-20 text-sm py-1 px-3 rounded-4xl duration-200 ${isChecked ? " border-primary text-primary font-bold" : "text-black border-stroke"}`}
+              className={`btn border-[1.5px] max-sm:w-15 sm:w-20 text-sm py-1 px-3 rounded-4xl hover:opacity-70 duration-200 ${isChecked ? " border-primary text-primary font-bold" : "text-stroke-800 border-stroke-200"}`}
             >
               <p className="duration-200">{gender.title}</p>
             </div>

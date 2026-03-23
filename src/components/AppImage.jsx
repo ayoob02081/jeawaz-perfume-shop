@@ -6,7 +6,7 @@ export default function AppImage({
   className = "",
   ratio = "aspect-square",
   objectFit = "contain", // cover | contain | fill | none | scale-down
-  sizes = "100vw",
+  sizes = "80vw",
   width = "w-full",
   ...rest
 }) {

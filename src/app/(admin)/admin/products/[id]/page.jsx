@@ -15,7 +15,7 @@
 //   return (
 //     <div className="space-y-6">
 //       <div className="flex items-center justify-between">
-//         <h1 className="font-bold text-secondary-900">اطلاعات محصول</h1>
+//         <h1 className="font-bold text-secndary-900">اطلاعات محصول</h1>
 //         <GoBack />
 //       </div>
 //       <div>{product.title}</div>

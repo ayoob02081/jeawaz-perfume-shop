@@ -22,7 +22,7 @@ function TableRow({ children, className, border }) {
   return (
     <tr
       className={`${className} size-full ${
-        border && "border-t border-stroke pt-6"
+        border && "border-t border-stroke-200 pt-6"
       }`}
     >
       {children}

@@ -32,7 +32,6 @@ function FilterCheckBox({
           <AppImage
             src={imageSrc}
             alt={checkId + "-icon"}
-            className="mix-blend-multiply"
             width="size-full"
             sizes="20vw"
           />
@@ -45,21 +44,29 @@ function FilterCheckBox({
               className={`flex items-center justify-center size-5 rounded-md border-[1.5px] ${
                 checked
                   ? "bg-primary border-primary"
-                  : "bg-white border-text-secondary "
+                  : "bg-stroke-0 border-stroke-600 "
               } duration-200 `}
             >
               {checked && (
-                <CheckIcon className="size-3.5 stroke-4 text-white duration-200" />
+                <CheckIcon className="size-3.5 stroke-4 text-stroke-0 duration-200" />
               )}
             </div>
-            <p className={textClassName}>{label}</p>
+            <p
+              className={`${textClassName} ${checked ? "text-primary" : "text-stroke-800 dark:text-stroke-500"} duration-200`}
+            >
+              {label}
+            </p>
           </span>
         ) : (
           <span className="flex items-center justify-start gap-1">
-            <p className={textClassName}>{label}</p>
+            <p
+              className={`${textClassName} ${checked ? "text-primary" : "text-stroke-800 dark:text-stroke-500"} duration-200`}
+            >
+              {label}
+            </p>
             <div
               className={`h-2 w-0.5 rounded-full ${
-                checked ? "bg-primary" : "bg-secondary-2"
+                checked ? "bg-primary" : "bg-stroke-50 dark:bg-stroke-150"
               } duration-200`}
             ></div>
           </span>

@@ -123,7 +123,7 @@ function BrandForm({ brandToEdit }) {
         {/* IconUrl */}
         <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
           <div className="flex items-center justify-between mb-4 w-full">
-            <h3 className="text-text font-bold max-md:text-base text-lg">
+            <h3 className="text-stroke-800 font-bold max-md:text-base text-lg">
               آیکون برند
               <span className="text-error">*</span>
             </h3>

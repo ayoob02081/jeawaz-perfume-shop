@@ -7,7 +7,10 @@ import BreadCrumb from "@/ui/BreadCrumb";
 import { useGetAllBrandCategories } from "@/hooks/useCategories";
 import { useRef, useState } from "react";
 import Loading from "@/components/Loading";
-import { ChevronLeftIcon } from "@heroicons/react/24/outline";
+import {
+  AdjustmentsHorizontalIcon,
+  ChevronLeftIcon,
+} from "@heroicons/react/24/outline";
 import Modal from "@/components/Modal";
 import FormModalLayout from "@/components/FormModalLayout";
 import FilterModes from "./FilterModes";
@@ -84,22 +87,20 @@ function FilterSection() {
 
   return (
     <article>
-      <div className="border-b border-stroke">
+      <div className="border-b border-stroke-200">
         <section className="flex flex-col items-start justify-between size-full gap-6 py-4">
           <div className="w-full ">
             <section className="flex items-center justify-start gap-2 snap-x overflow-x-scroll scrollbar-none w-full">
+              {/* Filters Modal Button */}
               <button
                 onClick={ToggleModal}
-                className="flex items-center justify-between gap-2 rounded-5xl border-[1.5px] border-stroke max-md:min-w-[6.625rem] md:min-w-[8.315rem] max-md:h-8 md:h-11 snap-center px-4"
+                className="flex items-center justify-between gap-2 rounded-5xl border-[1.5px] border-stroke-200 dark:border-stroke-800/60 max-md:min-w-[6.625rem] md:min-w-[8.315rem] max-md:h-8 md:h-11 snap-center px-4"
               >
-                <AppImage
-                  src="images/filter-icon.svg"
-                  alt="filter-icon"
-                  width="size-5"
-                  sizes="10vw"
-                />
-                <p className="max-md:text-xs text-text">فیلتر ها</p>
+                <AdjustmentsHorizontalIcon className="size-5 text-stroke-800" />
+                <p className="max-md:text-xs text-stroke-800">فیلتر ها</p>
               </button>
+
+              {/* Filters Badge */}
               {state.draft.priceRange[1] !== 300000000 && (
                 <Badge
                   title="قیمت"
@@ -121,7 +122,6 @@ function FilterSection() {
                   error
                 />
               )}
-
               {state.draft.volumes.length > 0 && (
                 <Badge
                   title="حجم"
@@ -138,6 +138,7 @@ function FilterSection() {
               )}
             </section>
           </div>
+          {/* Brands Filter section */}
           {brandsLoading ? (
             <Loading />
           ) : (
@@ -150,6 +151,8 @@ function FilterSection() {
               applyFilter={applyFilter}
             />
           )}
+
+          {/* Bread Crumbs */}
           <section className="max-md:hidden pb-4">
             <BreadCrumbBase>
               <BreadCrumb href={"/"} label={"فروشگاه"} />
@@ -162,6 +165,8 @@ function FilterSection() {
             </BreadCrumbBase>
           </section>
         </section>
+
+        {/* Filters Modal */}
         <Modal isOpen={isModalOpen} onClose={CloseModal}>
           <FormModalLayout
             handleSubmit={HandlefilterData}
@@ -181,10 +186,13 @@ function FilterSection() {
         </Modal>
       </div>
       <section className="w-full flex items-center justify-between py-6">
+        {/* Products Genders Mode Info */}
         <div className=" flex items-center justify-center gap-2">
           <div className="bg-primary h-3 w-[3px] rounded-full"></div>
-          <p className="text-xl font-bold text-text">عطر های مردانه</p>
+          <p className="text-xl font-bold text-stroke-800">عطر های مردانه</p>
         </div>
+
+        {/* Sort Button */}
         <div>
           <SortSection />
         </div>
@@ -198,10 +206,10 @@ export default FilterSection;
 function BrandsFilter({ brands, ref, state, addFilter, applyFilter }) {
   return (
     <form className="relative max-md:hidden flex items-center gap-2 w-full h-14 lg:h-[72px] overflow-hidden">
-      <div className=" flex items-center justify-center border border-primary/10 bg-secondary-2 rounded-full text-primary lg:text-lg font-bold h-full aspect-square">
+      <div className=" flex items-center justify-center border border-primary/10 dark:border-primary/40 bg-stroke-50 dark:bg-stroke-800/50 rounded-full text-primary lg:text-lg font-bold h-full aspect-square">
         برندها
       </div>
-      <div className="flex items-center justify-center border border-primary/10 bg-secondary-2 rounded-full size-full overflow-hidden px-2">
+      <div className="flex items-center justify-center border border-primary/10 dark:border-primary/40 bg-stroke-50 dark:bg-stroke-800/50 rounded-full size-full overflow-hidden px-2">
         <div
           ref={ref}
           className="flex items-center justify-between gap-2 p-2 size-full rounded-full overflow-x-auto scrollbar-none snap-x scroll-smooth"
@@ -217,7 +225,7 @@ function BrandsFilter({ brands, ref, state, addFilter, applyFilter }) {
                 name={"brandFilter"}
                 onChange={() => addFilter("SET_ITEMS", "brands", brand.value)}
                 checked={isChecked}
-                className="justify-center text-nowrap text-text-primary has-checked:*:border-2 has-checked:text-primary has-checked:*:border-primary has-checked:*:bg-white size-full snap-center"
+                className={`justify-center text-nowrap has-checked:*:border-2 has-checked:*:bg-white dark:has-checked:*:bg-stroke-800/80 has-checked:*:border-primary size-full snap-center`}
                 imageClassName="p-2 lg h-10 lg:h-12 w-32 rounded-full duration-200"
               />
             );
@@ -228,7 +236,7 @@ function BrandsFilter({ brands, ref, state, addFilter, applyFilter }) {
         type="button"
         onClick={state.length > 0 ? applyFilter : null}
         disabled={state.length > 0 ? false : true}
-        className="flex items-center justify-center border-2 rounded-full h-full aspect-square border-primary bg-white  disabled:border-secondary disabled:*:text-text-secondary/20 duration-200"
+        className="flex items-center justify-center border-2 rounded-full h-full aspect-square border-primary bg-stroke-0 disabled:border-stroke-150 dark:disabled:border-stroke-50 disabled:*:text-stroke-600/20 duration-200"
       >
         <ChevronLeftIcon className="md:size-6 lg:size-8 text-primary duration-200" />
       </button>

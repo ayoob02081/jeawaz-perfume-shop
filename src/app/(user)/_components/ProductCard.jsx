@@ -71,10 +71,10 @@ function ProductCard({ product }) {
   }
 
   return (
-    <div
-      className={`flex items-center justify-center p-4 max-md:pr-0 h-[13.5rem] md:h-[28.9rem] aspect-[16/10] md:aspect-[10/15]
-    bg-white rounded-2xl border-[1.5px] border-stroke-2 ${isStock ? "" : "opacity-60"} snap-center`}
+    <article
+      className={`flex items-center justify-center p-4 max-md:pr-0 h-[13.5rem] md:h-[28.9rem] bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${isStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
     >
+      {/* Mobile Mode Base Image */}
       <div className="flex items-start justify-between gap-4 w-full h-full">
         <div className="flex flex-none md:hidden items-center justify-center !h-20 !w-[4.5rem]">
           <AppImage
@@ -84,6 +84,7 @@ function ProductCard({ product }) {
           />
         </div>
         <div className="flex grow flex-col w-full h-full">
+          {/* Categories Icon */}
           <div className="flex flex-none items-center justify-between max-md:mb-4 mb-1">
             {productAccords.map((accord) => (
               <CardIconResponsive
@@ -106,6 +107,8 @@ function ProductCard({ product }) {
               size="max-md:size-4 md:size-6"
             />
           </div>
+
+          {/* Desktop Mode Base Picture */}
           <div className="grow max-md:hidden md:flex items-center justify-center !h-[11.7rem] !w-[10.65rem] mx-auto">
             <AppImage
               src={images[0]}
@@ -113,9 +116,12 @@ function ProductCard({ product }) {
               ratio="aspect-[4/5]"
             />
           </div>
+
+          {/* Product Des */}
           <button onClick={() => router.push(`/products/${id}`)}>
+            {/* Products Brand */}
             <div className="flex-none flex items-center justify-between mb-2 md:mt-2 h-6">
-              <p className="text-text-secondary text-sm md:text-base md:font-bold">
+              <p className="text-stroke-600 text-sm md:text-base md:font-bold">
                 {productBrand?.value}
               </p>
               {original === true && (
@@ -129,10 +135,16 @@ function ProductCard({ product }) {
                 />
               )}
             </div>
-            <div className="flex-none flex items-start flex-col gap-1 max-md:pb-3 md:pb-6 font-bold border-b border-[#EBEBEB] ">
-              <p className="max-md:text-base text-lg font-bold text-text">{enTitle}</p>
-              <p className="max-md:text-sm text-lg font-bold text-text">{perTitle} </p>
+
+            {/* Products Name */}
+            <div className="flex-none flex items-center flex-col gap-1 max-md:pb-3 md:pb-6 font-bold border-b border-stroke-250">
+              <span className="flex items-start flex-col max-[366px]:w-52 w-64 md:w-72 text-lg font-bold text-stroke-800 text-start">
+                <p className="w-full max-md:text-base truncate">{enTitle}</p>
+                <p className="w-full max-md:text-sm truncate">{perTitle}</p>
+              </span>
             </div>
+
+            {/* Products Price */}
             <div
               className={`flex flex-none items-center md:items-end gap-4 w-full pt-2 ${isStock ? "justify-between" : "justify-end"}`}
             >
@@ -148,9 +160,11 @@ function ProductCard({ product }) {
                   justify="justify-start"
                 />
               )}
+
+              {/* Products Order Button */}
               <div>
                 {isStock ? (
-                  <p className="btn border border-primary text-primary bg-secondary-2 active:bg-primary active:text-white  rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
+                  <p className="btn border border-primary text-primary bg-stroke-50 active:bg-primary active:text-stroke-0  rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
                     سفارش
                   </p>
                 ) : (
@@ -163,7 +177,7 @@ function ProductCard({ product }) {
           </button>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -179,60 +193,53 @@ export function CardIconResponsive({
   type,
 }) {
   let bgColor;
-  let textStyle;
 
   switch (type) {
     case "floral":
-      bgColor = "bg-orange/10";
-      textStyle = "text-orange";
+      bgColor = "bg-primary/10 text-primary dark:bg-primary/5";
       break;
 
     case "woody":
-      bgColor = "bg-dark-brown/10 text-brown";
-      textStyle = "text-dark-brown";
+      bgColor = "bg-dark-orange/10 text-dark-orange dark:bg-dark-orange/5 ";
       break;
 
     case "aromatic":
-      bgColor = "bg-success/10";
-      textStyle = "text-success";
+      bgColor = "bg-green/10 text-green dark:bg-green/5";
       break;
 
     case "citrus":
-      bgColor = "bg-orange/10";
-      textStyle = "text-orange";
+      bgColor = "bg-orange/10 text-red dark:bg-orange/5";
       break;
 
     case "leather":
-      bgColor = "bg-dark-brown/10 text-dark-brown";
-      textStyle = "text-dark-brown";
+      bgColor =
+        "bg-stroke-950/10 text-stroke-950 dark:bg-stroke-800/5 dark:text-dark-orange";
       break;
 
     case "chypre":
-      bgColor = "bg-success/10";
-      textStyle = "text-success";
+      bgColor = "bg-brown/10 text-dark-orange";
       break;
 
     case "amber":
-      bgColor = "bg-orange/10";
-      textStyle = "text-orange";
+      bgColor = "bg-warning/20 text-orange dark:bg-warning/5";
       break;
 
     case "men":
-      bgColor = "bg-blue/20 text-blue";
+      bgColor =
+        "bg-stroke-950/10 text-stroke-950 dark:bg-stroke-800/5 dark:text-stroke-250";
       break;
 
     case "women":
-      bgColor = "bg-primary/10 text-primary";
+      bgColor = "bg-primary/10 text-primary dark:bg-primary/5";
       break;
 
     case "unisex":
-      bgColor = "bg-violet-700/10 text-violet-900 grop-hover:gap-1";
-      textStyle = "group-hover:pl-2";
+      bgColor =
+        "bg-orange/10 text-dark-orange dark:bg-warning/5 dark:text-warning";
       break;
 
     case "support":
-      bgColor = "bg-primary/10";
-      textStyle = "text-text";
+      bgColor = "bg-primary/10 text-primary dark:bg-primary/5";
       break;
 
     default:
@@ -252,7 +259,9 @@ export function CardIconResponsive({
         sizes="10vw"
       />
       <p
-        className={`w-0 opacity-0 group-hover:opacity-100 group-hover:duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pr-2 md:text-sm font-bold ${textStyle}`}
+        className={
+          "w-0 opacity-0 group-hover:opacity-100 group-hover:duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pr-2 md:text-sm font-bold"
+        }
       >
         {title}
       </p>
@@ -270,7 +279,9 @@ export function CardIconResponsive({
         sizes="10vw"
       />
       <p
-        className={`w-0 opacity-0 group-hover:opacity-100 group-hover:duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pr-2 md:text-sm font-bold ${textStyle}`}
+        className={
+          "w-0 opacity-0 group-hover:opacity-100 group-hover:duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pl-1 md:text-sm font-bold"
+        }
       >
         {title}
       </p>

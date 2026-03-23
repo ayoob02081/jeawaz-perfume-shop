@@ -9,41 +9,32 @@ import { useGetUser } from "@/hooks/useUsers";
 import { usePathname } from "next/navigation";
 
 function UserSidebar() {
-  const pathName = usePathname();
   const { data: user, isLoading, error } = useGetUser();
   const { email, firstName, lastName, role } = user || {};
   const UserProfileLinks = [
     {
       id: 1,
       href: "/profile/orders",
+      baseHref: "/profile/orders",
       label: "سفارش های من",
-      srcPrimary: "/images/orders-stroke-white-icon.svg",
-      srcSecondary: "/images/orders-stroke-black-icon.svg",
-      alt: "orders-icon",
     },
     {
       id: 2,
       href: "/profile/me",
+      baseHref: "/profile/me",
       label: "اطلاعات حساب کاربری",
-      srcPrimary: "/images/user-serach-stroke-white-icon.svg",
-      srcSecondary: "/images/user-serach-stroke-black-icon.svg",
-      alt: "user-icon",
     },
     {
       id: 3,
       href: "/profile/notifs/all",
+      baseHref: "/profile/notifs",
       label: "پیام‌ها",
-      srcPrimary: "/images/notification-stroke-white-icon.svg",
-      srcSecondary: "/images/notification-stroke-black-icon.svg",
-      alt: "notif-icon",
     },
     {
       id: 4,
       href: "/logout",
+      baseHref: "/logout",
       label: "خروج از حساب کاربری",
-      srcPrimary: "/images/logout-stroke-black-icon.svg",
-      srcSecondary: "/images/logout-stroke-black-icon.svg",
-      alt: "logout-icon",
     },
   ];
 
@@ -53,13 +44,14 @@ function UserSidebar() {
         <UserProfileLink
           href={"/profile/me"}
           label={firstName + " " + lastName}
-          phoneNumber="09180522273"
+          phoneNumber={email}
           isloading={isLoading}
         />
         {UserProfileLinks?.map((link) => (
           <ProfileLink
             key={link.id}
             href={link.href}
+            baseHref={link.baseHref}
             label={link.label}
             srcPrimary={link.srcPrimary}
             srcSecondary={link.srcSecondary}
@@ -69,6 +61,7 @@ function UserSidebar() {
         {role === "admin" && (
           <ProfileLink
             href={"/admin"}
+            baseHref="/admin"
             label="ادمین"
             srcPrimary="/images/user-stroke-black-icon.svg"
             srcSecondary="/images/user-stroke-black-icon.svg"

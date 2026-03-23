@@ -8,7 +8,7 @@ import Link from "next/link";
 
 function UsersListTable({ users }) {
   return (
-    <div className="w-full overflow-x-auto pb-0.5 rounded-xl shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-track-grey/0">
+    <div className="w-full overflow-x-auto pb-0.5 rounded-xl shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-track-stroke-100/0">
       <Table className="overflow-auto">
         <Table.Header>
           {userTHeads.map((item) => (

@@ -74,7 +74,7 @@ function CardEvents({
     <div className="flex w-full items-center justify-center gap-4">
       {/* {isInCart(product, user) ? ( */}
       <div
-        className={`${className} flex items-center gap-2 justify-between text-text-primary 
+        className={`${className} flex items-center gap-2 justify-between text-stroke-800 
             `}
         //     ${
         //     !isInCart(product, user)
@@ -86,18 +86,18 @@ function CardEvents({
           // onClick={AddToCartHandler}
 
           className={` btn-card-event btn-card-event--success ${btnStyle}`}
-          // className={`cardEventsBtn  hover:bg-success active:bg-success text-text-primary hover:text-white active:text-white`}
+          // className={`cardEventsBtn  hover:bg-success active:bg-success text-stroke-800 hover:text-stroke-0 active:text-stroke-0`}
         >
           <PlusIcon className="max-md:size-3.5 size-6" />
         </button>
         <span
-          className={`btn-card-event border-[1.5px] border-stroke-3 rounded-full ${quantityStyle}`}
+          className={`btn-card-event border-[1.5px] border-stroke-300 rounded-full ${quantityStyle}`}
         >
           {toPersianNumbers(1)}
         </span>
         <button
           // onClick={RemoveFromCartHandler}
-          // className={`cardEventsBtn  hover:bg-error active:bg-error text-error hover:text-white active:text-white`}
+          // className={`cardEventsBtn  hover:bg-error active:bg-error text-error hover:text-stroke-0 active:text-stroke-0`}
           className={`btn-card-event btn-card-event--error ${btnStyle}`}
         >
           {/* {quantityCount(user, product) > 1 ? ( */}
@@ -122,7 +122,7 @@ function CardEvents({
       </div>
       )   }
       {isInCart(product, user) && pathname !== "/cart" ? (
-      <div className=" hover:bg-primary-800 bg-primary-900 px-4 rounded-xl text-white duration-300 font-bold py-3">
+      <div className=" hover:bg-primary-800 bg-primary-900 px-4 rounded-xl text-stroke-0 duration-300 font-bold py-3">
         <Link href={"/cart"}>ادامه سفارش</Link>
       </div>
       ) : null} */}

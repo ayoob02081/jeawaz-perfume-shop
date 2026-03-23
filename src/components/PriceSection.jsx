@@ -21,7 +21,7 @@ function PriceSection({
         className={`relative flex ${pricesRow} flex-col justify-center items-center md:h-14`}
       >
         <div
-          className={`flex grow items-center ${justify} gap-1 w-full h-full text-text-primary`}
+          className={`flex grow items-center ${justify} gap-1 w-full h-full text-stroke-800`}
         >
           <p className={`${priceClassName} font-bold`}>
             {offValue
@@ -32,7 +32,7 @@ function PriceSection({
         </div>
         {offValue > 0 && (
           <div
-            className={`flex grow items-center ${justify} gap-1 w-full h-full text-text-secondary`}
+            className={`flex grow items-center ${justify} gap-1 w-full h-full text-stroke-600`}
           >
             <p className="max-md:absolute aspect-square -right-7 badge badge--primary bg-primary text-white px-1 py-3 size-5 md:size-6">
               {toPersianNumbers(offValue)}٪

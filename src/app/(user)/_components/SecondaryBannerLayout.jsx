@@ -44,7 +44,7 @@ export default SecondaryBannerLayout;
 function BannerCardSecondary({ srcLg, url, urlLabel, label, description }) {
   return (
     <div className="relative rounded-2xl xl:rounded-3xl overflow-hidden banner--secondary--size">
-      <div className="absolute size-full from-banner-gradient/0 bg-linear-to-r to-banner-gradient z-10"></div>
+      <div className="absolute size-full from-stroke-950/0 bg-linear-to-r to-stroke-950 z-10"></div>
       <AppImage
         src={srcLg}
         alt="banner-image"
@@ -60,13 +60,13 @@ function BannerCardSecondary({ srcLg, url, urlLabel, label, description }) {
         </span>
         <Link
           href={url}
-          className=" flex items-center banner--btn--secondary hover:*:last:absolute hover:*:last:-left-7 sm:hover:*:last:-left-8 xl:hover:*:last:-left-9 2xl:hover:*:last:-left-10 hover:*:last:*:size-3 sm:hover:*:last:*:size-4 xl:hover:*:last:*:size-5 hover:*:last:bg-white hover:*:last:text-primary hover:**:duration-200"
+          className="group flex items-center banner--btn--secondary duration-200"
         >
-          <p className=" px-1.5 lg:px-2.5 py-1 h-full flex items-center bg-white justify-center rounded-4xl duration-200 ">
+          <p className="flex items-center bg-white text-stroke-950 group-hover:text-primary justify-center rounded-4xl px-1.5 lg:px-2.5 py-1 group-hover:ml-2 h-full duration-200 ">
             {urlLabel}
           </p>
-          <div className="-left-5 sm:-left-6 xl:-left-7 2xl:-left-8 flex items-center justify-center text-white -z-10 rounded-full size-5 sm:size-6 xl:size-8 duration-200">
-            <ArrowLeftIcon className="size-2 sm:size-3 xl:size-4" />
+          <div className="flex items-center justify-center text-white group-hover:text-primary group-hover:bg-white -z-10 rounded-full size-5 sm:size-6 xl:size-8 duration-200">
+            <ArrowLeftIcon className="size-2 sm:size-3 xl:size-4 group-hover:size-2.5 sm:group-hover:size-3.5 xl:group-hover:size-[18px]" />
           </div>
         </Link>
       </div>

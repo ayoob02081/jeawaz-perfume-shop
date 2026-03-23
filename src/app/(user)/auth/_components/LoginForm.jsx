@@ -29,10 +29,10 @@ function LoginForm({
     >
       {step === 2 && (
         <button
-          className="absolute max-md:right-6 md:right-6 max-md:top-6 md:top-6 btn max-md:border-0 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl md:border-[1.5px] border-stroke md:size-10 md:rounded-full md:p-0"
+          className="absolute max-md:right-6 md:right-6 max-md:top-6 md:top-6 btn max-md:border-0 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl md:border-[1.5px] border-stroke-200 md:size-10 md:rounded-full md:p-0  duration-200"
           onClick={MoveBack}
         >
-          <ArrowRightIcon className="size-5 text-text" />
+          <ArrowRightIcon className="size-5 text-stroke-800" />
         </button>
       )}
       <AuthLayout

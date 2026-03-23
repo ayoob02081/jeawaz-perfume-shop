@@ -20,9 +20,9 @@ function ProfileInfo() {
   }
 
   return (
-    <div className="w-full border md:border-[1.5px] border-stroke rounded-2xl p-4">
+    <div className="w-full border md:border-[1.5px] border-stroke-200 rounded-2xl p-4">
       <div className="flex items-center justify-between w-full pb-4">
-        <p className="text-sm md:text-base text-text">اطلاعات کاربری</p>
+        <p className="text-sm md:text-base text-stroke-800">اطلاعات کاربری</p>
         <Link
           href="/profile/me/edit"
           className="text-primary hover:text-success active:text-success duration-200"
@@ -30,7 +30,7 @@ function ProfileInfo() {
           ویرایش اطلاعات
         </Link>
       </div>
-      <div className="flex max-md:flex-col max-md:justify-center md:justify-between md:items-center border-t border-stroke pt-4 max-md:gap-6">
+      <div className="flex max-md:flex-col max-md:justify-center md:justify-between md:items-center border-t border-stroke-200 pt-4 max-md:gap-6">
         <InfoSections
           titleOne="نام و نام خانوادگی :"
           desOne={firstName + " " + lastName}
@@ -62,20 +62,20 @@ function InfoSections({ border, titleOne, desOne, titleTwo, desTwo }) {
   return (
     <div
       className={`flex flex-col items-start justify-between gap-6 md:gap-10 md:py-2 w-full ${
-        border && " md:border-r border-stroke md:pr-10"
+        border && " md:border-r border-stroke-200 md:pr-10"
       }`}
     >
       <span className="flex md:flex-col items-center md:items-start justify-between md:justify-center gap-2 w-full">
-        <p className="text-sm md:text-base text-text md:text-text-secondary">
+        <p className="text-sm md:text-base text-stroke-800 md:text-stroke-600">
           {titleOne}
         </p>
-        <p className="text-sm text-text">{desOne}</p>
+        <p className="text-sm text-stroke-800">{desOne}</p>
       </span>
       <span className="flex md:flex-col items-center md:items-start justify-between md:justify-center gap-2 w-full">
-        <p className="text-sm md:text-base text-text md:text-text-secondary">
+        <p className="text-sm md:text-base text-stroke-800 md:text-stroke-600">
           {titleTwo}
         </p>
-        <p className="text-sm text-text">{desTwo}</p>
+        <p className="text-sm text-stroke-800">{desTwo}</p>
       </span>
     </div>
   );

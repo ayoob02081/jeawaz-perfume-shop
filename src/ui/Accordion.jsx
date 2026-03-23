@@ -14,7 +14,7 @@ function Accordion({ label, children, className = "flex", titleStyle, plus }) {
   };
   return (
     <div
-      className={` flex-col border-[1.5px] border-stroke rounded-2.5xl w-full px-6 ${className} ${
+      className={` flex-col border-[1.5px] border-stroke-200 rounded-2.5xl w-full px-6 ${className} ${
         accordionOpen ? "justify-between pb-6" : "items-center justify-center"
       } transition-all duration-200`}
     >
@@ -27,11 +27,11 @@ function Accordion({ label, children, className = "flex", titleStyle, plus }) {
           accordionOpen ? (
             <MinusIcon className="size-6 text-primary" />
           ) : (
-            <PlusIcon className="size-6 text-text-secondary" />
+            <PlusIcon className="size-6 text-stroke-600" />
           )
         ) : (
           <ChevronDownIcon
-            className={`size-4 ${accordionOpen && "rotate-180"} duration-200`}
+            className={`size-4 ${accordionOpen && "rotate-180"} text-stroke-800 duration-200`}
           />
         )}
       </button>

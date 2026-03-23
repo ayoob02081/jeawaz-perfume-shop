@@ -8,7 +8,7 @@ function GoBack({
   onClick,
   side = "right",
   label,
-  fontStyle = "text-xl font-bold",
+  fontStyle = "text-xl font-bold truncate",
   justify = "center",
 }) {
   const router = useRouter();
@@ -27,14 +27,14 @@ function GoBack({
     >
       {justify === "between" && side === "left" && <div></div>}
 
-      {label && side === "left" && <p className="">{label}</p>}
+      {label && side === "left" && <p className="truncate text-stroke-800">{label}</p>}
       {side === "right" ? (
-        <ArrowRightIcon className={` ${className}`} />
+        <ArrowRightIcon className={`text-stroke-800 ${className}`} />
       ) : (
-        <ArrowLeftIcon className={` ${className}`} />
+        <ArrowLeftIcon className={`text-stroke-800 ${className}`} />
       )}
       {label && side === "right" && (
-        <p className={`${fontStyle} text-text-primary`}>{label}</p>
+        <p className={`${fontStyle} text-stroke-800`}>{label}</p>
       )}
       {justify === "between" && side === "right" && <div></div>}
     </button>

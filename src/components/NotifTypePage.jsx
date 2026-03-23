@@ -12,12 +12,14 @@ function NotifTypePage({ type, className, text }) {
       </div>
       <div className="flex flex-col items-start justify-start gap-3 ">
         <div className="flex items-center justify-start gap-2">
-          <div className="max-md:text-sm text-text">آخرین محصولات تخفیف خورده سال</div>
-          <div className="text-text-secondary-light max-md:text-xs md:text-sm">
+          <div className="max-md:text-sm text-stroke-800">
+            آخرین محصولات تخفیف خورده سال
+          </div>
+          <div className="text-stroke-400 max-md:text-xs md:text-sm">
             1404/02/25
           </div>
         </div>
-        <div className="flex items-center justify-start max-md:text-xs md:text-sm text-text-secondary">
+        <div className="flex items-center justify-start max-md:text-xs md:text-sm text-stroke-600">
           لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
           استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در
           ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و
