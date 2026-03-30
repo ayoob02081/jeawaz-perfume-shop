@@ -82,7 +82,7 @@ function StatusOrderCard({ order, title, color, src, alt }) {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col justify-between gap-6 w-full max-lg:border-t border-text/10 p-6 lg:border lg:rounded-2xl">
+    <div className="flex flex-col justify-between gap-6 w-full max-lg:border-t border-stroke-800/10 p-6 lg:border lg:rounded-2xl">
       <div
         className={`flex items-center justify-start gap-1 h-11 w-fit px-2 rounded-5xl ${color}`}
       >
@@ -118,7 +118,7 @@ function StatusOrderCard({ order, title, color, src, alt }) {
           {order.items.map((item) => (
             <div
               className="flex items-center justify-center bg-stroke-0 border-6 border-stroke-100 size-20 rounded-xl z-10"
-              key={item.src}
+              key={item.id + item.id}
             >
               <AppImage src={item.src} alt={item.alt} className="size-10 " />
             </div>

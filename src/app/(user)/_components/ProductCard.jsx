@@ -164,7 +164,7 @@ function ProductCard({ product }) {
               {/* Products Order Button */}
               <div>
                 {isStock ? (
-                  <p className="btn border border-primary text-primary bg-stroke-50 active:bg-primary active:text-stroke-0  rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
+                  <p className="btn border border-primary text-primary bg-stroke-50 active:bg-primary active:text-white  rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
                     سفارش
                   </p>
                 ) : (

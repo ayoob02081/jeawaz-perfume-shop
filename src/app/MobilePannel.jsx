@@ -28,6 +28,7 @@ function MobilePannel() {
                     : "/images/home-stroke-sec-icon.svg"
                 }
                 alt="home-icon"
+                className={pathname !== "/" && "dark:invert"}
                 sizes="20vw"
               />
             </div>
@@ -54,6 +55,7 @@ function MobilePannel() {
                     : "/images/products-stroke-sec-icon.svg"
                 }
                 alt="products-icon"
+                className={!pathname.startsWith("/products") && "dark:invert"}
                 sizes="20vw"
               />
             </div>
@@ -86,6 +88,7 @@ function MobilePannel() {
                     : "/images/bag-stroke-sec-icon.svg"
                 }
                 alt="cart-icon"
+                className={!pathname.startsWith("/cart") && "dark:invert"}
                 sizes="20vw"
               />
             </div>
@@ -113,7 +116,7 @@ function MobilePannel() {
               {pathname.startsWith("/profile") ? (
                 <UserIconFill className="size-6 text-primary" />
               ) : (
-                <UserIcon className="size-6 text-[#606060]" />
+                <UserIcon className="size-6 text-stroke-600 dark:text-stroke-400" />
               )}
             </div>
             <p

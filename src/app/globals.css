@@ -89,7 +89,7 @@
   --color-stroke-850: rgb(255, 255, 255);
   --color-stroke-800: rgb(255, 244, 248);
   --color-stroke-750: rgb(247, 247, 247);
-  --color-stroke-600: rgb(245, 245, 247);
+  --color-stroke-600: rgb(164, 168, 186);
   --color-stroke-550: rgb(240, 240, 240);
   --color-stroke-500: rgb(235, 235, 235);
   --color-stroke-450: rgb(230, 230, 230);
@@ -156,7 +156,7 @@
     @apply flex items-center justify-center rounded-full;
   }
   .btn--primary {
-    @apply border-4 border-stroke-100 dark:border-stroke-0 bg-primary text-stroke-100 dark:text-stroke-800 active:bg-stroke-100 active:**:text-primary active:text-primary active:border active:border-primary disabled:bg-primary/30 disabled:text-white duration-200;
+    @apply border-4 border-stroke-100 dark:border-stroke-0 bg-primary text-white dark:text-stroke-800 active:bg-stroke-100 active:**:text-primary active:text-primary active:border active:border-primary disabled:bg-primary/30 disabled:text-white duration-200;
   }
   .btn--primary--2 {
     @apply text-primary border-primary active:text-primary/70 active:border-primary/70 disabled:border-stroke-600 duration-200;
@@ -185,14 +185,8 @@
   .badge--secondary--2 {
     @apply bg-stroke-0 text-stroke-800 border border-stroke-250;
   }
-  .profile__link {
-    @apply flex items-center gap-2 px-6 text-xs;
-  }
   .profile__title {
     @apply flex items-center gap-2 py-4 w-full text-xs text-stroke-800;
-  }
-  .profile__link--2 {
-    @apply flex items-center justify-between gap-2 px-6 text-sm text-stroke-800;
   }
   .pages--btn {
     @apply flex items-center justify-center size-10 aspect-square text-sm bg-stroke-0 border border-stroke-150 hover:border hover:border-primary hover:bg-stroke-0 hover:text-primary active:border active:border-primary active:bg-stroke-0 active:*:text-primary *:text-stroke-800  focus-within:*:text-primary focus-within:*:font-bold focus-within:border-primary rounded-full duration-200;

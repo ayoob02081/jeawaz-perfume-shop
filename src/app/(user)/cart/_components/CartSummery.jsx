@@ -4,15 +4,23 @@ import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
-import CartOrders from "./CartOrders";
+import OrderCardLayout from "./OrderCardLayout";
 
-function CartSummery({ items, date, totalPrice, setStep, step }) {
+function CartSummery({
+  items,
+  date,
+  totalPrice,
+  totalOffPrice,
+  setStep,
+  step,
+  post,
+}) {
   const renderSteps = () => {
     switch (step) {
       case 1:
         return (
           <div className="flex items-center justify-center size-full max-md:mx-auto max-md:max-w-[22rem] md:max-w-[23rem]">
-            <CartSummeryAccept
+            <AcceptOrderLayout
               items={items}
               totalPrice={totalPrice}
               date={date}
@@ -24,13 +32,15 @@ function CartSummery({ items, date, totalPrice, setStep, step }) {
 
       case 2:
         return (
-          <div className="flex items-center justify-center size-full md:max-w-max">
-            <CartSummeryPay
+          <div className="flex items-center justify-center md:justify-end size-full">
+            <PayInfoLayout
               items={items}
               totalPrice={totalPrice}
+              totalOffPrice={totalOffPrice}
               date={date}
               step={step}
               setStep={setStep}
+              post={post}
             />
             <div className="size-full max-md:flex md:hidden items-center justify-between gap-4">
               <button
@@ -46,7 +56,7 @@ function CartSummery({ items, date, totalPrice, setStep, step }) {
 
       case 3:
         return (
-          <div className="flex max-md:flex-col items-center justify-between gap-4 size-full max-md:px-6">
+          <div className="flex max-md:flex-col items-center justify-between gap-4 size-full max-md:px-6 ">
             <button
               onClick={() => setStep(3)}
               className="btn btn--primary--2 border size-full py-2 md:max-w-60"
@@ -69,11 +79,11 @@ function CartSummery({ items, date, totalPrice, setStep, step }) {
 
 export default CartSummery;
 
-function CartSummeryAccept({ items, date, totalPrice, step, setStep }) {
+function AcceptOrderLayout({ items, date, totalPrice, step, setStep }) {
   return (
-    <div className="flex flex-col items-start justify-between gap-6 max-md:bg-secondary md:bg-grey p-4 rounded-xl size-full">
+    <div className="flex flex-col items-start justify-between gap-6 max-md:bg-stroke-150 md:bg-stroke-100 p-4 rounded-xl size-full">
       <div className="flex items-center justify-start gap-4 size-full">
-        <div className="flex items-center justify-center size-14 rounded-xl bg-white">
+        <div className="flex items-center justify-center size-14 rounded-xl bg-stroke-0 dark:bg-stroke-800/50">
           <AppImage
             src="/images/cart-order-icon.svg"
             alt="cart-order-icon"
@@ -82,33 +92,35 @@ function CartSummeryAccept({ items, date, totalPrice, step, setStep }) {
           />
         </div>
         <span className="flex flex-col items-start justify-between gap-2">
-          <p className="font-semibold text-text">پرداخت سفارش</p>
-          <p className="text-xs text-text-secondary-light">
+          <p className="font-semibold text-stroke-800">پرداخت سفارش</p>
+          <p className="text-xs text-stroke-400">
             متن کوتاهی در این بخش قرار میگیرد
           </p>
         </span>
       </div>
-      <div className="flex flex-col items-start justify-between gap-4 size-full border-t-[1.5px] border-dashed border-text-secondary-light pt-3">
+      <div className="flex flex-col items-start justify-between gap-4 size-full border-t-[1.5px] border-dashed border-stroke-400 pt-3">
         <div className="flex items-center gap-2">
           <AppImage
             src="/images/percent-badge-icon.svg"
             alt="percent-badge-icon"
-             width="size-6"
+            width="size-6"
             sizes="10vw"
           />
-          <span className="text-sm">اگر کد تخفیف دارید وارد کنید</span>
+          <span className="text-sm text-stroke-800">
+            اگر کد تخفیف دارید وارد کنید
+          </span>
         </div>
         <div className="size-full">
           <label
             htmlFor=""
-            className="flex items-center justify-between siz-full bg-white py-2 px-2 rounded-xl"
+            className="flex items-center justify-between bg-stroke-0 p-2 rounded-xl"
           >
             <input
               type="text"
               name=""
               id=""
               // value={value}
-              className="size-full outline-0"
+              className="size-full outline-0 text-stroke-800"
               placeholder="کد تخفیف را وارد کنید"
             />
             <button className="text-nowrap text-primary text-sm">
@@ -117,49 +129,47 @@ function CartSummeryAccept({ items, date, totalPrice, step, setStep }) {
           </label>
         </div>
       </div>
-      <div className="flex flex-col items-center justify-between gap-4 size-full border-t max-md:border-stroke md:border-stroke-2 pt-3">
-        <span className="flex items-center justify-between size-full">
-          <p className="text-sm">تعداد محصولات</p>
-          <div className="flex items-center gap-1">
-            <p className="text-sm">
-              {toPersianNumbers((items && items?.length) || 0)}
-            </p>
-            <p className="text-xs text-text-secondary-light">محصول</p>
-          </div>
-        </span>
-        <span className="flex items-center justify-between size-full">
-          <p className="text-sm">سود شما از این خرید</p>
-          <div className="flex items-center gap-1">
-            <p className="text-sm">{toPersianNumbersWithComma(100000)}</p>
-            <p className="text-xs text-text-secondary-light">تومان</p>
-          </div>
-        </span>
+      <div className="flex flex-col items-center justify-between gap-4 size-full border-t max-md:border-stroke-200 md:border-stroke-250 pt-3">
+        <Details textStyle="text-sm" title="تعداد محصولات" des="محصول">
+          {toPersianNumbers((items && items?.length) || 0)}
+        </Details>
+        <Details textStyle="text-sm" title="سود شما از این خرید" des="تومان">
+          {toPersianNumbersWithComma(100000)}
+        </Details>
       </div>
-      <div className="flex flex-col items-center justify-between gap-4 size-full border-t max-md:border-stroke md:border-stroke-2 pt-3">
-        <span className="flex items-center justify-between size-full">
-          <p className="text-sm">مجموع سبد خرید</p>
-          <div className="flex items-center gap-1">
-            <p className="text-lg font-bold">
-              {toPersianNumbersWithComma(totalPrice && totalPrice)}
-            </p>
-            <p className="text-xs text-text-secondary-light">تومان</p>
-          </div>
-        </span>
+      <div className="flex flex-col items-center justify-between gap-4 size-full border-t max-md:border-stroke-200 md:border-stroke-250 pt-3">
+        <Details
+          textStyle="text-lg font-bold"
+          title="مجموع سبد خرید"
+          des="تومان"
+        >
+          {toPersianNumbersWithComma(totalPrice && totalPrice)}
+        </Details>
         <CartSummeryBtn step={step} setStep={setStep} />
       </div>
     </div>
   );
 }
-function CartSummeryPay({ items, date, totalPrice, step, setStep }) {
+function PayInfoLayout({
+  items,
+  date,
+  totalPrice,
+  totalOffPrice,
+  post,
+  step,
+  setStep,
+}) {
+  const finalPrice = totalPrice && toPersianNumbersWithComma(totalPrice + post);
+
   return (
-    <div className="max-md:hidden md:flex flex-col items-center justify-between gap-4 max-md:bg-secondary md:bg-grey p-4 rounded-xl ">
-      <span className="flex items-center justify-start gap-1 size-full text-text-primary">
-        <p className="text-[1.375rem] font-bold">اطلاعات</p>
+    <div className="max-md:hidden md:flex flex-col items-center justify-between gap-4 max-md:bg-stroke-150 md:bg-stroke-100 p-4 rounded-xl w-full h-full">
+      <span className="flex items-center justify-start gap-1 size-full text-stroke-800">
+        <p className="text-[22px] font-bold">اطلاعات</p>
         <p className="text-lg">خرید</p>
       </span>
-      <div className="flex flex-col items-center justify-between size-full overflow-x-auto">
+      <div className="flex flex-col items-center justify-between size-full">
         {items?.map((item) => (
-          <CartOrders.Summery
+          <OrderCardLayout.Summery
             key={item.id}
             src={item.src}
             alt={item.alt}
@@ -167,35 +177,28 @@ function CartSummeryPay({ items, date, totalPrice, step, setStep }) {
             perTitle={item.perTitle}
             price={item.price}
             offValue={item.offValue}
+            type={item.type}
+            volume={item.volume}
           />
         ))}
       </div>
-      <div className="flex flex-col items-center justify-between gap-4 size-full p-4 bg-white rounded-xl">
-        <span className="flex items-center justify-between size-full">
-          <p className="text-sm"> سود خرید شما:</p>
-          <div className="flex items-center gap-1">
-            <p className="text-sm">{toPersianNumbersWithComma(1450000)}</p>
-            <p className="text-xs text-text-secondary-light">تومان</p>
-          </div>
-        </span>
-        <span className="flex items-center justify-between size-full">
-          <p className="text-sm">هزینه ارسال:</p>
-          <div className="flex items-center gap-1">
-            <p className="text-sm">{toPersianNumbersWithComma(80000)}</p>
-            <p className="text-xs text-text-secondary-light">تومان</p>
-          </div>
-        </span>
-        <span className="flex items-center justify-between size-full border-t md:border-stroke-3 pt-3">
-          <p className="text-sm">مبلغ قابل پرداخت:</p>
-          <div className="flex items-center gap-1">
-            <p className="text-lg font-bold">
-              {toPersianNumbersWithComma(totalPrice && totalPrice)}
-            </p>
-            <p className="text-xs text-text-secondary-light">تومان</p>
-          </div>
-        </span>
+      <div className="flex flex-col items-center justify-between gap-4 size-full p-4 bg-stroke-0 rounded-xl">
+        <Details textStyle="text-sm" title="سود خرید شما:" des="تومان">
+          {toPersianNumbersWithComma(totalOffPrice)}
+        </Details>
+        <Details textStyle="text-sm" title="هزینه ارسال:" des="تومان">
+          {toPersianNumbersWithComma(post)}
+        </Details>
+        <Details
+          className="border-t md:border-stroke-300 pt-3"
+          textStyle="text-lg font-bold"
+          title="مبلغ قابل پرداخت:"
+          des="تومان"
+        >
+          {finalPrice}
+        </Details>
       </div>
-      <div className="flex items-center justify-start gap-4 size-full p-4 bg-white rounded-xl">
+      <div className="flex items-center justify-start gap-4 size-full p-4 bg-stroke-0 rounded-xl">
         <div className="size-12 flex items-center justify-center">
           <AppImage
             src="/images/zarinpal-icon.svg"
@@ -204,8 +207,8 @@ function CartSummeryPay({ items, date, totalPrice, step, setStep }) {
             sizes="20vw"
           />
         </div>
-        <span className="text-xs text-text-primary w-full flex items-center justify-start gap-1">
-          <p>
+        <span className="text-xs text-stroke-800 w-full flex items-center justify-start gap-1">
+          <p className="">
             پرداخت امن با کارت‌های عضو شتاب از طریق{" "}
             <strong className="font-bold">درگاه زیبال</strong>
           </p>
@@ -213,6 +216,20 @@ function CartSummeryPay({ items, date, totalPrice, step, setStep }) {
       </div>
       <CartSummeryBtn step={step} setStep={setStep} />
     </div>
+  );
+}
+
+function Details({ title, des, children, className, textStyle }) {
+  return (
+    <span
+      className={`flex items-center justify-between size-full ${className}`}
+    >
+      <p className="text-sm text-stroke-800">{title}</p>
+      <div className="flex items-center gap-1">
+        <p className={`${textStyle} text-stroke-800`}>{children}</p>
+        <p className="text-xs text-stroke-400">{des}</p>
+      </div>
+    </span>
   );
 }
 
@@ -230,7 +247,7 @@ function CartSummeryBtn({ step, setStep }) {
       {step === 2 && (
         <button
           onClick={() => setStep(3)}
-          className="btn btn--primary border hover:bg-white active:bg-white size-full py-2"
+          className="btn btn--primary border hover:bg-stroke-0 active:bg-stroke-0 size-full py-2"
         >
           پرداخت و خرید محصول
         </button>

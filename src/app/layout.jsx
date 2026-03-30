@@ -13,7 +13,7 @@ export const metadata = {
 
 export default function RootLayout({ children, modal }) {
   return (
-    <html lang="fa" dir="rtl" >
+    <html lang="fa" dir="rtl">
       <body
         dir="rtl"
         className="font-display antialiased scrollbar-none !bg-stroke-0 duration-200"

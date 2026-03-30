@@ -77,7 +77,7 @@ export default function ImageSwiper({ product, images }) {
               >
                 <Image
                   src={src}
-                  alt={product.enTitle + "-image"}
+                  alt={product?.enTitle + "-image"}
                   fill
                   loading="eager"
                   priority={i < 2}
@@ -93,6 +93,7 @@ export default function ImageSwiper({ product, images }) {
               <AppImage
                 src="/images/share-icon.svg"
                 alt="share-icon"
+                className="dark:invert"
                 width="size-5 sm:size-6 md:size-5 xl:size-6"
                 sizes="10vw"
               />
@@ -122,7 +123,7 @@ export default function ImageSwiper({ product, images }) {
             </button>
             <button
               onClick={scrollNext}
-              disabled={selectedIndex === images.length - 1 ? true : false}
+              disabled={selectedIndex === images?.length - 1 ? true : false}
               className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-stroke-0 disabled:opacity-60"
             >
               <ChevronRightIcon className="size-4 stroke-2 text-stroke-800" />
@@ -152,7 +153,7 @@ export default function ImageSwiper({ product, images }) {
               >
                 <Image
                   src={src}
-                  alt={product.enTitle + "-image"}
+                  alt={product?.enTitle + "-image"}
                   fill
                   className="object-contain "
                 />
@@ -174,10 +175,10 @@ export default function ImageSwiper({ product, images }) {
           </button>
           <button
             onClick={scrollNext}
-            disabled={selectedIndex === images.length - 1 ? true : false}
-            className={`${selectedIndex === images.length - 1 ? "bg-transparent" : "lg:bg-stroke-100 "} lg:flex lg:items-center lg:justify-center lg:size-8 xl:size-10 lg:rounded-full`}
+            disabled={selectedIndex === images?.length - 1 ? true : false}
+            className={`${selectedIndex === images?.length - 1 ? "bg-transparent" : "lg:bg-stroke-100 "} lg:flex lg:items-center lg:justify-center lg:size-8 xl:size-10 lg:rounded-full`}
           >
-            {selectedIndex !== images.length - 1 && (
+            {selectedIndex !== images?.length - 1 && (
               <ChevronDownIcon className="size-4 stroke-2 text-stroke-800 " />
             )}
           </button>

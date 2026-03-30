@@ -10,19 +10,47 @@ import { usePathname } from "next/navigation";
 import TextField from "@/ui/TextField";
 import TextAreaField from "@/ui/TextAreaField";
 import RadioButton from "@/ui/RadioButton";
-import { CheckIcon, PlusIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  CheckIcon,
+  PlusIcon,
+  ShoppingBagIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
+import {
+  ShoppingBagIcon as ShoppingBagSolidIcon,
+  CheckCircleIcon as CheckCircleSolidIcon,
+  UserIcon as UserSolidIcon,
+} from "@heroicons/react/24/solid";
 import AppImage from "@/components/AppImage";
 import CartSummery from "./CartSummery";
-import CartOrders from "./CartOrders";
+import OrderCardLayout from "./OrderCardLayout";
 import PriceSection from "@/components/PriceSection";
 import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
 import Loading from "@/components/Loading";
 import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
 import Accordion from "@/ui/Accordion";
 
+const postOptions = [
+  {
+    id: 1,
+    value: "post",
+    title: "پست پیشتاز(۲ تا ۴ روز کاری)",
+    price: 50000,
+  },
+  {
+    id: 2,
+    value: "tipax",
+    title: "تیپاکس با بیمه(۱ تا ۳ روز کاری)",
+    price: 80000,
+  },
+  { id: 3, value: "terminal", title: "باربری و ترمینال(۲۴ ساعته)", price: 0 },
+];
+
 function CartLayout() {
   const pathName = usePathname();
   const [cartOpen, setCartOpen] = useState(false);
+  const [post, setPost] = useState(0);
   const { data, isLoading, error } = useGetAllOrdersByStatus("succeed");
   const firstOrder = data && data[0];
 
@@ -40,28 +68,34 @@ function CartLayout() {
     switch (step) {
       case 1:
         return (
-          <CartFirstStep
+          <AcceptStep
             items={firstOrder?.items}
             totalPrice={firstOrder?.price}
+            totalOffPrice={firstOrder?.offPrice}
             date={firstOrder?.date}
           />
         );
 
       case 2:
         return (
-          <CartSecondStep
+          <PayInfoStep
             items={firstOrder?.items}
             totalPrice={firstOrder?.price}
+            totalOffPrice={firstOrder?.offPrice}
             date={firstOrder?.date}
+            post={post}
+            setPost={setPost}
           />
         );
 
       case 3:
         return (
-          <CartLastStep
+          <SuccessedStep
             items={firstOrder?.items}
             totalPrice={firstOrder?.price}
+            totalOffPrice={firstOrder?.offPrice}
             date={firstOrder?.date}
+            post={post}
           />
         );
 
@@ -79,26 +113,30 @@ function CartLayout() {
       className="size-4"
       overflow="overflow-y-auto"
     >
-      <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-grey md:rounded-3xl">
+      <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-stroke-100 md:rounded-3xl duration-200">
         <CardStepsIcon step={step} setStep={setStep} />
       </div>
       {isLoading ? (
         <Loading />
       ) : (
-        <div
-          className={`${step === 3 ? "" : "md:flex-row"}
-            flex flex-col items-start xl:items-start md:justify-between xl:justify-normal gap-5 mx-6 md:p-6 md:py-8 md:border-[1.5px] border-stroke md:rounded-2.5xl`}
-        >
-          <>{renderSteps()}</>
-          {firstOrder && (
-            <CartSummery
-              items={firstOrder?.items}
-              totalPrice={firstOrder?.price}
-              date={firstOrder?.date}
-              setStep={setStep}
-              step={step}
-            />
-          )}
+        <div className="px-6">
+          <div
+            className={`${step !== 3 && "md:flex-row"}
+          flex flex-col items-start xl:items-start md:justify-between xl:justify-normal gap-5 px-6 md:p-6 md:py-8 md:border-[1.5px] border-stroke-200 md:rounded-2.5xl size-full duration-200`}
+          >
+            <>{renderSteps()}</>
+            {firstOrder && (
+              <CartSummery
+                items={firstOrder?.items}
+                totalPrice={firstOrder?.price}
+                totalOffPrice={firstOrder?.offPrice}
+                date={firstOrder?.date}
+                setStep={setStep}
+                step={step}
+                post={post}
+              />
+            )}
+          </div>
         </div>
       )}
     </AdaptiveOverlayPage>
@@ -107,36 +145,29 @@ function CartLayout() {
 
 export default CartLayout;
 
-function CardTitle({
-  productValue,
-  className,
-  label1,
-  label2,
-  label3,
-  dir = "rtl",
-}) {
+function Title({ productValue, className, titleOne, titleTwo, dir = "rtl" }) {
   return (
     <div
       className={`flex lg:justify-star gap-2 lg:gap-4 size-full ${className}`}
     >
       <div className="flex items-center justify-center gap-1 text-nowrap ">
         {dir === "rtl" ? (
-          <h2 className="text-lg md:text-[1.38rem] text-text-primary font-bold">
-            {label1}
+          <h2 className="text-lg md:text-[22px] text-stroke-800 font-bold">
+            {titleOne}
           </h2>
         ) : (
-          <p className="text-text-primary text-sm md:text-xl">{label1}</p>
+          <p className="text-stroke-800 text-sm md:text-xl">{titleOne}</p>
         )}
         {dir === "rtl" ? (
-          <p className="text-text-primary text-sm md:text-xl">{label2}</p>
+          <p className="text-stroke-800 text-sm md:text-xl">{titleTwo}</p>
         ) : (
-          <h2 className="text-lg md:text-[1.38rem] text-text-primary font-bold">
-            {label2}
+          <h2 className="text-lg md:text-[22px] text-stroke-800 font-bold">
+            {titleTwo}
           </h2>
         )}
       </div>
       <div className="badge badge--primary h-8 w-[5.75rem] text-sm text-nowrap">
-        {toPersianNumbers(productValue)} {label3}
+        {toPersianNumbers(productValue)} محصول
       </div>
     </div>
   );
@@ -153,23 +184,22 @@ function CardStepsIcon({ productValue, className, step, setStep }) {
       >
         <div
           className={`flex flex-none items-center justify-center max-md:size-10 md:size-14 rounded-xl ${
-            step === 1 ? "bg-text-primary" : "bg-text-primary/20"
+            step === 1 ? "bg-stroke-800" : "bg-stroke-800/20"
           } `}
         >
-          <AppImage
-            src={`/images/bag-fill-level-${step === 1 ? "2" : "3"}-icon.svg`}
-            alt="bag-fill-icon"
-            width="size-6"
-            sizes="20vw"
-          />
+          {step === 1 ? (
+            <ShoppingBagIcon className="size-6 text-stroke-0" />
+          ) : (
+            <ShoppingBagSolidIcon className="size-6 text-stroke-800" />
+          )}
         </div>
-        <p className="text-xs md:text-base max-md:text-text-primary md:text-icon-brown font-semibold">
+        <p className="text-xs md:text-base max-md:text-stroke-800 md:text-stroke-900 dark:md:text-stroke-800 font-semibold">
           سبد خرید
         </p>
       </button>
-      <div className="grow flex items-center justify-start bg-secondary-3 max-md:h-[0.1875rem] md:h-1.5 rounded-2xl max-md:-translate-y-3 md:-translate-y-3.5">
+      <div className="grow flex items-center justify-start bg-stroke-0 max-md:h-[3px] md:h-1.5 rounded-2xl max-md:-translate-y-3 md:-translate-y-3.5">
         <div
-          className={`max-md:bg-text-primary md:bg-icon-brown max-md:h-[0.1875rem] md:h-1.5 rounded-2xl ${
+          className={`max-md:bg-stroke-800 md:bg-stroke-900 dark:md:bg-stroke-800 max-md:h-[3px] md:h-1.5 rounded-2xl ${
             step === 1 ? "w-3/4" : "w-full"
           }`}
         ></div>
@@ -178,28 +208,31 @@ function CardStepsIcon({ productValue, className, step, setStep }) {
         <div
           className={`flex flex-none items-center justify-center max-md:size-10 md:size-14 rounded-xl ${
             step === 1
-              ? "bg-white"
+              ? "bg-stroke-0"
               : step === 2
-                ? "bg-text-primary"
-                : "bg-text-primary/20"
+                ? "bg-stroke-800"
+                : "bg-stroke-800/20"
           } `}
         >
-          <AppImage
-            src={`/images/user-level-${
-              step === 3 ? "3" : step === 2 ? "2" : "1"
-            }-icon.svg`}
-            alt="user-icon"
-            width="size-6"
-            sizes="20vw"
-          />
+          {step === 3 ? (
+            <UserSolidIcon className="size-6 text-stroke-800" />
+          ) : step === 2 ? (
+            <UserIcon className="size-6 text-stroke-0" />
+          ) : (
+            <UserIcon className="size-6 text-stroke-500 dark:text-stroke-400" />
+          )}
         </div>
-        <p className="text-xs md:text-base max-md:text-text-primary md:text-icon-brown font-semibold text-center max-sm:max-h-4">
+        <p
+          className={`text-xs md:text-base max-md:text-stroke-800 md:text-stroke-900 dark:md:text-stroke-800 font-semibold text-center max-sm:max-h-4 ${
+            step === 1 && "opacity-50 dark:opacity-30"
+          } `}
+        >
           ثبت اطلاعات کاربری
         </p>
       </div>
-      <div className="grow flex items-center justify-start bg-secondary-3 max-md:h-[0.1875rem] md:h-1.5 rounded-2xl max-md:-translate-y-3 md:-translate-y-3.5">
+      <div className="grow flex items-center justify-start bg-stroke-0 max-md:h-[3px] md:h-1.5 rounded-2xl max-md:-translate-y-3 md:-translate-y-3.5">
         <div
-          className={`max-md:bg-text-primary md:bg-icon-brown max-md:h-[0.1875rem] md:h-1.5 rounded-2xl ${
+          className={`max-md:bg-stroke-800 md:bg-stroke-900 dark:md:bg-stroke-800 max-md:h-[3px] md:h-1.5 rounded-2xl ${
             step === 3 ? "w-full" : step === 2 ? "w-3/4" : "w-0"
           }`}
         ></div>
@@ -207,17 +240,20 @@ function CardStepsIcon({ productValue, className, step, setStep }) {
       <div className="flex flex-col items-center justify-center gap-2">
         <div
           className={`flex flex-none items-center justify-center max-md:size-10 md:size-14 rounded-xl ${
-            step === 3 ? "bg-text-primary" : "bg-white"
+            step === 3 ? "bg-stroke-800" : "bg-stroke-0"
           } `}
         >
-          <AppImage
-            src={`/images/checked-level-${step === 3 ? "2" : "1"}-icon.svg`}
-            alt="checked-icon"
-            width="size-6"
-            sizes="20vw"
-          />
+          {step === 3 ? (
+            <CheckCircleSolidIcon className="size-7 text-stroke-0 " />
+          ) : (
+            <CheckCircleIcon className="size-6 text-stroke-500 dark:text-stroke-400" />
+          )}
         </div>
-        <p className="text-xs md:text-base max-md:text-text-primary md:text-icon-brown font-semibold">
+        <p
+          className={`text-xs md:text-base max-md:text-stroke-800 md:text-stroke-900 dark:md:text-stroke-800 font-semibold ${
+            step !== 3 && "opacity-50 dark:opacity-30"
+          } `}
+        >
           تکمیل خرید
         </p>
       </div>
@@ -225,11 +261,11 @@ function CardStepsIcon({ productValue, className, step, setStep }) {
   );
 }
 
-function MobileOrderCard({ items }) {
+function OrdersMobaileLayout({ items }) {
   return (
     <div className="max-lg:flex items-center justify-center flex-col gap-4 lg:hidden w-full">
       {items?.map((item) => (
-        <CartOrders.Mobile
+        <OrderCardLayout.Mobile
           key={item.id}
           src={item.src}
           alt={item.alt}
@@ -237,33 +273,34 @@ function MobileOrderCard({ items }) {
           perTitle={item.perTitle}
           price={item.price}
           offValue={item.offValue}
+          type={item.type}
+          volume={item.volume}
         />
       ))}
     </div>
   );
 }
 
-function CartFirstStep({ items, date, totalPrice }) {
+function AcceptStep({ items, date, totalPrice }) {
   return (
     <div className="flex flex-col md:items-center md:justify-between gap-5 size-full max-lg:*:first:hidden">
       <Table className="">
         <Table.Header className="*:pb-6">
-          <th className="text-right">
-            <CardTitle
-              label1="سبد خرید"
-              label2="شما"
-              label3="محصول"
+          <th className="text-right px-2">
+            <Title
+              titleOne="سبد خرید"
+              titleTwo="شما"
               productValue={3}
-              className="lg:flex-col xl:flex-row items-center justify-center"
+              className="lg:flex-co xl: flex-row items-center justify-start"
             />
           </th>
-          <th className="max-xl:-translate-y-6">حجم</th>
-          <th className="max-xl:-translate-y-6">تعداد</th>
-          <th className="text-left max-xl:-translate-y-6">قیمت نهایی </th>
+          <th className="px-2 text-stroke-800 text-nowrap">حجم و نوع</th>
+          <th className="px-2 text-stroke-800">تعداد</th>
+          <th className="text-left px-2 text-stroke-800">قیمت نهایی</th>
         </Table.Header>
         <Table.body>
           {items?.map((item) => (
-            <CartOrders.Desk
+            <OrderCardLayout.Desktop
               key={item.id}
               src={item.src}
               alt={item.alt}
@@ -271,36 +308,41 @@ function CartFirstStep({ items, date, totalPrice }) {
               perTitle={item.perTitle}
               price={item.price}
               offValue={item.offValue}
+              type={item.type}
+              volume={item.volume}
             />
           ))}
         </Table.body>
       </Table>
-      <CardTitle
-        label1="سبد خرید"
-        label2="شما"
-        label3="محصول"
+      <Title
+        titleOne="سبد خرید"
+        titleTwo="شما"
         productValue={3}
         className="justify-between lg:hidden"
       />
-      <MobileOrderCard items={items} />
+      <OrdersMobaileLayout items={items} />
     </div>
   );
 }
 
-function CartSecondStep({ items, date, totalPrice }) {
+function PayInfoStep({ items, date, setPost, post }) {
   return (
     <div className="flex flex-col gap-8 size-full">
-      <Accordion className="max-md:flex md:hidden" label="نمایش سبد خرید شما">
-        <MobileOrderCard items={items} />
+      <Accordion
+        titleStyle="text-stroke-800"
+        className="max-md:flex md:hidden w-full"
+        label="نمایش سبد خرید شما"
+      >
+        <OrdersMobaileLayout items={items} />
       </Accordion>
-      <div className="flex flex-col items-center justify-between gap-4 w-full h-full max-md:border-[1.5px] border-stroke rounded-2.5xl max-md:p-6">
-        <div className="flex items-center justify-start gap-1 text-text-primary border-b border-stroke w-full pb-4">
+      <div className="flex flex-col items-center justify-between gap-4 size-full max-md:border-[1.5px] border-stroke-200 rounded-2.5xl max-md:p-6">
+        <div className="flex items-center justify-start gap-1 text-stroke-800 border-b border-stroke-200 w-full pb-4">
           <h2 className="max-md:text-lg md:text-[1.375rem]">اطلاعات کاربری</h2>
           <p className="max-md:text-sm md:text-xl">شما</p>
         </div>
         <form className="flex flex-col gap-6 w-full ">
           <div className="flex flex-col gap-6 w-full">
-            <p className="max-md:text-sm md:text-base font-bold text-text-primary">
+            <p className="max-md:text-sm md:text-base font-bold text-stroke-800">
               اطلاعات تحویل گیرنده
             </p>
             <div className="flex flex-col lg:flex-row gap-4 w-full">
@@ -322,7 +364,7 @@ function CartSecondStep({ items, date, totalPrice }) {
           </div>
           <div className="flex flex-col gap-6 w-full">
             <span className="flex items-center justify-between w-full">
-              <p className="max-md:text-sm md:text-base font-bold text-text-primary">
+              <p className="max-md:text-sm md:text-base font-bold text-stroke-800">
                 آدرس تحویل
               </p>
               <button className="flex items-center justify-center gap-1">
@@ -377,98 +419,72 @@ function CartSecondStep({ items, date, totalPrice }) {
           </div>
         </form>
         <div className="w-full mt-14">
-          <div className="size-full border-b border-stroke pb-4 mb-4">
-            <CardTitle
+          <div className="size-full border-b border-stroke-200 pb-4 mb-4">
+            <Title
               dir="ltr"
-              label1="انتخاب"
-              label2="نحوه ارسال"
-              label3="محصول"
+              titleOne="انتخاب"
+              titleTwo="نحوه ارسال"
               productValue={3}
               className="justify-between "
             />
           </div>
         </div>
-        <div className="flex flex-col xl:flex-row gap-4 w-full mb-6">
-          <RadioButton
-            id="post"
-            name="post"
-            value="post"
-            className="flex items-center justify-between gap-4 w-full
-             text-xs md:text-sm max-md:rounded-lg md:rounded-5xl
-             px-4 py-3 text-text-primary bg-grey has-checked:*:even:*:first:bg-primary
-             has-checked:*:even:*:first:border-primary
-             border-[1.5px] border-grey has-checked:border-primary has-checked:font-bold has-checked:bg-white
-             duration-200"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center justify-center size-4 rounded-sm border-[1.25px] border-text-secondary/50 ">
-                <CheckIcon className="size-2.5 text-grey" />
-              </div>
-              <p className="text-xs">
-                پست پیشتاز ({toPersianNumbers(2)} تا {toPersianNumbers(4)} روز
-                کاری)
-              </p>
-            </div>
-            <span className="flex items-center justify-between gap-1">
-              <p className="text-base">{toPersianNumbersWithComma(50000)}</p>
-              <p className="text-text-secondary-light text-xs">تومان</p>
-            </span>
-          </RadioButton>
-          <RadioButton
-            id="tipax"
-            name="post"
-            value="tipax"
-            className="flex items-center justify-between gap-4 w-full
-             text-xs md:text-sm max-md:rounded-lg md:rounded-5xl
-             px-4 py-3 text-text-primary bg-grey has-checked:*:even:*:first:bg-primary
-             has-checked:*:even:*:first:border-primary
-             border-[1.5px] border-grey has-checked:border-primary has-checked:font-bold has-checked:bg-white
-             duration-200"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center justify-center size-4 rounded-sm border-[1.25px] border-text-secondary/50 ">
-                <CheckIcon className="size-2.5 text-grey" />
-              </div>
-              <p className="text-xs">
-                تیپاکس با بیمه ({toPersianNumbers(1)} تا {toPersianNumbers(3)}{" "}
-                روز کاری)
-              </p>
-            </div>
-            <span className="flex items-center justify-between gap-1">
-              <p className="text-base">{toPersianNumbersWithComma(80000)}</p>
-              <p className="text-text-secondary-light text-xs">تومان</p>
-            </span>
-          </RadioButton>
-          <RadioButton
-            id="terminal"
-            name="post"
-            value="terminal"
-            className="flex items-center justify-between gap-4 w-full
-             text-xs md:text-sm max-md:rounded-lg md:rounded-5xl
-             px-4 py-3 text-text-primary bg-grey has-checked:*:even:*:first:bg-primary
-             has-checked:*:even:*:first:border-primary
-             border-[1.5px] border-grey has-checked:border-primary has-checked:font-bold has-checked:bg-white
-             duration-200"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center justify-center size-4 rounded-sm border-[1.25px] border-text-secondary/50 ">
-                <CheckIcon className="size-2.5 text-grey" />
-              </div>
-              <p className="text-xs">
-                باربری و ترمینال ({toPersianNumbers(24)} ساعته )
-              </p>
-            </div>
-            <span className="flex items-center justify-between gap-1">
-              <p className="text-sm">پس کرایه</p>
-              {/* <p className="text-text-secondary-light text-xs">تومان</p> */}
-            </span>
-          </RadioButton>
+        <div className="flex items-center flex-wrap gap-4 w-full mb-6">
+          {postOptions.map((item) => (
+            <SendOptoins
+              key={item.id}
+              value={item.value}
+              title={item.title}
+              price={item.price}
+              type={item.type}
+              volume={item.volume}
+              setPost={setPost}
+              post={post}
+            />
+          ))}
         </div>
       </div>
     </div>
   );
 }
-function CartLastStep({ items, date, totalPrice }) {
+
+function SendOptoins({ title, price, value, setPost, post }) {
+  return (
+    <RadioButton
+      onChange={() => setPost(price)}
+      checked={post === price}
+      id={value}
+      name="post"
+      value={value}
+      className="flex items-center justify-between gap-4 w-full lg:w-fit
+             text-xs md:text-sm max-md:rounded-lg md:rounded-5xl
+             px-4 py-3 text-stroke-800 bg-stroke-100 has-checked:*:even:*:first:bg-primary
+             has-checked:*:even:*:first:border-primary
+             border-[1.5px] border-stroke-100 has-checked:border-primary has-checked:font-bold has-checked:bg-stroke-0
+              duration-200"
+    >
+      <div className="flex items-center justify-between gap-2 overflow-hidden">
+        <div className="flex items-center justify-center size-4 aspect-square rounded-sm border-[1.25px] border-stroke-600/50 ">
+          <CheckIcon className="size-2.5 stroke-4 text-stroke-100 checked:text-success" />
+        </div>
+        <p className="text-xs text-nowrap whitespace-nowrap overflow-auto w-full py-0.5">
+          {title}
+        </p>
+      </div>
+      <span className="flex items-center justify-between gap-1">
+        {value === "terminal" ? (
+          <p className="text-sm text-nowrap">پس کرایه</p>
+        ) : (
+          <>
+            <p className="text-base">{toPersianNumbersWithComma(price)}</p>
+            <p className="text-stroke-400 text-xs">تومان</p>
+          </>
+        )}
+      </span>
+    </RadioButton>
+  );
+}
+function SuccessedStep({ items, date, totalPrice }) {
   return (
     <div className="flex flex-col items-center justify-center gap-6 size-full">
       <div className="flex flex-col md:flex-row items-center md:items-start justify-between size-full">
@@ -479,81 +495,78 @@ function CartLastStep({ items, date, totalPrice }) {
             width="max-md:size-12 md:size-16"
             sizes="30vw"
           />
-          <div className="flex flex-col items-center md:items-start justify-between gap-4 md:gap-2">
+          <div className="flex flex-col items-center md:items-start justify-between gap-4 md:gap-2 text-stroke-800">
             <p className="md:text-lg font-bold">
               خرید شما با <strong className="text-success">موفقیت</strong> انجام
               شد
             </p>
-            <p className="text-text-secondary">
+            <p className="text-stroke-600">
               جهت دریافت جزئیات بیشتر، لطفاً ایمیل یا پیامک خود را بررسی کنید
             </p>
           </div>
         </div>
         <div className="md:flex flex-col items-start justify-between gap-2 max-md:hidden">
-          <p className="text-text-secondary">مبلغ پرداختی</p>
+          <p className="text-stroke-600">مبلغ پرداختی</p>
           <PriceSection
             offValue={0}
             price={totalPrice}
             priceClassName="text-3xl"
-            textClassName="text-sm text-text-primary font-normal"
+            textClassName="text-sm text-stroke-800 font-normal"
           />
         </div>
       </div>
-      <div className="flex items-center justify-center gap-4 flex-wrap bg-grey rounded-2xl py-4 px-6 w-full">
+      <div className="flex items-center justify-start overflow-auto gap-4 flex-wrap bg-stroke-100 rounded-2xl py-4 px-6 w-full scrollbar--primary scrollbar-h-1 duration-200">
         <Table className="text-right max-sm:hidden">
-          <Table.Header className="*:text-text-secondary-light *:font-normal">
-            <th>کد سفارش شما</th>
-            <th>تاریخ تراکنش</th>
-            <th>تعداد سفارشات</th>
-            <th>آدرس</th>
+          <Table.Header className="*:text-stroke-400 *:font-normal w-full h-fit">
+            <th className="pl-2 truncate">کد سفارش شما</th>
+            <th className="px-2 truncate">تاریخ تراکنش</th>
+            <th className="px-2 truncate">تعداد سفارشات</th>
+            <th className="pr-2 truncate">آدرس</th>
           </Table.Header>
           <Table.body>
-            <Table.Row className="*:pt-2 *:text-text-primary">
-              <td>#{toPersianNumbers(123456789)}</td>
-              <td>25 اردیبهشت 1404</td>
-              <td>{toPersianNumbers(3)} سفارش</td>
-              <td>
+            <Table.Row className="*:pt-2 *:text-stroke-800 w-full h-fit">
+              <td className="pl-2 whitespace-nowrap text-ellipsis w-full">
+                #{toPersianNumbers(123456789)}
+              </td>
+              <td className="px-2 whitespace-nowrap text-ellipsis w-full">
+                25 اردیبهشت 1404
+              </td>
+              <td className="px-2 whitespace-nowrap text-ellipsis w-full">
+                {toPersianNumbers(3)} سفارش
+              </td>
+              <td className="pr-2 whitespace-nowrap overflow-x-auto w-full py-0.5">
                 تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵
               </td>
             </Table.Row>
-            {/* {orders.map((order, index) => (
-            <CartOrderRow key={order._id} order={order} index={index} />
-          ))} */}
           </Table.body>
         </Table>
         <Table className="sm:hidden *:*:*:odd:text-right *:*:*:even:text-left *:*:*:pt-6">
           <Table.body>
             <tr className="*:pt-0">
-              <th className="text-text-secondary-light font-normal">
-                کد سفارش شما
-              </th>
-              <td className="text-text-primary">
+              <th className="text-stroke-400 font-normal">کد سفارش شما</th>
+              <td className="text-stroke-800">
                 #{toPersianNumbers(123456789)}
               </td>
             </tr>
           </Table.body>
           <Table.body>
             <tr>
-              <th className="text-text-secondary-light font-normal">
-                تاریخ تراکنش
-              </th>
-              <td className="text-text-primary">25 اردیبهشت 1404</td>
+              <th className="text-stroke-400 font-normal">تاریخ تراکنش</th>
+              <td className="text-stroke-800">25 اردیبهشت 1404</td>
             </tr>
           </Table.body>
           <Table.body>
             <tr>
-              <th className="text-text-secondary-light font-normal">
-                تعداد سفارشات
-              </th>
-              <td className="text-text-primary">
+              <th className="text-stroke-400 font-normal">تعداد سفارشات</th>
+              <td className="text-stroke-800">
                 {toPersianNumbers(items?.length)} سفارش
               </td>
             </tr>
           </Table.body>
           <Table.body>
             <tr>
-              <th className="text-text-secondary-light font-normal">آدرس</th>
-              <td className="text-text-primary">
+              <th className="text-stroke-400 font-normal">آدرس</th>
+              <td className="text-stroke-800">
                 تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵
               </td>
             </tr>
@@ -562,7 +575,7 @@ function CartLastStep({ items, date, totalPrice }) {
       </div>
       <div className="flex flex-col md:flex-row md:flex-wrap items-center lg:items-start justify-center lg:justify-start gap-4 w-full ">
         {items?.map((item) => (
-          <CartOrders.Success
+          <OrderCardLayout.Success
             key={item.id}
             src={item.src}
             alt={item.alt}
@@ -570,6 +583,8 @@ function CartLastStep({ items, date, totalPrice }) {
             perTitle={item.perTitle}
             price={item.price}
             offValue={item.offValue}
+            type={item.type}
+            volume={item.volume}
           />
         ))}
       </div>

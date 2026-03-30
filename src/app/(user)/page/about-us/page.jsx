@@ -60,7 +60,8 @@ function AboutUsPage() {
               title="پشتیبانی ۲۴ ساعته"
               discription="پاسخ‌گویی سریع، همیشه آنلاین"
               direction="flex-col h-full bg-stroke-0 px-6 py-8 rounded-2.5xl"
-              bg="bg-secondary dark:bg-secondary/50"
+              className="dark:invert"
+              bg="bg-secondary dark:bg-stroke-50"
               items="items-center"
             />
             <FooterDetail
@@ -70,7 +71,8 @@ function AboutUsPage() {
               title="محصولات منحصر به فرد"
               discription="رایحه‌هایی خاص و کمیاب"
               direction="flex-col h-full bg-stroke-0 px-6 py-8 rounded-2.5xl"
-              bg="bg-secondary dark:bg-secondary/50"
+              className="dark:invert"
+              bg="bg-secondary dark:bg-stroke-50"
               items="items-center"
             />
             <FooterDetail
@@ -80,7 +82,8 @@ function AboutUsPage() {
               title="تضمین کیفیت"
               discription="اصل بودن با ضمانت"
               direction="flex-col h-full bg-stroke-0 px-6 py-8 rounded-2.5xl"
-              bg="bg-secondary dark:bg-secondary/50"
+              className="dark:invert"
+              bg="bg-secondary dark:bg-stroke-50"
               items="items-center"
             />
             <FooterDetail
@@ -90,7 +93,8 @@ function AboutUsPage() {
               title="ارسال به سراسر کشور"
               discription="تحویل سریع، مطمئن، سراسری"
               direction="flex-col h-full bg-stroke-0 px-6 py-8 rounded-2.5xl"
-              bg="bg-secondary dark:bg-secondary/50"
+              className="dark:invert"
+              bg="bg-secondary dark:bg-stroke-50"
               items="items-center"
             />
           </section>

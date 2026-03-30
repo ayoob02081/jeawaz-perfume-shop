@@ -74,6 +74,7 @@ function BannerCard({ srcLg, srcSm, url, urlLabel }) {
         className="max-sm:hidden"
         objectFit="cover"
         width="size-full"
+        loading="eager"
         sizes="80vw"
       />
       <AppImage
@@ -82,6 +83,7 @@ function BannerCard({ srcLg, srcSm, url, urlLabel }) {
         className="sm:hidden"
         objectFit="cover"
         width="size-full"
+        loading="eager"
         sizes="80vw"
       />
       <div className="absolute bottom-7 md:bottom-9 lg:bottom-12 right-5 md:right-6 lg:right-7 flex items-center justify-start gap-4">

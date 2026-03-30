@@ -117,8 +117,8 @@ function StatusOrderCard({ order, title, color, src, alt }) {
         <div className=" flex items-center justify-start *:not-first:-mr-8">
           {order.items.map((item) => (
             <div
+              key={item.id}
               className="flex items-center justify-center bg-stroke-0 border-6 border-stroke-100 dark:border-stroke-50 size-20 rounded-xl z-10"
-              key={item.src}
             >
               <AppImage src={item.src} alt={item.alt} className="size-10 " />
             </div>

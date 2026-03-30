@@ -4,7 +4,7 @@ function FooterDetail({
   src,
   className,
   direction = "flex-row",
-  bg = "bg-stroke-0 dark:bg-stroke-800/20",
+  bg = "bg-stroke-0",
   items = "items-start",
   title,
   width,
@@ -22,7 +22,7 @@ function FooterDetail({
           width={width}
           sizes="10vw"
         />
-        <div className="absolute top-4 left-4 bg-primary/50 size-4 rounded-full"></div>
+        <div className="absolute top-4 left-4 bg-primary/50 dark:bg-primary/80 size-4 rounded-full"></div>
       </div>
       <div className={`grow flex flex-col ${items} justify-between gap-1 `}>
         <p className="font-bold text-stroke-800">{title}</p>

@@ -39,20 +39,24 @@ function SingleProductPage({ slug }) {
     <main className=" container mx-auto xl:max-w-7xl md:mt-40">
       <article className="px-6">
         <section className="max-md:hidden">
-          <BreadCrumbBase>
-            <BreadCrumb href={"/"} label={"فروشگاه"} />
-            <BreadCrumb href={"/products"} label={"محصولات"} chevron />
-            <BreadCrumb
-              href={`/products/${product.id}`}
-              label={product.perTitle}
-              className="!text-primary font-bold"
-              chevron
-            />
-          </BreadCrumbBase>
+          {isLoading ? (
+            <Loading />
+          ) : (
+            <BreadCrumbBase>
+              <BreadCrumb href={"/"} label={"فروشگاه"} />
+              <BreadCrumb href={"/products"} label={"محصولات"} chevron />
+              <BreadCrumb
+                href={`/products/${product?.id}`}
+                label={product?.perTitle}
+                className="!text-primary font-bold"
+                chevron
+              />
+            </BreadCrumbBase>
+          )}
         </section>
       </article>
       <article className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 w-ful md:p-6">
-        <ImageSwiper images={product.images} product={product} />
+        <ImageSwiper images={product?.images} product={product} />
         <ProductDes product={product} />
         <ProductOptions product={product} categories={categories} />
         <ProductDetails product={product} />
@@ -121,14 +125,14 @@ function ProductDes({ product }) {
           <p className="font-bold text-wrap text-[28px] w-full text-stroke-800">
             {product.perTitle}
           </p>
-          <div className="md:hidden bg-white p-2 rounded-full">
+          <div className="md:hidden p-2">
             <AppImage
               src={productBrand.iconUrl}
               alt={productBrand.value + "-icon"}
-              className="justify-center h-full"
+              className="justify-center h-full dark:invert"
               width="max-md:w-20 md:w-[4.815rem]"
-              ratio="aspect-[5/2]"
-              sizes="10vw"
+              ratio="aspect-[6/2]"
+              sizes="20vw"
             />
           </div>
         </span>
@@ -224,27 +228,27 @@ function ProductDes({ product }) {
             ناموجود!
           </p>
         )}
-        <div className="max-md:hidden bg-white py-2 rounded-full">
+        <div className="max-md:hidden p-2">
           <AppImage
             src={productBrand.iconUrl}
             alt={productBrand.value + "-icon"}
-            className="justify-center h-full w"
-            width="max-md:w-16 md:w-20 xl:w-28"
+            className="justify-center h-full dark:invert"
+            width="max-md:w-16 md:w-20 xl:w-28 "
             ratio="aspect-[4/1]"
-            sizes="10vw"
+            sizes="20vw"
           />
         </div>
       </div>
 
       {/* Buttons */}
       <div className="flex items-center justify-between w-full gap-4">
-        {product.stock >= 3 && (
+        {product?.stock >= 3 && (
           <button className="btn btn--success w-full h-12 px-2">
             افزودن به سبد خرید
           </button>
         )}
         <div className=" flex-none">
-          {product.stock >= 3 && (
+          {product?.stock >= 3 && (
             <CardEvents
               btnStyle="max-lg:size-8 lg:size-12 not-active:bg-stroke-100 dark:not-active:bg-stroke-50"
               quantityStyle="max-lg:size-12 lg:size-12 max-lg:text-lg lg:text-lg"
@@ -260,7 +264,7 @@ function ProductDes({ product }) {
         label="توضیحات تکمیلی"
       >
         <p className="text-stroke-600 text-sm pt-4 border-t border-stroke-200 leading-8 ">
-          {product.description}
+          {product?.description}
         </p>
       </Accordion>
     </article>
@@ -295,7 +299,7 @@ function ProductOptions({ product, categories }) {
           <ProductOption
             title="حجم شیشه پلمپ"
             volumes
-            data={modes.sealed.variants}
+            data={modes?.sealed.variants}
           />
           <ProductOption
             title="گروه‌‌بندی رایحه"
@@ -349,7 +353,7 @@ function ProductDetails({ product }) {
 
   return (
     <div className="grow flex flex-col items-center justify-between gap-6 w-full max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl p-6 border-stroke-250  ">
-      <div className="flex flex-col items-start justify-between gap-2">
+      <div className="flex flex-col items-start justify-between gap-2 w-full">
         <span className="flex items-center justify-start gap-2">
           <AppImage
             src="/images/square-list-icon.svg"
@@ -375,10 +379,11 @@ function ProductDetails({ product }) {
 
 function Notes({ type, top, middle, base }) {
   return (
-    <div className="relative flex flex-col items-center justify-center gap-2 text-nowrap whitespace-nowrap">
+    <div className="relative flex flex-col items-center justify-start gap-2 text-nowrap whitespace-nowrap w-full">
       <AppImage
         src={`/images/scent-background-${base ? "1" : middle ? "2" : "3"}.svg`}
         alt="shape-background"
+        className="dark:mix-blend-overlay"
         width={
           base
             ? "!w-[60px] !h-[53.3px]"
@@ -387,26 +392,35 @@ function Notes({ type, top, middle, base }) {
               : "!w-[310px] !h-[134.23px]"
         }
       />
-      <span className="absolute flex flex-col items-center justify-center gap-1 z-20">
+      <span className="absolute flex flex-col items-center justify-center gap-1 z-20 w-4/5">
         <p className="text-xs text-stroke-800 font-bold">
           {base ? "نت‌های آغازین" : middle ? "نت‌های میانی" : "نت‌های پایانی"}
         </p>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-center gap-2 w-full text-wrap">
           {base &&
             type?.map((s, index) => (
-              <p key={s + index} className="**:text-xs text-stroke-600 ">
+              <p
+                key={s + index}
+                className="text-xs text-stroke-600 text-wrap"
+              >
                 {type.length > 1 ? s + " - " : s}
               </p>
             ))}
           {middle &&
             type?.map((s, index) => (
-              <p key={s + index} className="**:text-xs text-stroke-600 ">
+              <p
+                key={s + index}
+                className="text-xs text-stroke-600 text-wrap"
+              >
                 {type.length > 1 ? s + " - " : s}
               </p>
             ))}
           {top &&
             type?.map((s, index) => (
-              <p key={s + index} className="**:text-xs text-stroke-600 ">
+              <p
+                key={s + index}
+                className="text-xs text-stroke-600 text-wrap"
+              >
                 {type.length > 1 ? s + " - " : s}
               </p>
             ))}

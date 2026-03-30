@@ -6,6 +6,7 @@ import {
   SunIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { MoonIcon as MoonSolidIcon, SunIcon as SunSolidIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import AppImage from "./AppImage";
 import useOutsideClick from "@/hooks/useOutsideClick";
@@ -81,23 +82,39 @@ function SideBar({
               sizes="20vw"
             />
             <div className="flex items-center justify-between gap-6">
-              {!!dark ? (
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="text-stroke-800"
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="relative flex items-center justify-center gap-2 bg-stroke-200 dark:bg-stroke-50 rounded-full px-1 py-0.5 w-12 h-6"
+              >
+                <div
+                  className={`absolute flex items-center justify-center h-full aspect-square from-yellow-400 to-yellow-700 dark:from-blue-700 dark:to-blue-950 bg-gradient-to-r rounded-full ${
+                    !dark ? "right-0" : "right-0 -translate-x-full"
+                  } shadow duration-200`}
                 >
-                  <SunIcon className="max-md:size-6 size-5 text-warning" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="text-stroke-800"
-                >
-                  <MoonIcon className="max-md:size-5 size-4 text-blue-900" />
-                </button>
-              )}
+                  {!!dark ? (
+                    <div className="text-stroke-800" />
+                  ) : (
+                    <div className="text-stroke-800" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between w-full">
+                  <div className="text-stroke-800 z-10">
+                    {!!dark ? (
+                      <SunIcon className="size-4 text-warning" />
+                    ) : (
+                      <SunSolidIcon className="size-4 text-white" />
+                    )}
+                  </div>
+                  <div className="text-stroke-800 z-10">
+                    {!dark ? (
+                      <MoonIcon className="size-4 text-blue-900" />
+                    ) : (
+                      <MoonSolidIcon className="size-4 text-white" />
+                    )}
+                  </div>
+                </div>
+              </button>
               <button
                 className="flex items-center justify-center size-6 border-[1.5px] border-primary rounded-md  "
                 onClick={toggleSideBar}
@@ -107,12 +124,11 @@ function SideBar({
             </div>
           </li>
           <div className=" border-b-4 border-stroke-200 dark:border-stroke-150 ">
-            <li>
+            <li className="px-6">
               <button
-                className="flex-col gap-0 profile__link justify-between text-base size-full "
+                className="flex-col gap-0 border-t border-stroke-250 justify-between text-base size-full "
                 onClick={toggleCategory}
               >
-                <div className=" w-full !h-[1px] bg-stroke-250 rounded-full"></div>
                 <div className="flex items-center w-full">
                   <div className="profile__title border-0">
                     <AppImage
@@ -132,32 +148,28 @@ function SideBar({
                 </div>
               </button>
             </li>
-            <div className="flex flex-col gap-1 mb-1">
+            <div>
               {filterLinks.map((item) => (
-                <li key={item.id} className="flex flex-col items-center gap-1">
-                  <div className=" w-[88%] !h-[1px] bg-stroke-250 rounded-full"></div>
-                  <SideBarLink
-                    toggleSideBar={toggleSideBar}
-                    href={item.href}
-                    title={item.title}
-                    src={item.src}
-                    alt={item.alt}
-                  />
-                </li>
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-col gap-1 ">
-            {pageLinks.map((item) => (
-              <li key={item.id} className="flex flex-col items-center gap-1">
-                <div className=" w-[88%] !h-[1px] bg-stroke-250 rounded-full"></div>
                 <SideBarLink
-                  id={item.id}
+                  key={item.id}
                   toggleSideBar={toggleSideBar}
                   href={item.href}
                   title={item.title}
+                  src={item.src}
+                  alt={item.alt}
                 />
-              </li>
+              ))}
+            </div>
+          </div>
+          <div>
+            {pageLinks.map((item) => (
+              <SideBarLink
+                key={item.id}
+                id={item.id}
+                toggleSideBar={toggleSideBar}
+                href={item.href}
+                title={item.title}
+              />
             ))}
           </div>
         </div>
@@ -172,30 +184,38 @@ function SideBarLink({ href, src, alt, title, toggleSideBar, id }) {
   const pathName = usePathname();
 
   return (
-    <Link
-      onClick={toggleSideBar}
-      className={`${
-        pathName.endsWith(href) &&
-        "*:text-primary *:font-bold bg-stroke-50 rounded-full"
-      } ${src ? "profile__link" : "profile__link--2"} w-full`}
-      href={href}
-    >
-      {src ? (
-        <div className="profile__title">
-          <div className="relative">
-            <div className="absolute translate-y-1/ top-0 size-full dark:bg-stroke-800/20 rounded-full blur-[4px"></div>
-            <AppImage src={src} alt={alt} width="size-6" sizes="10vw" />
+    <li className="flex flex-col items-center px-6">
+      <Link
+        onClick={toggleSideBar}
+        className={`${
+          pathName.endsWith(href) && "*:text-primary *:dark: *:font-bold"
+        } flex items-center gap-2 ${src ? "text-xs" : "text-sm text-stroke-800"} w-full`}
+        href={href}
+      >
+        {src ? (
+          <div className="profile__title border-t border-stroke-250">
+            <AppImage
+              src={src}
+              alt={alt}
+              width="size-6"
+              sizes="10vw"
+              className={
+                !pathName.endsWith(href)
+                  ? "mix-blend-luminosity dark:mix-blend-plus-lighter dark:invert-50"
+                  : "dark:saturate-150 dark:brightness-200"
+              }
+            />
+            <p>{title}</p>
           </div>
-          <p>{title}</p>
-        </div>
-      ) : (
-        <div
-          className={`profile__title justify-between ${id === 1 && "border-none"}`}
-        >
-          <p>{title}</p>
-          <ChevronLeftIcon className="size-4" />
-        </div>
-      )}
-    </Link>
+        ) : (
+          <div
+            className={`profile__title justify-between ${id === 1 ? "border-none" : "border-t border-stroke-250"}`}
+          >
+            <p>{title}</p>
+            <ChevronLeftIcon className=" size-4" />
+          </div>
+        )}
+      </Link>
+    </li>
   );
 }

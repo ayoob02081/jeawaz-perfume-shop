@@ -74,6 +74,7 @@ function ProductsListTable({ products }) {
                         src={productBrand?.iconUrl || "/brand-icon"}
                         alt={`${productBrand?.value}-icon` || "brand-icon"}
                         ratio="aspect-[4/1]"
+                        className="dark:invert"
                         width="w-16"
                         sizes="10vw"
                       />

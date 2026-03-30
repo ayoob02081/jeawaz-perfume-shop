@@ -80,6 +80,7 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
                         alt={`${category?.value}-icon` || "category-icon"}
                         ratio={brands ? "aspect-[4/1]" : "aspect-square"}
                         width={brands ? "w-16" : "w-7"}
+                        className={brands && "dark:invert" }
                         sizes="10vw"
                       />
                     </div>

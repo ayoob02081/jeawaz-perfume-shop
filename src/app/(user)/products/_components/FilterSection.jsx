@@ -7,10 +7,7 @@ import BreadCrumb from "@/ui/BreadCrumb";
 import { useGetAllBrandCategories } from "@/hooks/useCategories";
 import { useRef, useState } from "react";
 import Loading from "@/components/Loading";
-import {
-  AdjustmentsHorizontalIcon,
-  ChevronLeftIcon,
-} from "@heroicons/react/24/outline";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import Modal from "@/components/Modal";
 import FormModalLayout from "@/components/FormModalLayout";
 import FilterModes from "./FilterModes";
@@ -94,10 +91,16 @@ function FilterSection() {
               {/* Filters Modal Button */}
               <button
                 onClick={ToggleModal}
-                className="flex items-center justify-between gap-2 rounded-5xl border-[1.5px] border-stroke-200 dark:border-stroke-800/60 max-md:min-w-[6.625rem] md:min-w-[8.315rem] max-md:h-8 md:h-11 snap-center px-4"
+                className="flex items-center justify-between gap-2 rounded-5xl border-[1.5px] border-stroke-200 dark:border-stroke-800/60 max-md:h-8 md:h-11 snap-center px-4"
               >
-                <AdjustmentsHorizontalIcon className="size-5 text-stroke-800" />
-                <p className="max-md:text-xs text-stroke-800">فیلتر ها</p>
+                <AppImage
+                  src="/images/filter-icon.svg"
+                  alt="filter-icon"
+                  sizes="10vw"
+                  width="size-5"
+                  className="dark:invert"
+                />
+                <p className="max-md:text-xs text-stroke-800">فیلترها</p>
               </button>
 
               {/* Filters Badge */}
@@ -206,10 +209,10 @@ export default FilterSection;
 function BrandsFilter({ brands, ref, state, addFilter, applyFilter }) {
   return (
     <form className="relative max-md:hidden flex items-center gap-2 w-full h-14 lg:h-[72px] overflow-hidden">
-      <div className=" flex items-center justify-center border border-primary/10 dark:border-primary/40 bg-stroke-50 dark:bg-stroke-800/50 rounded-full text-primary lg:text-lg font-bold h-full aspect-square">
+      <div className=" flex items-center justify-center border border-primary/10 dark:border-stroke-200 bg-stroke-50 rounded-full text-primary dark:text-stroke-800 lg:text-lg font-bold h-full aspect-square">
         برندها
       </div>
-      <div className="flex items-center justify-center border border-primary/10 dark:border-primary/40 bg-stroke-50 dark:bg-stroke-800/50 rounded-full size-full overflow-hidden px-2">
+      <div className="flex items-center justify-center border border-primary/10 dark:border-stroke-200 bg-stroke-50 rounded-full size-full overflow-hidden px-2">
         <div
           ref={ref}
           className="flex items-center justify-between gap-2 p-2 size-full rounded-full overflow-x-auto scrollbar-none snap-x scroll-smooth"
@@ -225,8 +228,8 @@ function BrandsFilter({ brands, ref, state, addFilter, applyFilter }) {
                 name={"brandFilter"}
                 onChange={() => addFilter("SET_ITEMS", "brands", brand.value)}
                 checked={isChecked}
-                className={`justify-center text-nowrap has-checked:*:border-2 has-checked:*:bg-white dark:has-checked:*:bg-stroke-800/80 has-checked:*:border-primary size-full snap-center`}
-                imageClassName="p-2 lg h-10 lg:h-12 w-32 rounded-full duration-200"
+                className={`justify-center text-nowrap has-checked:*:border-2 dark:has-checked:*:border-[1.5px] has-checked:*:bg-white  dark:has-checked:*:bg-stroke-0  *:border-primary dark:*:border-stroke-200 has-checked:*:border-primary dark:has-checked:*:border-stroke-200 size-full snap-center`}
+                imageClassName="p-2 lg h-10 lg:h-12 w-32 rounded-full duration-200 dark:*:invert "
               />
             );
           })}
@@ -236,9 +239,9 @@ function BrandsFilter({ brands, ref, state, addFilter, applyFilter }) {
         type="button"
         onClick={state.length > 0 ? applyFilter : null}
         disabled={state.length > 0 ? false : true}
-        className="flex items-center justify-center border-2 rounded-full h-full aspect-square border-primary bg-stroke-0 disabled:border-stroke-150 dark:disabled:border-stroke-50 disabled:*:text-stroke-600/20 duration-200"
+        className="flex items-center justify-center border-2 rounded-full h-full aspect-square border-primary dark:border-stroke-200 bg-stroke-0 disabled:border-stroke-150 dark:disabled:border-stroke-50 disabled:*:text-stroke-600/20 duration-200"
       >
-        <ChevronLeftIcon className="md:size-6 lg:size-8 text-primary duration-200" />
+        <ChevronLeftIcon className="md:size-6 lg:size-8 text-primary dark:text-stroke-200 duration-200" />
       </button>
     </form>
   );

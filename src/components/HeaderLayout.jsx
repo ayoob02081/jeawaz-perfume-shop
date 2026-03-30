@@ -9,6 +9,10 @@ import {
   MoonIcon,
   SunIcon,
 } from "@heroicons/react/24/outline";
+import {
+  MoonIcon as MoonSolidIcon,
+  SunIcon as SunSolidIcon,
+} from "@heroicons/react/24/solid";
 import Link from "next/link";
 import AppImage from "./AppImage";
 import { useEffect, useState } from "react";
@@ -107,27 +111,43 @@ function DesktopHeader({
                 <SearchSection placeholder="نام ادکلن ، دسته بندی ، برند و ..." />
               </li>
             </div>
-            <li className="flex items-center justify-center">
-              {!!dark ? (
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="text-stroke-800"
+            <li>
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="relative flex items-center justify-center gap-2 bg-stroke-200 dark:bg-stroke-50 rounded-full px-1 py-0.5 w-12 h-6"
+              >
+                <div
+                  className={`absolute flex items-center justify-center h-full aspect-square from-yellow-400 to-yellow-700 dark:from-blue-700 dark:to-blue-950 bg-gradient-to-r rounded-full ${
+                    !dark ? "right-0" : "right-0 -translate-x-full"
+                  } shadow duration-200`}
                 >
-                  <SunIcon className="max-md:size-6 size-5 text-warning" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="text-stroke-800"
-                >
-                  <MoonIcon className="max-md:size-5 size-4 text-blue-900" />
-                </button>
-              )}
+                  {!!dark ? (
+                    <div className="text-stroke-800" />
+                  ) : (
+                    <div className="text-stroke-800" />
+                  )}
+                </div>
+                <div className="flex items-center justify-between w-full">
+                  <div className="text-stroke-800 z-10">
+                    {!!dark ? (
+                      <SunIcon className="size-4 text-warning" />
+                    ) : (
+                      <SunSolidIcon className="size-4 text-white" />
+                    )}
+                  </div>
+                  <div className="text-stroke-800 z-10">
+                    {!dark ? (
+                      <MoonIcon className="size-4 text-blue-900" />
+                    ) : (
+                      <MoonSolidIcon className="size-4 text-white" />
+                    )}
+                  </div>
+                </div>
+              </button>
             </li>
             <div className="flex flex-none items-center justify-between gap-4">
-              <li className="relative flex items-center justify-center">
+              <li className="relative flex items-center justify-center max-lg:hidden">
                 <Link
                   href={"/page/terms"}
                   className={`duration-200 ${
@@ -191,7 +211,7 @@ function DesktopHeader({
                   className={`flex flex-row-reverse items-center gap-1 size-full${user?.email ? "justify-between text-stroke-900 dark:text-stroke-800 font-bold " : "justify-center text-stroke-800"}`}
                 >
                   <div
-                    className={`${user?.email && "bg-stroke-900 dark:bg-stroke-150 text-stroke-0 dark:text-stroke-800"} rounded-full p-2`}
+                    className={`${user?.email && "bg-stroke-900 dark:bg-stroke-50 text-stroke-400"} rounded-full p-2`}
                   >
                     <UserIcon className="size-4 stroke-2" />
                   </div>
@@ -211,7 +231,13 @@ function DesktopHeader({
                 }
               >
                 <div className="flex items-center justify-center size-8 lg:size-10 p-1 rounded-full ring-4 ring-stroke-900/10 bg-stroke-900 group-active:bg-stroke-0 group-active:ring-stroke-900/20 dark:bg-stroke-50 dark:ring-stroke-800/5 dark:group-active:ring-stroke-800/5 duration-200">
-                  <ShoppingBagIcon className="size-6 text-white" />
+                  <AppImage
+                    src="/images/bag-stroke-sec-icon.svg"
+                    alt="shopping-bag-icon"
+                    className="invert"
+                    width="size-6"
+                    sizes="10vw"
+                  />
                 </div>
                 <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem] text-xs lg:text-sm text-stroke-800">
                   <p>سبد خرید شما</p>
@@ -252,6 +278,7 @@ function DesktopHeader({
                       alt="popular-icon"
                       width="size-5"
                       sizes="10vw"
+                      className="dark:saturate-150 dark:brightness-200"
                     />
                     <p className="text-sm">پرفروش ترین ها</p>
                   </div>
@@ -268,6 +295,7 @@ function DesktopHeader({
                       alt="tag-icon"
                       width="size-5"
                       sizes="10vw"
+                      className="dark:saturate-150 dark:brightness-200"
                     />
                     <p className="text-sm">جدیدترین ها</p>
                   </div>
@@ -284,6 +312,7 @@ function DesktopHeader({
                       alt="offer-icon"
                       width="size-5"
                       sizes="10vw"
+                      className="dark:saturate-150 dark:brightness-200"
                     />
                     <p className="text-sm">تخفیف دار</p>
                   </div>
@@ -332,10 +361,15 @@ function MobileHeader({
         <li className="justify-items-start">
           <button
             type="button"
-            className="text-2xl  block p-3 rounded-full border-2 border-primary/10 active:bg-stroke-50 dark:bg-stroke-50 active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-primary active:text-primary/80 dark:text-stroke-800 dark:active:text-stroke-800/70 duration-200"
+            className="text-2xl aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 active:bg-stroke-50 dark:bg-stroke-50 active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-primary active:text-primary/80 dark:text-stroke-800 dark:active:text-stroke-800/70 duration-200"
             onClick={toggleSideBar}
           >
-            <Squares2X2Icon className="size-7" />
+            <AppImage
+              src="/images/category.svg"
+              alt="shopping-bag-icon"
+              width="size-8"
+              sizes="10vw"
+            />
           </button>
         </li>
         <li className=" justify-items-center">
@@ -355,13 +389,18 @@ function MobileHeader({
                 ? () => router.push("/auth/login")
                 : () => router.push("/cart")
             }
-            className="relative block p-3 rounded-full border-2 border-primary/10 active:bg-stroke-50 active:border-stroke-900/20 dark:bg-stroke-50 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-stroke-800 active:text-stroke-800/70 duration-200"
+            className="relative aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 active:bg-stroke-50 active:border-stroke-900/20 dark:bg-stroke-50 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-stroke-800 active:text-stroke-800/70 duration-200"
           >
-            <ShoppingBagIcon className="size-6" />
-
+            <AppImage
+              src="/images/bag-stroke-sec-icon.svg"
+              alt="shopping-bag-icon"
+              className="dark:invert"
+              width="size-8"
+              sizes="10vw"
+            />
             {user?.email && (
-              <p className="absolute -top-1 -right-1 px-1.5 pt-[1.5px] rounded-full bg-primary text-stroke-0 text-[12px]">
-                ۴
+              <p className="absolute -top-1 -right-1 flex items-center justify-center w-5 aspect-square rounded-full bg-primary text-white text-xs">
+                {toPersianNumbers(4)}
               </p>
             )}
           </button>

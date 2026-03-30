@@ -226,7 +226,7 @@ function Order({ order, status }) {
               {items?.map((item) => (
                 <div
                   className="flex items-center justify-between gap-1 lg:border-t border-[#D1D1D1] max-lg:bg-stroke-0 p-4 max-lg:rounded-xl"
-                  key={item.src}
+                  key={item.id}
                 >
                   <div className="flex items-center justify-start gap-2 md:gap-4">
                     <div className="flex items-center justify-center max-lg:h-16 lg:size-16 lg:rounded-xl lg:bg-stroke-0 ">

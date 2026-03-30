@@ -35,7 +35,7 @@ function TermsPage() {
               <AppImage
                 src="/images/star-8-icon.svg"
                 alt="star-icon"
-                className="rotate-6"
+                className="rotate-6 dark:invert"
                 width="size-[18px] md:size-10"
                 sizes="10vw"
               />

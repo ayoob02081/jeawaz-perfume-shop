@@ -196,7 +196,7 @@ function FilterModes({
           onClick={mode === "all" ? onClose : () => setMode("all")}
           className="btn btn--secondary--2 px-6 h-full w-1/2 "
         >
-          <p className="text-sm sm:text-base text-stroke-800">
+          <p className="text-sm sm:text-base">
             {mode === "all" ? "انصراف" : "بازگشت"}
           </p>
         </button>
@@ -285,7 +285,7 @@ function BrandsFilter({ state, brands, type, addFilter }) {
             onChange={() => addFilter("SET_ITEMS", type, brand.value)}
             checked={isChecked}
             className="flex flex-row-reverse justify-between text-stroke-800 size-full"
-            imageClassName="h-6 md:h-8 lg:h-12 w-20 md:w-26 lg:w-32 duration-200"
+            imageClassName="h-6 md:h-8 lg:h-12 w-20 md:w-26 lg:w-32 dark:invert duration-200"
             textClassName="text-base text-wrap"
             checkbox
           />

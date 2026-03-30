@@ -29,7 +29,7 @@ function GenderCategoriesLayout() {
         <AppImage
           src="/images/star-8-icon.svg"
           alt="star-icon"
-          className="text-stroke-950"
+          className="dark:invert"
           width="max-sm:size-4 sm:size-9"
           sizes="10vw"
         />
