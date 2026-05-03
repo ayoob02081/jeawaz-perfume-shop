@@ -12,12 +12,13 @@ import {
   PencilIcon,
 } from "@heroicons/react/24/outline";
 import AppImage from "@/components/AppImage";
-import { useGetUser } from "@/hooks/useUsers";
 import Link from "next/link";
+import { useAuth } from "@/contexts/filters/auth/AuthContext";
 
 export default function ImageSwiper({ product, images }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { data } = useGetUser();
+  const { user, isAuthenticated } = useAuth();
+  const isPending = isAuthenticated === null;
 
   const [mainRef, mainApi] = useEmblaCarousel({
     loop: false,
@@ -101,7 +102,7 @@ export default function ImageSwiper({ product, images }) {
           </div>
 
           {/* Edit Btn */}
-          {data?.role === "admin" && (
+          {user?.role === "admin" && (
             <div className="absolute flex items-center gap-1 top-5 max-md:right-3 md:left-3 max-md:z-50">
               <Link
                 href={`/admin/products/edit/${product?.id}`}

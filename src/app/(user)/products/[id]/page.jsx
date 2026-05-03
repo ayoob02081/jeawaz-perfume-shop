@@ -1,9 +1,9 @@
-import { getProductByIdApi } from "@/services/productServices";
 import SingleProductPage from "../_components/SingleProductPage";
+import httpServer from "@/services/httpServer";
 
 export async function generateMetadata({ params }) {
-  const { slug } = await params;
-  const product = await getProductByIdApi(slug);
+  const { id } = await params;
+  const { data: product } = await httpServer.get(`/products/${id}`);
   return {
     title: product.perTitle,
     description: product.description,
@@ -11,9 +11,9 @@ export async function generateMetadata({ params }) {
 }
 
 async function page({ params }) {
-  const { slug } = await params;
+  const { id } = await params;
 
-  return <SingleProductPage slug={slug} />;
+  return <SingleProductPage slug={id} />;
 }
 
 export default page;

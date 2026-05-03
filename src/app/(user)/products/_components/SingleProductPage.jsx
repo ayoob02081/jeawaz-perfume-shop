@@ -2,7 +2,7 @@
 
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
-import { useGetProductsbyId } from "@/hooks/useProducts";
+import { useGetProductPrice, useGetProductsbyId } from "@/hooks/useProducts";
 import AppImage from "@/components/AppImage";
 import CardEvents from "@/components/CardEvents";
 import RadioButton from "@/ui/RadioButton";
@@ -18,14 +18,13 @@ import {
 import BreadCrumbBase from "@/ui/BreadCrumbBase";
 import BreadCrumb from "@/ui/BreadCrumb";
 
-function SingleProductPage({ slug }) {
-  const { data: product, isLoading, error } = useGetProductsbyId(slug);
+import { useRouter } from "next/navigation";
+import { useQuantityHandler } from "@/hooks/useQuantityHandler";
 
-  const {
-    data: categories,
-    isLoading: categoriesLoading,
-    error: categoriesError,
-  } = useGetAllCategories();
+function SingleProductPage({ slug }) {
+  const { data: product = [], isLoading, error } = useGetProductsbyId(slug);
+
+  const { data: categories } = useGetAllCategories();
 
   if (isLoading) {
     return <Loading />;
@@ -68,27 +67,33 @@ function SingleProductPage({ slug }) {
 export default SingleProductPage;
 
 function ProductDes({ product }) {
-  const {
-    data: allBrands,
-    isLoading: brandsLoading,
-    error: brandsError,
-  } = useGetAllBrandCategories();
+  const [basePrice, setBasePrice] = useState();
+  const [finalPrice, setFinalPrice] = useState();
+  const { isGettingPrice, getProductPrice } = useGetProductPrice();
+  const router = useRouter();
+
+  const { data: allBrands } = useGetAllBrandCategories();
   const productBrand = allBrands?.find(
     (brand) => brand.title === product?.categories.brand,
   );
 
-  const [volumeMode, setVolumeMode] = useState("sealed");
-
+  const [volumeMode, setVolumeMode] = useState("decant");
   const volumes =
-    (volumeMode === "decant" && product.modes?.decant.availableVolumes) ||
     (volumeMode === "sealed" &&
-      product.modes?.sealed.variants.map((v) => v.volume));
+      product.modes?.sealed.variants.map((v) => v.volume)) ||
+    (volumeMode === "decant" && product.modes?.decant.availableVolumes);
 
-  const defaultVolume = volumes.includes(100)
-    ? 100
-    : volumes.find((v) => v === 100 || v >= 3);
+  const defaultVolume = volumes[0];
 
-  const [selectedVolume, setSelectedVolume] = useState(defaultVolume);
+  const {
+    AddToCartHandler,
+    RemoveFromCartHandler,
+    selectedVolume,
+    setSelectedVolume,
+    quantity,
+    setQuantity,
+    defaultQuantity,
+  } = useQuantityHandler(product, defaultVolume, volumeMode);
 
   const volumeHandler = (e, type) => {
     const value = e.target.value;
@@ -103,19 +108,32 @@ function ProductDes({ product }) {
   };
 
   useEffect(() => {
-    setSelectedVolume(
-      volumes.includes(100) ? 100 : volumes.find((v) => v === 100 || v >= 3),
-    );
+    setSelectedVolume(defaultVolume);
   }, [volumeMode]);
 
-  const decantsPrice = product.modes?.decant.pricePerMl * selectedVolume;
+  useEffect(() => {
+    async function fetchPrice() {
+      const data = await getProductPrice({
+        id: product.id,
+        mode: volumeMode,
+        volume: selectedVolume,
+      });
 
-  const sealedPrice = product.modes?.sealed.variants.find(
-    (v) => v.volume === selectedVolume,
-  );
+      const { basePrice, finalPrice } = data;
+      setBasePrice(basePrice);
+      setFinalPrice(finalPrice);
+    }
 
-  const price =
-    volumeMode === "decant" ? decantsPrice : sealedPrice?.price || 0;
+    fetchPrice();
+  }, [selectedVolume]);
+
+  useEffect(() => {
+    if (defaultQuantity?.quantity && defaultQuantity?.quantity !== undefined) {
+      setQuantity(defaultQuantity?.quantity);
+    } else {
+      setQuantity(0);
+    }
+  }, [defaultQuantity]);
 
   return (
     <article className="grid grid-cols-1 w-full gap-y-4 xl:gap-y-10 max-md:p-6 h-fit justify-items-start">
@@ -143,31 +161,43 @@ function ProductDes({ product }) {
 
       {/* Product Type */}
       <section className="flex items-center justify-between w-full max-md:border-t border-stroke-250 pt-4 ">
-        <div className="flex flex-col items-star justify-between gap-2 w-full md:row-start-3 h-full overflow-hidden">
-          <div className="flex flex-col items-start justify-start gap-3">
-            <p className="text-stroke-800">نوع محصول:</p>
-            <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
-              <RadioButton
-                id="productVolumeModeDecant"
-                name="productVolumeMode"
-                value="decant"
-                onChange={(e) => volumeHandler(e, "decant")}
-                checked={volumeMode === "decant"}
-                className="badge btn--type duration-200 "
-              >
-                <p className="text-nowrap">دکانت</p>
-              </RadioButton>
-              <RadioButton
-                id="productVolumeModeSealed"
-                name="productVolumeMode"
-                value="sealed"
-                onChange={(e) => volumeHandler(e, "sealed")}
-                checked={volumeMode === "sealed"}
-                className="badge btn--type duration-200 "
-              >
-                <p className="text-nowrap">شیشه پلمپ</p>
-              </RadioButton>
+        <div className="flex flex-col justify-between gap-2 w-full md:row-start-3 h-full overflow-hidden">
+          <div className="flex justify-between">
+            <div className="flex flex-col items-start justify-start gap-3">
+              <p className="text-stroke-800">نوع محصول:</p>
+              <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
+                <RadioButton
+                  id="productVolumeModeDecant"
+                  name="productVolumeMode"
+                  value="decant"
+                  onChange={(e) => volumeHandler(e, "decant")}
+                  checked={volumeMode === "decant"}
+                  className="badge btn--type duration-200 "
+                >
+                  <p className="text-nowrap">دکانت</p>
+                </RadioButton>
+                <RadioButton
+                  id="productVolumeModeSealed"
+                  name="productVolumeMode"
+                  value="sealed"
+                  onChange={(e) => volumeHandler(e, "sealed")}
+                  checked={volumeMode === "sealed"}
+                  className="badge btn--type duration-200 "
+                >
+                  <p className="text-nowrap">شیشه پلمپ</p>
+                </RadioButton>
+              </div>
             </div>
+            {product.original === true && (
+              <AppImage
+                src="/images/bg-original.svg"
+                alt="original-icon"
+                ratio="aspect-[5/2]"
+                width="w-32"
+                sizes="10vw"
+                className="self-end"
+              />
+            )}
           </div>
           <div className="flex flex-col items-start justify-start gap-3">
             <p className="text-stroke-800">انتخاب حجم:</p>
@@ -198,24 +228,15 @@ function ProductDes({ product }) {
             </div>
           </div>
         </div>
-        {product.original === true && (
-          <AppImage
-            src="/images/bg-original.svg"
-            alt="original-icon"
-            ratio="aspect-[5/2]"
-            width="max-sm:w-36 w-44"
-            sizes="10vw"
-          />
-        )}
       </section>
 
       {/* Price Section */}
-      <div className="flex items-center md:justify-between max-md:justify-end w-full md:row-start-2">
-        {product.stock >= 3 ? (
+      <div className="flex items-center md:justify-between max-md:justify-end w-full md:row-start-2 duration-200">
+        {product.stock >= selectedVolume ? (
           <PriceSection
             volume={selectedVolume}
-            volumeMode={volumeMode}
-            price={price}
+            basePrice={basePrice}
+            unitPrice={finalPrice}
             offValue={product.offValue}
             OldPricevisibility="block"
             pricesRow="flex-col-reverse max-md:gap-0"
@@ -241,15 +262,23 @@ function ProductDes({ product }) {
       </div>
 
       {/* Buttons */}
-      <div className="flex items-center justify-between w-full gap-4">
-        {product?.stock >= 3 && (
-          <button className="btn btn--success w-full h-12 px-2">
-            افزودن به سبد خرید
+      <div className="flex items-center justify-between w-full gap-4 duration-200">
+        {product?.stock >= selectedVolume && (
+          <button
+            onClick={
+              !quantity > 0 ? AddToCartHandler : () => router.push("/cart")
+            }
+            className={`btn ${!quantity > 0 ? "btn--success" : "bg-stroke-0 text-success font-bold border border-success"} w-full h-12 px-2 transition-all ease-in-out duration-200`}
+          >
+            {!quantity > 0 ? "افزودن به سبد خرید" : "نهایی کردن سبد خرید"}
           </button>
         )}
         <div className=" flex-none">
-          {product?.stock >= 3 && (
+          {quantity > 0 && (
             <CardEvents
+              RemoveFromCartHandler={RemoveFromCartHandler}
+              AddToCartHandler={AddToCartHandler}
+              quantity={quantity}
               btnStyle="max-lg:size-8 lg:size-12 not-active:bg-stroke-100 dark:not-active:bg-stroke-50"
               quantityStyle="max-lg:size-12 lg:size-12 max-lg:text-lg lg:text-lg"
             />
@@ -399,28 +428,19 @@ function Notes({ type, top, middle, base }) {
         <div className="flex items-center justify-center gap-2 w-full text-wrap">
           {base &&
             type?.map((s, index) => (
-              <p
-                key={s + index}
-                className="text-xs text-stroke-600 text-wrap"
-              >
+              <p key={s + index} className="text-xs text-stroke-600 text-wrap">
                 {type.length > 1 ? s + " - " : s}
               </p>
             ))}
           {middle &&
             type?.map((s, index) => (
-              <p
-                key={s + index}
-                className="text-xs text-stroke-600 text-wrap"
-              >
+              <p key={s + index} className="text-xs text-stroke-600 text-wrap">
                 {type.length > 1 ? s + " - " : s}
               </p>
             ))}
           {top &&
             type?.map((s, index) => (
-              <p
-                key={s + index}
-                className="text-xs text-stroke-600 text-wrap"
-              >
+              <p key={s + index} className="text-xs text-stroke-600 text-wrap">
                 {type.length > 1 ? s + " - " : s}
               </p>
             ))}

@@ -6,7 +6,6 @@ import {
   useGetAllCategories,
 } from "@/hooks/useCategories";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 function ProductCard({ product }) {
   const router = useRouter();
@@ -16,38 +15,12 @@ function ProductCard({ product }) {
     isLoading: brandsLoading,
     error: brandsError,
   } = useGetAllBrandCategories();
-  const [volumeMode, setVolumeMode] = useState("sealed");
-
-  const volumes =
-    (volumeMode === "decant" && product.modes?.decant.availableVolumes) ||
-    (volumeMode === "sealed" &&
-      product.modes?.sealed.variants.map((v) => v.volume));
-
-  const defaultVolume = volumes.includes(100)
-    ? 100
-    : volumes.find((v) => v === 100 || v >= 3);
-
-  const [selectedVolume, setSelectedVolume] = useState(defaultVolume);
-
-  useEffect(() => {
-    setSelectedVolume(
-      volumes.includes(100) ? 100 : volumes.find((v) => v === 100 || v >= 3),
-    );
-  }, [volumeMode]);
-
-  const decantsPrice = product.modes?.decant.pricePerMl * selectedVolume;
-
-  const sealedPrice = product.modes?.sealed.variants.find(
-    (v) => v.volume === selectedVolume,
-  );
-
-  const price =
-    volumeMode === "decant" ? decantsPrice : sealedPrice?.price || 0;
-
-  const { id, original, enTitle, perTitle, stock, images, categories } =
+  const { id, original, enTitle, perTitle, stock, images, categories, modes } =
     product || {};
 
-  const isStock = stock > 3;
+  const minDecant = modes?.decant.availableVolumes[0];
+  const pricePerMl = modes?.decant.pricePerMl;
+  const isStock = stock > minDecant;
 
   const productAccords = categories?.accords.map((accord) => {
     const accords = allCategories?.find((item) => item.value === accord);
@@ -150,13 +123,12 @@ function ProductCard({ product }) {
             >
               {product.stock >= 3 && (
                 <PriceSection
-                  volume={selectedVolume}
-                  volumeMode={volumeMode}
-                  price={price}
+                  volume={minDecant}
+                  pricePerMl={pricePerMl}
                   offValue={product.offValue}
                   OldPricevisibility="block"
                   pricesRow="flex-col-reverse max-md:gap-0"
-                  priceClassName="max-md:text-lg md:text-xl lg:text-[32px]"
+                  priceClassName="max-md:text-lg md:text-xl lg:text-[32px] text-stroke-800"
                   justify="justify-start"
                 />
               )}

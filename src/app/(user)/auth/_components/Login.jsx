@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LoginForm from "./LoginForm";
-import { loginApi } from "@/services/authServices";
-import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useGetAllUsers } from "@/hooks/useUsers";
@@ -12,6 +10,7 @@ import OTPInput from "react-otp-input";
 import PassInput from "@/ui/PassInput";
 import { useForm } from "react-hook-form";
 import RHFLoginField from "@/ui/RHFLoginField";
+import { useAuth } from "@/contexts/filters/auth/AuthContext";
 
 const RESEND_TIME = 90;
 
@@ -31,15 +30,7 @@ function Login({ toggleModalOpen, closeBtn }) {
   const [time, setTime] = useState(RESEND_TIME);
   const router = useRouter();
   const { isLoading: isGetting, data: users } = useGetAllUsers();
-
-  const {
-    data: loginData,
-    isPending: isChecking,
-    mutateAsync: loginApifn,
-    error: loginError,
-  } = useMutation({
-    mutationFn: loginApi,
-  });
+  const { login } = useAuth();
 
   const toggleLoginType = () => {
     setIsEmailType((prevState) => !prevState);
@@ -49,8 +40,9 @@ function Login({ toggleModalOpen, closeBtn }) {
     const { email, phoneNumber } = e;
     if (e.email) {
       if (step === 1 && email.length >= 11) {
-        const isEmailExist = users?.data.find((user) => user.email === email);
-        if (isEmailExist?.email === email) {
+        const isEmailExist = users.find((user) => user.email === email);
+
+        if (isEmailExist) {
           setStep(2);
         } else {
           toast.error("ایمیل وارد شده وجود ندارد");
@@ -63,7 +55,7 @@ function Login({ toggleModalOpen, closeBtn }) {
           (user) => user.phoneNumber === phoneNumber,
         );
 
-        if (isPhoneNumberExist === true) {
+        if (isPhoneNumberExist) {
           setStep(2);
         } else {
           toast.error("شماره موبایل وارد شده وجود ندارد");
@@ -75,46 +67,25 @@ function Login({ toggleModalOpen, closeBtn }) {
 
   const handleSubmitForm = async (e) => {
     const { email, password, phoneNumber, otp } = e;
-    if (email) {
-      if (password.length >= 6) {
-        const userData = {
-          email,
-          password,
-        };
-        try {
-          const { accessToken, message } = await loginApifn(userData);
-          if (accessToken && step === 2 && password.length >= 6) {
-            router.back();
-            toast.success("به جیاواز خوش آمدید!");
-            reset();
-          }
-        } catch (error) {
-          toast.error(
-            loginError?.response?.data?.message ||
-              "رمز نادرست است، لطفا مجددا تلاش کنید",
-          );
-        }
+
+    try {
+      let userData;
+
+      if (email) {
+        if (password.length < 6) return toast.error("رمز عبور کوتاه است");
+
+        userData = { email, password };
+      } else {
+        if (otp.length < 5) return toast.error("کد تکمیل نشده");
+
+        userData = { phoneNumber, otp };
       }
-    } else {
-      if (otp.length === 6) {
-        setOtp(otp);
-        const userData = {
-          phoneNumber,
-          otp,
-        };
-        try {
-          const { accessToken, message } = await loginApifn(userData);
-          if (accessToken && step === 2 && otp.length >= 6) {
-            router.back();
-            toast.success("به جیاواز خوش آمدید!");
-          }
-        } catch (error) {
-          toast.error(
-            loginError?.response?.data?.message ||
-              "کد نادرست است، لطفا مجددا تلاش کنید",
-          );
-        }
-      }
+      await login(userData);
+      toast.success("به جیاواز خوش آمدید!");
+      reset();
+      router.back();
+    } catch {
+      toast.error("ورود ناموفق بود، دوباره تلاش کنید");
     }
   };
 

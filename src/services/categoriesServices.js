@@ -1,4 +1,4 @@
-import http from "./httpService";
+import http from "./httpClient";
 
 export function getAllCategoriesApi() {
   return http.get(`/categories`).then(({ data }) => data);

@@ -1,15 +1,7 @@
-"use client";
-
 import ProfileLayout from "@/components/ProfileLayout";
-import ProfileLinks, {
-  ProfileLink,
-  UserProfileLink,
-} from "@/components/ProfileLinks";
-import { useGetUser } from "@/hooks/useUsers";
+import ProfileLinks, { ProfileLink } from "@/components/ProfileLinks";
 
 function AdminSidebar() {
-  const { data: user, isLoading, error } = useGetUser();
-  const { email, firstName, lastName, role } = user || {};
   const AdminProfileLinks = [
     {
       id: 1,
@@ -41,23 +33,12 @@ function AdminSidebar() {
       baseHref: "/admin/notifs",
       label: "پیام‌ها",
     },
-    {
-      id: 6,
-      href: "/logout",
-      baseHref: "/logout",
-      label: "خروج از حساب کاربری",
-    },
   ];
 
   return (
     <ProfileLayout label="پروفایل ادمین" correctPathName="/admin">
       <ProfileLinks>
-        <UserProfileLink
-          href={"/profile/me"}
-          label={firstName + " " + lastName}
-          phoneNumber={email}
-          isloading={isLoading}
-        />
+        <ProfileLink href={"/profile/me"} userProfileMode />
         {AdminProfileLinks?.map((link) => (
           <ProfileLink
             key={link.id}
@@ -69,6 +50,7 @@ function AdminSidebar() {
             alt={link.alt}
           />
         ))}
+        <ProfileLink label="خروج از حساب کاربری" logoutMode />
       </ProfileLinks>
     </ProfileLayout>
   );

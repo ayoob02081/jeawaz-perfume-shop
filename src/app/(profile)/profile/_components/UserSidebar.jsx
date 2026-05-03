@@ -1,16 +1,12 @@
 "use client";
 
 import ProfileLayout from "@/components/ProfileLayout";
-import ProfileLinks, {
-  ProfileLink,
-  UserProfileLink,
-} from "@/components/ProfileLinks";
-import { useGetUser } from "@/hooks/useUsers";
-import { usePathname } from "next/navigation";
+import ProfileLinks, { ProfileLink } from "@/components/ProfileLinks";
+import { useAuth } from "@/contexts/filters/auth/AuthContext";
 
 function UserSidebar() {
-  const { data: user, isLoading, error } = useGetUser();
-  const { email, firstName, lastName, role } = user || {};
+  const { user } = useAuth();
+  const { role } = user || {};
   const UserProfileLinks = [
     {
       id: 1,
@@ -30,32 +26,17 @@ function UserSidebar() {
       baseHref: "/profile/notifs",
       label: "پیام‌ها",
     },
-    {
-      id: 4,
-      href: "/logout",
-      baseHref: "/logout",
-      label: "خروج از حساب کاربری",
-    },
   ];
-
   return (
     <ProfileLayout label="پروفایل کاربری" correctPathName="/profile">
       <ProfileLinks>
-        <UserProfileLink
-          href={"/profile/me"}
-          label={firstName + " " + lastName}
-          phoneNumber={email}
-          isloading={isLoading}
-        />
+        <ProfileLink href={"/profile/me"} userProfileMode />
         {UserProfileLinks?.map((link) => (
           <ProfileLink
             key={link.id}
             href={link.href}
             baseHref={link.baseHref}
             label={link.label}
-            srcPrimary={link.srcPrimary}
-            srcSecondary={link.srcSecondary}
-            alt={link.alt}
           />
         ))}
         {role === "admin" && (
@@ -68,6 +49,7 @@ function UserSidebar() {
             alt="admin-icon"
           />
         )}
+        <ProfileLink label="خروج از حساب کاربری" logoutMode />
       </ProfileLinks>
     </ProfileLayout>
   );

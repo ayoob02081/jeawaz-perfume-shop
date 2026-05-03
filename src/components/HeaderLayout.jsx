@@ -3,7 +3,6 @@
 import {
   ArrowLeftIcon,
   ChevronDownIcon,
-  ShoppingBagIcon,
   Squares2X2Icon,
   UserIcon,
   MoonIcon,
@@ -22,15 +21,20 @@ import SideBar from "./SideBar";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
 import { usePathname, useRouter } from "next/navigation";
-import { useGetUser } from "@/hooks/useUsers";
+import { useGetAllCartItems } from "@/hooks/useCart";
+import { useAuth } from "@/contexts/filters/auth/AuthContext";
 
 function HeaderLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
-  const { data: user, isPending, error } = useGetUser();
+  const { user, isAuthenticated } = useAuth();
+  const { data: cartItems, isLoading } = useGetAllCartItems();
   const [dark, setDark] = useState(false);
 
-  const userFullName = user?.firstName + " " + user?.lastName;
+  const fullName =
+    (isAuthenticated === true && user?.firstName + " " + user?.lastName) ||
+    "ورود | ثبت نام";
+
   const toggleTheme = () => {
     setDark((prev) => !prev);
   };
@@ -50,20 +54,19 @@ function HeaderLayout() {
   return (
     <>
       <DesktopHeader
+        totalProducts={cartItems?.totalProducts}
         toggleCategory={toggleCategory}
-        user={user}
-        userFullName={userFullName}
-        isPending={isPending}
+        fullName={fullName}
+        isAuthenticated={isAuthenticated}
         toggleTheme={toggleTheme}
         dark={dark}
       />
       <MobileHeader
-        user={user}
+        totalProducts={cartItems?.totalProducts}
         toggleSideBar={toggleSideBar}
         toggleCategory={toggleCategory}
         sidebarOpen={sidebarOpen}
-        userFullName={userFullName}
-        categoryOpen={categoryOpen}
+        isAuthenticated={isAuthenticated}
         toggleTheme={toggleTheme}
         dark={dark}
       />
@@ -81,18 +84,18 @@ export default HeaderLayout;
 
 function DesktopHeader({
   toggleCategory,
-  userFullName,
-  user,
-  isPending,
+  fullName,
+  isAuthenticated,
   categoryOpen,
   toggleTheme,
+  totalProducts,
   dark,
 }) {
   const router = useRouter();
   const pathName = usePathname();
 
   return (
-    <nav className="max-md:hidden md:fixed inset-0 top-0 right-0 left-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-90 bg-stroke-0 shadow-md duration-200">
+    <nav className="max-md:hidden md:fixed inset-0 top-0 right-0 left-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-90 bg-stroke-0 shadow-md dark:shadow-stroke-800/10 duration-200">
       <ul className="flex flex-col justify-between gap-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex grow items-center justify-betwee gap-4">
@@ -196,27 +199,27 @@ function DesktopHeader({
           </div>
           <div className="flex flex-none items-center justify-between gap-3">
             <li
-              className={`w-fit group max-w-36 h-10 lg:h-12 btn bg-stroke-0 active:bg-stroke-900 dark:active:bg-stroke-150 py-0 pl-1 pr-2 ${user?.email ? "border-0 ring-1 ring-stroke-900/10 dark:ring-stroke-800/10" : "border border-stroke-250"} duration-200`}
+              className={`w-fit group max-w-36 h-10 lg:h-12 btn bg-stroke-0 active:bg-stroke-900 dark:active:bg-stroke-150 py-0 pl-1 pr-2 ${isAuthenticated === true ? "border-0 ring-1" : "border ring-0"} ring-stroke-900/10 dark:ring-stroke-800/10 border-stroke-250 duration-200`}
             >
               <button
                 onClick={
-                  !user?.email || user?.email === undefined
+                  isAuthenticated === false
                     ? () => router.push("/auth/login")
                     : () => router.push("/profile")
                 }
-                disabled={isPending ? true : false}
-                className={`size-full ${isPending && "blur-x opacity-50"} duration-200`}
+                disabled={isAuthenticated === null ? true : false}
+                className={`size-full ${isAuthenticated === null && "blur-xs opacity-50"} duration-200`}
               >
                 <span
-                  className={`flex flex-row-reverse items-center gap-1 size-full${user?.email ? "justify-between text-stroke-900 dark:text-stroke-800 font-bold " : "justify-center text-stroke-800"}`}
+                  className={`flex flex-row-reverse items-center gap-1 size-full${isAuthenticated === true ? "justify-between text-stroke-900 dark:text-stroke-800 font-bold " : "justify-center text-stroke-800"}`}
                 >
                   <div
-                    className={`${user?.email && "bg-stroke-900 dark:bg-stroke-50 text-stroke-400"} rounded-full p-2`}
+                    className={`${isAuthenticated === true && "bg-stroke-900 dark:bg-stroke-50 text-stroke-400"} rounded-full p-2`}
                   >
                     <UserIcon className="size-4 stroke-2" />
                   </div>
                   <p className=" text-xs lg:text-sm text-nowrap overflow-x-scroll scrollbar-none size-full group-active:text-stroke-0 dark:group-active:text-stroke-800">
-                    {user?.email ? userFullName : "ورود | ثبت نام"}
+                    {fullName}
                   </p>
                 </span>
               </button>
@@ -224,31 +227,29 @@ function DesktopHeader({
             <li>
               <button
                 className="flex items-center justify-between gap-2 group"
-                onClick={
-                  !userFullName || userFullName === undefined
-                    ? () => router.push("/auth/login")
-                    : () => router.push("/cart")
-                }
+                onClick={() => router.push("/cart")}
               >
                 <div className="flex items-center justify-center size-8 lg:size-10 p-1 rounded-full ring-4 ring-stroke-900/10 bg-stroke-900 group-active:bg-stroke-0 group-active:ring-stroke-900/20 dark:bg-stroke-50 dark:ring-stroke-800/5 dark:group-active:ring-stroke-800/5 duration-200">
                   <AppImage
                     src="/images/bag-stroke-sec-icon.svg"
                     alt="shopping-bag-icon"
                     className="invert"
-                    width="size-6"
+                    width="max-lg:size-5 lg:size-6"
                     sizes="10vw"
                   />
                 </div>
-                <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem] text-xs lg:text-sm text-stroke-800">
-                  <p>سبد خرید شما</p>
-                  <div className="flex items-center justify-between w-full">
-                    <span className="flex items-center gap-2 pt-0.5 px-2 lg:px-3 rounded-3xl bg-stroke-900/10 dark:bg-stroke-800/5 text-xs lg:text-sm text-stroke-800">
-                      <p>۴</p>
-                      <p>کالا</p>
-                    </span>
-                    <ArrowLeftIcon className="text-stroke-800 group-active:text-stroke-800/70 size-3 lg:size-4" />
+                {totalProducts > 0 && (
+                  <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem] text-xs lg:text-sm text-stroke-800 duration-200">
+                    <p>سبد خرید شما</p>
+                    <div className="flex items-center justify-between w-full">
+                      <span className="flex items-center gap-2 pt-0.5 px-2 lg:px-3 rounded-3xl bg-stroke-900/10 dark:bg-stroke-800/5 text-xs lg:text-sm text-stroke-800">
+                        <p>{toPersianNumbers(totalProducts)}</p>
+                        <p>کالا</p>
+                      </span>
+                      <ArrowLeftIcon className="text-stroke-800 group-active:text-stroke-800/70 size-3 lg:size-4" />
+                    </div>
                   </div>
-                </div>
+                )}
               </button>
             </li>
           </div>
@@ -349,7 +350,8 @@ function MobileHeader({
   toggleSideBar,
   toggleCategory,
   sidebarOpen,
-  user,
+  isAuthenticated,
+  totalProducts,
   toggleTheme,
   dark,
 }) {
@@ -385,7 +387,7 @@ function MobileHeader({
         <li className=" justify-items-end">
           <button
             onClick={
-              !user?.email || user?.email === undefined
+              isAuthenticated === false
                 ? () => router.push("/auth/login")
                 : () => router.push("/cart")
             }
@@ -398,9 +400,9 @@ function MobileHeader({
               width="size-8"
               sizes="10vw"
             />
-            {user?.email && (
+            {totalProducts > 0 && (
               <p className="absolute -top-1 -right-1 flex items-center justify-center w-5 aspect-square rounded-full bg-primary text-white text-xs">
-                {toPersianNumbers(4)}
+                {toPersianNumbers(totalProducts)}
               </p>
             )}
           </button>

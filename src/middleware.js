@@ -7,12 +7,14 @@ export async function middleware(req) {
 
   if (pathname.startsWith("/profile")) {
     const user = await middlewareAuth(req);
-    if (!user) return NextResponse.redirect(new URL("/auth", url));
+    if (user.statusCode === 401)
+      return NextResponse.redirect(new URL("/auth/login", url));
   }
 
   if (pathname.startsWith("/admin")) {
     const user = await middlewareAuth(req);
-    if (!user) return NextResponse.redirect(new URL("/auth", url));
+    if (user.statusCode === 401)
+      return NextResponse.redirect(new URL("/auth/login", url));
     if (user && user.role !== "admin")
       return NextResponse.redirect(new URL("/", req.url));
   }

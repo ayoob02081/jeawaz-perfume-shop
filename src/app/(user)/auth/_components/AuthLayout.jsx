@@ -45,6 +45,7 @@ function AuthLayout({
       </div>
       {login && step === 1 && (
         <button
+        type="button"
           onClick={toggleLoginType}
           className=" text-xs text-primary font-bold cursor-pointer"
         >

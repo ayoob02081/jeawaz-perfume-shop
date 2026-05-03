@@ -4,26 +4,16 @@ import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
-import OrderCardLayout from "./OrderCardLayout";
+import CartItemsLayout from "./CartItemsLayout";
 
-function CartSummery({
-  items,
-  date,
-  totalPrice,
-  totalOffPrice,
-  setStep,
-  step,
-  post,
-}) {
+function CartSummery({ cartItems, setStep, step, post }) {
   const renderSteps = () => {
     switch (step) {
       case 1:
         return (
           <div className="flex items-center justify-center size-full max-md:mx-auto max-md:max-w-[22rem] md:max-w-[23rem]">
-            <AcceptOrderLayout
-              items={items}
-              totalPrice={totalPrice}
-              date={date}
+            <AcceptCartSummery
+              cartItems={cartItems}
               step={step}
               setStep={setStep}
             />
@@ -33,11 +23,8 @@ function CartSummery({
       case 2:
         return (
           <div className="flex items-center justify-center md:justify-end size-full">
-            <PayInfoLayout
-              items={items}
-              totalPrice={totalPrice}
-              totalOffPrice={totalOffPrice}
-              date={date}
+            <CheckoutCartSummery
+              cartItems={cartItems}
               step={step}
               setStep={setStep}
               post={post}
@@ -79,7 +66,8 @@ function CartSummery({
 
 export default CartSummery;
 
-function AcceptOrderLayout({ items, date, totalPrice, step, setStep }) {
+function AcceptCartSummery({ cartItems, date, totalPrice, step, setStep }) {
+  const { itemsTotal = 0, discountAmount = 0, totalProducts = 0 } = cartItems;
   return (
     <div className="flex flex-col items-start justify-between gap-6 max-md:bg-stroke-150 md:bg-stroke-100 p-4 rounded-xl size-full">
       <div className="flex items-center justify-start gap-4 size-full">
@@ -131,10 +119,10 @@ function AcceptOrderLayout({ items, date, totalPrice, step, setStep }) {
       </div>
       <div className="flex flex-col items-center justify-between gap-4 size-full border-t max-md:border-stroke-200 md:border-stroke-250 pt-3">
         <Details textStyle="text-sm" title="تعداد محصولات" des="محصول">
-          {toPersianNumbers((items && items?.length) || 0)}
+          {toPersianNumbers(totalProducts)}
         </Details>
         <Details textStyle="text-sm" title="سود شما از این خرید" des="تومان">
-          {toPersianNumbersWithComma(100000)}
+          {toPersianNumbersWithComma(discountAmount)}
         </Details>
       </div>
       <div className="flex flex-col items-center justify-between gap-4 size-full border-t max-md:border-stroke-200 md:border-stroke-250 pt-3">
@@ -143,23 +131,21 @@ function AcceptOrderLayout({ items, date, totalPrice, step, setStep }) {
           title="مجموع سبد خرید"
           des="تومان"
         >
-          {toPersianNumbersWithComma(totalPrice && totalPrice)}
+          {toPersianNumbersWithComma(itemsTotal)}
         </Details>
         <CartSummeryBtn step={step} setStep={setStep} />
       </div>
     </div>
   );
 }
-function PayInfoLayout({
-  items,
-  date,
-  totalPrice,
-  totalOffPrice,
-  post,
-  step,
-  setStep,
-}) {
-  const finalPrice = totalPrice && toPersianNumbersWithComma(totalPrice + post);
+function CheckoutCartSummery({ cartItems, post, step, setStep }) {
+  const {
+    totalPriceBeforeDiscount = 0,
+    shippingMethod = null,
+    shippingCost = 0,
+    payableTotal = 0,
+    discountAmount = 0,
+  } = cartItems;
 
   return (
     <div className="max-md:hidden md:flex flex-col items-center justify-between gap-4 max-md:bg-stroke-150 md:bg-stroke-100 p-4 rounded-xl w-full h-full">
@@ -168,23 +154,13 @@ function PayInfoLayout({
         <p className="text-lg">خرید</p>
       </span>
       <div className="flex flex-col items-center justify-between size-full">
-        {items?.map((item) => (
-          <OrderCardLayout.Summery
-            key={item.id}
-            src={item.src}
-            alt={item.alt}
-            enTitle={item.enTitle}
-            perTitle={item.perTitle}
-            price={item.price}
-            offValue={item.offValue}
-            type={item.type}
-            volume={item.volume}
-          />
+        {cartItems?.items.map((item) => (
+          <CartItemsLayout.Summery key={item.id} cartItem={item} />
         ))}
       </div>
       <div className="flex flex-col items-center justify-between gap-4 size-full p-4 bg-stroke-0 rounded-xl">
         <Details textStyle="text-sm" title="سود خرید شما:" des="تومان">
-          {toPersianNumbersWithComma(totalOffPrice)}
+          {toPersianNumbersWithComma(discountAmount)}
         </Details>
         <Details textStyle="text-sm" title="هزینه ارسال:" des="تومان">
           {toPersianNumbersWithComma(post)}
@@ -195,7 +171,7 @@ function PayInfoLayout({
           title="مبلغ قابل پرداخت:"
           des="تومان"
         >
-          {finalPrice}
+          {toPersianNumbersWithComma(payableTotal)}
         </Details>
       </div>
       <div className="flex items-center justify-start gap-4 size-full p-4 bg-stroke-0 rounded-xl">

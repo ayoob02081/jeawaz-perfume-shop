@@ -2,6 +2,7 @@ import {
   addProductApi,
   getAllProductsApi,
   getProductByIdApi,
+  getProductPriceApi,
   removeProductApi,
   updateProductApi,
 } from "@/services/productServices";
@@ -10,7 +11,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 export const useGetAllProducts = () =>
   useQuery({
     queryKey: ["get-products"],
-    queryFn: getAllProductsApi,
+    queryFn: async () => {
+      const res = getAllProductsApi();
+      return res;
+    },
     retry: false,
     refetchOnWindowFocus: true,
   });
@@ -22,6 +26,15 @@ export const useGetProductsbyId = (id) =>
     retry: false,
     refetchOnWindowFocus: true,
   });
+
+export function useGetProductPrice() {
+  const { isPending: isGettingPrice, mutateAsync: getProductPrice } =
+    useMutation({
+      mutationFn: getProductPriceApi,
+    });
+
+  return { isGettingPrice, getProductPrice };
+}
 
 export function useRemoveProduct() {
   const { isPending: isDeleting, mutateAsync: removeProduct } = useMutation({

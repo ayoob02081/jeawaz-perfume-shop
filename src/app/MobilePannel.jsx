@@ -4,16 +4,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { UserIcon } from "@heroicons/react/24/outline";
 import { UserIcon as UserIconFill } from "@heroicons/react/24/solid";
 import AppImage from "@/components/AppImage";
-import { useGetUser } from "@/hooks/useUsers";
+import { useAuth } from "@/contexts/filters/auth/AuthContext";
 
 function MobilePannel() {
   const router = useRouter();
   const pathname = usePathname();
-  const { data, isPending, error } = useGetUser();
-
+  const { isAuthenticated } = useAuth();
   return (
     <nav className="fixed flex items-center justify-center bottom-3 right-0 h-[83px] w-full md:hidden z-[70]">
-      <ul className="grid grid-cols-4 justify-items-center gap-x-5 h-full w-[95%] shadow-2xl shadow-black rounded-2xl bg-stroke-0 px-5">
+      <ul className="grid grid-cols-4 justify-items-center gap-x-5 h-full w-[95%] shadow-2xl shadow-black dark:shadow-stroke-800/40 rounded-2xl bg-stroke-0 px-5">
         <li className="flex items-center justify-center ">
           <button
             className="flex flex-col justify-center items-center gap-2"
@@ -73,11 +72,7 @@ function MobilePannel() {
         <li className="flex items-center justify-center ">
           <button
             className="flex flex-col justify-center items-center gap-2"
-            onClick={
-              !data?.email || data?.email === undefined
-                ? () => router.push("/auth/login")
-                : () => router.push("/cart")
-            }
+            onClick={() => router.push("/cart")}
           >
             <div className="size-7">
               <AppImage
@@ -107,7 +102,7 @@ function MobilePannel() {
           <button
             className="flex flex-col justify-center items-center gap-2"
             onClick={
-              !data?.email || data?.email === undefined
+              !isAuthenticated || isAuthenticated === null
                 ? () => router.push("/auth/login")
                 : () => router.push("/profile")
             }

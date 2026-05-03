@@ -24,12 +24,13 @@ import {
 } from "@heroicons/react/24/solid";
 import AppImage from "@/components/AppImage";
 import CartSummery from "./CartSummery";
-import OrderCardLayout from "./OrderCardLayout";
 import PriceSection from "@/components/PriceSection";
 import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
 import Loading from "@/components/Loading";
-import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
 import Accordion from "@/ui/Accordion";
+import { useGetAllCartItems } from "@/hooks/useCart";
+import CartItemsLayout from "./CartItemsLayout";
+import Link from "next/link";
 
 const postOptions = [
   {
@@ -51,8 +52,7 @@ function CartLayout() {
   const pathName = usePathname();
   const [cartOpen, setCartOpen] = useState(false);
   const [post, setPost] = useState(0);
-  const { data, isLoading, error } = useGetAllOrdersByStatus("succeed");
-  const firstOrder = data && data[0];
+  const { data: cartItems = [], isLoading } = useGetAllCartItems();
 
   const toggleCart = () => {
     setCartOpen((prevState) => !prevState);
@@ -67,37 +67,13 @@ function CartLayout() {
   const renderSteps = () => {
     switch (step) {
       case 1:
-        return (
-          <AcceptStep
-            items={firstOrder?.items}
-            totalPrice={firstOrder?.price}
-            totalOffPrice={firstOrder?.offPrice}
-            date={firstOrder?.date}
-          />
-        );
+        return <AcceptCart cartItems={cartItems} />;
 
       case 2:
-        return (
-          <PayInfoStep
-            items={firstOrder?.items}
-            totalPrice={firstOrder?.price}
-            totalOffPrice={firstOrder?.offPrice}
-            date={firstOrder?.date}
-            post={post}
-            setPost={setPost}
-          />
-        );
+        return <Checkout cartItems={cartItems} post={post} setPost={setPost} />;
 
       case 3:
-        return (
-          <SuccessedStep
-            items={firstOrder?.items}
-            totalPrice={firstOrder?.price}
-            totalOffPrice={firstOrder?.offPrice}
-            date={firstOrder?.date}
-            post={post}
-          />
-        );
+        return <PaymentResault cartItems={cartItems} post={post} />;
 
       default:
         return null;
@@ -113,31 +89,46 @@ function CartLayout() {
       className="size-4"
       overflow="overflow-y-auto"
     >
-      <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-stroke-100 md:rounded-3xl duration-200">
-        <CardStepsIcon step={step} setStep={setStep} />
-      </div>
-      {isLoading ? (
-        <Loading />
-      ) : (
-        <div className="px-6">
-          <div
-            className={`${step !== 3 && "md:flex-row"}
-          flex flex-col items-start xl:items-start md:justify-between xl:justify-normal gap-5 px-6 md:p-6 md:py-8 md:border-[1.5px] border-stroke-200 md:rounded-2.5xl size-full duration-200`}
-          >
-            <>{renderSteps()}</>
-            {firstOrder && (
-              <CartSummery
-                items={firstOrder?.items}
-                totalPrice={firstOrder?.price}
-                totalOffPrice={firstOrder?.offPrice}
-                date={firstOrder?.date}
-                setStep={setStep}
-                step={step}
-                post={post}
-              />
-            )}
-          </div>
+      {cartItems?.totalProducts === 0 ? (
+        <div className="flex items-center justify-center max-md:h-screen md:h-92 w-full">
+          <span className="flex flex-col items-center justify-center max-md:gap-4 md:gap-6 text-stroke-800">
+            <p className="font-bol max-md:text-xl md:text-2xl text-stroke-600">
+              سبد خرید شما خالی است!
+            </p>
+            <Link
+              href="/products"
+              className="btn btn--primary px-3 py-1.5 max-md:text-sm "
+            >
+              صفحه محصولات
+            </Link>
+          </span>
         </div>
+      ) : (
+        <>
+          <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-stroke-100 md:rounded-3xl duration-200">
+            <CartStepsIcon step={step} setStep={setStep} />
+          </div>
+          {isLoading ? (
+            <Loading />
+          ) : (
+            <div className="px-6">
+              <div
+                className={`${step !== 3 && "md:flex-row"}
+          flex flex-col items-start xl:items-start md:justify-between xl:justify-normal gap-5 px-6 md:p-6 md:py-8 md:border-[1.5px] border-stroke-200 md:rounded-2.5xl size-full duration-200`}
+              >
+                <>{renderSteps()}</>
+                {
+                  <CartSummery
+                    cartItems={cartItems}
+                    setStep={setStep}
+                    step={step}
+                    post={post}
+                  />
+                }
+              </div>
+            </div>
+          )}
+        </>
       )}
     </AdaptiveOverlayPage>
   );
@@ -173,7 +164,7 @@ function Title({ productValue, className, titleOne, titleTwo, dir = "rtl" }) {
   );
 }
 
-function CardStepsIcon({ productValue, className, step, setStep }) {
+function CartStepsIcon({ productValue, className, step, setStep }) {
   return (
     <div className="flex items-center justify-center max-sm:gap-1 sm:gap-4 size-full max-w-[50rem] px-10 h-[7.15rem] md:h-40">
       <button
@@ -261,27 +252,19 @@ function CardStepsIcon({ productValue, className, step, setStep }) {
   );
 }
 
-function OrdersMobaileLayout({ items }) {
+function CartMobaileLayout({ cartItems }) {
   return (
     <div className="max-lg:flex items-center justify-center flex-col gap-4 lg:hidden w-full">
-      {items?.map((item) => (
-        <OrderCardLayout.Mobile
-          key={item.id}
-          src={item.src}
-          alt={item.alt}
-          enTitle={item.enTitle}
-          perTitle={item.perTitle}
-          price={item.price}
-          offValue={item.offValue}
-          type={item.type}
-          volume={item.volume}
-        />
+      {cartItems?.items.map((item) => (
+        <CartItemsLayout.Mobile key={item.id} cartItem={item} />
       ))}
     </div>
   );
 }
 
-function AcceptStep({ items, date, totalPrice }) {
+function AcceptCart({ cartItems }) {
+  const { totalProducts = 0 } = cartItems;
+
   return (
     <div className="flex flex-col md:items-center md:justify-between gap-5 size-full max-lg:*:first:hidden">
       <Table className="">
@@ -290,7 +273,7 @@ function AcceptStep({ items, date, totalPrice }) {
             <Title
               titleOne="سبد خرید"
               titleTwo="شما"
-              productValue={3}
+              productValue={totalProducts}
               className="lg:flex-co xl: flex-row items-center justify-start"
             />
           </th>
@@ -299,33 +282,25 @@ function AcceptStep({ items, date, totalPrice }) {
           <th className="text-left px-2 text-stroke-800">قیمت نهایی</th>
         </Table.Header>
         <Table.body>
-          {items?.map((item) => (
-            <OrderCardLayout.Desktop
-              key={item.id}
-              src={item.src}
-              alt={item.alt}
-              enTitle={item.enTitle}
-              perTitle={item.perTitle}
-              price={item.price}
-              offValue={item.offValue}
-              type={item.type}
-              volume={item.volume}
-            />
+          {cartItems?.items.map((item) => (
+            <CartItemsLayout.Desktop key={item.id} cartItem={item} />
           ))}
         </Table.body>
       </Table>
       <Title
         titleOne="سبد خرید"
         titleTwo="شما"
-        productValue={3}
+        productValue={totalProducts}
         className="justify-between lg:hidden"
       />
-      <OrdersMobaileLayout items={items} />
+      <CartMobaileLayout cartItems={cartItems} />
     </div>
   );
 }
 
-function PayInfoStep({ items, date, setPost, post }) {
+function Checkout({ cartItems, date, setPost, post }) {
+  const { totalProducts = 0 } = cartItems;
+
   return (
     <div className="flex flex-col gap-8 size-full">
       <Accordion
@@ -333,7 +308,7 @@ function PayInfoStep({ items, date, setPost, post }) {
         className="max-md:flex md:hidden w-full"
         label="نمایش سبد خرید شما"
       >
-        <OrdersMobaileLayout items={items} />
+        <CartMobaileLayout cartItems={cartItems} />
       </Accordion>
       <div className="flex flex-col items-center justify-between gap-4 size-full max-md:border-[1.5px] border-stroke-200 rounded-2.5xl max-md:p-6">
         <div className="flex items-center justify-start gap-1 text-stroke-800 border-b border-stroke-200 w-full pb-4">
@@ -424,7 +399,7 @@ function PayInfoStep({ items, date, setPost, post }) {
               dir="ltr"
               titleOne="انتخاب"
               titleTwo="نحوه ارسال"
-              productValue={3}
+              productValue={totalProducts}
               className="justify-between "
             />
           </div>
@@ -433,11 +408,7 @@ function PayInfoStep({ items, date, setPost, post }) {
           {postOptions.map((item) => (
             <SendOptoins
               key={item.id}
-              value={item.value}
-              title={item.title}
-              price={item.price}
-              type={item.type}
-              volume={item.volume}
+              item={item}
               setPost={setPost}
               post={post}
             />
@@ -448,7 +419,8 @@ function PayInfoStep({ items, date, setPost, post }) {
   );
 }
 
-function SendOptoins({ title, price, value, setPost, post }) {
+function SendOptoins({ item, setPost, post }) {
+  const { value, title, price } = item;
   return (
     <RadioButton
       onChange={() => setPost(price)}
@@ -484,7 +456,15 @@ function SendOptoins({ title, price, value, setPost, post }) {
     </RadioButton>
   );
 }
-function SuccessedStep({ items, date, totalPrice }) {
+function PaymentResault({ cartItems, date, totalPrice }) {
+  const {
+    totalPriceBeforeDiscount = 0,
+    shippingMethod = null,
+    shippingCost = 0,
+    payableTotal = 0,
+    discountAmount = 0,
+    totalProducts = 0,
+  } = cartItems;
   return (
     <div className="flex flex-col items-center justify-center gap-6 size-full">
       <div className="flex flex-col md:flex-row items-center md:items-start justify-between size-full">
@@ -509,7 +489,8 @@ function SuccessedStep({ items, date, totalPrice }) {
           <p className="text-stroke-600">مبلغ پرداختی</p>
           <PriceSection
             offValue={0}
-            price={totalPrice}
+            basePrice={payableTotal}
+            unitPrice={payableTotal}
             priceClassName="text-3xl"
             textClassName="text-sm text-stroke-800 font-normal"
           />
@@ -532,7 +513,7 @@ function SuccessedStep({ items, date, totalPrice }) {
                 25 اردیبهشت 1404
               </td>
               <td className="px-2 whitespace-nowrap text-ellipsis w-full">
-                {toPersianNumbers(3)} سفارش
+                {toPersianNumbers(totalProducts)} سفارش
               </td>
               <td className="pr-2 whitespace-nowrap overflow-x-auto w-full py-0.5">
                 تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵
@@ -559,7 +540,7 @@ function SuccessedStep({ items, date, totalPrice }) {
             <tr>
               <th className="text-stroke-400 font-normal">تعداد سفارشات</th>
               <td className="text-stroke-800">
-                {toPersianNumbers(items?.length)} سفارش
+                {toPersianNumbers(cartItems?.items.length)} سفارش
               </td>
             </tr>
           </Table.body>
@@ -574,18 +555,8 @@ function SuccessedStep({ items, date, totalPrice }) {
         </Table>
       </div>
       <div className="flex flex-col md:flex-row md:flex-wrap items-center lg:items-start justify-center lg:justify-start gap-4 w-full ">
-        {items?.map((item) => (
-          <OrderCardLayout.Success
-            key={item.id}
-            src={item.src}
-            alt={item.alt}
-            enTitle={item.enTitle}
-            perTitle={item.perTitle}
-            price={item.price}
-            offValue={item.offValue}
-            type={item.type}
-            volume={item.volume}
-          />
+        {cartItems?.items.map((item) => (
+          <CartItemsLayout.Success key={item.id} cartItem={item} />
         ))}
       </div>
     </div>
