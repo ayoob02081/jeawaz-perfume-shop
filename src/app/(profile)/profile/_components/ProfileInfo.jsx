@@ -9,7 +9,7 @@ import Link from "next/link";
 function ProfileInfo() {
   const { data: user, isLoading, error } = useGetUser();
 
-  const { email, firstName, lastName } = user || {};
+  const { email,phoneNumber, firstName, lastName } = user || {};
 
   if (isLoading) {
     return <Loading />;
@@ -40,7 +40,7 @@ function ProfileInfo() {
         <InfoSections
           border={true}
           titleOne="شماره موبایل :"
-          desOne={toPersianNumbers("09180522273")}
+          desOne={toPersianNumbers(Number(phoneNumber))+"+"}
           titleTwo="تلفن ثابت :"
           desTwo={toPersianNumbers("091-3564842")}
         />

@@ -67,7 +67,7 @@ function SideBar({
     <ul
       className={`${
         sidebarOpen ? "right-0" : "translate-x-[200vw]"
-      } fixed top-0 bg-black/30 w-[100vw] h-full z-[60] backdrop-blur-md flex flex-col duration-200`}
+      } fixed top-0 bg-black/30 w-screen h-full z-60 backdrop-blur-md flex flex-col duration-200`}
     >
       {sidebarOpen && (
         <div

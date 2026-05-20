@@ -9,7 +9,6 @@ import { useRef, useState } from "react";
 import Loading from "@/components/Loading";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import Modal from "@/components/Modal";
-import FormModalLayout from "@/components/FormModalLayout";
 import FilterModes from "./FilterModes";
 import { useFilters } from "@/hooks/useFilters";
 import SortSection from "@/components/SortSection";
@@ -171,10 +170,9 @@ function FilterSection() {
 
         {/* Filters Modal */}
         <Modal isOpen={isModalOpen} onClose={CloseModal}>
-          <FormModalLayout
-            handleSubmit={HandlefilterData}
-            onClose={CloseModal}
-            closeBtn={false}
+          <form
+            className="flex flex-col items-center justify-between gap-4 size-full"
+            onSubmit={HandlefilterData()}
           >
             <FilterModes
               mode={mode}
@@ -185,7 +183,7 @@ function FilterSection() {
               resetAllFilters={resetAllFilters}
               resetFilter={resetFilter}
             />
-          </FormModalLayout>
+          </form>
         </Modal>
       </div>
       <section className="w-full flex items-center justify-between py-6">

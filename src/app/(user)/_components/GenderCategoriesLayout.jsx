@@ -66,9 +66,9 @@ function CategoreyCard({ src, alt, value, label }) {
   const quantity = product?.length || 0;
 
   return (
-    <div className="flex h-24 md:h-[140px] max-[365px]:aspect-[6/2] aspect-[7/2] md:aspect-[9/3] justify-center items-center justify-items-center bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ">
+    <div className="flex h-24 md:h-35 max-[365px]:aspect-6/2 aspect-7/2 md:aspect-9/3 justify-center items-center justify-items-center bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ">
       <div className="h-full self-start justify-self-start px-4">
-        <div className="relative flex items-center justify-center aspect-[8/10] md:aspect-[10/13] w-16 md:w-[5.25rem] p-3 rounded-b-xl bg-stroke-200">
+        <div className="relative flex items-center justify-center aspect-8/10 md:aspect-10/13 w-16 md:w-21 p-3 rounded-b-xl bg-stroke-200">
           <AppImage
             src={src}
             alt={alt}

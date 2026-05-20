@@ -6,5 +6,6 @@ export const useGetAllOrdersByStatus = (status) =>
     queryKey: ["orders-by-status", status],
     queryFn: () => fetchOrders(status),
     retry: false,
-    refetchOnWindowFocus: true,
+     staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });

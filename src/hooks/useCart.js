@@ -35,7 +35,8 @@ export const useGetAllCartItems = () =>
     queryKey: ["cart-items"],
     queryFn: getAllCartItemsApi,
     retry: false,
-    refetchOnWindowFocus: true,
+     staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
 export function useUpdateQuantity() {

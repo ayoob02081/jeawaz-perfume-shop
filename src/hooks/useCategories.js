@@ -13,7 +13,8 @@ export const useGetAllCategories = () =>
     queryKey: ["get-categories"],
     queryFn: getAllCategoriesApi,
     retry: false,
-    refetchOnWindowFocus: true,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
 export const useGetAllBrandCategories = () =>
@@ -21,7 +22,8 @@ export const useGetAllBrandCategories = () =>
     queryKey: ["get-brands"],
     queryFn: getAllBrandsApi,
     retry: false,
-    refetchOnWindowFocus: true,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
 export const useGetCategorybyID = (id) =>
@@ -29,7 +31,8 @@ export const useGetCategorybyID = (id) =>
     queryKey: ["get-category", id],
     queryFn: () => getCategoryByIdApi(id),
     retry: false,
-    refetchOnWindowFocus: true,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
 export const useGetBrandbyID = (id) =>
@@ -37,7 +40,8 @@ export const useGetBrandbyID = (id) =>
     queryKey: ["get-brand", id],
     queryFn: () => getBrandByIdApi(id),
     retry: false,
-    refetchOnWindowFocus: true,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
 export function useRemoveCategory() {

@@ -47,7 +47,7 @@ function SingleProductPage({ slug }) {
               <BreadCrumb
                 href={`/products/${product?.id}`}
                 label={product?.perTitle}
-                className="!text-primary font-bold"
+                className="text-primary! font-bold"
                 chevron
               />
             </BreadCrumbBase>
@@ -215,7 +215,7 @@ function ProductDes({ product }) {
                     checked={selectedVolume === volume}
                     className={`badge ${
                       isDisabled
-                        ? "opacity-60 dark:opacity-40 !cursor-not-allowed"
+                        ? "opacity-60 dark:opacity-40 cursor-not-allowed!"
                         : "btn--type"
                     } duration-200`}
                   >

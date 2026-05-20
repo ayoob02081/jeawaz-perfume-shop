@@ -157,7 +157,7 @@ function Title({ productValue, className, titleOne, titleTwo, dir = "rtl" }) {
           </h2>
         )}
       </div>
-      <div className="badge badge--primary h-8 w-[5.75rem] text-sm text-nowrap">
+      <div className="badge badge--primary h-8 w-23 text-sm text-nowrap">
         {toPersianNumbers(productValue)} محصول
       </div>
     </div>
@@ -166,7 +166,7 @@ function Title({ productValue, className, titleOne, titleTwo, dir = "rtl" }) {
 
 function CartStepsIcon({ productValue, className, step, setStep }) {
   return (
-    <div className="flex items-center justify-center max-sm:gap-1 sm:gap-4 size-full max-w-[50rem] px-10 h-[7.15rem] md:h-40">
+    <div className="flex items-center justify-center max-sm:gap-1 sm:gap-4 size-full max-w-200 px-10 h-[7.15rem] md:h-40">
       <button
         onClick={() => {
           step === 2 && setStep(1);
@@ -188,9 +188,9 @@ function CartStepsIcon({ productValue, className, step, setStep }) {
           سبد خرید
         </p>
       </button>
-      <div className="grow flex items-center justify-start bg-stroke-0 max-md:h-[3px] md:h-1.5 rounded-2xl max-md:-translate-y-3 md:-translate-y-3.5">
+      <div className="grow flex items-center justify-start bg-stroke-0 max-md:h-0.75 md:h-1.5 rounded-2xl max-md:-translate-y-3 md:-translate-y-3.5">
         <div
-          className={`max-md:bg-stroke-800 md:bg-stroke-900 dark:md:bg-stroke-800 max-md:h-[3px] md:h-1.5 rounded-2xl ${
+          className={`max-md:bg-stroke-800 md:bg-stroke-900 dark:md:bg-stroke-800 max-md:h-0.75 md:h-1.5 rounded-2xl ${
             step === 1 ? "w-3/4" : "w-full"
           }`}
         ></div>
@@ -221,9 +221,9 @@ function CartStepsIcon({ productValue, className, step, setStep }) {
           ثبت اطلاعات کاربری
         </p>
       </div>
-      <div className="grow flex items-center justify-start bg-stroke-0 max-md:h-[3px] md:h-1.5 rounded-2xl max-md:-translate-y-3 md:-translate-y-3.5">
+      <div className="grow flex items-center justify-start bg-stroke-0 max-md:h-0.75 md:h-1.5 rounded-2xl max-md:-translate-y-3 md:-translate-y-3.5">
         <div
-          className={`max-md:bg-stroke-800 md:bg-stroke-900 dark:md:bg-stroke-800 max-md:h-[3px] md:h-1.5 rounded-2xl ${
+          className={`max-md:bg-stroke-800 md:bg-stroke-900 dark:md:bg-stroke-800 max-md:h-0.75 md:h-1.5 rounded-2xl ${
             step === 3 ? "w-full" : step === 2 ? "w-3/4" : "w-0"
           }`}
         ></div>

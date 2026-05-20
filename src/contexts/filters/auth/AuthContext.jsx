@@ -1,23 +1,24 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import { loginApi, logoutApi } from "@/services/authServices";
+import { getUserApi, updateUserApi } from "@/services/usersServices";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const checkAuth = async () => {
     try {
-      const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/me`,
-        { withCredentials: true },
-      );
-      setUser(res.data);
+      const user = await getUserApi();
+      setUser(user);
       setIsAuthenticated(true);
     } catch {
       setUser(null);
       setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -25,22 +26,20 @@ export function AuthProvider({ children }) {
     checkAuth();
   }, []);
 
-  const login = async (loginData) => {
-    await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-      loginData,
-      { withCredentials: true },
-    );
+  const login = async (data) => {
+    await loginApi(data);
+    await checkAuth();
+  };
+
+  const updateUser = async (data) => {
+    await updateUserApi(data);
     await checkAuth();
   };
 
   const logout = async () => {
-    await axios.post(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
-      {},
-      { withCredentials: true },
-    );
-    await checkAuth();
+    await logoutApi();
+    setUser(null);
+    setIsAuthenticated(false);
   };
 
   return (
@@ -48,9 +47,10 @@ export function AuthProvider({ children }) {
       value={{
         user,
         isAuthenticated,
-        setIsAuthenticated,
+        loading,
         checkAuth,
         login,
+        updateUser,
         logout,
       }}
     >

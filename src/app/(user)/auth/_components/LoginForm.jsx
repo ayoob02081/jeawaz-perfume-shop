@@ -1,35 +1,44 @@
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
-import FormModalLayout from "@/components/FormModalLayout";
+import { ArrowRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import AuthLayout from "./AuthLayout";
 
 function LoginForm({
-  isEmailType,
-  toggleLoginType,
+  togglePasswordType,
+  isPasswordType,
+  onClose,
   phoneNumber,
   MoveBack,
   step,
-  email,
+  setStep,
   children,
-  toggleModalOpen,
   otp,
   password,
-  handleSubmit,
+  onSubmit,
   closeBtn,
+  remaining,
 }) {
-  const phoneNumberLength = isEmailType
-    ? email.length >= 14
-    : phoneNumber.length === 11;
-  const OTPLength = isEmailType ? password.length >= 6 : otp.length === 5;
+  const phoneNumberLength = phoneNumber.length === 11;
+  const passLength = isPasswordType ? password.length >= 6 : otp?.length === 5;
 
   return (
-    <FormModalLayout
-      onClose={toggleModalOpen}
-      handleSubmit={handleSubmit}
-      closeBtn={closeBtn}
+    <form
+      data-scroll
+      className="flex flex-col items-center justify-between gap-4 size-full"
+      onSubmit={onSubmit}
     >
+      {closeBtn && (
+        <div className="absolute md:left-6 max-md:top-3 md:top-6 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl max-md:bg-stroke-200">
+          <button
+            className="btn max-md:border-0 md:border-[1.5px] border-stroke-200 md:size-10 aspect-square rounded-full md:p-0"
+            onClick={onClose}
+            type="button"
+          >
+            <XMarkIcon className="max-md:hidden size-5.5 text-stroke-800" />
+          </button>
+        </div>
+      )}
       {step === 2 && (
         <button
-        type="button"
+          type="button"
           className="absolute max-md:right-6 md:right-6 max-md:top-6 md:top-6 btn max-md:border-0 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl md:border-[1.5px] border-stroke-200 md:size-10 md:rounded-full md:p-0  duration-200"
           onClick={MoveBack}
         >
@@ -37,16 +46,31 @@ function LoginForm({
         </button>
       )}
       <AuthLayout
-        isEmailType={isEmailType}
+        isPasswordType={isPasswordType}
         step={step}
-        toggleLoginType={toggleLoginType}
-        OTPLength={OTPLength}
-        phoneNumberLength={phoneNumberLength}
+        setStep={setStep}
+        togglePasswordType={togglePasswordType}
+        passLength={passLength}
+        phoneNumber={phoneNumber}
         login
+        remaining={remaining}
       >
-        {children}
+        <div className="flex flex-col items-center justify-center gap-4 size-full">
+          {children}
+          <button
+            type="submit"
+            disabled={
+              isPasswordType
+                ? !phoneNumberLength || !passLength
+                : !phoneNumberLength
+            }
+            className=" btn btn--primary w-full px-3 py-2 h-12 md:h-14 border-0 "
+          >
+            {isPasswordType === false && step === 1 ? "دریافت کد ورود" : "ورود"}
+          </button>
+        </div>
       </AuthLayout>
-    </FormModalLayout>
+    </form>
   );
 }
 

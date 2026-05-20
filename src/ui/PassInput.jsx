@@ -18,8 +18,7 @@ function PassInput({
   dir = "rtl",
   ...rest
 }) {
-  const errorMessages = errors?.[name];
-  const hasError = !!(errors && errorMessages);
+  const hasError = errors?.[name];
 
   const [passwordVisible, setPasswordVisible] = useState("password");
   const ShowPasswordHandler = () => {
@@ -27,25 +26,26 @@ function PassInput({
   };
 
   return RHForm ? (
-    <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
-      <label htmlFor={name} className="text-stroke-800 mb-4">
-        {label}
-        {isRequired && <span className="text-error">*</span>}
-      </label>
+    <div className="flex flex-col items-start justify-center space-y-4 text-sm w-full h-12 md:h-14">
+      {label && (
+        <label htmlFor={name} className="text-stroke-800 mb-4">
+          {label}
+          {isRequired && <span className="text-error">*</span>}
+        </label>
+      )}
       <div
-        className={`flex items-center justify-between gap-2 size-full px-3 py-2 rounded-5xl bg-stroke-100 text-stroke-800  focus-within:bg-stroke-0 focus-within:border-[1.5px] border-primary`}
+        className={`flex items-center justify-between gap-2 w-full px-3 py-2 rounded-5xl bg-stroke-100 text-stroke-800  focus-within:bg-stroke-0 focus-within:border-[1.5px] border-primary h-full`}
       >
         <input
           className={`outline-0 size-full ${
             dir === "ltr" ? "text-left" : "text-right"
           }`}
-          dir="rtl"
+          dir={dir}
           type={passwordVisible}
           id={name}
-          minLength={6}
           placeholder={placeholder}
-          {...register(name, validationSchema)}
           {...rest}
+          {...register(name, validationSchema)}
         />
         <div onClick={ShowPasswordHandler}>
           {passwordVisible === "password" ? (
@@ -55,9 +55,9 @@ function PassInput({
           )}
         </div>
       </div>
-      {errors && errors[name] && (
+      {hasError && (
         <span className="text-error block text-xs mt-2">
-          {errors[name]?.message}
+          {hasError?.message}
         </span>
       )}
     </div>
@@ -67,20 +67,20 @@ function PassInput({
     >
       <input
         className="outline-0 size-full"
-        dir="rtl"
+        dir={dir}
         type={passwordVisible}
         id="password"
         minLength={6}
         placeholder={placeholder}
         onChange={onChange}
       />
-      <div onClick={ShowPasswordHandler}>
+      <button type="button" onClick={ShowPasswordHandler}>
         {passwordVisible === "password" ? (
           <EyeSlashIcon className=" size-5" />
         ) : (
           <EyeIcon className=" size-5" />
         )}
-      </div>
+      </button>
     </div>
   );
 }

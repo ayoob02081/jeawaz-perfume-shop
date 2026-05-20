@@ -1,43 +1,43 @@
-import http from "./httpClient";
+import app from "./httpClient";
 
 export function getAllCategoriesApi() {
-  return http.get(`/categories`).then(({ data }) => data);
+  return app.get(`/categories`).then(({ data }) => data);
 }
 
 export function getCategoryByIdApi(id) {
-  return http.get(`/categories/${id}`).then(({ data }) => data);
+  return app.get(`/categories/${id}`).then(({ data }) => data);
 }
 
 export function getAllBrandsApi() {
-  return http.get(`/brands`).then(({ data }) => data);
+  return app.get(`/brands`).then(({ data }) => data);
 }
 
 export function getBrandByIdApi(id) {
-  return http.get(`/brands/${id}`).then(({ data }) => data);
+  return app.get(`/brands/${id}`).then(({ data }) => data);
 }
 
 export function addCategoryApi(data) {
-  return http.post("/categories", data).then(({ data }) => data);
+  return app.post("/categories", data).then(({ data }) => data);
 }
 
 export function updateCategoryApi({ categoryId, data }) {
-  return http.patch(`/categories/${categoryId}`, data).then(({ data }) => data);
+  return app.patch(`/categories/${categoryId}`, data).then(({ data }) => data);
 }
 
 export function removeCategoryApi(id) {
-  return http.delete(`/categories/${id}`).then(({ data }) => data);
+  return app.delete(`/categories/${id}`).then(({ data }) => data);
 }
 
 export function addBrandApi(data) {
-  return http.post("/brands", data).then(({ data }) => data);
+  return app.post("/brands", data).then(({ data }) => data);
 }
 
 export function updateBrandApi({ brandId, data }) {
-  return http.patch(`/brands/${brandId}`, data).then(({ data }) => data);
+  return app.patch(`/brands/${brandId}`, data).then(({ data }) => data);
 }
 
 export function removeBrandApi(id) {
-  return http.delete(`/brands/${id}`).then(({ data }) => data);
+  return app.delete(`/brands/${id}`).then(({ data }) => data);
 }
 
 // export async function fetchGenderCategories() {

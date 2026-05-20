@@ -5,14 +5,21 @@ import { UserIcon } from "@heroicons/react/24/outline";
 import { UserIcon as UserIconFill } from "@heroicons/react/24/solid";
 import AppImage from "@/components/AppImage";
 import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 
 function MobilePannel() {
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated } = useAuth();
+  const showElement = useHideOnScroll();
   return (
-    <nav className="fixed flex items-center justify-center bottom-3 right-0 h-[83px] w-full md:hidden z-[70]">
-      <ul className="grid grid-cols-4 justify-items-center gap-x-5 h-full w-[95%] shadow-2xl shadow-black dark:shadow-stroke-800/40 rounded-2xl bg-stroke-0 px-5">
+    <nav
+      className={`fixed flex items-center justify-center bottom-0 right-0 w-full md:hidden z-70
+     transition-all duration-200 ease-in-out overflow-hidden ${
+       showElement ? "h-24 opacity-100 " : "max-h-0 opacity-0"
+     }`}
+    >
+      <ul className="grid grid-cols-4 justify-items-center gap-x-5 h-20.75 w-[95%] shadow-2xl shadow-stroke-800/40 dark:shadow-stroke-800/40 rounded-2xl bg-stroke-0 px-5">
         <li className="flex items-center justify-center ">
           <button
             className="flex flex-col justify-center items-center gap-2"
@@ -102,7 +109,7 @@ function MobilePannel() {
           <button
             className="flex flex-col justify-center items-center gap-2"
             onClick={
-              !isAuthenticated || isAuthenticated === null
+              isAuthenticated !== true
                 ? () => router.push("/auth/login")
                 : () => router.push("/profile")
             }
@@ -121,7 +128,7 @@ function MobilePannel() {
                   : "text-stroke-600"
               }`}
             >
-              پروفایل
+              {isAuthenticated !== true ? "ورود" : "پروفایل"}
             </p>
           </button>
         </li>

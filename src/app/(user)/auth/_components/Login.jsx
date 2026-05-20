@@ -1,20 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import LoginForm from "./LoginForm";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { useGetAllUsers } from "@/hooks/useUsers";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import OTPInput from "react-otp-input";
 import PassInput from "@/ui/PassInput";
 import { useForm } from "react-hook-form";
-import RHFLoginField from "@/ui/RHFLoginField";
 import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import LoginForm from "./LoginForm";
+import { requestOtpApi, verifyOtpApi } from "@/services/authServices";
+import { DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
+import useOtpTimer from "@/hooks/useOtpTimer";
 
-const RESEND_TIME = 90;
-
-function Login({ toggleModalOpen, closeBtn }) {
+function Login({ closeBtn }) {
   const {
     register,
     watch,
@@ -23,66 +22,57 @@ function Login({ toggleModalOpen, closeBtn }) {
     formState: { errors },
   } = useForm();
   const [otp, setOtp] = useState(""); //?
-  const email = watch("email") || "";
   const phoneNumber = watch("phoneNumber") || "";
   const [step, setStep] = useState(1);
-  const [isEmailType, setIsEmailType] = useState(true); // 'email' or 'phone'
-  const [time, setTime] = useState(RESEND_TIME);
-  const router = useRouter();
-  const { isLoading: isGetting, data: users } = useGetAllUsers();
-  const { login } = useAuth();
+  const [isPasswordType, setIsPasswordType] = useState(false);
+  const { remaining, startTimer } = useOtpTimer();
 
-  const toggleLoginType = () => {
-    setIsEmailType((prevState) => !prevState);
+  const router = useRouter();
+
+  const { checkAuth, login } = useAuth();
+
+  const togglePasswordType = () => {
+    setIsPasswordType((prevState) => !prevState);
   };
 
   const PasswordHandler = async (e) => {
-    const { email, phoneNumber } = e;
-    if (e.email) {
-      if (step === 1 && email.length >= 11) {
-        const isEmailExist = users.find((user) => user.email === email);
+    const { phoneNumber } = e;
 
-        if (isEmailExist) {
-          setStep(2);
-        } else {
-          toast.error("ایمیل وارد شده وجود ندارد");
-          reset();
-        }
-      }
-    } else {
-      if (step === 1 && phoneNumber.length >= 11) {
-        const isPhoneNumberExist = users?.data.find(
-          (user) => user.phoneNumber === phoneNumber,
-        );
+    try {
+      if (phoneNumber && !/^09\d{9}$/.test(phoneNumber))
+        return toast.error("شماره موبایل نامعتبر است");
 
-        if (isPhoneNumberExist) {
-          setStep(2);
-        } else {
-          toast.error("شماره موبایل وارد شده وجود ندارد");
-          reset();
-        }
+      if (phoneNumber) {
+        const res = await requestOtpApi({ phoneNumber });
+        const expiresAt = new Date(res.expiresAt).getTime();
+        setStep(2);
+        startTimer(expiresAt);
+        return res?.message;
       }
+      setStep(2);
+    } catch (err) {
+      if (!isPasswordType) {
+        console.error("خطا در ارسال کد", err);
+      }
+      console.error(err);
     }
   };
 
   const handleSubmitForm = async (e) => {
-    const { email, password, phoneNumber, otp } = e;
+    const { password, phoneNumber } = e;
 
     try {
-      let userData;
-
-      if (email) {
+      if (isPasswordType) {
         if (password.length < 6) return toast.error("رمز عبور کوتاه است");
 
-        userData = { email, password };
+        await login({ phoneNumber, password });
       } else {
         if (otp.length < 5) return toast.error("کد تکمیل نشده");
-
-        userData = { phoneNumber, otp };
+        await verifyOtpApi({ phoneNumber, code: otp });
+        checkAuth();
       }
-      await login(userData);
+
       toast.success("به جیاواز خوش آمدید!");
-      reset();
       router.back();
     } catch {
       toast.error("ورود ناموفق بود، دوباره تلاش کنید");
@@ -94,79 +84,89 @@ function Login({ toggleModalOpen, closeBtn }) {
     reset();
   };
 
+  const submitStep1 = handleSubmit(PasswordHandler);
+  const submitStep2 = handleSubmit(handleSubmitForm);
+
   const renderSteps = () => {
     switch (step) {
       case 1:
         return (
           <LoginForm
-            toggleLoginType={toggleLoginType}
-            isEmailType={isEmailType}
+            togglePasswordType={togglePasswordType}
+            isPasswordType={isPasswordType}
             password={watch("password") || ""}
             otp={otp}
             step={step}
             MoveBack={MoveBack}
-            email={email}
             phoneNumber={phoneNumber}
-            toggleModalOpen={toggleModalOpen}
-            handleSubmit={() => handleSubmit(PasswordHandler)}
+            onClose={() => router.back()}
+            onSubmit={submitStep1}
             closeBtn={closeBtn}
-            // isGetting={isGetting}
           >
             <RHFLoginField
               step={step}
               register={register}
               isRequired
-              isEmailType={isEmailType}
               errors={errors}
-              email={email}
               phoneNumber={phoneNumber}
+              validationSchema={{
+                required: "شماره تلفن الزامی است",
+                pattern: /^[0-9]{11}$/,
+              }}
             />
+            {isPasswordType === true && (
+              <PassInput
+                RHForm
+                isRequired
+                name="password"
+                errors={errors}
+                register={register}
+                validationSchema={{
+                  required: "رمز عبور الزامی است",
+                  pattern: {
+                    value: /^[a-zA-Z0-9]+$/,
+                    message: "فقط حروف انگلیسی و عدد مجاز است",
+                  },
+                  minLength: {
+                    value: 6,
+                    message: "رمز عبور باید حداقل ۶ کاراکتر باشد",
+                  },
+                }}
+                className="textField__input textField__input--2 w-full"
+                placeholder="رمز عبور"
+              />
+            )}
           </LoginForm>
         );
 
       case 2:
         return (
           <LoginForm
-            isEmailType={isEmailType}
+            isPasswordType={isPasswordType}
             password={watch("password") || ""}
             otp={otp}
             step={step}
+            setStep={setStep}
             MoveBack={MoveBack}
-            email={email}
             phoneNumber={phoneNumber}
-            toggleModalOpen={toggleModalOpen}
-            handleSubmit={() => handleSubmit(handleSubmitForm)}
+            onClose={() => router.back()}
+            onSubmit={submitStep2}
             closeBtn={closeBtn}
-
-            // onResendOtp={SendOTPFormHandler}
-            // time={time}
-            // isChecking={isChecking}
+            remaining={remaining}
           >
-            <div className="flex items-center justify-center gap-2 w-full h-12 ">
-              {isEmailType === false ? (
-                <OTPInput
-                  inputType="tel"
-                  value={toPersianNumbers(otp)}
-                  onChange={setOtp}
-                  numInputs={5}
-                  renderSeparator={<span> </span>}
-                  inputStyle="flex items-center justify-center pl-4 md:pl-5.5 pt-1 max-md:size-11 md:size-14 bg-[#F1F1F1] rounded-full outline-0 text-stroke-800 max-md:text-lg md:text-xl duration-200"
-                  containerStyle="flex max-md:gap-1 md:gap-2 items-center justify-center w-full focus-within:*:[input]:bg-stroke-0 focus-within:*:[input]:border focus-within:*:border-primary duration-200"
-                  renderInput={(props) => <input {...props} />}
-                  skipDefaultStyles
-                />
-              ) : (
-                <PassInput
-                  RHForm
-                  isRequired
-                  label="رمز عبور"
-                  name="password"
-                  register={register}
-                  validationSchema={{ required: true }}
-                  className="textField__input textField__input--2 w-full"
-                  placeholder="رمز عبور"
-                />
-              )}
+            <div className="flex items-center justify-center gap-2 w-full h-12 my-4">
+              <OTPInput
+                dir="ltr"
+                inputType="tel"
+                value={otp}
+                onChange={setOtp}
+                numInputs={5}
+                renderSeparator={<span> </span>}
+                inputStyle="flex items-center justify-center pl-4 sm:pl-5.5 pt-1 max-sm:size-11 sm:size-14 bg-[#F1F1F1] rounded-full outline-0 text-stroke-800 max-sm:text-lg sm:text-xl duration-200"
+                containerStyle="flex max-sm:gap-1 sm:gap-2 items-center justify-center w-full focus-within:*:[input]:bg-stroke-0 focus-within:*:[input]:border focus-within:*:border-primary duration-200"
+                renderInput={(props) => <input {...props} />}
+                skipDefaultStyles
+              />
             </div>
           </LoginForm>
         );
@@ -184,3 +184,34 @@ function Login({ toggleModalOpen, closeBtn }) {
 }
 
 export default Login;
+
+function RHFLoginField({
+  phoneNumber,
+  register,
+  errors,
+  isRequired,
+  validationSchema,
+  ...rest
+}) {
+  return (
+    <div className="relative flex flex-col items-center justify-center gap-2 w-full h-12 md:h-14 ">
+      {errors && errors["phoneNumber"] && (
+        <span className="absolute -translate-y-1 left-2 text-error block text-xs mt-2">
+          {errors["phoneNumber"]?.message}
+        </span>
+      )}
+      <div className="flex items-center justify-center gap-2 size-full px-5 py-2 rounded-5xl bg-stroke-100  text-stroke-600 focus-within:*:text-stroke-800  focus-within:bg-stroke-0 focus-within:border border-primary">
+        <DevicePhoneMobileIcon className="size-5" />
+        <input
+          className="outline-0 size-full"
+          dir="rtl"
+          type="tel"
+          id="phoneNumber"
+          placeholder="شماره همراه شما"
+          {...register("phoneNumber", validationSchema)}
+          {...rest}
+        />
+      </div>
+    </div>
+  );
+}

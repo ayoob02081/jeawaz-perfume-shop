@@ -10,11 +10,11 @@ function page() {
 
   return (
     <Modal
-      isOpen={() => router.back()}
-      onClose={() => {router.back()}}
-      className="max-md:h-80 md:h-[30rem] justify-end"
+      isOpen={true}
+      onClose={() => router.back()}
+      className="h-fit justify-end"
     >
-      <Login toggleModalOpen={() => router.back()} />
+      <Login closeBtn={true} />
     </Modal>
   );
 }

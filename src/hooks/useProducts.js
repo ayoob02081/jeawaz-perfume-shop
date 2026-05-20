@@ -11,12 +11,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 export const useGetAllProducts = () =>
   useQuery({
     queryKey: ["get-products"],
-    queryFn: async () => {
-      const res = getAllProductsApi();
-      return res;
-    },
+    queryFn: getAllProductsApi,
     retry: false,
-    refetchOnWindowFocus: true,
+     staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
 export const useGetProductsbyId = (id) =>
@@ -24,7 +22,8 @@ export const useGetProductsbyId = (id) =>
     queryKey: ["get-product", id],
     queryFn: () => getProductByIdApi(id),
     retry: false,
-    refetchOnWindowFocus: true,
+     staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 
 export function useGetProductPrice() {

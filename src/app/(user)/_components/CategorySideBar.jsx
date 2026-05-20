@@ -85,7 +85,10 @@ function CategorySideBar({
 
   return (
     <Modal isOpen={categoryOpen} onClose={onClose} category>
-      <div className="size-full max-md:h-screen max-md:overflow-auto md:overflow-hidden bg-stroke-100">
+      <div
+        data-scroll
+        className="size-full max-md:h-screen max-md:overflow-auto md:overflow-hidden bg-stroke-100"
+      >
         {/* Mobile Category Button */}
         <div className="flex items-center justify-between px-4 w-full py-6 md:hidden md:h-0 bg-stroke-0">
           <button className="size-6" onClick={toggleCategory}>
@@ -98,7 +101,7 @@ function CategorySideBar({
         {/* Category Form */}
         {isPending && <Loading />}
         {!isPending && (
-          <form className="flex max-md:flex-col justify-start md:justify-between md:items-stretch h-full md:h-[470px] max-md:w-full bg-stroke-100">
+          <form className="flex max-md:flex-col justify-start md:justify-between md:items-stretch h-full md:h-117.5 max-md:w-full bg-stroke-100">
             {/* Gender Categories */}
             <GenderCategoriesFilter fieldsetId="category-section">
               <div
@@ -170,7 +173,6 @@ function CategorySideBar({
                     dir="ltr"
                     className="flex flex-wrap flex-row-reverse items-start justify-start size-full overflow-y-auto scrollbar-none gap-6 pr-4 scroll-smooth **:scroll-smooth"
                   >
-
                     {/* Brands Filter */}
                     <CategriesFilter fieldsetId="brand-value" title="برند">
                       {brandCategories?.map((brand) => {
@@ -196,7 +198,7 @@ function CategorySideBar({
                         );
                       })}
                     </CategriesFilter>
-                    
+
                     {/* Volumes Filter */}
                     <CategriesFilter fieldsetId="volume-value" title="حجم">
                       {volumes.map((volume, i) => {
@@ -222,7 +224,7 @@ function CategorySideBar({
                         );
                       })}
                     </CategriesFilter>
-                  
+
                     {/* Accords Filter */}
                     <CategriesFilter fieldsetId="scent-type" title="رایحه">
                       {accordCategories?.map((accord) => {
@@ -247,7 +249,7 @@ function CategorySideBar({
                         );
                       })}
                     </CategriesFilter>
-                   
+
                     {/* Price Filter */}
                     <CategriesFilter
                       fieldsetId="price-range"

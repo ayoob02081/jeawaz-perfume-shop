@@ -44,7 +44,7 @@ export function ProfileLink({
 }) {
   const { user, isAuthenticated, logout } = useAuth();
 
-  const { email, firstName, lastName, role } = user || {};
+  const { phoneNumber, firstName, lastName, role } = user || {};
   const isPending = isAuthenticated === null;
   const fullName =
     (isAuthenticated === true && firstName + " " + lastName) ||
@@ -166,11 +166,8 @@ export function ProfileLink({
               ) : (
                 <span className="flex flex-col items-start justify-between gap-2 max-[365px]:w-44 lg:w-36">
                   <p className="max-lg:font-bold text-stroke-800">{fullName}</p>
-                  <p
-                    dir="ltr"
-                    className="text-stroke-800/40 overflow-x-auto w-full py-0.5 scrollbar-none duration-200"
-                  >
-                    {email}
+                  <p className="text-stroke-800/40 overflow-x-auto w-full py-0.5 scrollbar-none duration-200">
+                    {toPersianNumbers(Number(phoneNumber))}+
                   </p>
                 </span>
               )}

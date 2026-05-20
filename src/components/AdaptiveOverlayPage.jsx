@@ -15,11 +15,11 @@ function AdaptiveOverlayPage({
 }) {
   return (
     <div
-      className={`${isOpen ? "right-0" : "-right-[100vw]"} top-0 bg-stroke-0 ${
+      className={`${isOpen ? "right-0" : "right-[-100vw]"} top-0 bg-stroke-0 ${
         max === "true"
           ? "max-lg:fixed max-lg:w-screen max-lg:h-screen"
           : "max-md:fixed max-md:w-full max-md:h-screen"
-      } max-lg:z-[90] duration-200 ${overflow} max-md:bottom-20 md:bottom-0`}
+      } max-lg:z-90 duration-200 ${overflow} max-md:bottom-20 md:bottom-0`}
     >
       <div className="flex flex-col gap-4 h-fit bg-stroke-0 max-md:pb-28 md:pb-10">
         <div

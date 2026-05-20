@@ -130,27 +130,24 @@
   .banner--btn--secondary {
     @apply font-bold text-[8px] sm:text-[10px] xl:text-xs 2xl:text-sm rounded-4xl h-5 sm:h-6 xl:h-8 2xl:h-8 bg-stroke-0/10 backdrop-blur-md text-stroke-800 hover:*:first:text-primary duration-200;
   }
-  .mobileHeader {
-    @apply grid grid-cols-3 p-2 gap-x-10 gap-y-5;
-  }
   .backdrop {
     @apply h-screen w-screen bg-stroke-950/15 backdrop-blur-md duration-200;
   }
   .backdrop--primary {
-    @apply flex max-md:items-end inset-0 md:items-center justify-center max-md:pb-6 px-6 [30rem]:px-12 max-md:pt-[20%] mx-auto overflow-hidden md:py-[10%] z-[90];
+    @apply flex max-md:items-end inset-0 md:items-center justify-center max-md:pb-6 px-6 [30rem]:px-12 max-md:pt-[20%] mx-auto overflow-hidden md:py-[10%] z-100;
   }
   .backdrop--secondary {
-    @apply flex items-start justify-center md:justify-start top-0 inset-0 right-0 left-0 max-md:bottom-0 md:p-6 md:pt-44 max-md:overflow-y-auto scrollbar-none z-[80];
+    @apply flex items-start justify-center md:justify-start top-0 inset-0 right-0 left-0 max-md:bottom-0 md:p-6 md:pt-44 max-md:overflow-y-auto scrollbar-none z-80;
   }
   .modal {
     @apply flex items-center justify-center bg-stroke-0 duration-200;
   }
 
   .modal--primary {
-    @apply sm:w-[33.8rem] overflow-hidden size-full rounded-3xl shadow-md z-[100];
+    @apply sm:w-[33.8rem] overflow-hidden size-full rounded-3xl shadow-md z-100;
   }
   .modal--secondary {
-    @apply md:rounded-3xl w-screen md:w-xl lg:w-3xl md:h-auto md:shadow-md md:justify-start z-[90];
+    @apply md:rounded-3xl w-screen md:w-xl lg:w-3xl md:h-auto md:shadow-md md:justify-start z-90;
   }
   .btn {
     @apply flex items-center justify-center rounded-full;

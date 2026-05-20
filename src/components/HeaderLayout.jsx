@@ -23,17 +23,23 @@ import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
 import { usePathname, useRouter } from "next/navigation";
 import { useGetAllCartItems } from "@/hooks/useCart";
 import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import CompleteUserData from "@/components/CompleteUserData";
+import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 
 function HeaderLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const { data: cartItems, isLoading } = useGetAllCartItems();
   const [dark, setDark] = useState(false);
+  const isProfileCompleted = user?.profileCompleted || false;
 
   const fullName =
-    (isAuthenticated === true && user?.firstName + " " + user?.lastName) ||
-    "ورود | ثبت نام";
+    isAuthenticated !== true
+      ? "ورود | ثبت نام"
+      : isProfileCompleted && user?.firstName.length > 1
+        ? user?.firstName + " " + user?.lastName
+        : toPersianNumbers(user?.phoneNumber);
 
   const toggleTheme = () => {
     setDark((prev) => !prev);
@@ -53,9 +59,11 @@ function HeaderLayout() {
 
   return (
     <>
+      {isAuthenticated && !isProfileCompleted && <CompleteUserData />}
       <DesktopHeader
         totalProducts={cartItems?.totalProducts}
         toggleCategory={toggleCategory}
+        loading={loading}
         fullName={fullName}
         isAuthenticated={isAuthenticated}
         toggleTheme={toggleTheme}
@@ -66,7 +74,6 @@ function HeaderLayout() {
         toggleSideBar={toggleSideBar}
         toggleCategory={toggleCategory}
         sidebarOpen={sidebarOpen}
-        isAuthenticated={isAuthenticated}
         toggleTheme={toggleTheme}
         dark={dark}
       />
@@ -90,6 +97,7 @@ function DesktopHeader({
   toggleTheme,
   totalProducts,
   dark,
+  loading,
 }) {
   const router = useRouter();
   const pathName = usePathname();
@@ -203,12 +211,12 @@ function DesktopHeader({
             >
               <button
                 onClick={
-                  isAuthenticated === false
+                  isAuthenticated !== true
                     ? () => router.push("/auth/login")
                     : () => router.push("/profile")
                 }
                 disabled={isAuthenticated === null ? true : false}
-                className={`size-full ${isAuthenticated === null && "blur-xs opacity-50"} duration-200`}
+                className={`size-full ${loading && "blur-xs opacity-50"} duration-200`}
               >
                 <span
                   className={`flex flex-row-reverse items-center gap-1 size-full${isAuthenticated === true ? "justify-between text-stroke-900 dark:text-stroke-800 font-bold " : "justify-center text-stroke-800"}`}
@@ -239,7 +247,7 @@ function DesktopHeader({
                   />
                 </div>
                 {totalProducts > 0 && (
-                  <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-[4.5rem] lg:w-[5.3rem] text-xs lg:text-sm text-stroke-800 duration-200">
+                  <div className="flex flex-col items-center justify-between gap-1 lg:gap-2 w-18 lg:w-20.75 text-xs lg:text-sm text-stroke-800 duration-200">
                     <p>سبد خرید شما</p>
                     <div className="flex items-center justify-between w-full">
                       <span className="flex items-center gap-2 pt-0.5 px-2 lg:px-3 rounded-3xl bg-stroke-900/10 dark:bg-stroke-800/5 text-xs lg:text-sm text-stroke-800">
@@ -350,16 +358,16 @@ function MobileHeader({
   toggleSideBar,
   toggleCategory,
   sidebarOpen,
-  isAuthenticated,
   totalProducts,
   toggleTheme,
   dark,
 }) {
   const router = useRouter();
+  const showElement = useHideOnScroll();
 
   return (
-    <nav className="md:hidden fixed inset-0 top-0 right-0 left-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-50 bg-stroke-0 shadow-md duration-200">
-      <ul className="mobileHeader relative">
+    <nav className="md:hidden fixed inset-0 top-0 right-0 left-0 h-fit w-[95%] container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-50 bg-stroke-0 shadow-md dark:shadow-stroke-800/10 duration-200">
+      <ul className="grid grid-cols-3 p-2 gap-x-10 relative">
         <li className="justify-items-start">
           <button
             type="button"
@@ -379,18 +387,14 @@ function MobileHeader({
             <AppImage
               src="/images/Jeaawaz-Logo-red-v5.0.webp"
               alt="jeawaz-brand-icon"
-              width="h-[2.65rem] w-[5.15rem]"
+              width="h-10.5 w-20.75"
               sizes="20vw"
             />
           </Link>
         </li>
         <li className=" justify-items-end">
           <button
-            onClick={
-              isAuthenticated === false
-                ? () => router.push("/auth/login")
-                : () => router.push("/cart")
-            }
+            onClick={() => router.push("/cart")}
             className="relative aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 active:bg-stroke-50 active:border-stroke-900/20 dark:bg-stroke-50 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-stroke-800 active:text-stroke-800/70 duration-200"
           >
             <AppImage
@@ -407,8 +411,14 @@ function MobileHeader({
             )}
           </button>
         </li>
-        <li className="flex relative grow col-span-3 w-full h-12">
-          <SearchSection placeholder="نام ادکلن ، دسته بندی ، برند و ..." />
+        <li
+          className={`flex relative grow col-span-3 transition-all duration-200 ease-in-out overflow-hidden w-full ${
+            showElement ? "max-h-16 opacity-100 mt-5" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className=" w-full h-12">
+            <SearchSection placeholder="نام ادکلن ، دسته بندی ، برند و ..." />
+          </div>
         </li>
       </ul>
       <SideBar

@@ -12,32 +12,39 @@ export default function RHFTextField({
   validationSchema = {},
   ...rest
 }) {
-  const errorMessages = errors?.[name];
-  const hasError = !!(errors && errorMessages);
+  const hasError = errors?.[name];
+  const onlyNumbers = (e) => {
+    e.target.value = e.target.value.replace(/\D/g, "");
+  };
+
   return (
     <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
-      <label
-        htmlFor={name}
-        className={`text-stroke-800 mb-4 max-md:text-base text-lg ${textClassName}`}
-      >
-        {label}
-        {isRequired && <span className="text-error">*</span>}
-      </label>
+      {label && (
+        <label
+          htmlFor={name}
+          className={`text-stroke-800 mb-4 max-md:text-base text-lg ${textClassName}`}
+        >
+          {label}
+          {isRequired && <span className="text-error">*</span>}
+        </label>
+      )}
       <input
         type={type}
         name={name}
         id={name}
         dir={dir}
         placeholder={placeholder}
+        inputMode={type === "tel" ? "numeric" : undefined}
+        onInput={type === "tel" ? onlyNumbers : undefined}
         className={` ${className} ${
           dir === "ltr" ? "text-left" : "text-right"
         }`}
-        {...register(name, validationSchema)}
         {...rest}
+        {...register(name, validationSchema)}
       />
-      {errors && errors[name] && (
+      {hasError && (
         <span className="text-error block text-xs mt-2">
-          {errors[name]?.message}
+          {hasError?.message}
         </span>
       )}
     </div>

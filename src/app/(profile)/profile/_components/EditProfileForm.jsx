@@ -1,10 +1,11 @@
 "use client";
 import toast, { Toaster } from "react-hot-toast";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import RHFTextField from "@/ui/RHFTextField";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useGetUser } from "@/hooks/useUsers";
+import { useGetUser, useUpdateUser } from "@/hooks/useUsers";
+import PersianDateRHForm from "./PersianDateRHForm";
 
 const basicInfoData = [
   {
@@ -32,22 +33,6 @@ const basicInfoData = [
     isRequired: true,
   },
   {
-    id: 4,
-    label: "کد ملی",
-    name: "idNo",
-    placeholder: "۰۱۲۳۴۵۶۷۸۹",
-    type: "number",
-    isRequired: true,
-  },
-  {
-    id: 5,
-    label: "ایمیل",
-    name: "email",
-    placeholder: "example@gmail.com",
-    type: "email",
-    isRequired: true,
-  },
-  {
     id: 6,
     label: "نام کاربری",
     name: "username",
@@ -56,31 +41,48 @@ const basicInfoData = [
     isRequired: true,
   },
   {
-    id: 7,
-    label: "تلفن ثابت",
-    name: "tellNumber",
-    placeholder: "۰۹۱-۳۴۵۶۷۸۹",
-    type: "number",
+    id: 5,
+    label: "ایمیل",
+    name: "email",
+    placeholder: "example@gmail.com",
+    type: "email",
+    // isRequired: true,
   },
   {
-    id: 8,
-    label: "تولد",
-    name: "birthday",
-    placeholder: "۱۳۸۱/۲/۴",
+    id: 4,
+    label: "کد ملی",
+    name: "nationalCode",
+    placeholder: "۰۱۲۳۴۵۶۷۸۹",
     type: "number",
+    // isRequired: true,
   },
+  // {
+  //   id: 7,
+  //   label: "تلفن ثابت",
+  //   name: "tellNumber",
+  //   placeholder: "۰۹۱-۳۴۵۶۷۸۹",
+  //   type: "number",
+  // },
+  // {
+  //   id: 8,
+  //   label: "تولد",
+  //   name: "birthday",
+  //   placeholder: "۱۳۸۱/۲/۴",
+  //   type: "date",
+  // },
 ];
 
 function EditProfileForm() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { data: userToEdit, isLoading, error } = useGetUser();
+  const { isUpdating, updateUser } = useUpdateUser();
   const {
     firstName,
     lastName,
     phoneNumber,
     tellNumber,
-    idNo,
+    nationalCode,
     birthday,
     email,
     username,
@@ -91,6 +93,7 @@ function EditProfileForm() {
 
   const {
     register,
+    control,
     handleSubmit,
     watch,
     formState: { isSubmitting },
@@ -99,8 +102,7 @@ function EditProfileForm() {
       firstName: firstName || "",
       lastName: lastName || "",
       phoneNumber: phoneNumber || "",
-      tellNumber: tellNumber || "",
-      idNo: idNo || "",
+      nationalCode: nationalCode || "",
       birthday: birthday || "",
       email: email || "",
       username: username || "",
@@ -113,8 +115,7 @@ function EditProfileForm() {
       firstName: data.firstName,
       lastName: data.lastName,
       phoneNumber: data.phoneNumber,
-      tellNumber: data.tellNumber,
-      idNo: data.idNo,
+      nationalCode: data.nationalCode,
       birthday: data.birthday,
       email: data.email,
       username: data.username,
@@ -122,19 +123,26 @@ function EditProfileForm() {
     };
 
     // if (!!userToEdit) {
-    //   try {
-    //     editUser(payload);
-    //     toast.success(`اطلاعات حساب کاربری ${data.title} با موفقیت ویرایش شد`);
-    //     router.back();
-    //   } catch (error) {
-    //     toast.error(`ویرایش اطلاعات حساب کاربری ${data.title} با خطا مواجه شد`);
-    //     (error);
-    //   }
+
+    try {
+      await updateUser({
+        id: userToEdit?.id,
+        payload,
+      });
+      toast.success(
+        `اطلاعات حساب کاربری ${data?.title || data?.phoneNumber} با موفقیت ویرایش شد`,
+      );
+      // router.back();
+    } catch (error) {
+      console.log(error);
+      toast.error(`ویرایش اطلاعات حساب کاربری ${data?.title} با خطا مواجه شد`);
+      error;
+    }
     // }
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-10 w-full">
+    <div className="max-w-6xl mx-auto px-6 md:p-6 w-full">
       <Toaster />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
@@ -157,16 +165,21 @@ function EditProfileForm() {
               <RHFTextField
                 key={item.name}
                 register={register}
-                //   isRequired
                 label={item.label}
                 name={item.name}
                 type={item.type}
                 className="textField__input textField__input--2 rounded-xl w-full"
-                //   validationSchema={{ required: true }}
                 placeholder={`مثال: ${item.placeholder}`}
               />
             ),
           )}
+          <PersianDateRHForm
+            control={control}
+            name="birthday"
+            label="تولد"
+            className="textField__input textField__input--2 rounded-xl w-full"
+            placeholder="مثال: ۱۳۸۱/۲/۴"
+          />
           <RHFTextField
             register={register}
             isRequired
