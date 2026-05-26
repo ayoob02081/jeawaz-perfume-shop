@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/filters/auth/AuthContext";
 function UserSidebar() {
   const { user } = useAuth();
   const { role } = user || {};
+
   const UserProfileLinks = [
     {
       id: 1,

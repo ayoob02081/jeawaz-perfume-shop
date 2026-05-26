@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   useAddToCart,
   useGetAllCartItems,
@@ -13,46 +13,66 @@ export function useQuantityHandler(
   cartItem,
 ) {
   const { addToCart } = useAddToCart();
-  const { isDeleting, removeFromCart } = useRemoveFromCart();
+  const { removeFromCart } = useRemoveFromCart();
   const { data: cart } = useGetAllCartItems();
   const { mutate: updateQuantity } = useUpdateQuantity();
 
   const [selectedVolume, setSelectedVolume] = useState(defaultVolume);
-  const defaultQuantity = cart?.items.find(
+  const [quantity, setQuantity] = useState(0);
+
+  useEffect(() => {
+    if (defaultVolume !== undefined) {
+      setSelectedVolume(defaultVolume);
+    }
+  }, [defaultVolume]);
+
+  const defaultCartItem = cart?.items?.find(
     (item) =>
-      item.product.id === product.id &&
+      item.product.id === product?.id &&
       item.mode === volumeMode &&
       item.volume === selectedVolume,
   );
-  const [quantity, setQuantity] = useState(
-    cartItem?.quantity || defaultQuantity,
-  );
+
+  useEffect(() => {
+    if (cartItem?.quantity !== undefined) {
+      setQuantity(cartItem.quantity);
+    } else if (defaultCartItem?.quantity !== undefined) {
+      setQuantity(defaultCartItem.quantity);
+    } else {
+      setQuantity(0);
+    }
+  }, [cartItem, defaultCartItem]);
 
   const RemoveFromCartHandler = () => {
-    const itemToDelete =
-      cartItem || cart?.items.find((item) => item.volume === selectedVolume);
+    const item = cartItem || defaultCartItem;
+    if (!item) return;
+
     if (quantity > 1) {
       updateQuantity({
-        itemId: itemToDelete?.id,
+        itemId: item.id,
         quantity: quantity - 1,
       });
     } else {
-      removeFromCart(itemToDelete?.id);
+      removeFromCart(item.id);
     }
-    setQuantity((i) => i > 0 && --i);
+
+    setQuantity((q) => Math.max(0, q - 1));
   };
 
   const AddToCartHandler = () => {
+    if (!selectedVolume || !product?.id) return;
+
     const orderData = {
-      productId: product.id, //1
-      quantity: quantity + 1, // 1
-      mode: volumeMode, //"sealed"
-      volume: selectedVolume, // 105
+      productId: product.id,
+      quantity: quantity + 1,
+      mode: volumeMode,
+      volume: selectedVolume,
     };
 
     addToCart(orderData);
-    if (orderData.quantity * selectedVolume < product.stock) {
-      setQuantity((i) => ++i);
+
+    if ((quantity + 1) * selectedVolume <= product?.stock) {
+      setQuantity((q) => q + 1);
     }
   };
 
@@ -63,6 +83,6 @@ export function useQuantityHandler(
     setSelectedVolume,
     quantity,
     setQuantity,
-    defaultQuantity,
+    defaultCartItem,
   };
 }

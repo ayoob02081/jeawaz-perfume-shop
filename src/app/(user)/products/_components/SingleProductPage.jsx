@@ -1,14 +1,12 @@
 "use client";
 
 import Loading from "@/components/Loading";
-import Error from "@/components/Error";
-import { useGetProductPrice, useGetProductsbyId } from "@/hooks/useProducts";
 import AppImage from "@/components/AppImage";
 import CardEvents from "@/components/CardEvents";
 import RadioButton from "@/ui/RadioButton";
 import PriceSection from "@/components/PriceSection";
 import Accordion from "@/ui/Accordion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import ImageSwiper from "@/ui/ImageSwiper";
 import {
@@ -20,25 +18,24 @@ import BreadCrumb from "@/ui/BreadCrumb";
 
 import { useRouter } from "next/navigation";
 import { useQuantityHandler } from "@/hooks/useQuantityHandler";
+import { calculateProductPrice } from "@/utils/priceCalculator";
 
-function SingleProductPage({ slug }) {
-  const { data: product = [], isLoading, error } = useGetProductsbyId(slug);
-
+function SingleProductPage({ product }) {
   const { data: categories } = useGetAllCategories();
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (error) {
-    return <Error />;
+  if (!product) {
+    return (
+      <main className=" container mx-auto xl:max-w-7xl md:mt-40">
+        <Loading />
+      </main>
+    );
   }
 
   return (
     <main className=" container mx-auto xl:max-w-7xl md:mt-40">
       <article className="px-6">
         <section className="max-md:hidden">
-          {isLoading ? (
+          {!product ? (
             <Loading />
           ) : (
             <BreadCrumbBase>
@@ -67,23 +64,21 @@ function SingleProductPage({ slug }) {
 export default SingleProductPage;
 
 function ProductDes({ product }) {
-  const [basePrice, setBasePrice] = useState();
-  const [finalPrice, setFinalPrice] = useState();
-  const { isGettingPrice, getProductPrice } = useGetProductPrice();
   const router = useRouter();
-
   const { data: allBrands } = useGetAllBrandCategories();
+
   const productBrand = allBrands?.find(
     (brand) => brand.title === product?.categories.brand,
   );
 
   const [volumeMode, setVolumeMode] = useState("decant");
-  const volumes =
-    (volumeMode === "sealed" &&
-      product.modes?.sealed.variants.map((v) => v.volume)) ||
-    (volumeMode === "decant" && product.modes?.decant.availableVolumes);
 
-  const defaultVolume = volumes[0];
+  const volumes =
+    volumeMode === "sealed"
+      ? product?.modes?.sealed?.variants?.map((v) => v.volume)
+      : product?.modes?.decant?.availableVolumes;
+
+  const defaultVolume = volumes?.[0];
 
   const {
     AddToCartHandler,
@@ -91,49 +86,18 @@ function ProductDes({ product }) {
     selectedVolume,
     setSelectedVolume,
     quantity,
-    setQuantity,
-    defaultQuantity,
   } = useQuantityHandler(product, defaultVolume, volumeMode);
 
+  const price = calculateProductPrice(product, volumeMode, selectedVolume);
+
   const volumeHandler = (e, type) => {
-    const value = e.target.value;
+    const value = Number(e.target.value);
     if (type) {
       setVolumeMode(type);
-    } else {
-      const selectedItem = volumes?.filter(
-        (volume) => volume === Number(value),
-      );
-      setSelectedVolume(selectedItem[0]);
+      return;
     }
+    setSelectedVolume(value);
   };
-
-  useEffect(() => {
-    setSelectedVolume(defaultVolume);
-  }, [volumeMode]);
-
-  useEffect(() => {
-    async function fetchPrice() {
-      const data = await getProductPrice({
-        id: product.id,
-        mode: volumeMode,
-        volume: selectedVolume,
-      });
-
-      const { basePrice, finalPrice } = data;
-      setBasePrice(basePrice);
-      setFinalPrice(finalPrice);
-    }
-
-    fetchPrice();
-  }, [selectedVolume]);
-
-  useEffect(() => {
-    if (defaultQuantity?.quantity && defaultQuantity?.quantity !== undefined) {
-      setQuantity(defaultQuantity?.quantity);
-    } else {
-      setQuantity(0);
-    }
-  }, [defaultQuantity]);
 
   return (
     <article className="grid grid-cols-1 w-full gap-y-4 xl:gap-y-10 max-md:p-6 h-fit justify-items-start">
@@ -145,8 +109,8 @@ function ProductDes({ product }) {
           </p>
           <div className="md:hidden p-2">
             <AppImage
-              src={productBrand.iconUrl}
-              alt={productBrand.value + "-icon"}
+              src={productBrand?.iconUrl}
+              alt={productBrand?.value + "-icon"}
               className="justify-center h-full dark:invert"
               width="max-md:w-20 md:w-[4.815rem]"
               ratio="aspect-[6/2]"
@@ -235,8 +199,8 @@ function ProductDes({ product }) {
         {product.stock >= selectedVolume ? (
           <PriceSection
             volume={selectedVolume}
-            basePrice={basePrice}
-            unitPrice={finalPrice}
+            basePrice={price?.basePrice}
+            unitPrice={price?.finalPrice}
             offValue={product.offValue}
             OldPricevisibility="block"
             pricesRow="flex-col-reverse max-md:gap-0"
@@ -251,8 +215,8 @@ function ProductDes({ product }) {
         )}
         <div className="max-md:hidden p-2">
           <AppImage
-            src={productBrand.iconUrl}
-            alt={productBrand.value + "-icon"}
+            src={productBrand?.iconUrl}
+            alt={productBrand?.value + "-icon"}
             className="justify-center h-full dark:invert"
             width="max-md:w-16 md:w-20 xl:w-28 "
             ratio="aspect-[4/1]"
@@ -392,10 +356,7 @@ function ProductDetails({ product }) {
           />
           <p className="font-bold text-stroke-800">ترکیبات محصول</p>
         </span>
-        <p className="text-xs text-stroke-800">
-          لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
-          استفاده از طراحان گرافیک است،.
-        </p>
+        <p className="text-xs text-stroke-800">{product?.notesDescription}</p>
       </div>
       <div className="flex flex-col items-center justify-between gap-2 size-full">
         <Notes type={notes.base} base />

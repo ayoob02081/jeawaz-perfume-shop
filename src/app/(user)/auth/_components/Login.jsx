@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { toPersianNumbers } from "@/utils/toPersianNumbers";
-import OTPInput from "react-otp-input";
 import PassInput from "@/ui/PassInput";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/contexts/filters/auth/AuthContext";
@@ -12,16 +10,19 @@ import LoginForm from "./LoginForm";
 import { requestOtpApi, verifyOtpApi } from "@/services/authServices";
 import { DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
 import useOtpTimer from "@/hooks/useOtpTimer";
+import RHFTextField from "@/ui/RHFTextField";
+import PersianOTPInput from "@/ui/PersianOTPInput";
 
 function Login({ closeBtn }) {
   const {
     register,
+    control,
     watch,
     reset,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const [otp, setOtp] = useState(""); //?
+  const [otp, setOtp] = useState("");
   const phoneNumber = watch("phoneNumber") || "";
   const [step, setStep] = useState(1);
   const [isPasswordType, setIsPasswordType] = useState(false);
@@ -103,15 +104,19 @@ function Login({ closeBtn }) {
             onSubmit={submitStep1}
             closeBtn={closeBtn}
           >
-            <RHFLoginField
-              step={step}
-              register={register}
-              isRequired
+            <RHFTextField
+              name="phoneNumber"
+              type="tel"
+              control={control}
               errors={errors}
-              phoneNumber={phoneNumber}
+              icon={DevicePhoneMobileIcon}
+              placeholder="شماره همراه شما"
               validationSchema={{
                 required: "شماره تلفن الزامی است",
-                pattern: /^[0-9]{11}$/,
+                pattern: {
+                  value: /^09\d{9}$/,
+                  message: "شماره موبایل نامعتبر است",
+                },
               }}
             />
             {isPasswordType === true && (
@@ -155,18 +160,7 @@ function Login({ closeBtn }) {
             remaining={remaining}
           >
             <div className="flex items-center justify-center gap-2 w-full h-12 my-4">
-              <OTPInput
-                dir="ltr"
-                inputType="tel"
-                value={otp}
-                onChange={setOtp}
-                numInputs={5}
-                renderSeparator={<span> </span>}
-                inputStyle="flex items-center justify-center pl-4 sm:pl-5.5 pt-1 max-sm:size-11 sm:size-14 bg-[#F1F1F1] rounded-full outline-0 text-stroke-800 max-sm:text-lg sm:text-xl duration-200"
-                containerStyle="flex max-sm:gap-1 sm:gap-2 items-center justify-center w-full focus-within:*:[input]:bg-stroke-0 focus-within:*:[input]:border focus-within:*:border-primary duration-200"
-                renderInput={(props) => <input {...props} />}
-                skipDefaultStyles
-              />
+              <PersianOTPInput value={otp} onChange={setOtp} numInputs={5} />
             </div>
           </LoginForm>
         );
@@ -184,34 +178,3 @@ function Login({ closeBtn }) {
 }
 
 export default Login;
-
-function RHFLoginField({
-  phoneNumber,
-  register,
-  errors,
-  isRequired,
-  validationSchema,
-  ...rest
-}) {
-  return (
-    <div className="relative flex flex-col items-center justify-center gap-2 w-full h-12 md:h-14 ">
-      {errors && errors["phoneNumber"] && (
-        <span className="absolute -translate-y-1 left-2 text-error block text-xs mt-2">
-          {errors["phoneNumber"]?.message}
-        </span>
-      )}
-      <div className="flex items-center justify-center gap-2 size-full px-5 py-2 rounded-5xl bg-stroke-100  text-stroke-600 focus-within:*:text-stroke-800  focus-within:bg-stroke-0 focus-within:border border-primary">
-        <DevicePhoneMobileIcon className="size-5" />
-        <input
-          className="outline-0 size-full"
-          dir="rtl"
-          type="tel"
-          id="phoneNumber"
-          placeholder="شماره همراه شما"
-          {...register("phoneNumber", validationSchema)}
-          {...rest}
-        />
-      </div>
-    </div>
-  );
-}

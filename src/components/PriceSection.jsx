@@ -1,5 +1,4 @@
-"use client";
-
+import { normalizePrice } from "@/utils/priceCalculator";
 import {
   toPersianNumbers,
   toPersianNumbersWithComma,
@@ -20,12 +19,16 @@ function PriceSection({
 }) {
   const calculateDecantPrice = (pricePerMl, volume, offValue = 0) => {
     const basePrice = pricePerMl * volume;
-    const unitPrice = basePrice * (1 - offValue / 100);
-    return Math.round(unitPrice);
+    const finalPrice =
+      offValue > 0 ? basePrice - (basePrice * offValue) / 100 : basePrice;
+
+    return normalizePrice(finalPrice);
   };
 
   const baseStartingPrice = pricePerMl * volume;
   const startingPrice = calculateDecantPrice(pricePerMl, volume, offValue);
+
+  const badgeWidth = offValue > 10 ? "text-[10px] md:text-xs" : "";
 
   return basePrice ? (
     <div className={`${className}`}>
@@ -47,20 +50,16 @@ function PriceSection({
             className={`flex grow items-center ${justify} gap-1 size-full text-stroke-600`}
           >
             <p
-              className={`absolute badge aspect-square bg-primary text-white p-0 ${offValue < 10 ? "w-6 md:w-7" : "w-7 md:w-8"}`}
+              className={`absolut badge aspect-square bg-primary text-white py-0 px-1 w-6 md:w-7 ${badgeWidth}`}
             >
               {toPersianNumbers(offValue)}٪
             </p>
-            <div className={offValue < 10 ? "w-6 md:w-7" : "w-7 md:w-8"}></div>
             <span className={`flex gap-1 strikeThrough ${OldPricevisibility} `}>
               <p className=" text-xs font-bold">
                 {toPersianNumbersWithComma(basePrice)}
               </p>
               <p className="text-[10px] font-bold">تومان</p>
             </span>
-            <div
-              className={` ${offValue < 10 ? "w-6 md:w-7" : "w-7 md:w-8"}`}
-            ></div>
           </div>
         )}
       </div>
@@ -81,11 +80,10 @@ function PriceSection({
           className={`flex grow items-center ${justify} gap-1 size-full text-stroke-600`}
         >
           <p
-            className={`absolute badge aspect-square bg-primary text-white p-0 ${offValue < 10 ? "w-6 md:w-7" : "w-7 md:w-8"}`}
+            className={`absolut badge aspect-square bg-primary text-white py-0 px-1 w-6 md:w-7 ${badgeWidth}`}
           >
             {toPersianNumbers(offValue)}٪
           </p>
-          <div className={offValue < 10 ? "w-6 md:w-7" : "w-7 md:w-8"}></div>
           <span className={`flex gap-1 strikeThrough ${OldPricevisibility} `}>
             <p className="text-[10px] font-bold">از</p>
             <p className=" text-xs font-bold">

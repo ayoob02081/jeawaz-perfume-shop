@@ -1,7 +1,6 @@
 "use client";
 
 import useEmblaCarousel from "embla-carousel-react";
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import {
@@ -15,10 +14,9 @@ import AppImage from "@/components/AppImage";
 import Link from "next/link";
 import { useAuth } from "@/contexts/filters/auth/AuthContext";
 
-export default function ImageSwiper({ product, images }) {
+export default function ImageSwiper({ product, images = [] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { user, isAuthenticated } = useAuth();
-  const isPending = isAuthenticated === null;
+  const { user } = useAuth();
 
   const [mainRef, mainApi] = useEmblaCarousel({
     loop: false,
@@ -76,13 +74,12 @@ export default function ImageSwiper({ product, images }) {
                 key={i}
                 className="flex-[0_0_100%] relative aspect-square md:bg-stroke-150 md:dark:bg-stroke-50"
               >
-                <Image
+                <AppImage
                   src={src}
-                  alt={product?.enTitle + "-image"}
-                  fill
-                  loading="eager"
+                  alt={`${product?.enTitle || "product"}-image-${i}`}
                   priority={i < 2}
-                  className="object-contain size-full"
+                  objectFit="object-contain"
+                  className="size-full"
                 />
               </div>
             ))}
@@ -90,7 +87,7 @@ export default function ImageSwiper({ product, images }) {
 
           {/* Share Btn */}
           <div className="absolute flex items-center gap-1 top-5 max-md:left-3 md:right-3 max-md:z-50">
-            <button className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-stroke-0">
+            <button className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-stroke-0 shadow-sm">
               <AppImage
                 src="/images/share-icon.svg"
                 alt="share-icon"
@@ -117,15 +114,15 @@ export default function ImageSwiper({ product, images }) {
           <div className="max-md:hidden absolute flex items-center gap-1 bottom-5 right-3">
             <button
               onClick={scrollPrev}
-              disabled={selectedIndex === 0 ? true : false}
-              className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-stroke-0 disabled:opacity-60"
+              disabled={selectedIndex === 0}
+              className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-stroke-0 disabled:opacity-60 shadow-sm"
             >
               <ChevronLeftIcon className="size-4 stroke-2 text-stroke-800" />
             </button>
             <button
               onClick={scrollNext}
-              disabled={selectedIndex === images?.length - 1 ? true : false}
-              className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-stroke-0 disabled:opacity-60"
+              disabled={selectedIndex === images?.length - 1}
+              className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-stroke-0 disabled:opacity-60 shadow-sm"
             >
               <ChevronRightIcon className="size-4 stroke-2 text-stroke-800" />
             </button>
@@ -140,48 +137,57 @@ export default function ImageSwiper({ product, images }) {
           className="max-sm:p-4 max-md:p-6 max-lg:h-full lg:w-24 overflow-auto scrollbar-none"
         >
           <div className="flex max-lg:justify-start lg:justify-center lg:flex-col gap-3 max-lg:px-2">
-            {images?.map((src, i) => (
+            {images?.map((imgSrc, i) => (
               <button
                 key={i}
-                ref={(el) => (thumbRefs.current[i] = el)}
+                ref={(el) => {
+                  thumbRefs.current[i] = el;
+                }}
                 onClick={() => onThumbClick(i)}
                 className={clsx(
-                  "relative aspect-square max-[30rem]:size-18 max-md:size-26 md:size-20 lg:size-full *:rounded-xl rounded-xl lg:overflow-hidden border transition",
+                  "relative aspect-square max-[30rem]:size-18 max-md:size-26 md:size-20 lg:size-full *:rounded-xl rounded-xl lg:overflow-hidden border transition duration-200",
                   selectedIndex === i
-                    ? "border-primary md:*:bg-stroke-0 *:dark:bg-stroke-50"
+                    ? "border-primary md:*:bg-stroke-0 *:dark:bg-stroke-50 shadow-md scale-95"
                     : "border-stroke-250 opacity-60 dark:opacity-30 hover:opacity-100 bg-stroke-0 md:bg-stroke-150 md:dark:bg-stroke-100",
                 )}
               >
-                <Image
-                  src={src}
-                  alt={product?.enTitle + "-image"}
-                  fill
-                  className="object-contain "
+                <AppImage
+                  src={imgSrc}
+                  alt={`${product?.enTitle || "product"}-thumb-${i}`}
+                  priority={i < 2}
+                  objectFit="object-contain"
+                  className="size-full"
                 />
               </button>
             ))}
           </div>
         </div>
 
-        {/* Swiper Btn */}
+        {/* Swiper Btn (Desktop Only) */}
         <div className="max-lg:hidden lg:h-28 lg:w-full lg:flex lg:flex-col lg:gap-1 lg:items-center lg:pt-4 lg:justify-start">
           <button
             onClick={scrollPrev}
-            disabled={selectedIndex === 0 ? true : false}
-            className={`${selectedIndex === 0 ? "bg-transparent" : "lg:bg-stroke-100"} lg:flex lg:items-center lg:justify-center lg:size-8 xl:size-10 lg:rounded-full`}
-          >
-            {selectedIndex !== 0 && (
-              <ChevronUpIcon className="size-4 stroke-2 text-stroke-800 " />
+            disabled={selectedIndex === 0}
+            className={clsx(
+              "lg:flex lg:items-center lg:justify-center lg:size-8 xl:size-10 lg:rounded-full transition duration-200",
+              selectedIndex === 0
+                ? "bg-transparent opacity-0 pointer-events-none"
+                : "lg:bg-stroke-100",
             )}
+          >
+            <ChevronUpIcon className="size-4 stroke-2 text-stroke-800" />
           </button>
           <button
             onClick={scrollNext}
-            disabled={selectedIndex === images?.length - 1 ? true : false}
-            className={`${selectedIndex === images?.length - 1 ? "bg-transparent" : "lg:bg-stroke-100 "} lg:flex lg:items-center lg:justify-center lg:size-8 xl:size-10 lg:rounded-full`}
-          >
-            {selectedIndex !== images?.length - 1 && (
-              <ChevronDownIcon className="size-4 stroke-2 text-stroke-800 " />
+            disabled={selectedIndex === images?.length - 1}
+            className={clsx(
+              "lg:flex lg:items-center lg:justify-center lg:size-8 xl:size-10 lg:rounded-full transition duration-200",
+              selectedIndex === images?.length - 1
+                ? "bg-transparent opacity-0 pointer-events-none"
+                : "lg:bg-stroke-100",
             )}
+          >
+            <ChevronDownIcon className="size-4 stroke-2 text-stroke-800" />
           </button>
         </div>
       </div>

@@ -45,14 +45,15 @@ function ProductCard({ product }) {
 
   return (
     <article
-      className={`flex items-center justify-center p-4 max-md:pr-0 h-[13.5rem] md:h-[28.9rem] bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${isStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
+      className={`flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${isStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
     >
       {/* Mobile Mode Base Image */}
       <div className="flex items-start justify-between gap-4 w-full h-full">
-        <div className="flex flex-none md:hidden items-center justify-center !h-20 !w-[4.5rem]">
+        <div className="flex flex-none md:hidden items-center justify-center h-20! w-18!">
           <AppImage
             src={images[0]}
             alt={"-عکس" + perTitle}
+            priority={true}
             ratio="aspect-[4/5]"
           />
         </div>
@@ -82,10 +83,11 @@ function ProductCard({ product }) {
           </div>
 
           {/* Desktop Mode Base Picture */}
-          <div className="grow max-md:hidden md:flex items-center justify-center !h-[11.7rem] !w-[10.65rem] mx-auto">
+          <div className="grow max-md:hidden md:flex items-center justify-center h-46.75! w-42.5 mx-auto">
             <AppImage
               src={images[0]}
               alt={"-عکس" + perTitle}
+              priority={true}
               ratio="aspect-[4/5]"
             />
           </div>

@@ -7,6 +7,11 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
+const showApiError = (err) => {
+  const message = err?.response?.data?.message || "خطا در ارتباط با سرور";
+  toast.error(message, { id: "api-error" });
+};
+
 export function useAddToCart() {
   const queryClient = useQueryClient();
 
@@ -17,14 +22,13 @@ export function useAddToCart() {
   } = useMutation({
     mutationFn: addToCartApi,
     onSuccess: (data) => {
-      toast.success(data.message);
+      toast.success(data.message, { id: "cart-success" });
       queryClient.invalidateQueries({
         queryKey: ["cart-items"],
+        exact: true,
       });
     },
-    onError: (err) => {
-      toast.error(err?.response?.data?.message);
-    },
+    onError: showApiError,
   });
 
   return { error, isAdding, addToCart };
@@ -35,7 +39,7 @@ export const useGetAllCartItems = () =>
     queryKey: ["cart-items"],
     queryFn: getAllCartItemsApi,
     retry: false,
-     staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
   });
 
@@ -44,8 +48,9 @@ export function useUpdateQuantity() {
   return useMutation({
     mutationFn: updateQuantityApi,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart-items"] });
+      queryClient.invalidateQueries({ queryKey: ["cart-items"], exact: true });
     },
+    onError: showApiError,
   });
 }
 
@@ -54,8 +59,9 @@ export function useRemoveFromCart() {
   const { isPending: isDeleting, mutateAsync: removeFromCart } = useMutation({
     mutationFn: removeFromCartApi,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart-items"] });
+      queryClient.invalidateQueries({ queryKey: ["cart-items"], exact: true });
     },
+    onError: showApiError,
   });
   return { isDeleting, removeFromCart };
 }

@@ -2,6 +2,7 @@ function RHFTextAreaField({
   name,
   label,
   register,
+  errors,
   textClassName,
   dir = "rtl",
   isRequired,
@@ -10,6 +11,7 @@ function RHFTextAreaField({
   validationSchema = {},
   ...rest
 }) {
+  const hasError = errors?.[name];
   return (
     <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
       <label
@@ -30,6 +32,11 @@ function RHFTextAreaField({
         {...register(name, validationSchema)}
         {...rest}
       />
+      {hasError && (
+        <span className="text-error block text-xs mt-2">
+          {hasError?.message}
+        </span>
+      )}
     </div>
   );
 }

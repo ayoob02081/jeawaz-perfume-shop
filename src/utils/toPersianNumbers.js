@@ -1,15 +1,36 @@
 const farsiDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
 
-export function toPersianNumbersWithComma(n) {
-  const numWithCommas = numberWithCommas(n); // 100243 => 100,243
-  const persianNumber = toPersianNumbers(numWithCommas); // 100,243 => ۱۰۰,۲۴۳
-  return persianNumber;
+export function toPersianNumbers(value) {
+  if (value === null || value === undefined) return "";
+  return String(value).replace(/\d/g, (d) => farsiDigits[Number(d)]);
 }
 
-function numberWithCommas(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+export function numberWithCommas(value) {
+  if (value === null || value === undefined || value === "") return "";
+  const num = String(value).replace(/,/g, "");
+  return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-export function toPersianNumbers(n) {
-  return n.toString().replace(/\d/g, (x) => farsiDigits[parseInt(x)]);
+export function toPersianNumbersWithComma(value) {
+  return toPersianNumbers(numberWithCommas(value));
+}
+
+export function toEnglishNumbers(value) {
+  if (!value) return "";
+  return String(value)
+    .replace(/۰/g, "0")
+    .replace(/۱/g, "1")
+    .replace(/۲/g, "2")
+    .replace(/۳/g, "3")
+    .replace(/۴/g, "4")
+    .replace(/۵/g, "5")
+    .replace(/۶/g, "6")
+    .replace(/۷/g, "7")
+    .replace(/۸/g, "8")
+    .replace(/۹/g, "9");
+}
+
+export function cleanNumericValue(value) {
+  if (value === null || value === undefined) return "";
+  return toEnglishNumbers(String(value)).replace(/[^\d]/g, "");
 }
