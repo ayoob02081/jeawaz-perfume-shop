@@ -157,7 +157,7 @@ function EditProfileForm() {
                 label={item.label}
                 name={item.name}
                 type={item.type}
-                className="textField__input textField__input--2 rounded-xl w-full"
+                className="  rounded-xl w-full"
                 validationSchema={{ required: true }}
                 placeholder={`مثال: ${item.placeholder}`}
               />
@@ -168,7 +168,7 @@ function EditProfileForm() {
                 label={item.label}
                 name={item.name}
                 type={item.type}
-                className="textField__input textField__input--2 rounded-xl w-full"
+                className="  rounded-xl w-full"
                 placeholder={`مثال: ${item.placeholder}`}
               />
             ),
@@ -177,7 +177,7 @@ function EditProfileForm() {
             control={control}
             name="birthday"
             label="تولد"
-            className="textField__input textField__input--2 rounded-xl w-full"
+            className="  rounded-xl w-full"
             placeholder="مثال: ۱۳۸۱/۲/۴"
           />
           <RHFTextField
@@ -186,7 +186,7 @@ function EditProfileForm() {
             label="رمز ورود"
             name="password"
             type="password"
-            className="textField__input textField__input--2 rounded-xl w-full"
+            className="  rounded-xl w-full"
             validationSchema={{ required: true }}
             // placeholder={`مثال: ${item.placeholder}`}
           />

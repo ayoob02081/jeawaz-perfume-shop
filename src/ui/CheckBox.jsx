@@ -7,6 +7,7 @@ function CheckBox({
   label,
   className,
   children,
+  textClassName = "text-xs",
 }) {
   return (
     <label
@@ -20,10 +21,10 @@ function CheckBox({
         checked={checked}
         value={value}
         onChange={onChange}
-        className="sr-only size-0"
+        className="sr-only size-"
       />
       {children}
-      {label && <p className="text-xs">{label}</p>}
+      {label && <p className={`text-stroke-800 ${textClassName}`}>{label}</p>}
     </label>
   );
 }

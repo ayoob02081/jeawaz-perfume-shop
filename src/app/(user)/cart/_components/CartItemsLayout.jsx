@@ -216,7 +216,7 @@ function SuccessedOrderCard({ cartItem }) {
   const imageSrc = product.images[0];
   return (
     <div
-      className={`flex items-center justify-between w-full sm:max-w-max sm:min-w-96 max-md:p-3 md:p-4 !pr-0 max-md:gap-4 md:gap-5 max-md:border md:border-[1.5px] border-stroke-300 shadow-xs rounded-2xl`}
+      className={`flex items-center justify-between w-full  max-md:p-3 md:p-4 pr-0! max-md:gap-4 md:gap-5 max-md:border md:border-[1.5px] border-stroke-300 shadow-xs rounded-2xl`}
     >
       <DeskSuccessedCartItem cartItem={cartItem} />
       <div className="max-md:flex md:hidden items-center justify-start gap-4 size-full">

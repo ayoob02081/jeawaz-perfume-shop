@@ -1,11 +1,11 @@
-import { cache } from "react"; // <--- این خیلی مهمه
+import { cache } from "react";
 import SingleProductPage from "../_components/SingleProductPage";
-import httpServer from "@/services/httpServer";
 import { notFound } from "next/navigation";
+import http from "@/services/httpServer";
 
 const getProduct = cache(async (id) => {
   try {
-    const { data } = await httpServer.get(`/products/${id}`, {
+    const { data } = await http.get(`/products/${id}`, {
       headers: { "Cache-Control": "no-store" },
     });
     return data;

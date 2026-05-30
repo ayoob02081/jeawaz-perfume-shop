@@ -109,7 +109,7 @@ function CompleteUserData() {
                   errors={errors}
                   placeholder={item.placeholder}
                   validationSchema={item.validationSchema}
-                  className="textField__input rounded-full w-full h-12 md:h-14"
+                  className="rounded-full w-full h-12 md:h-14"
                 />
               ))}
             </div>

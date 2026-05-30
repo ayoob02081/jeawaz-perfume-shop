@@ -1,8 +1,10 @@
+import { useAuth } from "@/contexts/filters/auth/AuthContext";
 import {
   addToCartApi,
   getAllCartItemsApi,
   removeFromCartApi,
   updateQuantityApi,
+  updateShippingMethodApi,
 } from "@/services/cartServices";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -33,20 +35,35 @@ export function useAddToCart() {
 
   return { error, isAdding, addToCart };
 }
+export const useGetAllCartItems = () => {
+  const { loading } = useAuth();
 
-export const useGetAllCartItems = () =>
-  useQuery({
+  return useQuery({
     queryKey: ["cart-items"],
     queryFn: getAllCartItemsApi,
-    retry: false,
+    enabled: !loading,
+    retry: 1,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
   });
+};
 
 export function useUpdateQuantity() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateQuantityApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart-items"], exact: true });
+    },
+    onError: showApiError,
+  });
+}
+
+export function useUpdateShippingMethod() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateShippingMethodApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart-items"], exact: true });
     },

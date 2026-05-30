@@ -17,3 +17,9 @@ export const updateQuantityApi = ({ itemId, quantity }) => {
 export function removeFromCartApi(itemId) {
   return app.delete(`/cart/item/${itemId}`).then(({ data }) => data);
 }
+
+export function updateShippingMethodApi(shippingMethod) {
+  return app
+    .patch("/cart/shipping-method", { shippingMethod })
+    .then(({ data }) => data);
+}

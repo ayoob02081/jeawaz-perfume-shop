@@ -1,73 +1,19 @@
-import GoBack from "@/ui/GoBack";
 import AppImage from "@/components/AppImage";
 import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import CartItemsLayout from "./CartItemsLayout";
+import Loading from "@/components/Loading";
 
-function CartSummery({ cartItems, setStep, step, post }) {
-  const renderSteps = () => {
-    switch (step) {
-      case 1:
-        return (
-          <div className="flex items-center justify-center size-full max-md:mx-auto max-md:max-w-[22rem] md:max-w-[23rem]">
-            <AcceptCartSummery
-              cartItems={cartItems}
-              step={step}
-              setStep={setStep}
-            />
-          </div>
-        );
-
-      case 2:
-        return (
-          <div className="flex items-center justify-center md:justify-end size-full">
-            <CheckoutCartSummery
-              cartItems={cartItems}
-              step={step}
-              setStep={setStep}
-              post={post}
-            />
-            <div className="size-full max-md:flex md:hidden items-center justify-between gap-4">
-              <button
-                onClick={() => setStep(1)}
-                className="btn btn--secondary--2 size-full py-2 max-sm:max-w-1/3"
-              >
-                مرحله قبل
-              </button>
-              <CartSummeryBtn step={step} setStep={setStep} />
-            </div>
-          </div>
-        );
-
-      case 3:
-        return (
-          <div className="flex max-md:flex-col items-center justify-between gap-4 size-full max-md:px-6 ">
-            <button
-              onClick={() => setStep(3)}
-              className="btn btn--primary--2 border size-full py-2 md:max-w-60"
-            >
-              دریافت فاکتور
-            </button>
-            <div className="btn btn--secondary--2 size-full py-2 duration-200 md:max-w-60">
-              <GoBack side="left" label="بازگشت به سایت" className="size-4" />
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  return <>{renderSteps()}</>;
-}
-
-export default CartSummery;
-
-function AcceptCartSummery({ cartItems, date, totalPrice, step, setStep }) {
-  const { itemsTotal = 0, discountAmount = 0, totalProducts = 0 } = cartItems;
+export function OrderSummaryCard({
+  cart,
+  date,
+  totalPrice,
+  step,
+  setStep,
+}) {
+  const { itemsTotal = 0, discountAmount = 0, totalProducts = 0 } = cart;
   return (
     <div className="flex flex-col items-start justify-between gap-6 max-md:bg-stroke-150 md:bg-stroke-100 p-4 rounded-xl size-full">
       <div className="flex items-center justify-start gap-4 size-full">
@@ -81,9 +27,9 @@ function AcceptCartSummery({ cartItems, date, totalPrice, step, setStep }) {
         </div>
         <span className="flex flex-col items-start justify-between gap-2">
           <p className="font-semibold text-stroke-800">پرداخت سفارش</p>
-          <p className="text-xs text-stroke-400">
+          {/* <p className="text-xs text-stroke-400">
             متن کوتاهی در این بخش قرار میگیرد
-          </p>
+          </p> */}
         </span>
       </div>
       <div className="flex flex-col items-start justify-between gap-4 size-full border-t-[1.5px] border-dashed border-stroke-400 pt-3">
@@ -128,24 +74,33 @@ function AcceptCartSummery({ cartItems, date, totalPrice, step, setStep }) {
       <div className="flex flex-col items-center justify-between gap-4 size-full border-t max-md:border-stroke-200 md:border-stroke-250 pt-3">
         <Details
           textStyle="text-lg font-bold"
+          className="max-md:items-center max-md:h-fit"
           title="مجموع سبد خرید"
           des="تومان"
         >
           {toPersianNumbersWithComma(itemsTotal)}
         </Details>
-        <CartSummeryBtn step={step} setStep={setStep} />
+      </div>
+      <div className="max-md:sticky bottom-9 flex items-center justify-center w-full">
+        <button
+          type="submit"
+          onClick={() => setStep(2)}
+          className=" h-12 btn btn--success size-full py-2 "
+        >
+          تایید و تکمیل سفارش
+        </button>
       </div>
     </div>
   );
 }
-function CheckoutCartSummery({ cartItems, post, step, setStep }) {
+export function CheckoutCartSummery({ cart, post, setStep, isPending }) {
   const {
     totalPriceBeforeDiscount = 0,
     shippingMethod = null,
     shippingCost = 0,
     payableTotal = 0,
     discountAmount = 0,
-  } = cartItems;
+  } = cart;
 
   return (
     <div className="max-md:hidden md:flex flex-col items-center justify-between gap-4 max-md:bg-stroke-150 md:bg-stroke-100 p-4 rounded-xl w-full h-full">
@@ -153,8 +108,8 @@ function CheckoutCartSummery({ cartItems, post, step, setStep }) {
         <p className="text-[22px] font-bold">اطلاعات</p>
         <p className="text-lg">خرید</p>
       </span>
-      <div className="flex flex-col items-center justify-between size-full">
-        {cartItems?.items.map((item) => (
+      <div className="flex flex-col items-center justify-between size-full max-lg:hidden">
+        {cart?.items.map((item) => (
           <CartItemsLayout.Summery key={item.id} cartItem={item} />
         ))}
       </div>
@@ -190,7 +145,20 @@ function CheckoutCartSummery({ cartItems, post, step, setStep }) {
           </p>
         </span>
       </div>
-      <CartSummeryBtn step={step} setStep={setStep} />
+      <div className="size-full flex items-center justify-between gap-4">
+        <button
+          onClick={() => setStep(1)}
+          className="btn btn--secondary--2 bg-stroke-0 size-full py-2 max-sm:max-w-1/3"
+        >
+          مرحله قبل
+        </button>
+        <button
+          type="submit"
+          className="btn btn--primary border hover:bg-stroke-0 active:bg-stroke-0 size-full py-2"
+        >
+          پرداخت و خرید محصول
+        </button>
+      </div>
     </div>
   );
 }
@@ -203,31 +171,8 @@ function Details({ title, des, children, className, textStyle }) {
       <p className="text-sm text-stroke-800">{title}</p>
       <div className="flex items-center gap-1">
         <p className={`${textStyle} text-stroke-800`}>{children}</p>
-        <p className="text-xs text-stroke-400">{des}</p>
+        <p className="text-xs text-stroke-400 ">{des}</p>
       </div>
     </span>
-  );
-}
-
-function CartSummeryBtn({ step, setStep }) {
-  return (
-    <>
-      {step === 1 && (
-        <button
-          onClick={() => setStep(2)}
-          className="btn btn--success size-full py-2"
-        >
-          تایید و تکمیل سفارش
-        </button>
-      )}
-      {step === 2 && (
-        <button
-          onClick={() => setStep(3)}
-          className="btn btn--primary border hover:bg-stroke-0 active:bg-stroke-0 size-full py-2"
-        >
-          پرداخت و خرید محصول
-        </button>
-      )}
-    </>
   );
 }

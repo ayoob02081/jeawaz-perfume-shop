@@ -51,7 +51,7 @@ export default function ContactUsForm() {
               label={item.label}
               name={item.name}
               textClassName="!text-sm"
-              className="textField__input textField__input--2 rounded-xl w-full"
+              className="  rounded-xl w-full"
               validationSchema={{ required: true }}
               placeholder={`مثال: ${item.placeholder}`}
             />
@@ -63,7 +63,7 @@ export default function ContactUsForm() {
             register={register}
             placeholder="پیام خود را بنویسید ..."
             validationSchema={{ required: true }}
-            className="textField__input textField__input--2 rounded-xl w-full h-32"
+            className="  rounded-xl w-full h-32"
           />
         </div>
         <button className="btn btn--primary px-8 py-2 font-bold rounded-xl text-base">

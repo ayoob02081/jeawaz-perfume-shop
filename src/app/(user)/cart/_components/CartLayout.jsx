@@ -5,10 +5,8 @@ import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
-import TextField from "@/ui/TextField";
-import TextAreaField from "@/ui/TextAreaField";
 import RadioButton from "@/ui/RadioButton";
 import {
   CheckCircleIcon,
@@ -23,14 +21,23 @@ import {
   UserIcon as UserSolidIcon,
 } from "@heroicons/react/24/solid";
 import AppImage from "@/components/AppImage";
-import CartSummery from "./CartSummery";
+import { CheckoutCartSummery, OrderSummaryCard } from "./CartSummery";
 import PriceSection from "@/components/PriceSection";
 import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
 import Loading from "@/components/Loading";
 import Accordion from "@/ui/Accordion";
-import { useGetAllCartItems } from "@/hooks/useCart";
+import { useGetAllCartItems, useUpdateShippingMethod } from "@/hooks/useCart";
 import CartItemsLayout from "./CartItemsLayout";
 import Link from "next/link";
+import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import RHFTextField from "@/ui/RHFTextField";
+import { useForm } from "react-hook-form";
+import RHFSelect from "@/ui/RHFSelect";
+import RHFTextAreaField from "@/ui/RHFTextAreaField";
+import GoBack from "@/ui/GoBack";
+import { AllAddresses } from "./AddressModals";
+import CheckBox from "@/ui/CheckBox";
+const { shahr, ostan } = require("iran-cities-json");
 
 const postOptions = [
   {
@@ -45,14 +52,16 @@ const postOptions = [
     title: "تیپاکس با بیمه(۱ تا ۳ روز کاری)",
     price: 80000,
   },
-  { id: 3, value: "terminal", title: "باربری و ترمینال(۲۴ ساعته)", price: 0 },
+  { id: 3, value: "barbari", title: "باربری و ترمینال(۲۴ ساعته)", price: 0 },
 ];
 
 function CartLayout() {
   const pathName = usePathname();
   const [cartOpen, setCartOpen] = useState(false);
-  const [post, setPost] = useState(0);
-  const { data: cartItems = [], isLoading } = useGetAllCartItems();
+  const { loading } = useAuth();
+  const { data: cart, isLoading, isError } = useGetAllCartItems();
+  const [post, setPost] = useState(80000);
+  const [step, setStep] = useState(1);
 
   const toggleCart = () => {
     setCartOpen((prevState) => !prevState);
@@ -62,22 +71,93 @@ function CartLayout() {
     setCartOpen(true);
   }
 
-  const [step, setStep] = useState(1);
+  useEffect(() => {
+    if (cart?.shippingCost !== undefined) {
+      setPost(cart.shippingCost);
+    }
+  }, [cart?.shippingCost]);
+
+  useEffect(() => {
+    if (!cart || cart.totalProducts === 0) {
+      setStep(1);
+    }
+  }, [cart]);
 
   const renderSteps = () => {
     switch (step) {
       case 1:
-        return <AcceptCart cartItems={cartItems} />;
-
+        return <CartOverview cart={cart} step={step} setStep={setStep} />;
       case 2:
-        return <Checkout cartItems={cartItems} post={post} setPost={setPost} />;
-
+        return (
+          <Checkout
+            cart={cart}
+            post={post}
+            setPost={setPost}
+            step={step}
+            setStep={setStep}
+          />
+        );
       case 3:
-        return <PaymentResault cartItems={cartItems} post={post} />;
-
+        return <PaymentResault cart={cart} post={post} />;
       default:
         return null;
     }
+  };
+
+  const renderCartContent = () => {
+    if (loading || isLoading) {
+      return <Loading />;
+    }
+
+    if (isError) {
+      return (
+        <div className="flex items-center justify-center max-md:h-screen md:h-92 w-full">
+          <span className="flex flex-col items-center justify-center max-md:gap-4 md:gap-6 text-stroke-800">
+            <p className="font-bol max-md:text-xl md:text-2xl text-stroke-600">
+              خطا در دریافت سبد خرید
+            </p>
+          </span>
+        </div>
+      );
+    }
+
+    if (!cart || cart.totalProducts === 0) {
+      return (
+        <div className="flex items-center justify-center max-md:h-screen md:h-92 w-full">
+          <span className="flex flex-col items-center justify-center max-md:gap-4 md:gap-6 text-stroke-800">
+            <p className="font-bol max-md:text-xl md:text-2xl text-stroke-600">
+              سبد خرید شما خالی است!
+            </p>
+            <Link
+              href="/products"
+              className="btn btn--primary px-3 py-1.5 max-md:text-sm"
+            >
+              صفحه محصولات
+            </Link>
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-stroke-100 md:rounded-3xl duration-200">
+          <CheckoutStepper step={step} setStep={setStep} />
+        </div>
+
+        <div className="flex items-center justify-center w-full px-6">
+          <div
+            className={`container ${step !== 3 ? "md:flex-row" : ""} ${
+              step === 2
+                ? "lg:p-6 lg:py-8 lg:border-[1.5px] lg:rounded-2.5xl"
+                : "md:p-6 md:py-8 md:border-[1.5px] md:rounded-2.5xl"
+            } flex flex-col items-start md:items-center md:justify-between xl:justify-normal gap-5 border-stroke-200 size-full duration-200`}
+          >
+            {renderSteps()}
+          </div>
+        </div>
+      </>
+    );
   };
 
   return (
@@ -89,47 +169,7 @@ function CartLayout() {
       className="size-4"
       overflow="overflow-y-auto"
     >
-      {cartItems?.totalProducts === 0 ? (
-        <div className="flex items-center justify-center max-md:h-screen md:h-92 w-full">
-          <span className="flex flex-col items-center justify-center max-md:gap-4 md:gap-6 text-stroke-800">
-            <p className="font-bol max-md:text-xl md:text-2xl text-stroke-600">
-              سبد خرید شما خالی است!
-            </p>
-            <Link
-              href="/products"
-              className="btn btn--primary px-3 py-1.5 max-md:text-sm "
-            >
-              صفحه محصولات
-            </Link>
-          </span>
-        </div>
-      ) : (
-        <>
-          <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-stroke-100 md:rounded-3xl duration-200">
-            <CartStepsIcon step={step} setStep={setStep} />
-          </div>
-          {isLoading ? (
-            <Loading />
-          ) : (
-            <div className="px-6">
-              <div
-                className={`${step !== 3 && "md:flex-row"}
-          flex flex-col items-start xl:items-start md:justify-between xl:justify-normal gap-5 px-6 md:p-6 md:py-8 md:border-[1.5px] border-stroke-200 md:rounded-2.5xl size-full duration-200`}
-              >
-                <>{renderSteps()}</>
-                {
-                  <CartSummery
-                    cartItems={cartItems}
-                    setStep={setStep}
-                    step={step}
-                    post={post}
-                  />
-                }
-              </div>
-            </div>
-          )}
-        </>
-      )}
+      {renderCartContent()}
     </AdaptiveOverlayPage>
   );
 }
@@ -164,7 +204,7 @@ function Title({ productValue, className, titleOne, titleTwo, dir = "rtl" }) {
   );
 }
 
-function CartStepsIcon({ productValue, className, step, setStep }) {
+function CheckoutStepper({ productValue, className, step, setStep }) {
   return (
     <div className="flex items-center justify-center max-sm:gap-1 sm:gap-4 size-full max-w-200 px-10 h-[7.15rem] md:h-40">
       <button
@@ -252,178 +292,344 @@ function CartStepsIcon({ productValue, className, step, setStep }) {
   );
 }
 
-function CartMobaileLayout({ cartItems }) {
-  return (
-    <div className="max-lg:flex items-center justify-center flex-col gap-4 lg:hidden w-full">
-      {cartItems?.items.map((item) => (
-        <CartItemsLayout.Mobile key={item.id} cartItem={item} />
-      ))}
-    </div>
-  );
-}
-
-function AcceptCart({ cartItems }) {
-  const { totalProducts = 0 } = cartItems;
+function CartOverview({ cart, step, setStep }) {
+  const { totalProducts = 0 } = cart;
 
   return (
-    <div className="flex flex-col md:items-center md:justify-between gap-5 size-full max-lg:*:first:hidden">
-      <Table className="">
-        <Table.Header className="*:pb-6">
-          <th className="text-right px-2">
-            <Title
-              titleOne="سبد خرید"
-              titleTwo="شما"
-              productValue={totalProducts}
-              className="lg:flex-co xl: flex-row items-center justify-start"
-            />
-          </th>
-          <th className="px-2 text-stroke-800 text-nowrap">حجم و نوع</th>
-          <th className="px-2 text-stroke-800">تعداد</th>
-          <th className="text-left px-2 text-stroke-800">قیمت نهایی</th>
-        </Table.Header>
-        <Table.body>
-          {cartItems?.items.map((item) => (
-            <CartItemsLayout.Desktop key={item.id} cartItem={item} />
-          ))}
-        </Table.body>
-      </Table>
-      <Title
-        titleOne="سبد خرید"
-        titleTwo="شما"
-        productValue={totalProducts}
-        className="justify-between lg:hidden"
-      />
-      <CartMobaileLayout cartItems={cartItems} />
-    </div>
-  );
-}
-
-function Checkout({ cartItems, date, setPost, post }) {
-  const { totalProducts = 0 } = cartItems;
-
-  return (
-    <div className="flex flex-col gap-8 size-full">
-      <Accordion
-        titleStyle="text-stroke-800"
-        className="max-md:flex md:hidden w-full"
-        label="نمایش سبد خرید شما"
-      >
-        <CartMobaileLayout cartItems={cartItems} />
-      </Accordion>
-      <div className="flex flex-col items-center justify-between gap-4 size-full max-md:border-[1.5px] border-stroke-200 rounded-2.5xl max-md:p-6">
-        <div className="flex items-center justify-start gap-1 text-stroke-800 border-b border-stroke-200 w-full pb-4">
-          <h2 className="max-md:text-lg md:text-[1.375rem]">اطلاعات کاربری</h2>
-          <p className="max-md:text-sm md:text-xl">شما</p>
-        </div>
-        <form className="flex flex-col gap-6 w-full ">
-          <div className="flex flex-col gap-6 w-full">
-            <p className="max-md:text-sm md:text-base font-bold text-stroke-800">
-              اطلاعات تحویل گیرنده
-            </p>
-            <div className="flex flex-col lg:flex-row gap-4 w-full">
-              <TextField
-                isRequired
-                label="نام و نام خانوادگی"
-                name="fullName"
-                className="textField__input w-full"
-                placeholder="مثال : رضا جنیدی"
+    <div className="flex flex-col md:flex-row justify-center gap-6 w-full">
+      {/* CartItems */}
+      <div className="flex flex-col md:items-center md:justify-between gap-5 size-full max-lg:*:first:hidden">
+        <Table className="">
+          <Table.Header className="*:pb-6">
+            <th className="text-right px-2">
+              <Title
+                titleOne="سبد خرید"
+                titleTwo="شما"
+                productValue={totalProducts}
+                className="lg:flex-co xl: flex-row items-center justify-start"
               />
-              <TextField
-                isRequired
-                label="نام و نام خانوادگی"
-                name="fullName"
-                className="textField__input w-full"
-                placeholder="مثال : رضا جنیدی"
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-6 w-full">
-            <span className="flex items-center justify-between w-full">
-              <p className="max-md:text-sm md:text-base font-bold text-stroke-800">
-                آدرس تحویل
-              </p>
-              <button className="flex items-center justify-center gap-1">
-                <PlusIcon className="size-4 text-primary" />
-                <p className="text-primary text-xs font-bold">انتخاب آدرس</p>
-              </button>
-            </span>
-            <div className="flex flex-col gap-4 w-full">
-              <div className="flex flex-col lg:flex-row w-full gap-4">
-                <TextField
-                  isRequired
-                  label="استان"
-                  name="ostan"
-                  className="textField__input w-full"
-                  placeholder="انتخاب کنید"
-                />
-                <TextField
-                  isRequired
-                  label="شهر"
-                  name="city"
-                  className="textField__input w-full"
-                  placeholder="انتخاب کنید"
-                />
-              </div>
-              <div className="flex flex-col lg:flex-row w-full gap-4">
-                <TextField
-                  isRequired
-                  label="پلاک"
-                  name="No"
-                  className="textField__input w-full"
-                  placeholder=" مثال :۱۰"
-                />
-                <TextField
-                  isRequired
-                  label="کدپستی"
-                  name="postCode"
-                  className="textField__input w-full"
-                  placeholder=" مثال : ۳۲۱۲۵۶۳۷۴۹۰"
-                  type="number"
-                />
-              </div>
-              <div className="max-md:h-28 md:h-32 w-full">
-                <TextAreaField
-                  isRequired
-                  label="نشانی پستی"
-                  name="address"
-                  className="w-full h-full resize-none"
-                  placeholder=" مثال : تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵"
-                />
-              </div>
-            </div>
-          </div>
-        </form>
-        <div className="w-full mt-14">
-          <div className="size-full border-b border-stroke-200 pb-4 mb-4">
-            <Title
-              dir="ltr"
-              titleOne="انتخاب"
-              titleTwo="نحوه ارسال"
-              productValue={totalProducts}
-              className="justify-between "
-            />
-          </div>
-        </div>
-        <div className="flex items-center flex-wrap gap-4 w-full mb-6">
-          {postOptions.map((item) => (
-            <SendOptoins
-              key={item.id}
-              item={item}
-              setPost={setPost}
-              post={post}
-            />
+            </th>
+            <th className="px-2 text-stroke-800 text-nowrap">حجم و نوع</th>
+            <th className="px-2 text-stroke-800">تعداد</th>
+            <th className="text-left px-2 text-stroke-800">قیمت نهایی</th>
+          </Table.Header>
+          <Table.body>
+            {cart?.items.map((item) => (
+              <CartItemsLayout.Desktop key={item.id} cartItem={item} />
+            ))}
+          </Table.body>
+        </Table>
+        <Title
+          titleOne="سبد خرید"
+          titleTwo="شما"
+          productValue={totalProducts}
+          className="justify-between lg:hidden"
+        />
+
+        {/* MobileCartItems */}
+        <div className="max-lg:flex items-center justify-center flex-col gap-4 lg:hidden w-full">
+          {cart?.items.map((item) => (
+            <CartItemsLayout.Mobile key={item.id} cartItem={item} />
           ))}
         </div>
+      </div>
+
+      {/* CartSummery */}
+      <div className="flex items-center justify-center size-full max-md:mx-auto md:max-w-92">
+        <OrderSummaryCard cart={cart} step={step} setStep={setStep} />
       </div>
     </div>
   );
 }
 
-function SendOptoins({ item, setPost, post }) {
+function Checkout({ cart, date, setPost, post, step, setStep }) {
+  const { totalProducts = 0 } = cart;
+  const [isListOpen, setIsListOpen] = useState(false);
+  const [isSave, setIsSave] = useState(true);
+
+  const { mutate: updateShippingMethod, isPending } = useUpdateShippingMethod();
+
+  const { user } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      fullName: user
+        ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
+        : "",
+      phoneNumber: user?.phoneNumber || "",
+      ostan: "",
+      shahr: "",
+      No: "",
+      postCode: "",
+      address: "",
+    },
+  });
+  const selectedOstanId = watch("ostan");
+
+  const ostanOptions = useMemo(
+    () => ostan.map((o) => ({ label: o.name, value: o.name })),
+    [],
+  );
+
+  const cityOptions = useMemo(() => {
+    const selectedProvince = watch("ostan");
+    if (!selectedProvince) return [];
+
+    return shahr
+      .filter(
+        (c) => c.ostan === ostan.find((o) => o.name === selectedProvince)?.id,
+      )
+      .map((c) => ({ label: c.name, value: c.name }));
+  }, [watch("ostan")]);
+
+  const onSubmit = (data) => {
+    console.log("Final Data:", data, isSave);
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col lg:flex-row justify-center gap-6 w-full"
+    >
+      <div className="flex flex-col gap-8 size-full">
+        {/* CartItems */}
+        <Accordion
+          titleStyle="text-stroke-800"
+          className="max-lg:flex lg:hidden w-full"
+          label="نمایش سبد خرید شما"
+        >
+          <div className="max-lg:flex items-center justify-center flex-col gap-4 lg:hidden w-full">
+            {cart?.items?.map((item) => (
+              <CartItemsLayout.Mobile key={item.id} cartItem={item} />
+            ))}
+          </div>
+        </Accordion>
+
+        {/* UserInfo */}
+        <div className="flex flex-col items-center justify-between gap-4 size-full max-lg:border-[1.5px] border-stroke-200 rounded-2.5xl max-lg:p-6">
+          <div className="flex items-center justify-start gap-1 text-stroke-800 border-b border-stroke-200 w-full pb-4">
+            <h2 className="max-md:text-lg md:text-[1.375rem]">
+              اطلاعات کاربری
+            </h2>
+            <p className="max-md:text-sm md:text-xl">شما</p>
+          </div>
+          <div className="flex flex-col gap-6 w-full ">
+            <div className="flex flex-col gap-6 w-full">
+              <p className="max-md:text-sm md:text-base font-bold text-stroke-800">
+                اطلاعات تحویل گیرنده
+              </p>
+              <div className="flex flex-col lg:flex-row gap-4 w-full">
+                <RHFTextField
+                  isRequired
+                  register={register}
+                  errors={errors}
+                  label="نام و نام خانوادگی"
+                  name="fullName"
+                  className="w-full"
+                  placeholder="مثال : رضا جنیدی"
+                  validationSchema={{
+                    required: "نام گیرنده الزامی است",
+                  }}
+                />
+                <RHFTextField
+                  name="phoneNumber"
+                  type="tel"
+                  label="شماره تماس گیرنده"
+                  isRequired
+                  errors={errors}
+                  control={control}
+                  isPrice={false}
+                  className="w-full"
+                  placeholder="مثال : ۰۹۱۲۳۴۵۶۷۸۹"
+                  validationSchema={{
+                    required: "شماره تلفن الزامی است",
+                    pattern: {
+                      value: /^(?:\+98|98|0)?9\d{9}$/,
+                      message: "شماره موبایل نامعتبر است",
+                    },
+                  }}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-6 w-full">
+              <span className="flex items-center justify-between w-full">
+                <p className="max-md:text-sm md:text-base font-bold text-stroke-800">
+                  آدرس تحویل
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsListOpen(true)}
+                  className="flex items-center justify-center gap-1"
+                >
+                  <PlusIcon className="size-4 text-primary" />
+                  <p className="text-primary text-xs font-bold">انتخاب آدرس</p>
+                </button>
+              </span>
+              <div className="flex flex-col gap-6 w-full">
+                <div className="flex flex-col lg:flex-row w-full gap-4">
+                  <RHFSelect
+                    isRequired
+                    label="استان"
+                    name="ostan"
+                    className="textField__input"
+                    register={register}
+                    errors={errors}
+                    options={ostanOptions}
+                    placeholder="انتخاب استان"
+                  />
+                  <RHFSelect
+                    isRequired
+                    label="شهر"
+                    name="shahr"
+                    register={register}
+                    errors={errors}
+                    disabled={!selectedOstanId}
+                    options={cityOptions}
+                    placeholder={
+                      selectedOstanId
+                        ? "انتخاب شهر"
+                        : "ابتدا استان را انتخاب کنید"
+                    }
+                    className="textField__input"
+                  />
+                </div>
+                <div className="flex flex-col lg:flex-row w-full gap-4">
+                  <RHFTextField
+                    type="tel"
+                    label="کدپستی"
+                    name="postCode"
+                    isRequired
+                    errors={errors}
+                    control={control}
+                    isPrice={false}
+                    className="w-full"
+                    placeholder="مثال : ۳۲۱۲۵۶۳۷۴۹۰"
+                    validationSchema={{
+                      required: "کدپستی الزامی است",
+                    }}
+                  />
+                  <RHFTextField
+                    type="tel"
+                    label="پلاک"
+                    name="No"
+                    // isRequired
+                    errors={errors}
+                    control={control}
+                    isPrice={false}
+                    className="w-full"
+                    placeholder="مثال : ۱۰"
+                    // validationSchema={{
+                    //   required: "پلاک الزامی است",
+                    // }}
+                  />
+                </div>
+                <div className="flex flex-col items-center justify-center gap-4 w-full">
+                  <RHFTextAreaField
+                    label="نشانی پستی"
+                    name="address"
+                    isRequired
+                    errors={errors}
+                    register={register}
+                    placeholder=" مثال : خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵"
+                    validationSchema={{ required: "نشانی ضروری است" }}
+                    className="rounded-2xl w-full"
+                  />
+                  <CheckBox
+                    name="saveAddress"
+                    id="saveAddres"
+                    value="saveAddres"
+                    onChange={() => setIsSave(!isSave)}
+                    checked={isSave}
+                    label="ذخیره آدرس برای خریدهای بعدی"
+                    className="flex flex-row items-center justify-start gap-2 cursor-pointer duration-200 w-full"
+                    textClassName="text-sm"
+                  >
+                    <div
+                      className={`flex items-center justify-center size-4.5 aspect-square rounded-sm border-[1.5px] ${isSave ? "bg-primary has-checked: border-primary" : "border-stroke-600/50"} `}
+                    >
+                      <CheckIcon className="size-3 stroke-4 text-stroke-0" />
+                    </div>
+                  </CheckBox>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="w-full mt-6">
+            <div className="size-full border-b border-stroke-200 pb-4 mb-4">
+              <Title
+                dir="ltr"
+                titleOne="انتخاب"
+                titleTwo="نحوه ارسال"
+                productValue={totalProducts}
+                className="justify-between "
+              />
+            </div>
+          </div>
+          <div className="flex items-center flex-wrap gap-4 w-full mb-6">
+            {postOptions.map((item) => (
+              <SendOptoins
+                key={item.id}
+                item={item}
+                setPost={setPost}
+                post={post}
+                updateShippingMethod={updateShippingMethod}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Modals */}
+      <AllAddresses isListOpen={isListOpen} setIsListOpen={setIsListOpen} />
+
+      {/* CartSummery */}
+      <div className="flex items-center justify-center md:justify-end size-full">
+        <CheckoutCartSummery
+          cart={cart}
+          step={step}
+          setStep={setStep}
+          post={post}
+          isPending={isPending}
+        />
+      </div>
+
+      {/* MobileButtons */}
+      <div className="size-full md:hidden flex items-center justify-between gap-4">
+        <button
+          type="button"
+          onClick={() => setStep(1)}
+          className="btn btn--secondary--2 size-full py-2 max-sm:max-w-1/3"
+        >
+          مرحله قبل
+        </button>
+        <button
+          type="submit"
+          className="btn btn--primary border hover:bg-stroke-0 active:bg-stroke-0 size-full py-2"
+        >
+          پرداخت و خرید محصول
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function SendOptoins({ item, setPost, post, updateShippingMethod }) {
   const { value, title, price } = item;
+  const onChange = () => {
+    updateShippingMethod(value);
+    setPost(price);
+  };
+
   return (
     <RadioButton
-      onChange={() => setPost(price)}
+      onChange={onChange}
       checked={post === price}
       id={value}
       name="post"
@@ -439,7 +645,7 @@ function SendOptoins({ item, setPost, post }) {
         <div className="flex items-center justify-center size-4 aspect-square rounded-sm border-[1.25px] border-stroke-600/50 ">
           <CheckIcon className="size-2.5 stroke-4 text-stroke-100 checked:text-success" />
         </div>
-        <p className="text-xs text-nowrap whitespace-nowrap overflow-auto w-full py-0.5">
+        <p className="text-xs text-nowrap whitespace-nowrap overflow-auto w-full py-1 scrollbar-none">
           {title}
         </p>
       </div>
@@ -456,7 +662,7 @@ function SendOptoins({ item, setPost, post }) {
     </RadioButton>
   );
 }
-function PaymentResault({ cartItems, date, totalPrice }) {
+function PaymentResault({ cart, date, totalPrice }) {
   const {
     totalPriceBeforeDiscount = 0,
     shippingMethod = null,
@@ -464,100 +670,116 @@ function PaymentResault({ cartItems, date, totalPrice }) {
     payableTotal = 0,
     discountAmount = 0,
     totalProducts = 0,
-  } = cartItems;
+  } = cart;
   return (
-    <div className="flex flex-col items-center justify-center gap-6 size-full">
-      <div className="flex flex-col md:flex-row items-center md:items-start justify-between size-full">
-        <div className="flex flex-col md:flex-row items-center md:items-start justify-start gap-2 size-full">
-          <AppImage
-            src="/images/success-badge-icon.svg"
-            alt="success-badge-icon"
-            width="max-md:size-12 md:size-16"
-            sizes="30vw"
-          />
-          <div className="flex flex-col items-center md:items-start justify-between gap-4 md:gap-2 text-stroke-800">
-            <p className="md:text-lg font-bold">
-              خرید شما با <strong className="text-success">موفقیت</strong> انجام
-              شد
-            </p>
-            <p className="text-stroke-600">
-              جهت دریافت جزئیات بیشتر، لطفاً ایمیل یا پیامک خود را بررسی کنید
-            </p>
+    <div className="flex flex-col md:flex-ro items-center justify-center gap-4 w-full">
+      <div className="flex flex-col items-center justify-center gap-6 size-full">
+        <div className="flex flex-col md:flex-row items-center md:items-start justify-between size-full">
+          <div className="flex flex-col md:flex-row items-center md:items-start justify-start gap-2 size-full">
+            <AppImage
+              src="/images/success-badge-icon.svg"
+              alt="success-badge-icon"
+              width="max-md:size-12 md:size-16"
+              sizes="30vw"
+            />
+            <div className="flex flex-col items-center md:items-start justify-between gap-4 md:gap-2 text-stroke-800">
+              <p className="md:text-lg font-bold">
+                خرید شما با <strong className="text-success">موفقیت</strong>{" "}
+                انجام شد
+              </p>
+              <p className="text-stroke-600">
+                جهت دریافت جزئیات بیشتر، لطفاً ایمیل یا پیامک خود را بررسی کنید
+              </p>
+            </div>
+          </div>
+          <div className="md:flex flex-col items-start justify-between gap-2 max-md:hidden">
+            <p className="text-stroke-600">مبلغ پرداختی</p>
+            <PriceSection
+              offValue={0}
+              basePrice={payableTotal}
+              unitPrice={payableTotal}
+              priceClassName="text-3xl"
+              textClassName="text-sm text-stroke-800 font-normal"
+            />
           </div>
         </div>
-        <div className="md:flex flex-col items-start justify-between gap-2 max-md:hidden">
-          <p className="text-stroke-600">مبلغ پرداختی</p>
-          <PriceSection
-            offValue={0}
-            basePrice={payableTotal}
-            unitPrice={payableTotal}
-            priceClassName="text-3xl"
-            textClassName="text-sm text-stroke-800 font-normal"
-          />
+        <div className="flex items-center justify-start overflow-auto gap-4 flex-wrap bg-stroke-100 rounded-2xl py-4 px-6 w-full scrollbar--primary scrollbar-h-1 duration-200">
+          <Table className="text-right max-lg:hidden">
+            <Table.Header className="*:text-stroke-400 *:font-normal w-full h-fit">
+              <th className="pl-2 truncate">کد سفارش شما</th>
+              <th className="px-2 truncate">تاریخ تراکنش</th>
+              <th className="px-2 truncate">تعداد سفارشات</th>
+              <th className="pr-2 truncate">آدرس</th>
+            </Table.Header>
+            <Table.body>
+              <Table.Row className="*:pt-2 *:text-stroke-800 w-full h-fit">
+                <td className="pl-2 whitespace-nowrap text-ellipsis w-full">
+                  #{toPersianNumbers(123456789)}
+                </td>
+                <td className="px-2 whitespace-nowrap text-ellipsis w-full">
+                  25 اردیبهشت 1404
+                </td>
+                <td className="px-2 whitespace-nowrap text-ellipsis w-full">
+                  {toPersianNumbers(totalProducts)} سفارش
+                </td>
+                <td className="pr-2 whitespace-nowrap overflow-x-auto w-full py-0.5">
+                  تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک
+                  ۱۵
+                </td>
+              </Table.Row>
+            </Table.body>
+          </Table>
+          <Table className="lg:hidden *:*:*:odd:text-right *:*:*:even:text-left *:*:*:pt-6">
+            <Table.body>
+              <tr className="*:pt-0">
+                <th className="text-stroke-400 font-normal">کد سفارش شما</th>
+                <td className="text-stroke-800">
+                  #{toPersianNumbers(123456789)}
+                </td>
+              </tr>
+            </Table.body>
+            <Table.body>
+              <tr>
+                <th className="text-stroke-400 font-normal">تاریخ تراکنش</th>
+                <td className="text-stroke-800">25 اردیبهشت 1404</td>
+              </tr>
+            </Table.body>
+            <Table.body>
+              <tr>
+                <th className="text-stroke-400 font-normal">تعداد سفارشات</th>
+                <td className="text-stroke-800">
+                  {toPersianNumbers(cart?.items.length)} سفارش
+                </td>
+              </tr>
+            </Table.body>
+            <Table.body>
+              <tr>
+                <th className="text-stroke-400 font-normal">آدرس</th>
+                <td className="text-stroke-800">
+                  تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک
+                  ۱۵
+                </td>
+              </tr>
+            </Table.body>
+          </Table>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-4">
+          {cart?.items.map((item) => (
+            <CartItemsLayout.Success key={item.id} cartItem={item} />
+          ))}
         </div>
       </div>
-      <div className="flex items-center justify-start overflow-auto gap-4 flex-wrap bg-stroke-100 rounded-2xl py-4 px-6 w-full scrollbar--primary scrollbar-h-1 duration-200">
-        <Table className="text-right max-sm:hidden">
-          <Table.Header className="*:text-stroke-400 *:font-normal w-full h-fit">
-            <th className="pl-2 truncate">کد سفارش شما</th>
-            <th className="px-2 truncate">تاریخ تراکنش</th>
-            <th className="px-2 truncate">تعداد سفارشات</th>
-            <th className="pr-2 truncate">آدرس</th>
-          </Table.Header>
-          <Table.body>
-            <Table.Row className="*:pt-2 *:text-stroke-800 w-full h-fit">
-              <td className="pl-2 whitespace-nowrap text-ellipsis w-full">
-                #{toPersianNumbers(123456789)}
-              </td>
-              <td className="px-2 whitespace-nowrap text-ellipsis w-full">
-                25 اردیبهشت 1404
-              </td>
-              <td className="px-2 whitespace-nowrap text-ellipsis w-full">
-                {toPersianNumbers(totalProducts)} سفارش
-              </td>
-              <td className="pr-2 whitespace-nowrap overflow-x-auto w-full py-0.5">
-                تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵
-              </td>
-            </Table.Row>
-          </Table.body>
-        </Table>
-        <Table className="sm:hidden *:*:*:odd:text-right *:*:*:even:text-left *:*:*:pt-6">
-          <Table.body>
-            <tr className="*:pt-0">
-              <th className="text-stroke-400 font-normal">کد سفارش شما</th>
-              <td className="text-stroke-800">
-                #{toPersianNumbers(123456789)}
-              </td>
-            </tr>
-          </Table.body>
-          <Table.body>
-            <tr>
-              <th className="text-stroke-400 font-normal">تاریخ تراکنش</th>
-              <td className="text-stroke-800">25 اردیبهشت 1404</td>
-            </tr>
-          </Table.body>
-          <Table.body>
-            <tr>
-              <th className="text-stroke-400 font-normal">تعداد سفارشات</th>
-              <td className="text-stroke-800">
-                {toPersianNumbers(cartItems?.items.length)} سفارش
-              </td>
-            </tr>
-          </Table.body>
-          <Table.body>
-            <tr>
-              <th className="text-stroke-400 font-normal">آدرس</th>
-              <td className="text-stroke-800">
-                تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵
-              </td>
-            </tr>
-          </Table.body>
-        </Table>
-      </div>
-      <div className="flex flex-col md:flex-row md:flex-wrap items-center lg:items-start justify-center lg:justify-start gap-4 w-full ">
-        {cartItems?.items.map((item) => (
-          <CartItemsLayout.Success key={item.id} cartItem={item} />
-        ))}
+      <div className="flex max-md:flex-col items-center justify-between gap-4 size-full max-md:px-6 ">
+        <button
+          type="button"
+          // onClick={() => setStep(3)}
+          className="btn btn--primary--2 border size-full py-2 md:max-w-60"
+        >
+          دریافت فاکتور
+        </button>
+        <div className="btn btn--secondary--2 size-full py-2 duration-200 md:max-w-60">
+          <GoBack side="left" label="بازگشت به سایت" className="size-4" />
+        </div>
       </div>
     </div>
   );

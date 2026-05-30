@@ -13,10 +13,10 @@ function RHFTextAreaField({
 }) {
   const hasError = errors?.[name];
   return (
-    <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
+    <div className="flex flex-col items-start justify-start text-sm size-full">
       <label
         htmlFor={name}
-        className={`text-stroke-800 mb-4 max-md:text-base text-lg ${textClassName}`}
+        className={`text-stroke-800 mb-4 max-md:text-base text-lg mr-2 ${textClassName}`}
       >
         {label}
         {isRequired && <span className="text-error">*</span>}
@@ -27,8 +27,8 @@ function RHFTextAreaField({
         dir={dir}
         placeholder={placeholder}
         className={`textField__input ${
-          dir === "ltr" ? "text-left" : "text-right"
-        } ${className}`}
+          hasError ? "border-error bg-red-50 dark:bg-stroke-900" : ""
+        } ${dir === "ltr" ? "text-left" : "text-right"} ${className}`}
         {...register(name, validationSchema)}
         {...rest}
       />

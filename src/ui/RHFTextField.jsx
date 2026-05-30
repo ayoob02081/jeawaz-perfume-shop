@@ -32,10 +32,6 @@ export default function RHFTextField({
 }) {
   const hasError = getNestedError(errors, name);
 
-  const wrapperClass = `flex items-center justify-center gap-2 size-full px-5 py-2 rounded-5xl bg-stroke-100 text-stroke-600 transition-all duration-200 focus-within:text-stroke-800 focus-within:bg-stroke-0 focus-within:border border-primary ${
-    hasError ? "border-error bg-red-50" : ""
-  }`;
-
   const inputBaseClass = `outline-0 size-full bg-transparent ${
     dir === "ltr" ? "text-left" : "text-right"
   } ${className}`;
@@ -53,7 +49,11 @@ export default function RHFTextField({
       )}
 
       <div className={containerClassName + " w-full relative"}>
-        <div className={wrapperClass}>
+        <div
+          className={`textField__input rounded-5xl ${
+            hasError ? "border-error bg-red-50 dark:bg-stroke-900" : ""
+          }`}
+        >
           {Icon && <Icon className="size-5 shrink-0" />}
           {control && (isPrice || type === "tel") ? (
             <Controller

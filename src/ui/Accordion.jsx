@@ -19,6 +19,7 @@ function Accordion({ label, children, className = "flex", titleStyle, plus }) {
       } transition-all duration-200`}
     >
       <button
+        type="button"
         onClick={toggleAccordion}
         className="flex items-center justify-between gap-4 size-full max-md:py-6 md:py-4"
       >

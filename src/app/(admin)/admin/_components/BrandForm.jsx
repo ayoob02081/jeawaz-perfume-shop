@@ -113,7 +113,7 @@ function BrandForm({ brandToEdit }) {
               label={item.label}
               name={item.name}
               textClassName="font-bold"
-              className="textField__input textField__input--2 rounded-xl w-full"
+              className="  rounded-xl w-full"
               validationSchema={{ required: true }}
               placeholder={`مثال: ${item.placeholder}`}
             />
@@ -134,7 +134,7 @@ function BrandForm({ brandToEdit }) {
                 dir="ltr"
                 {...register(`iconUrl`)}
                 placeholder="/icons/icon.png"
-                className="textField__input textField__input--2 rounded-2xl w-full"
+                className="  rounded-2xl w-full"
               />
             </div>
           </div>

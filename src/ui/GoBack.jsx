@@ -22,12 +22,15 @@ function GoBack({
 
   return (
     <button
+      type="button"
       onClick={GoBackHandle}
       className={`flex items-center justify-${justify} size-full gap-2`}
     >
       {justify === "between" && side === "left" && <div></div>}
 
-      {label && side === "left" && <p className="truncate text-stroke-800">{label}</p>}
+      {label && side === "left" && (
+        <p className="truncate text-stroke-800">{label}</p>
+      )}
       {side === "right" ? (
         <ArrowRightIcon className={`text-stroke-800 ${className}`} />
       ) : (

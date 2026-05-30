@@ -137,7 +137,7 @@ function Login({ closeBtn }) {
                     message: "رمز عبور باید حداقل ۶ کاراکتر باشد",
                   },
                 }}
-                className="textField__input textField__input--2 w-full"
+                className="  w-full"
                 placeholder="رمز عبور"
               />
             )}

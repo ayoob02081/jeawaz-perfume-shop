@@ -307,7 +307,7 @@ function ProductForm({ productToEdit }) {
                 errors={errors}
                 isRequired
                 textClassName="font-bold"
-                className="textField__input textField__input--2 rounded-xl w-full"
+                className="rounded-xl w-full"
                 validationSchema={{ required: `${item.label} ضروری است` }}
                 {...(item.isNumeric
                   ? { control }
@@ -324,7 +324,7 @@ function ProductForm({ productToEdit }) {
             register={register}
             placeholder="توضیحات محصول"
             validationSchema={{ required: "توضیحات محصول ضروری است" }}
-            className="textField__input textField__input--2 rounded-2xl w-full"
+            className="rounded-2xl w-full"
           />
         </div>
 
@@ -519,7 +519,7 @@ function ProductForm({ productToEdit }) {
             register={register}
             placeholder="توضیحات نت ها"
             validationSchema={{ required: "توضیحات نت ها ضروری است" }}
-            className="textField__input textField__input--2 rounded-2xl w-full"
+            className="rounded-2xl w-full"
           />
           <div className="flex flex-wrap items-start justify-start gap-6 w-full">
             {/* Top Notes */}
@@ -544,7 +544,7 @@ function ProductForm({ productToEdit }) {
                       register(`notes.top.${i}`).onChange(e);
                       handleNoteChange(i, "notes.top", e.target.value);
                     }}
-                    className="textField__input textField__input--2 rounded-2xl w-full"
+                    className="rounded-2xl w-full"
                   />
                   {topFields.length > 1 && (
                     <button
@@ -581,7 +581,7 @@ function ProductForm({ productToEdit }) {
                       register(`notes.middle.${i}`).onChange(e);
                       handleNoteChange(i, "notes.middle", e.target.value);
                     }}
-                    className="textField__input textField__input--2 rounded-2xl w-full"
+                    className="rounded-2xl w-full"
                   />
                   {middleFields.length > 1 && (
                     <button
@@ -618,7 +618,7 @@ function ProductForm({ productToEdit }) {
                       register(`notes.base.${i}`).onChange(e);
                       handleNoteChange(i, "notes.base", e.target.value);
                     }}
-                    className="textField__input textField__input--2 rounded-2xl w-full"
+                    className="rounded-2xl w-full"
                   />
                   {baseFields.length > 1 && (
                     <button
@@ -648,7 +648,7 @@ function ProductForm({ productToEdit }) {
               control={control}
               label="قیمت هر میل(تومان)"
               name="modes.decant.pricePerMl"
-              className="textField__input textField__input--2 rounded-xl w-full"
+              className="rounded-xl w-full"
               validationSchema={{ required: "قیمت هر میل ضروری است" }}
               placeholder="مثال: ۳۴,۰۰۰"
             />
@@ -658,7 +658,7 @@ function ProductForm({ productToEdit }) {
               errors={errors}
               label="حجم‌ها (میلی‌لیتر)"
               name="modes.decant.availableVolumes"
-              className="textField__input textField__input--2 rounded-xl w-full"
+              className="rounded-xl w-full"
               placeholder="مثال: 3,5,10"
               validationSchema={{
                 required: "وارد کردن حجم‌ دکانت ها ضروری است",
@@ -696,7 +696,7 @@ function ProductForm({ productToEdit }) {
                 textClassName="font-bold"
                 control={control}
                 name={`modes.sealed.variants.${i}.volume`}
-                className="textField__input textField__input--2 rounded-xl w-full"
+                className="rounded-xl w-full"
                 validationSchema={{ required: "حجم ضروری است" }}
                 placeholder="حجم"
               />
@@ -705,7 +705,7 @@ function ProductForm({ productToEdit }) {
                 errors={errors}
                 control={control}
                 name={`modes.sealed.variants.${i}.price`}
-                className="textField__input textField__input--2 rounded-xl w-full"
+                className="rounded-xl w-full"
                 validationSchema={{ required: "قیمت ضروری است" }}
                 placeholder="قیمت(تومان)"
               />
@@ -735,7 +735,7 @@ function ProductForm({ productToEdit }) {
                 errors={errors}
                 label={item.label}
                 name={item.name}
-                className="textField__input textField__input--2 rounded-xl w-full"
+                className="rounded-xl w-full"
                 validationSchema={{ required: `${item.label} ضروری است` }}
                 placeholder={`مثال: ${item.placeholder}`}
               />

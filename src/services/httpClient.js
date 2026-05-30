@@ -7,6 +7,9 @@ const app = axios.create({
   withCredentials: true,
 });
 
+let isRefreshing = false;
+let refreshPromise = null;
+
 app.interceptors.response.use(
   (res) => res,
   async (err) => {
@@ -21,10 +24,18 @@ app.interceptors.response.use(
       originalConfig._retry = true;
 
       try {
-        await app.post("/auth/refresh");
+        if (!refreshPromise) {
+          isRefreshing = true;
+          refreshPromise = app.post("/auth/refresh").finally(() => {
+            isRefreshing = false;
+            refreshPromise = null;
+          });
+        }
+
+        await refreshPromise;
         return app(originalConfig);
-      } catch {
-        return Promise.reject(err);
+      } catch (refreshError) {
+        return Promise.reject(refreshError);
       }
     }
 

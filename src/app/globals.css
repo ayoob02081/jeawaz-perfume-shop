@@ -207,7 +207,8 @@
     @apply active:bg-success text-stroke-800 active:text-white;
   }
   .textField__input {
-    @apply flex items-center justify-start px-3 bg-stroke-100 rounded-xl py-2 outline-0 focus:bg-stroke-0 border-[1.5px] border-stroke-100 focus:border-primary text-stroke-800 duration-200;
+    @apply flex items-center justify-start px-3 bg-stroke-100 rounded-xl py-2 outline-0 focus:bg-stroke-0 border-[1.5px] border-stroke-100 text-stroke-800 
+    gap-2 size-full transition-all duration-200 focus-within:text-stroke-800 focus-within:bg-stroke-0 focus-within:border focus-within:border-primary;
   }
   .textField__input--2 {
     @apply rounded-full text-stroke-800 bg-stroke-50 focus-within:bg-stroke-0 duration-200;
