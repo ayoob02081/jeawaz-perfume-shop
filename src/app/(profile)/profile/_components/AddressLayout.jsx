@@ -1,47 +1,42 @@
+"use client";
+
 import AppImage from "@/components/AppImage";
+import Loading from "@/components/Loading";
+import { useGetAddresses, useRemoveAddress } from "@/hooks/useAddress";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-
-const addressData = [
-  {
-    id: 1,
-    address: "تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵",
-    name: "رضا جنیدی",
-    phoneNumber: "09123456789",
-    province: "تهران",
-    city: "تهران",
-    postNo: "3919856324",
-  },
-  {
-    id: 2,
-    address: "بانه، کوی فرهنگیان، کوچه البرز ۱۰",
-    name: "ایوب محمودیان",
-    phoneNumber: "09180522273",
-    province: "کردستان",
-    city: "بانه",
-    postNo: "6691963617",
-  },
-];
+import Link from "next/link";
 
 function AddressLayout() {
+  const { data, isLoading } = useGetAddresses();
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <div className="flex flex-col items-cente justify-start gap-3 w-full border md:border-[1.5px] border-stroke-200 rounded-2xl p-4">
       <div className="flex items-center justify-between w-full pb-4">
         <p className="text-sm md:text-base text-stroke-800">لیست آدرس ها</p>
-        <button className="flex items-center justify-center gap-2 text-primary hover:text-blue active:text-blue duration-200">
+        <Link
+          href={"/profile/me/address/add"}
+          className="flex items-center justify-center gap-2 text-primary hover:text-blue active:text-blue duration-200"
+        >
           <PlusIcon className="size-4" />
           <p>افزودن آدرس جدید</p>
-        </button>
+        </Link>
       </div>
-      {addressData.map((item) => (
+      {data.map((item) => (
         <Address
           key={item.id}
-          address={item.address}
-          name={item.name}
+          id={item.id}
+          label={item.label}
+          fullName={item.fullName}
+          ostan={item.ostan}
+          shahr={item.shahr}
           phoneNumber={item.phoneNumber}
-          province={item.province}
-          city={item.city}
-          postNo={item.postNo}
+          postalCode={item.postalCode}
+          addressLine={item.addressLine}
         />
       ))}
     </div>
@@ -66,51 +61,61 @@ function FullAddress({ address }) {
   );
 }
 
-function AddressDeatails({ titleOne, titleTwo }) {
+function AddressDeatails({ title, des }) {
   return (
     <span className="flex items-center justify-between md:justify-center md:rounded-2.5xl md:bg-stroke-150 md:h-8 gap-2 max-md:w-full text-sm md:text-xs text-stroke-800 md:px-4">
-      <p>{titleOne}</p>
-      <p>{titleTwo}</p>
+      <p>{title}</p>
+      <p>{des}</p>
     </span>
   );
 }
 
-function Address({ name, phoneNumber, province, city, postNo, address }) {
-  const AddressTitles = {
-    nameTitle: "نام تحویل گیرنده :",
-    phoneNumberTitle: "شماره تماس :",
-    provinceTitle: "استان :",
-    cityTitle: "شهر :",
-    postNoTitle: "کد پستی :",
+export function Address({
+  id,
+  fullName,
+  phoneNumber,
+  ostan,
+  shahr,
+  postalCode,
+  addressLine,
+  label,
+}) {
+  const { isDeleting, removeAddress } = useRemoveAddress();
+
+  const removeAddressHandler = async (id) => {
+    await removeAddress(id);
   };
+
   return (
     <div className="fle grid grid-cols-1 md:grid-cols-3 gap-x-4 flex-col md:flex-row items-center md:items-start justify-between md:justify-between gap-6 w-full border-t border-stroke-200 pt-4">
-      <FullAddress address={address} />
+      <FullAddress address={addressLine} />
       <div className="flex flex-col md:col-span-3 md:flex-row md:flex-wrap md:items-start max-md:justify-between md:justify-start w-full gap-6 md:gap-4 ">
-        <AddressDeatails titleOne={AddressTitles.nameTitle} titleTwo={name} />
+        <AddressDeatails title="نام تحویل گیرنده :" des={fullName} />
         <AddressDeatails
-          titleOne={AddressTitles.phoneNumberTitle}
-          titleTwo={toPersianNumbers(phoneNumber)}
+          title="شماره تماس :"
+          des={toPersianNumbers(phoneNumber)}
         />
-        <AddressDeatails
-          titleOne={AddressTitles.provinceTitle}
-          titleTwo={province}
-        />
-        <AddressDeatails titleOne={AddressTitles.cityTitle} titleTwo={city} />
-        <AddressDeatails
-          titleOne={AddressTitles.postNoTitle}
-          titleTwo={toPersianNumbers(postNo)}
-        />
+        <AddressDeatails title="استان :" des={ostan} />
+        <AddressDeatails title="شهر :" des={shahr} />
+        <AddressDeatails title="کد پستی :" des={toPersianNumbers(postalCode)} />
       </div>
+
       <div className="md:col-start-3 md:row-start-1 flex items-center justify-between md:justify-end gap-4 w-full text-nowrap">
-        <button className="flex items-center justify-center gap-1 max-md:h-12 max-md:border max-md:border-stroke-200 text-stroke-800 hover:text-success active:text-success max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200">
+        <Link
+          href={`/profile/me/address/edit/${id}`}
+          className="flex items-center justify-center gap-1 max-md:h-12 max-md:border max-md:border-stroke-200 text-stroke-800 hover:text-success active:text-success max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200"
+        >
           <div className="flex flex-col items-center justify-center gap-0.5 size-5">
-            <PencilIcon className="-rotate-[8de]" />
+            <PencilIcon className="rotate-[-8de]" />
             <span className="border w-4/5 rounded-full"></span>
           </div>
           <p>ویرایش</p>
-        </button>
-        <button className="flex items-center justify-center gap-1 max-md:h-12 max-md:bg-primary/10 max-md:border max-md:border-primary/10 text-primary hover:text-stroke-800 active:text-stroke-800 max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200">
+        </Link>
+        <button
+          type="button"
+          onClick={() => removeAddressHandler(id)}
+          className="flex items-center justify-center gap-1 max-md:h-12 max-md:bg-primary/10 max-md:border max-md:border-primary/10 text-primary hover:text-stroke-800 active:text-stroke-800 max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200"
+        >
           <TrashIcon className="size-5" />
           <p>حذف</p>
         </button>

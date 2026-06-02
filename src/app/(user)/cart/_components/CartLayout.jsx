@@ -37,7 +37,14 @@ import RHFTextAreaField from "@/ui/RHFTextAreaField";
 import GoBack from "@/ui/GoBack";
 import { AllAddresses } from "./AddressModals";
 import CheckBox from "@/ui/CheckBox";
-const { shahr, ostan } = require("iran-cities-json");
+import AddressFormLayout from "@/components/AddressForm";
+import AddressForm from "@/components/AddressForm";
+import {
+  useCreateAddress,
+  useGetAddressById,
+  useGetAddresses,
+} from "@/hooks/useAddress";
+// const { shahr, ostan } = require("iran-cities-json");
 
 const postOptions = [
   {
@@ -343,6 +350,12 @@ function CartOverview({ cart, step, setStep }) {
 }
 
 function Checkout({ cart, date, setPost, post, step, setStep }) {
+  const { data: addresses, isLoading: addressesLoading } = useGetAddresses();
+  const { createAddress, isCreating } = useCreateAddress();
+  const [addressId, setAddressId] = useState(null);
+
+  const selectedAddress = addresses?.find((a) => a.id === addressId);
+
   const { totalProducts = 0 } = cart;
   const [isListOpen, setIsListOpen] = useState(false);
   const [isSave, setIsSave] = useState(true);
@@ -356,41 +369,44 @@ function Checkout({ cart, date, setPost, post, step, setStep }) {
     reset,
     control,
     watch,
-    setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm({
     defaultValues: {
-      fullName: user
-        ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
-        : "",
-      phoneNumber: user?.phoneNumber || "",
+      fullName: "",
+      phoneNumber: "",
       ostan: "",
       shahr: "",
-      No: "",
-      postCode: "",
-      address: "",
+      postalCode: "",
+      addressLine: "",
     },
   });
-  const selectedOstanId = watch("ostan");
 
-  const ostanOptions = useMemo(
-    () => ostan.map((o) => ({ label: o.name, value: o.name })),
-    [],
-  );
+  useEffect(() => {
+    if (!addresses || addressId) return;
 
-  const cityOptions = useMemo(() => {
-    const selectedProvince = watch("ostan");
-    if (!selectedProvince) return [];
+    const def = addresses.find((a) => a.isDefault);
 
-    return shahr
-      .filter(
-        (c) => c.ostan === ostan.find((o) => o.name === selectedProvince)?.id,
-      )
-      .map((c) => ({ label: c.name, value: c.name }));
-  }, [watch("ostan")]);
+    if (def) setAddressId(def.id);
+  }, [addresses, addressId]);
 
-  const onSubmit = (data) => {
+  useEffect(() => {
+    if (!selectedAddress) return;
+
+    reset({
+      fullName: selectedAddress.fullName ?? "",
+      phoneNumber: selectedAddress.phoneNumber ?? "",
+      ostan: selectedAddress.ostan ?? "",
+      shahr: selectedAddress.shahr ?? "",
+      postalCode: selectedAddress.postalCode ?? "",
+      addressLine: selectedAddress.addressLine ?? "",
+    });
+  }, [selectedAddress, reset]);
+
+  const onSubmit = async (data) => {
     console.log("Final Data:", data, isSave);
+    if (isSave) {
+      await createAddress(data);
+    }
   };
 
   return (
@@ -420,147 +436,20 @@ function Checkout({ cart, date, setPost, post, step, setStep }) {
             </h2>
             <p className="max-md:text-sm md:text-xl">شما</p>
           </div>
-          <div className="flex flex-col gap-6 w-full ">
-            <div className="flex flex-col gap-6 w-full">
-              <p className="max-md:text-sm md:text-base font-bold text-stroke-800">
-                اطلاعات تحویل گیرنده
-              </p>
-              <div className="flex flex-col lg:flex-row gap-4 w-full">
-                <RHFTextField
-                  isRequired
-                  register={register}
-                  errors={errors}
-                  label="نام و نام خانوادگی"
-                  name="fullName"
-                  className="w-full"
-                  placeholder="مثال : رضا جنیدی"
-                  validationSchema={{
-                    required: "نام گیرنده الزامی است",
-                  }}
-                />
-                <RHFTextField
-                  name="phoneNumber"
-                  type="tel"
-                  label="شماره تماس گیرنده"
-                  isRequired
-                  errors={errors}
-                  control={control}
-                  isPrice={false}
-                  className="w-full"
-                  placeholder="مثال : ۰۹۱۲۳۴۵۶۷۸۹"
-                  validationSchema={{
-                    required: "شماره تلفن الزامی است",
-                    pattern: {
-                      value: /^(?:\+98|98|0)?9\d{9}$/,
-                      message: "شماره موبایل نامعتبر است",
-                    },
-                  }}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-6 w-full">
-              <span className="flex items-center justify-between w-full">
-                <p className="max-md:text-sm md:text-base font-bold text-stroke-800">
-                  آدرس تحویل
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setIsListOpen(true)}
-                  className="flex items-center justify-center gap-1"
-                >
-                  <PlusIcon className="size-4 text-primary" />
-                  <p className="text-primary text-xs font-bold">انتخاب آدرس</p>
-                </button>
-              </span>
-              <div className="flex flex-col gap-6 w-full">
-                <div className="flex flex-col lg:flex-row w-full gap-4">
-                  <RHFSelect
-                    isRequired
-                    label="استان"
-                    name="ostan"
-                    className="textField__input"
-                    register={register}
-                    errors={errors}
-                    options={ostanOptions}
-                    placeholder="انتخاب استان"
-                  />
-                  <RHFSelect
-                    isRequired
-                    label="شهر"
-                    name="shahr"
-                    register={register}
-                    errors={errors}
-                    disabled={!selectedOstanId}
-                    options={cityOptions}
-                    placeholder={
-                      selectedOstanId
-                        ? "انتخاب شهر"
-                        : "ابتدا استان را انتخاب کنید"
-                    }
-                    className="textField__input"
-                  />
-                </div>
-                <div className="flex flex-col lg:flex-row w-full gap-4">
-                  <RHFTextField
-                    type="tel"
-                    label="کدپستی"
-                    name="postCode"
-                    isRequired
-                    errors={errors}
-                    control={control}
-                    isPrice={false}
-                    className="w-full"
-                    placeholder="مثال : ۳۲۱۲۵۶۳۷۴۹۰"
-                    validationSchema={{
-                      required: "کدپستی الزامی است",
-                    }}
-                  />
-                  <RHFTextField
-                    type="tel"
-                    label="پلاک"
-                    name="No"
-                    // isRequired
-                    errors={errors}
-                    control={control}
-                    isPrice={false}
-                    className="w-full"
-                    placeholder="مثال : ۱۰"
-                    // validationSchema={{
-                    //   required: "پلاک الزامی است",
-                    // }}
-                  />
-                </div>
-                <div className="flex flex-col items-center justify-center gap-4 w-full">
-                  <RHFTextAreaField
-                    label="نشانی پستی"
-                    name="address"
-                    isRequired
-                    errors={errors}
-                    register={register}
-                    placeholder=" مثال : خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵"
-                    validationSchema={{ required: "نشانی ضروری است" }}
-                    className="rounded-2xl w-full"
-                  />
-                  <CheckBox
-                    name="saveAddress"
-                    id="saveAddres"
-                    value="saveAddres"
-                    onChange={() => setIsSave(!isSave)}
-                    checked={isSave}
-                    label="ذخیره آدرس برای خریدهای بعدی"
-                    className="flex flex-row items-center justify-start gap-2 cursor-pointer duration-200 w-full"
-                    textClassName="text-sm"
-                  >
-                    <div
-                      className={`flex items-center justify-center size-4.5 aspect-square rounded-sm border-[1.5px] ${isSave ? "bg-primary has-checked: border-primary" : "border-stroke-600/50"} `}
-                    >
-                      <CheckIcon className="size-3 stroke-4 text-stroke-0" />
-                    </div>
-                  </CheckBox>
-                </div>
-              </div>
-            </div>
-          </div>
+          <AddressForm
+            control={control}
+            errors={errors}
+            register={register}
+            watch={watch}
+            onChange={() => setIsSave((prev) => !prev)}
+            isChecked={isSave}
+            checkBoxLabel="ذخیره آدرس برای خریدهای بعدی"
+            checkBoxName="saveAddress"
+            checkBoxId="saveAddress"
+            reset={reset}
+            setIsListOpen={setIsListOpen}
+            checkout
+          />
           <div className="w-full mt-6">
             <div className="size-full border-b border-stroke-200 pb-4 mb-4">
               <Title
@@ -587,7 +476,14 @@ function Checkout({ cart, date, setPost, post, step, setStep }) {
       </div>
 
       {/* Modals */}
-      <AllAddresses isListOpen={isListOpen} setIsListOpen={setIsListOpen} />
+      <AllAddresses
+        addresses={addresses}
+        isListOpen={isListOpen}
+        onClose={() => setIsListOpen(false)}
+        addressId={addressId}
+        setAddressId={setAddressId}
+        isLoading={addressesLoading}
+      />
 
       {/* CartSummery */}
       <div className="flex items-center justify-center md:justify-end size-full">

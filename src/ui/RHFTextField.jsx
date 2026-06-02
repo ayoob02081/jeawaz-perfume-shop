@@ -24,6 +24,7 @@ export default function RHFTextField({
   isRequired,
   placeholder,
   className = "",
+  labelClassName = "font-medium",
   containerClassName = "h-12 md:h-14",
   icon: Icon,
   validationSchema = {},
@@ -41,7 +42,7 @@ export default function RHFTextField({
       {label && (
         <label
           htmlFor={name}
-          className="text-stroke-800 font-medium text-sm md:text-base mr-2"
+          className={`text-stroke-800 text-sm md:text-base mr-2 ${labelClassName}`}
         >
           {label}
           {isRequired && <span className="text-error mr-1">*</span>}
