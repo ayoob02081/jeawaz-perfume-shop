@@ -9,7 +9,7 @@ import Link from "next/link";
 function ProfileInfo() {
   const { data: user, isLoading, error } = useGetUser();
 
-  const { email,phoneNumber, firstName, lastName } = user || {};
+  const { email, phoneNumber, firstName, lastName } = user || {};
 
   if (isLoading) {
     return <Loading />;
@@ -22,7 +22,9 @@ function ProfileInfo() {
   return (
     <div className="w-full border md:border-[1.5px] border-stroke-200 rounded-2xl p-4">
       <div className="flex items-center justify-between w-full pb-4">
-        <p className="text-sm md:text-base text-stroke-800">اطلاعات کاربری</p>
+        <p className="text-sm md:text-base text-stroke-800 font-bold">
+          اطلاعات کاربری
+        </p>
         <Link
           href="/profile/me/edit"
           className="text-primary hover:text-success active:text-success duration-200"
@@ -40,7 +42,7 @@ function ProfileInfo() {
         <InfoSections
           border={true}
           titleOne="شماره موبایل :"
-          desOne={toPersianNumbers(Number(phoneNumber))+"+"}
+          desOne={toPersianNumbers(Number(phoneNumber)) + "+"}
           titleTwo="تلفن ثابت :"
           desTwo={toPersianNumbers("091-3564842")}
         />

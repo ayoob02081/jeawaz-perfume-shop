@@ -37,6 +37,7 @@ const basicInfoData = [
     name: "stock",
     placeholder: "۳۰۰",
     isNumeric: true,
+    isPrice: true,
   },
   {
     id: 4,
@@ -44,6 +45,7 @@ const basicInfoData = [
     name: "offValue",
     placeholder: "۵",
     isNumeric: true,
+    isPrice: true,
   },
 ];
 
@@ -273,6 +275,7 @@ function ProductForm({ productToEdit }) {
         },
       },
     };
+    console.log(data);
 
     productToEdit ? editProduct(payload) : addProduct(payload);
   };
@@ -310,7 +313,7 @@ function ProductForm({ productToEdit }) {
                 className="rounded-xl w-full"
                 validationSchema={{ required: `${item.label} ضروری است` }}
                 {...(item.isNumeric
-                  ? { control }
+                  ? { control, isPrice: true }
                   : { register, type: item.type || "text" })}
               />
             ))}
@@ -646,6 +649,7 @@ function ProductForm({ productToEdit }) {
               textClassName="font-bold"
               errors={errors}
               control={control}
+              isPrice={true}
               label="قیمت هر میل(تومان)"
               name="modes.decant.pricePerMl"
               className="rounded-xl w-full"
@@ -695,6 +699,7 @@ function ProductForm({ productToEdit }) {
                 errors={errors}
                 textClassName="font-bold"
                 control={control}
+                isPrice={true}
                 name={`modes.sealed.variants.${i}.volume`}
                 className="rounded-xl w-full"
                 validationSchema={{ required: "حجم ضروری است" }}
@@ -704,6 +709,7 @@ function ProductForm({ productToEdit }) {
                 textClassName="font-bold"
                 errors={errors}
                 control={control}
+                isPrice={true}
                 name={`modes.sealed.variants.${i}.price`}
                 className="rounded-xl w-full"
                 validationSchema={{ required: "قیمت ضروری است" }}

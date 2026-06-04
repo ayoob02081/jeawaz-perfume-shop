@@ -1,21 +1,17 @@
 "use client";
 
-import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import {
   useCreateAddress,
   useEditAddress,
   useRemoveAddress,
 } from "@/hooks/useAddress";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
 import AddressForm from "@/components/AddressForm";
 import RHFTextField from "@/ui/RHFTextField";
 import { useState } from "react";
 
 function AddressFormLayout({ addressToEdit }) {
-  const queryClient = useQueryClient();
   const router = useRouter();
 
   const {
@@ -41,14 +37,12 @@ function AddressFormLayout({ addressToEdit }) {
 
   const { createAddress, isAdding } = useCreateAddress();
   const { editAddress, isEditing } = useEditAddress(id);
-  const { user } = useAuth();
   const {
     register,
     handleSubmit,
     reset,
     control,
     watch,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -86,13 +80,17 @@ function AddressFormLayout({ addressToEdit }) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div className="flex flex-col  justify-center gap-6 w-full max-md:px-6">
         <RHFTextField
+          isRequired
           register={register}
           errors={errors}
           label="عنوان آدرس"
           name="label"
           className="w-full"
-          labelClassName="font-bold"
+          textClassName="font-bold"
           placeholder="مثال : آدرس خانه"
+          validationSchema={{
+            required: "نام آدرس الزامی است",
+          }}
         />
         <AddressForm
           control={control}

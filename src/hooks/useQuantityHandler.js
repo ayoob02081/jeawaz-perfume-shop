@@ -61,19 +61,28 @@ export function useQuantityHandler(
 
   const AddToCartHandler = () => {
     if (!selectedVolume || !product?.id) return;
+    if (selectedVolume > product?.stock) return;
 
-    const orderData = {
-      productId: product.id,
-      quantity: quantity + 1,
-      mode: volumeMode,
-      volume: selectedVolume,
-    };
+    const existingItem = cartItem || defaultCartItem;
 
-    addToCart(orderData);
-
-    if ((quantity + 1) * selectedVolume <= product?.stock) {
-      setQuantity((q) => q + 1);
+    if (existingItem) {
+      updateQuantity(
+        { itemId: existingItem.id, quantity: quantity + 1 },
+        { onError: () => setQuantity((q) => Math.max(0, q - 1)) },
+      );
+    } else {
+      addToCart(
+        {
+          productId: product.id,
+          quantity: 1,
+          mode: volumeMode,
+          volume: selectedVolume,
+        },
+        { onError: () => setQuantity((q) => Math.max(0, q - 1)) },
+      );
     }
+
+    setQuantity((q) => q + 1);
   };
 
   return {

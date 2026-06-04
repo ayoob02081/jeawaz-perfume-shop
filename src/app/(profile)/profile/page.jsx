@@ -4,7 +4,7 @@ import AddressLayout from "./_components/AddressLayout";
 
 export default function Home() {
   return (
-    <ProfileInfoLayout className="w-fit overflow-y-auto">
+    <ProfileInfoLayout className="w-full overflow-y-auto">
       <ProfileInfo />
       <AddressLayout />
     </ProfileInfoLayout>

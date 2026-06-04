@@ -6,13 +6,7 @@ import {
 import CartItemsLayout from "./CartItemsLayout";
 import Loading from "@/components/Loading";
 
-export function OrderSummaryCard({
-  cart,
-  date,
-  totalPrice,
-  step,
-  setStep,
-}) {
+export function OrderSummaryCard({ cart, date, totalPrice, step, setStep }) {
   const { itemsTotal = 0, discountAmount = 0, totalProducts = 0 } = cart;
   return (
     <div className="flex flex-col items-start justify-between gap-6 max-md:bg-stroke-150 md:bg-stroke-100 p-4 rounded-xl size-full">
@@ -93,14 +87,8 @@ export function OrderSummaryCard({
     </div>
   );
 }
-export function CheckoutCartSummery({ cart, post, setStep, isPending }) {
-  const {
-    totalPriceBeforeDiscount = 0,
-    shippingMethod = null,
-    shippingCost = 0,
-    payableTotal = 0,
-    discountAmount = 0,
-  } = cart;
+export function CheckoutCartSummery({ cart, setStep, isPending }) {
+  const { shippingCost = 0, payableTotal = 0, discountAmount = 0 } = cart;
 
   return (
     <div className="max-md:hidden md:flex flex-col items-center justify-between gap-4 max-md:bg-stroke-150 md:bg-stroke-100 p-4 rounded-xl w-full h-full">
@@ -118,7 +106,7 @@ export function CheckoutCartSummery({ cart, post, setStep, isPending }) {
           {toPersianNumbersWithComma(discountAmount)}
         </Details>
         <Details textStyle="text-sm" title="هزینه ارسال:" des="تومان">
-          {toPersianNumbersWithComma(post)}
+          {toPersianNumbersWithComma(shippingCost)}
         </Details>
         <Details
           className="border-t md:border-stroke-300 pt-3"

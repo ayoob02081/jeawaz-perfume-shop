@@ -230,11 +230,11 @@ function ProductDes({ product }) {
         {product?.stock >= selectedVolume && (
           <button
             onClick={
-              !quantity > 0 ? AddToCartHandler : () => router.push("/cart")
+              quantity === 0 ? AddToCartHandler : () => router.push("/cart")
             }
-            className={`btn ${!quantity > 0 ? "btn--success" : "bg-stroke-0 text-success font-bold border border-success"} w-full h-12 px-2 transition-all ease-in-out duration-200`}
+            className={`btn ${quantity === 0 ? "btn--success" : "bg-stroke-0 text-success font-bold border border-success"} w-full h-12 px-2 transition-all ease-in-out duration-200`}
           >
-            {!quantity > 0 ? "افزودن به سبد خرید" : "نهایی کردن سبد خرید"}
+            {quantity === 0 ? "افزودن به سبد خرید" : "نهایی کردن سبد خرید"}
           </button>
         )}
         <div className=" flex-none">

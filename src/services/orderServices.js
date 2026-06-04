@@ -1,12 +1,14 @@
-// export function getAllProductsApi(qs, cookies) {
-//   return http
-//     .get(`/product/list?${qs}`, {
-//       headers: {
-//         Cookie: cookies,
-//       },
-//     })
-//     .then(({ data }) => data.data);
-// }
+import app from "./httpClient";
+
+export const getAllOrdersApi = () =>
+  app.get("/orders").then(({ data }) => data);
+
+export const getOrderByIdApi = (id) =>
+  app.get(`/orders/${encodeURIComponent(id)}`).then(({ data }) => data);
+
+export const createOrderApi = (payload) =>
+  app.post("/orders", payload).then(({ data }) => data);
+
 export async function fetchOrders(status) {
   // شبیه‌سازی API call
   await new Promise((r) => setTimeout(r, 300));

@@ -2,34 +2,37 @@
 
 import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
 import AppImage from "@/components/AppImage";
+import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
-import { useGetAllOrdersByStatus } from "@/hooks/useOrders";
+import { statusConfig } from "@/constants/orderStatus";
+import { useGetOrderById, useGetOrders } from "@/hooks/useOrders";
 import GoBack from "@/ui/GoBack";
+import { toLocalDateString } from "@/utils/toLocalDate";
 import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 
 function SingleOrderPage({ params }) {
-  const pathName = usePathname();
   const correctParams = React.use(params);
+  const pathName = usePathname();
   const [openOrder, setOpenOrder] = useState(false);
-
-  const { data, isLoading, error } = useGetAllOrdersByStatus(
-    correctParams.status,
+  const { data: orders, isLoading: isOrdersLoading } = useGetOrders();
+  const { data: order, isLoading: isOrderLoading } = useGetOrderById(
+    correctParams.singleOrder,
   );
 
-  const correntOrder =
-    data?.filter((order) => {
-      const filteredOrder = order.id == correctParams.singleOrder;
-      return filteredOrder;
-    }) || {};
+  if (isOrdersLoading || isOrderLoading) return <Loading />;
 
-  if (pathName.endsWith(correntOrder[0].id) && openOrder === false) {
+  if (pathName.endsWith(order?.id) && openOrder === false) {
     setOpenOrder(true);
   }
+
+  const numOfOrder = orders?.findIndex((o) => o.id === order?.id);
+  console.log(numOfOrder);
 
   return (
     <AdaptiveOverlayPage
@@ -43,41 +46,56 @@ function SingleOrderPage({ params }) {
       max="true"
       min="true"
     >
-      <Order order={correntOrder[0]} status={correctParams.status} />
+      <Order
+        order={order}
+        orders={orders}
+        numOfOrder={numOfOrder}
+        status={correctParams.status}
+      />
     </AdaptiveOverlayPage>
   );
 }
 
 export default SingleOrderPage;
 
-function Order({ order, status }) {
-  const { id, date, price, items } = order;
-  const statusConfig = {
-    processing: {
-      title: "در حال پردازش",
-      color: "text-blue",
-      src: "/images/processing-icon.svg",
-      alt: "processing-icon",
-    },
-    delivered: {
-      title: "تحویل شده",
-      color: "text-green",
-      src: "/images/delivered-icon.svg",
-      alt: "delivered-icon",
-    },
-    returned: {
-      title: "مرجوع شده",
-      color: "text-stroke-800",
-      src: "/images/returned-icon.svg",
-      alt: "returned-icon",
-    },
-    canceled: {
-      title: "لغو شده",
-      color: "text-red",
-      src: "/images/canceled-icon.svg",
-      alt: "canceled-icon",
-    },
-  };
+function Order({ order, orders, numOfOrder, status }) {
+  const currentStatus = statusConfig?.find((s) => s.label === status);
+  const { title, label, textColor, src, des } = currentStatus || {};
+
+  console.log(order);
+
+  //   id: 19
+  //   invoiceNumber: "INV-722799174267"
+  //   items: Array(1)
+  //    0: enTitle: "Blue Green Channel"
+  //    id: 33
+  //    imageUrl: "/uploads/1779812742216-423145004.svg"
+  //    lineTotal: 144000
+  //     perTitle: "بلو گرین چنل"
+  //     price: 144000
+  //     productId: 96
+  //     quantity: 1
+  //   orderDate: "2026-06-03T07:37:59.923Z"
+  //   pricing: discount: 6000
+  //       itemsTotal: 150000
+  //        payable: 204000
+  //        shipping: 60000
+  //         subtotal: 144000
+  //   shipping:
+  //       address: "کردستان - بانه - کوی فرهنگیان، کوچه البرز ۱۰ - کد پستی: 6691963617"
+  //       method: "chapar"
+  //       phone: "09180522273"
+  //       receiver: "ایوب محمودیان"
+  //    status: "PENDING"
+  const {
+    id,
+    orderNumber,
+    items,
+    orderDate,
+    pricing,
+    shipping,
+    // status,
+  } = order || {};
 
   return (
     <div className="max-lg:px-4 lg:p-6 flex flex-col items-start justify-start lg:border border-stroke-200 lg:rounded-2.5xl">
@@ -95,44 +113,46 @@ function Order({ order, status }) {
       <div className="flex flex-col justify-center items-start w-full max-lg:p-4 max-lg:border-[1.5px] border-stroke-200 max-lg:rounded-2.5xl">
         <div className="flex flex-wrap w-full max-md:gap-4 md:gap-6 py-6">
           <span className="flex items-center justify-start gap-1">
-            <p className="text-gray-600">تاریخ تحویل سفارش :</p>
-            <p className="font-bold text-stroke-800">{date}</p>
+            <p className="text-stroke-600">{des}</p>
+            <p className="font-bold text-stroke-800">
+              {toLocalDateString(orderDate)}
+            </p>
           </span>
           <span className="flex items-center justify-start gap-1">
-            <p className="text-gray-600">کد پیگیری سفارش :</p>
-            <p className="font-bold text-stroke-800">{toPersianNumbers(id)}</p>
+            <p className="text-stroke-600">کد پیگیری سفارش :</p>
+            <p className="font-bold text-stroke-800">
+              {toPersianNumbers(orderNumber)}
+            </p>
           </span>
         </div>
         <div className="flex w-full flex-wrap py-6 border-t border-stroke-250 max-md:gap-4 md:gap-6">
           <div className="flex max-md:flex-col items-start justify-center max-md:gap-4 md:gap-6">
             <span className="flex items-center justify-start gap-1">
-              <p className="text-gray-600">تحویل گیرنده :</p>
-              <p className="font-bold text-stroke-800">احمد رضایی</p>
+              <p className="text-stroke-600">تحویل گیرنده :</p>
+              <p className="font-bold text-stroke-800">{shipping?.receiver}</p>
             </span>
             <span className="flex items-center justify-start gap-1">
-              <p className="text-gray-600">شماره تماس :</p>
+              <p className="text-stroke-600">شماره تماس :</p>
               <p className="font-bold text-stroke-800">
-                {toPersianNumbers(912345789)}
+                {toPersianNumbers(shipping?.phone)}
               </p>
             </span>
           </div>
           <span className="flex items-center justify-start gap-1">
-            <p className="text-gray-600">آدرس ارسال مرسوله :</p>
-            <p className="font-bold text-stroke-800">
-              تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵
-            </p>
+            <p className="text-stroke-600">آدرس ارسال مرسوله :</p>
+            <p className="font-bold text-stroke-800">{shipping?.address}</p>
           </span>
         </div>
         <div className="flex w-full flex-wrap py-6 border-t border-stroke-250 max-md:gap-4 md:gap-6">
           <div className="flex max-sm:flex-col items-start justify-center max-md:gap-4 md:gap-6">
             <span className="flex items-center justify-start gap-1">
-              <p className="text-gray-600">مبلغ کل :</p>
+              <p className="text-stroke-600">مبلغ کل :</p>
               <p className="font-bold text-stroke-800">
-                {toPersianNumbersWithComma(1450000)} تومان
+                {toPersianNumbersWithComma(pricing.payable)} تومان
               </p>
             </span>
             <span className="flex items-center justify-start gap-1">
-              <p className="text-gray-600">وضعیت پرداخت :</p>
+              <p className="text-stroke-600">وضعیت پرداخت :</p>
               <div className="flex items-center justify-center gap-1 text-success ">
                 <AppImage
                   src="/images/success-stroke-icon.svg"
@@ -145,9 +165,9 @@ function Order({ order, status }) {
             </span>
           </div>
           <span className="flex items-center justify-start gap-1">
-            <p className="text-gray-600">هزینه بسته بندی و ارسال :</p>
+            <p className="text-stroke-600">هزینه بسته بندی و ارسال :</p>
             <p className="font-bold text-stroke-800">
-              {toPersianNumbersWithComma(50000)} تومان
+              {toPersianNumbersWithComma(pricing.shipping)} تومان
             </p>
           </span>
         </div>
@@ -163,12 +183,16 @@ function Order({ order, status }) {
                     alt="deliver icon"
                     width="size-5"
                     sizes="10vw"
+                    className="dark:invert"
                   />
                   <p className="text-sm md:text-base font-bold text-stroke-800">
                     مشخصات مرسوله
                   </p>
                 </div>
-                <p className="text-gray-600 text-xs">مرسوله 1 از 1</p>
+                <p className="text-stroke-600 text-xs">
+                  مرسوله {toPersianNumbers(numOfOrder + 1)} از{" "}
+                  {toPersianNumbers(orders?.length)}
+                </p>
               </div>
               <button className="flex items-center justify-end gap-2 text-nowrap">
                 <AppImage
@@ -185,72 +209,91 @@ function Order({ order, status }) {
             <div className="w-full mb-4">
               <div className="flex flex-wrap max-md:items-start justify-start gap-4 w-full mb-4">
                 <span className="flex items-center justify-start gap-1">
-                  <p className="text-gray-600">زمان ارسال مرسوله :</p>
+                  <p className="text-stroke-600">زمان ارسال مرسوله :</p>
+                  <p className="font-bold text-stroke-800">۱ روز کاری</p>
+                </span>
+                {/* <div className="flex max-sm:flex-col xl:flex-row items-start justify-center md:justify-start gap-4"> */}
+                <span className="flex items-center justify-start gap-1">
+                  <p className="text-stroke-600">کد پیگیری سفارش :</p>
                   <p className="font-bold text-stroke-800">
-                    یکشنبه ، 1403/05/24 ، ساعت 15 تا 18
+                    {toPersianNumbers(orderNumber)}
                   </p>
                 </span>
-                <div className="flex max-sm:flex-col xl:flex-row items-start justify-center md:justify-start gap-4">
-                  <span className="flex items-center justify-start gap-1">
-                    <p className="text-gray-600">کد پیگیری سفارش :</p>
-                    <p className="font-bold text-stroke-800">
-                      {toPersianNumbers(id)}
-                    </p>
-                  </span>
-                  <span className="flex items-center justify-start gap-1">
-                    <p className="text-gray-600">وضعیت مرسوله :</p>
-                    <div
-                      className={`flex items-center justify-center gap-1 ${statusConfig[status].color} `}
-                    >
-                      <AppImage
-                        src={statusConfig[status].src}
-                        alt={statusConfig[status].alt}
-                        width="size-5"
-                        sizes="10vw"
-                      />
-                      <p className="font-bold text-stroke-800">
-                        {statusConfig[status].title}
-                      </p>
-                    </div>
-                  </span>
-                </div>
+                <span className="flex items-center justify-start gap-1">
+                  <p className="text-stroke-600">وضعیت مرسوله :</p>
+                  <div
+                    className={`flex items-center justify-center gap-1 ${textColor} `}
+                  >
+                    <AppImage
+                      src={src}
+                      alt={`${label}-icon`}
+                      width="size-5"
+                      sizes="10vw"
+                    />
+                    <p className="font-bold ">{title}</p>
+                  </div>
+                </span>
+                <span className="flex items-center justify-start gap-1">
+                  <p className="text-stroke-600">کد رهگیری مرسوله :</p>
+                  <p className="font-bold text-stroke-800">
+                    کد رهگیری مرسوله پس از ارسال به شماره{" "}
+                    {toPersianNumbers(shipping?.phone)} پیامک میشود
+                  </p>
+                </span>
               </div>
+              {/* </div> */}
               <span className="flex items-center justify-start gap-1">
-                <p className="text-gray-600">مبلغ مرسوله :</p>
+                <p className="text-stroke-600">مبلغ مرسوله :</p>
                 <p className="font-bold text-stroke-800">
-                  {toPersianNumbersWithComma(5000000)} تومان
+                  {toPersianNumbersWithComma(
+                    pricing.payable - pricing.shipping,
+                  )}{" "}
+                  تومان
                 </p>
               </span>
             </div>
             <div className="w-full flex flex-col justify-center max-lg:gap-4">
               {items?.map((item) => (
                 <div
-                  className="flex items-center justify-between gap-1 lg:border-t border-[#D1D1D1] max-lg:bg-stroke-0 p-4 max-lg:rounded-xl"
+                  className="flex items-center justify-between gap-1 lg:border-t border-stroke-200 max-lg:bg-stroke-0 p-4 max-lg:rounded-xl"
                   key={item.id}
                 >
                   <div className="flex items-center justify-start gap-2 md:gap-4">
                     <div className="flex items-center justify-center max-lg:h-16 lg:size-16 lg:rounded-xl lg:bg-stroke-0 ">
                       <AppImage
-                        src={item.src}
-                        alt={item.alt}
+                        src={item.imageUrl}
+                        alt={`${item.title}-image`}
                         width="max-lg:size-11 lg:size-9"
                         sizes="30vw"
                       />
                     </div>
                     <div className="flex flex-col items-start justify-center gap-2">
                       <p className="max-md:text-base text-lg font-bold text-stroke-800">
-                        Tiziana Terenzi
+                        {item.enTitle}
                       </p>
                       <p className="max-md:text-sm text-lg font-bold text-stroke-800">
-                        شنل اگویست پلاتینیوم
+                        {item.perTitle}
                       </p>
                     </div>
                   </div>
                   <div className="flex flex-col items-center justify-start gap-2">
-                    <PriceSection price={2000000} />
+                    <PriceSection
+                      basePrice={item.price}
+                      priceClassName="text-2xl"
+                      textClassName="text-[10px]"
+                    />
                   </div>
                 </div>
               ))}
+            </div>
+            <div className="flex items-center flex-wrap justify-start p-6 max-md:mt-6 bg-warning/20 dark:bg-stroke-900 rounded-xl text-start text-stroke-800">
+              در صورت عدم دریافت پیامک کد رهگیری مرسوله لطفا به شماره{" "}
+              {
+                <Link className="px-1 text-primary font-bold" href="tel:+989302125151">
+                  ۰۹۳۰۲۱۲۵۱۵۱
+                </Link>
+              }
+              در واتساپ یا روبیکا پیام دهید.
             </div>
           </div>
         </div>

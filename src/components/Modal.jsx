@@ -3,7 +3,7 @@ import useOutsideClick from "@/hooks/useOutsideClick";
 import Backdrop from "@/ui/Backdrop";
 import { useEffect, useRef } from "react";
 
-function Modal({ children, isOpen, onClose, category, className }) {
+function Modal({ children, isOpen, onClose, category, className="h-full" }) {
   const outsideRef = useOutsideClick(onClose);
   const modalRef = useRef(null);
 

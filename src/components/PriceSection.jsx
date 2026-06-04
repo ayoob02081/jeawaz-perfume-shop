@@ -19,14 +19,19 @@ function PriceSection({
 }) {
   const calculateDecantPrice = (pricePerMl, volume, offValue = 0) => {
     const basePrice = pricePerMl * volume;
-    const finalPrice =
-      offValue > 0 ? basePrice - (basePrice * offValue) / 100 : basePrice;
+   const finalPrice =
+    basePrice && offValue > 0
+      ? normalizePrice(basePrice - (basePrice * offValue) / 100)
+      : basePrice;
 
     return normalizePrice(finalPrice);
   };
 
-  const baseStartingPrice = pricePerMl * volume;
-  const startingPrice = calculateDecantPrice(pricePerMl, volume, offValue);
+  const baseStartingPrice = pricePerMl && volume ? pricePerMl * volume : 0;
+  const startingPrice =
+    pricePerMl && volume
+      ? calculateDecantPrice(pricePerMl, volume, offValue)
+      : 0;
 
   const badgeWidth = offValue > 10 ? "text-[10px] md:text-xs" : "";
 

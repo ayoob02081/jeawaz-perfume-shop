@@ -17,7 +17,9 @@ function AddressLayout() {
   return (
     <div className="flex flex-col items-cente justify-start gap-3 w-full border md:border-[1.5px] border-stroke-200 rounded-2xl p-4">
       <div className="flex items-center justify-between w-full pb-4">
-        <p className="text-sm md:text-base text-stroke-800">لیست آدرس ها</p>
+        <p className="text-sm md:text-base text-stroke-800 font-bold">
+          لیست آدرس ها
+        </p>
         <Link
           href={"/profile/me/address/add"}
           className="flex items-center justify-center gap-2 text-primary hover:text-blue active:text-blue duration-200"
@@ -88,6 +90,7 @@ export function Address({
 
   return (
     <div className="fle grid grid-cols-1 md:grid-cols-3 gap-x-4 flex-col md:flex-row items-center md:items-start justify-between md:justify-between gap-6 w-full border-t border-stroke-200 pt-4">
+      <h2 className="font-bold text-md">{label}</h2>
       <FullAddress address={addressLine} />
       <div className="flex flex-col md:col-span-3 md:flex-row md:flex-wrap md:items-start max-md:justify-between md:justify-start w-full gap-6 md:gap-4 ">
         <AddressDeatails title="نام تحویل گیرنده :" des={fullName} />
