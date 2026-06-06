@@ -56,7 +56,7 @@ export default function OrderStatusPage({ status }) {
   );
 }
 
-function StatusOrderCard({
+export function StatusOrderCard({
   id,
   date,
   orderItems,
@@ -95,7 +95,7 @@ function StatusOrderCard({
         </div>
         <div className="max-sm:w-full flex items-center max-sm:justify-end  sm:justify-center">
           <PriceSection
-            basePrice={pricing.payable}
+            basePrice={pricing.subtotal + pricing.shipping}
             priceClassName="text-2xl"
             textClassName="text-[10px]"
           />

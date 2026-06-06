@@ -1,13 +1,15 @@
 "use client";
 
 import toast, { Toaster } from "react-hot-toast";
-import { useForm } from "react-hook-form";
-import { useRemoveCategory } from "@/hooks/useCategories";
+import { Controller, useForm } from "react-hook-form";
+import {
+  useAddCategory,
+  useEditCategory,
+  useRemoveCategory,
+} from "@/hooks/useCategories";
 import RHFTextField from "@/ui/RHFTextField";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import useAddCategory from "../categories/useCreateCategory";
-import useEditCategory from "../categories/useEditCategory";
+import RHFUploadFile from "@/ui/RHFUploadFile";
 
 function CategoryForm({ categoryToEdit, accord, gender }) {
   const basicInfoData = [
@@ -31,7 +33,6 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
     },
   ];
 
-  const queryClient = useQueryClient();
   const router = useRouter();
 
   const { id, title, value, description, imageUrl, iconUrl, type } =
@@ -40,24 +41,19 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
   const { isDeleting, removeCategory } = useRemoveCategory();
 
   const removeCategoryHandler = async (category) => {
-    const { id, title } = category;
-    try {
-      await removeCategory(id);
-      queryClient.invalidateQueries(["get-categories"]);
-      router.back();
-      toast.success(`${title} با موفقیت حذف شد.`);
-    } catch (error) {
-      toast.error(error?.response?.data?.message);
-    }
+    const { id } = category;
+    await removeCategory(id);
+    router.back();
   };
 
-  const { AddCategory, isAdding } = useAddCategory();
+  const { addCategory, isAdding } = useAddCategory();
   const { editCategory, isEditing } = useEditCategory(id);
 
   const {
     register,
+    control,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm({
     defaultValues: {
       title: title || "",
@@ -80,27 +76,14 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
     };
 
     if (!categoryToEdit) {
-      try {
-        await AddCategory(payload);
-        queryClient.invalidateQueries(["get-categories"]);
-        router.back();
-        toast.success("Category Created");
-      } catch (error) {
-        toast.error("Category Not Created");
-      }
+      await addCategory(payload);
+    } else {
+      await editCategory(payload);
     }
 
-    if (!!categoryToEdit) {
-      try {
-        await editCategory(payload);
-        queryClient.invalidateQueries(["get-categories"]);
-        router.back();
-        toast.success("Category Updated");
-      } catch (error) {
-        toast.error("Category Not Updated");
-      }
-    }
+    router.back();
   };
+
   return (
     <div className="max-w-6xl mx-auto p-10">
       <Toaster />
@@ -123,44 +106,40 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
           ))}
         </div>
 
-        {/* IconUrl */}
-        <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
-          <div className="flex items-center justify-between mb-4 w-full">
-            <h3 className="text-stroke-800 font-bold max-md:text-base text-lg">
-              {accord ? "آیکون رایحه" : "آیکون جنسیت"}
-              <span className="text-error">*</span>
-            </h3>
+        {/* IconUrl & ImageUrl */}
+        <div className="flex flex-col items-start gap-y-4 w-fit bg-stroke-100 p-6 rounded-3xl border border-slate-100">
+          <h3 className="text-stroke-800 font-bold text-lg">
+            آیکون و عکس {accord ? "رایحه" : "جنسیت"}
+          </h3>
+          <div className="flex flex-wrap gap-6">
+            <Controller
+              name="iconUrl"
+              control={control}
+              render={({ field }) => (
+                <RHFUploadFile
+                  label="انتخاب آیکون"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onRemove={() => field.onChange("")}
+                />
+              )}
+            />
+            <Controller
+              name="imageUrl"
+              control={control}
+              render={({ field }) => (
+                <RHFUploadFile
+                  label="انتخاب عکس"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onRemove={() => field.onChange("")}
+                />
+              )}
+            />
           </div>
-          <div className="flex flex-wrap items-center justify-start gap-4">
-            <div className="flex items-center justify-start gap-2 mb-2 h-full">
-              <input
-                dir="ltr"
-                {...register(`iconUrl`)}
-                placeholder="/icons/icon.png"
-                className="  rounded-2xl w-full"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* ImageUrl */}
-        <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
-          <div className="flex items-center justify-between mb-4 w-full">
-            <h3 className="text-stroke-800 font-bold max-md:text-base text-lg">
-              {accord ? "عکس‌ رایحه" : "عکس‌ جنسیت"}
-              <span className="text-error">*</span>
-            </h3>
-          </div>
-          <div className="flex flex-wrap items-center justify-start gap-4">
-            <div className="flex items-center justify-start gap-2 mb-2 h-full">
-              <input
-                dir="ltr"
-                {...register(`imageUrl`)}
-                placeholder="/images/product.png"
-                className="  rounded-2xl w-full"
-              />
-            </div>
-          </div>
+          {errors.images && (
+            <p className="text-error text-xs">{errors.images.message}</p>
+          )}
         </div>
 
         {/* Submit Button */}

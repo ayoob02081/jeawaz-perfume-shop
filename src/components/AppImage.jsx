@@ -44,6 +44,7 @@ export default function AppImage({
         src={imgSrc}
         alt={alt}
         fill
+        unoptimized={imgSrc?.includes("/uploads")}
         className={fitClass}
         sizes={sizes}
         priority={priority}

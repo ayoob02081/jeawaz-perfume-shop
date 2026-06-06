@@ -15,7 +15,7 @@ function ProductsLayout() {
         <h1 className="font-bold text-stroke-800 text-xl">محصولات</h1>
         <Link
           href={"/admin/products/add"}
-          className="btn btn--primary py-1.5 px-3"
+          className="btn btn--primary border py-1.5 px-3"
         >
           اضافه کردن محصول
         </Link>

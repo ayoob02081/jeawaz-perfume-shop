@@ -1,10 +1,14 @@
 import {
+  addProductApi,
   getAllProductsApi,
   getProductByIdApi,
   getProductPriceApi,
   removeProductApi,
+  updateProductApi,
 } from "@/services/productServices";
+import { showApiError } from "@/utils/showApiError";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export const useGetAllProducts = () =>
@@ -24,6 +28,25 @@ export const useGetProductsbyId = (id) =>
     refetchOnWindowFocus: false,
   });
 
+export function useAddProduct() {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const { isPending: isAdding, mutate: addProduct } = useMutation({
+    mutationFn: addProductApi,
+    onSuccess: (data) => {
+      toast.success(data.message || "محصول با موفقیت اضافه شد", {
+        id: "add-product-success",
+      });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      router.push("/admin/products");
+    },
+    onError: (err) => showApiError(err),
+  });
+
+  return { isAdding, addProduct };
+}
+
 export function useGetProductPrice() {
   const { isPending: isGettingPrice, mutateAsync: getProductPrice } =
     useMutation({
@@ -35,6 +58,33 @@ export function useGetProductPrice() {
     });
 
   return { isGettingPrice, getProductPrice };
+}
+
+export function useEditProduct(productId) {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const { isPending: isEditing, mutate: editProduct } = useMutation({
+    mutationFn: (data) => updateProductApi({ productId, data }),
+    onSuccess: (data) => {
+      toast.success(data.message || "محصول با موفقیت ویرایش شد", {
+        id: "edit-product-success",
+      });
+
+      queryClient.setQueryData(["get-product", productId], (oldData) => {
+        return { ...oldData, ...data.product };
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["get-product", productId] });
+
+      router.refresh();
+      router.back();
+    },
+    onError: (err) => showApiError(err),
+  });
+
+  return { isEditing, editProduct };
 }
 
 export function useRemoveProduct() {

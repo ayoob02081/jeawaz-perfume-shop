@@ -1,13 +1,15 @@
 "use client";
 
-import toast, { Toaster } from "react-hot-toast";
-import { useForm } from "react-hook-form";
-import { useRemoveBrand } from "@/hooks/useCategories";
+import { Toaster } from "react-hot-toast";
+import { Controller, useForm } from "react-hook-form";
+import {
+  useAddBrand,
+  useEditBrand,
+  useRemoveBrand,
+} from "@/hooks/useCategories";
 import RHFTextField from "@/ui/RHFTextField";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import useAddBrand from "../categories/useCreateBrand";
-import useEditBrand from "../categories/useEditBrand";
+import RHFUploadFile from "@/ui/RHFUploadFile";
 
 const basicInfoData = [
   {
@@ -31,7 +33,6 @@ const basicInfoData = [
 ];
 
 function BrandForm({ brandToEdit }) {
-  const queryClient = useQueryClient();
   const router = useRouter();
 
   const { id, title, value, iconUrl, description } = brandToEdit || {};
@@ -39,25 +40,19 @@ function BrandForm({ brandToEdit }) {
   const { isDeleting, removeBrand } = useRemoveBrand();
 
   const removeCategoryHandler = async (category) => {
-    const { id, title } = category;
-    try {
-      await removeBrand(id);
-      queryClient.invalidateQueries(["get-brands"]);
-      router.back();
-      toast.success(`${title} با موفقیت حذف شد.`);
-    } catch (error) {
-      toast.error(error?.response?.data?.message);
-    }
+    const { id } = category;
+    await removeBrand(id);
+    router.back();
   };
 
-  const { AddBrand, isAdding } = useAddBrand();
+  const { addBrand, isAdding } = useAddBrand();
   const { editBrand, isEditing } = useEditBrand(id);
 
   const {
     register,
+    control,
     handleSubmit,
-    watch,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm({
     defaultValues: {
       title: title || "",
@@ -76,26 +71,12 @@ function BrandForm({ brandToEdit }) {
     };
 
     if (!brandToEdit) {
-      try {
-        await AddBrand(payload);
-        queryClient.invalidateQueries(["get-brands"]);
-        router.back();
-        toast.success(`برند ${data.title} با موفقیت ساخته شد`);
-      } catch (error) {
-        toast.error(`ساخت برند با خطا مواجه شد`);
-      }
+      await addBrand(payload);
+    } else {
+      await editBrand(payload);
     }
 
-    if (!!brandToEdit) {
-      try {
-        editBrand(payload);
-        queryClient.invalidateQueries(["get-brands"]);
-        router.back();
-        toast.success(`برند ${data.title} با موفقیت ویرایش شد`);
-      } catch (error) {
-        toast.error(`ویرایش برند ${data.title} با خطا مواجه شد`);
-      }
-    }
+    router.back();
   };
 
   return (
@@ -121,23 +102,25 @@ function BrandForm({ brandToEdit }) {
         </div>
 
         {/* IconUrl */}
-        <div className="flex flex-col items-start justify-center space-y-4 text-sm size-full">
-          <div className="flex items-center justify-between mb-4 w-full">
-            <h3 className="text-stroke-800 font-bold max-md:text-base text-lg">
-              آیکون برند
-              <span className="text-error">*</span>
-            </h3>
+        <div className="flex flex-col items-start gap-y-4 w-fit bg-stroke-100 p-6 rounded-3xl border border-slate-100">
+          <h3 className="text-stroke-800 font-bold text-lg">آیکون برند</h3>
+          <div className="flex flex-wrap gap-6">
+            <Controller
+              name="iconUrl"
+              control={control}
+              render={({ field }) => (
+                <RHFUploadFile
+                  label="انتخاب آیکون"
+                  value={field.value}
+                  onChange={field.onChange}
+                  onRemove={() => field.onChange("")}
+                />
+              )}
+            />
           </div>
-          <div className="flex flex-wrap items-center justify-start gap-4">
-            <div className="flex items-center justify-start gap-2 mb-2 h-full">
-              <input
-                dir="ltr"
-                {...register(`iconUrl`)}
-                placeholder="/icons/icon.png"
-                className="  rounded-2xl w-full"
-              />
-            </div>
-          </div>
+          {errors.images && (
+            <p className="text-error text-xs">{errors.images.message}</p>
+          )}
         </div>
 
         {/* Submit Button */}

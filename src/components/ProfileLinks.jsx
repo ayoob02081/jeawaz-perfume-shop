@@ -57,7 +57,7 @@ export function ProfileLink({
     try {
       await logout();
       localStorage.removeItem("user");
-      router.push("/");
+      router.replace("/");
     } catch (error) {
       console.error("Error during logout:", error);
     }

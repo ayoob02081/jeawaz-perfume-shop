@@ -28,9 +28,7 @@ export default function RHFUploadFile({
 
     try {
       setIsUploading(true);
-      const { data } = await app.post(uploadUrl, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const { data } = await app.post(uploadUrl, formData);
 
       onChange(data.url);
       toast.success("عکس با موفقیت آپلود شد");
@@ -66,7 +64,7 @@ export default function RHFUploadFile({
 
   return (
     <div className="relative group">
-      <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-stroke-300 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all overflow-hidden select-none">
+      <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-stroke-300 rounded-2xl cursor-pointer hover:bg-stroke-0 transition-all overflow-hidden select-none">
         {value ? (
           <AppImage
             src={value}
@@ -80,8 +78,10 @@ export default function RHFUploadFile({
               <span className="loading loading-spinner loading-sm text-primary"></span>
             ) : (
               <>
-                <CloudArrowUpIcon className="size-7 text-slate-400 group-hover:text-primary transition-colors" />
-                <span className="text-[10px] mt-1 font-medium">{label}</span>
+                <CloudArrowUpIcon className="size-7 text-stroke-600 group-hover:text-primary transition-colors" />
+                <span className="text-[10px] mt-1 text-stroke-600 group-hover:text-primary font-medium">
+                  {label}
+                </span>
               </>
             )}
           </div>

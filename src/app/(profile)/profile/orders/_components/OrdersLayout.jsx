@@ -1,5 +1,5 @@
+import OrderStatusPage from "@/app/(profile)/profile/orders/_components/OrderStatusPage";
 import OrderStatusButton from "@/ui/OrderStatusButton";
-import OrderStatusPage from "./OrderStatusPage";
 
 function OrdersLayout({ status }) {
   return (

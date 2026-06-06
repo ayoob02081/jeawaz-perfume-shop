@@ -13,7 +13,7 @@ import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
-import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -65,10 +65,10 @@ function ProductsListTable({ products }) {
                   <td className="table__td px-3 font-bold rounded-r-full">
                     <p>{toPersianNumbers(index + 1)}</p>
                   </td>
-                  <td className="table__td px-6 max-w-[280px] truncate">
+                  <td className="table__td px-6 max-w-70 truncate">
                     <p className="font-bold">{product.perTitle}</p>
                   </td>
-                  <td className="table__td px-2 max-w-[280px] truncate">
+                  <td className="table__td px-2 max-w-70 truncate">
                     <div className="flex items-center justify-center flex-col gap-2 text-xs">
                       <AppImage
                         src={productBrand?.iconUrl || "/brand-icon"}
@@ -81,7 +81,7 @@ function ProductsListTable({ products }) {
                       <p className="text-stroke-600">{productBrand?.title}</p>
                     </div>
                   </td>
-                  <td className="table__td px-2 max-w-[280px] truncate">
+                  <td className="table__td px-2 max-w-70 truncate">
                     <div className="flex items-center justify-start gap-2 h-full w-fit">
                       <CardIconResponsive
                         src={productGender?.iconUrl || "/gender-icon"}
@@ -94,7 +94,7 @@ function ProductsListTable({ products }) {
                       />
                     </div>
                   </td>
-                  <td className="table__td px-3 py-3 max-w-[280px] truncate">
+                  <td className="table__td px-3 py-3 max-w-70 truncate">
                     <div className="flex items-center justify-start gap-2 h-full w-fit">
                       {productAccords &&
                         productAccords?.map((accord) => (
@@ -123,7 +123,7 @@ function ProductsListTable({ products }) {
                       )}
                     </p>
                   </td>
-                  <td className="table__td py-3 gap-2 px-6 flex flex-col justify-center scrollbar--primary scrollbar-w-1">
+                  <td className="table__td py-3! gap-2 px-6 flex flex-col justify-center scrollbar--primary scrollbar-w-1">
                     {product.modes.sealed.variants.map((p, i) => (
                       <div
                         key={i}
@@ -145,19 +145,19 @@ function ProductsListTable({ products }) {
                     <div className="flex gap-2 items-center">
                       <Link
                         href={`/products/${product.id}`}
-                        className="text-blue/70 hover:text-blue duration-200"
+                        className="text-stroke-450 hover:text-blue duration-200"
                       >
                         <EyeIcon className=" size-5" />
                       </Link>
                       <Link
                         href={`/admin/products/edit/${product.id}`}
-                        className="text-success/70 hover:text-success duration-200"
+                        className="text-stroke-450 hover:text-success duration-200"
                       >
                         <PencilIcon className=" size-5" />
                       </Link>
                       <button
                         onClick={() => removeProductHandler(product)}
-                        className="text-primary/70 hover:text-primary duration-200"
+                        className="text-stroke-450 hover:text-primary duration-200"
                       >
                         <TrashIcon className="size-5" />
                       </button>

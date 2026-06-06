@@ -2,6 +2,7 @@ import {
   createAddressApi,
   editAddressApi,
   getAddressByIdApi,
+  getAddressesByUserIdApi,
   getAllAddressesApi,
   removeAddressApi,
 } from "@/services/addressServices";
@@ -14,6 +15,14 @@ export const useGetAddresses = () =>
     queryFn: getAllAddressesApi,
     retry: false,
     refetchOnWindowFocus: false,
+  });
+
+export const useGetAddressesByUserId = (userId) =>
+  useQuery({
+    queryKey: ["addresses", userId],
+    queryFn: () => getAddressesByUserIdApi(userId),
+    enabled: !!userId,
+    retry: false,
   });
 
 export function useCreateAddress() {
@@ -53,7 +62,7 @@ export function useEditAddress() {
     },
     onError: (err) => {
       console.log(err);
-      
+
       const msg = err?.response?.data?.message || "خطا در بروزرسانی آدرس";
       toast.error(msg, { id: "edit-address-error" });
     },

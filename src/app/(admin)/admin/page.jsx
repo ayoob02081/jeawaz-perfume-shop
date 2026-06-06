@@ -1,9 +1,5 @@
-import ProfileInfoLayout from "@/components/ProfileInfoLayout";
+import AdminProfileLayout from "./_components/AdminProfileLayout";
 
 export default function Home() {
-  return (
-    <ProfileInfoLayout className="w-fit overflow-y-auto">
-      {/* <ProfileInfo /> */}
-    </ProfileInfoLayout>
-  );
+  return <AdminProfileLayout />;
 }

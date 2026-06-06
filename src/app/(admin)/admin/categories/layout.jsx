@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
       label="دسته‌بندی‌ها"
       side="right"
       className="size-4"
-      fontStyle="text-base font-normal"
+      fontStyle="text-base font-bold"
       justify="between"
       overflow="overflow-y-auto"
       max="true"

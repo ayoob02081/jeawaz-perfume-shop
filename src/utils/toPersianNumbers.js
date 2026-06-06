@@ -34,3 +34,28 @@ export function cleanNumericValue(value) {
   if (value === null || value === undefined) return "";
   return toEnglishNumbers(String(value)).replace(/[^\d]/g, "");
 }
+
+export function normalizePhone(phone) {
+  if (!phone) return "";
+
+  let value = phone;
+
+  if (value.startsWith("98")) {
+    value = "0" + value.slice(2);
+  }
+
+  if (value.startsWith("9")) {
+    value = "0" + value;
+  }
+
+  return value;
+}
+
+export function normalizeIranPhone(phone) {
+  if (!phone) return "";
+
+  let value = normalizePhone(phone);
+  value = toPersianNumbers(value);
+
+  return value;
+}

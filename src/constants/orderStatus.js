@@ -18,8 +18,8 @@ export const statusConfig = [
   },
   {
     id: 2,
-    value: "CONFIRMED",
-    label: "confirmed",
+    value: "PAID",
+    label: "paid",
     title: "ارسال شده",
     des: "تاریخ ارسال سفارش:",
     color: "bg-green/10",

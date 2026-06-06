@@ -31,7 +31,7 @@ function CategoriesLayout() {
           <h1 className="font-bold text-stroke-800 text-xl">برند‌ها</h1>
           <Link
             href="/admin/categories/brands/add"
-            className="btn btn--primary py-1.5 px-3"
+            className="btn btn--primary border py-1.5 px-3"
           >
             اضافه کردن برند
           </Link>
@@ -52,7 +52,7 @@ function CategoriesLayout() {
           <h1 className="font-bold text-stroke-800 text-xl">رایحه‌ها</h1>
           <Link
             href="/admin/categories/accords/add"
-            className="btn btn--primary py-1.5 px-3"
+            className="btn btn--primary border py-1.5 px-3"
           >
             اضافه کردن رایحه
           </Link>
@@ -73,7 +73,7 @@ function CategoriesLayout() {
           <h1 className="font-bold text-stroke-800 text-xl">جنسیت</h1>
           <Link
             href="/admin/categories/genders/add"
-            className="btn btn--primary py-1.5 px-3"
+            className="btn btn--primary border py-1.5 px-3"
           >
             اضافه کردن جنسیت
           </Link>

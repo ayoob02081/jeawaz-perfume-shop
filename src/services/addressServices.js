@@ -9,6 +9,11 @@ export const createAddressApi = (payload) =>
 export const getAddressByIdApi = (id) =>
   app.get(`/addresses/${encodeURIComponent(id)}`).then(({ data }) => data);
 
+export const getAddressesByUserIdApi = (userId) =>
+  app
+    .get(`/addresses?userId=${encodeURIComponent(userId)}`)
+    .then(({ data }) => data);
+
 export const editAddressApi = ({ addressId, data: payload }) =>
   app
     .patch(`/addresses/${encodeURIComponent(addressId)}`, payload)

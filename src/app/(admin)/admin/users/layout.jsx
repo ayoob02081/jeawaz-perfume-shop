@@ -18,9 +18,9 @@ export default function RootLayout({ children }) {
       label="کاربران"
       side="right"
       className="size-4"
-      fontStyle="text-base font-normal"
+      fontStyle="text-base font-bold"
       justify="between"
-      overflow="overflow-y-auto"
+      overflow="overflow-y-auto w-full"
       max="true"
       min="true"
     >

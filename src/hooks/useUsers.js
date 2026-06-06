@@ -1,13 +1,14 @@
 import {
   getAllUsersApi,
   getUserApi,
+  getUserByIdApi,
   updateUserApi,
 } from "@/services/usersServices";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useGetUser = () =>
   useQuery({
-    queryKey: ["get-user"],
+    queryKey: ["user"],
     queryFn: getUserApi,
     retry: false,
     staleTime: 1000 * 60 * 5,
@@ -16,10 +17,19 @@ export const useGetUser = () =>
 
 export const useGetAllUsers = () =>
   useQuery({
-    queryKey: ["get-users"],
+    queryKey: ["users"],
     queryFn: getAllUsersApi,
     retry: false,
     staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+  });
+
+export const useGetUserbyId = (id) =>
+  useQuery({
+    queryKey: ["get-product", id],
+    queryFn: () => getUserByIdApi(id),
+    enabled: !!id,
+    retry: false,
     refetchOnWindowFocus: false,
   });
 

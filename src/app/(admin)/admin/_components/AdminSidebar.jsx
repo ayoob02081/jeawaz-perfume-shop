@@ -50,7 +50,6 @@ function AdminSidebar() {
             alt={link.alt}
           />
         ))}
-        <ProfileLink label="خروج از حساب کاربری" logoutMode />
       </ProfileLinks>
     </ProfileLayout>
   );

@@ -1,9 +1,8 @@
 import { userTHeads } from "@/constants/tableHeads";
 import Table from "@/ui/Table";
 import { toLocalDateString } from "@/utils/toLocalDate";
-import { toPersianNumbers } from "@/utils/toPersianNumbers";
-import { EyeIcon } from "@heroicons/react/24/outline";
-import { CheckCircleIcon } from "@heroicons/react/24/solid";
+import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
+import { EyeIcon, TrashIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 function UsersListTable({ users }) {
@@ -25,44 +24,21 @@ function UsersListTable({ users }) {
                   <td className="table__td font-bold px-2">
                     {toPersianNumbers(index + 1)}
                   </td>
-                  <td className="table__td px-2 max-w-[280px] truncate">
-                    <div className="flex items-center justify-start gap-1">
-                      <p>{user?.firstName}</p>
-                      <p>{user?.lastName}</p>
-                    </div>
+                  <td className="table__td px-2 max-w-70 truncate">
+                    <p>{user?.fullName || "اسمی ثبت نشده"}</p>
                   </td>
                   <td className="table__td px-2">
-                    <div className="flex items-center gap-2 justify-between">
-                      {/* {toPersianNumbers(user?.phoneNumber)} */}
-                      {/* {user.isVerifiedPhoneNumber && (
-                      <CheckCircleIcon className="size-4 text-success" />
-                    )} */}
-                    </div>
+                    <Link
+                      href={`tel:+${user?.phoneNumber}`}
+                      className="flex items-center gap-2 justify-between hover:text-primary duration-200"
+                    >
+                      {normalizeIranPhone(user?.phoneNumber) ||
+                        "شماره‌ای ثبت نشده"}
+                    </Link>
                   </td>
-                  <td className="table__td px-2 max-w-[280px] truncate">
-                    {user.email}
+                  <td className="table__td px-2 max-w-70 truncate">
+                    {user?.email || "ایمیلی ثبت نشده"}
                   </td>
-
-                  <td className="table__td px-2">
-                    <div className="flex flex-col items-center justify-center gap-y-2 badge badge--primary ">
-                      {toPersianNumbers(
-                        user?.Products?.length >= 1
-                          ? user.Products?.map((product, index) => (
-                              <div
-                                className="block badge badge--secondary"
-                                key={product.id + index}
-                              >
-                                {product.title}
-                              </div>
-                            ))
-                          : 0,
-                      )}
-                    </div>
-                  </td>
-
-                  {/* <td className="table__td px-2">
-                    {toLocalDateString(user?.createdAt)}
-                  </td> */}
                   <td className="table__td px-2">
                     <p
                       className={`badge ${user?.role === "admin" ? " bg-success/10 text-success" : "bg-orange/10 text-orange"}`}
@@ -70,13 +46,36 @@ function UsersListTable({ users }) {
                       {user?.role}
                     </p>
                   </td>
-                  <td className="table__td fle px-3">
+                  <td className="table__td px-2">
+                    <p
+                      className={`badge ${user?.accountStatus === "active" ? " bg-success/10 text-success" : "bg-orange/10 text-orange"}`}
+                    >
+                      {user?.accountStatus === "active" ? "فعال" : "غیر فعال"}
+                    </p>
+                  </td>
+                  <td className="table__td px-2">
+                    <div className="flex flex-col items-center justify-center gap-y-2 badge badge--primary ">
+                      {toPersianNumbers(user?.ordersCount)}
+                    </div>
+                  </td>
+
+                  <td className="table__td px-2">
+                    {toLocalDateString(user?.createdAt)}
+                  </td>
+
+                  <td className="table__td flex items-center justify-center gap-2 px-3">
                     <Link
                       href={`/admin/users/${user?.id}`}
-                      className="flex items-center justify-center text-blue/70 hover:text-blue duration-200"
+                      className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
                     >
-                      <EyeIcon className="size-4" />
+                      <EyeIcon className="size-5" />
                     </Link>
+                    <button
+                      type="button"
+                      className="flex items-center justify-center text-stroke-450 hover:text-primary duration-200"
+                    >
+                      <TrashIcon className="size-5" />
+                    </button>
                   </td>
                 </Table.Row>
               );

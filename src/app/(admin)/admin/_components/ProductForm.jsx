@@ -1,6 +1,6 @@
 "use client";
 
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import {
   useGetAllBrandCategories,
@@ -13,15 +13,17 @@ import RHFTextAreaField from "@/ui/RHFTextAreaField";
 import RHFRadioButton from "@/ui/RHFRadioButton";
 import AppImage from "@/components/AppImage";
 import RHFCheckBox from "@/ui/RHFCheckBox";
-import useAddProduct from "../products/useCreatePost";
-import useEditProduct from "../products/useEditPost";
-import { useRemoveProduct } from "@/hooks/useProducts";
+import {
+  useAddProduct,
+  useEditProduct,
+  useRemoveProduct,
+} from "@/hooks/useProducts";
 import { useRouter } from "next/navigation";
 import findCategories from "@/utils/findCategories";
 import { useEffect, useMemo } from "react";
 import RHFUploadFile from "@/ui/RHFUploadFile";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
-import { useQueryClient } from "@tanstack/react-query";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 const basicInfoData = [
   { id: 1, label: "عنوان فارسی", name: "perTitle", placeholder: "بلو شنل" },
@@ -72,7 +74,6 @@ function ProductForm({ productToEdit }) {
     isLoading: categoriesLoading,
     error: categoriesError,
   } = useGetAllCategories();
-  const queryClient = useQueryClient();
   const router = useRouter();
 
   const { isDeleting, removeProduct } = useRemoveProduct();
@@ -106,7 +107,7 @@ function ProductForm({ productToEdit }) {
         enTitle: "",
         description: "",
         notesDescription: "",
-        images: [""],
+        images: [{ url: "" }],
         offValue: 0,
         stock: 0,
         original: false,
@@ -231,6 +232,39 @@ function ProductForm({ productToEdit }) {
     }
   };
 
+  const NotsFieldData = [
+    {
+      id: 1,
+      label: "نت‌های اولیه",
+      addField: () => appendTop(""),
+      removeField: removeTop,
+      noteFields: topFields,
+      name: "notes.top",
+    },
+    {
+      id: 2,
+      label: "نت‌های میانی",
+      addField: () => appendMiddle(""),
+      removeField: removeMiddle,
+      noteFields: middleFields,
+      name: "notes.middle",
+    },
+    {
+      id: 3,
+      label: "نت‌های پایانی",
+      addField: () => appendBase(""),
+      removeField: removeBase,
+      noteFields: baseFields,
+      name: "notes.base",
+    },
+  ];
+
+  useEffect(() => {
+    appendTop("");
+    appendMiddle("");
+    appendBase("");
+  }, []);
+
   const onSubmit = async (data) => {
     const categoryIds = [
       Number(data.genderId),
@@ -275,20 +309,13 @@ function ProductForm({ productToEdit }) {
         },
       },
     };
-    console.log(data);
 
     productToEdit ? editProduct(payload) : addProduct(payload);
   };
 
   const removeProductHandler = async (product) => {
-    const { id, perTitle } = product;
-    try {
-      await removeProduct(id);
-      toast.success(`${perTitle} با موفقیت حذف شد.`);
-      queryClient.invalidateQueries(["products"]);
-    } catch (error) {
-      toast.error(error?.response?.data?.message);
-    }
+    const { id } = product;
+    await removeProduct(id);
   };
 
   if (brandsLoading || categoriesLoading) return <Loading />;
@@ -332,7 +359,7 @@ function ProductForm({ productToEdit }) {
         </div>
 
         {/* Images Section */}
-        <div className="flex flex-col items-start gap-y-4 w-full bg-slate-50/50 p-6 rounded-3xl border border-slate-100">
+        <div className="flex flex-col items-start gap-y-4 w-full bg-stroke-100 p-6 rounded-3xl border border-slate-100">
           <h3 className="text-stroke-800 font-bold text-lg">عکس‌های محصول</h3>
           <div className="flex flex-wrap gap-6">
             {imageFields.map((field, i) => (
@@ -373,7 +400,7 @@ function ProductForm({ productToEdit }) {
             انتخاب برند
             <span className="text-error">*</span>
           </h3>
-          <div className="flex items-start justify-start flex-wrap gap-x-4 h-64 w-full overflow-auto scrollbar--primary scrollbar-w-1.5">
+          <div className="flex items-start justify-center flex-wrap gap-6 h-64 w-full overflow-auto scrollbar--primary scrollbar-w-1.5">
             {brands.map((brand) => {
               const isChecked =
                 Number(watch("brandId")) === brand.id ? true : false;
@@ -525,116 +552,19 @@ function ProductForm({ productToEdit }) {
             className="rounded-2xl w-full"
           />
           <div className="flex flex-wrap items-start justify-start gap-6 w-full">
-            {/* Top Notes */}
-            <div className="max-sm:w-full">
-              <div className="flex items-center justify-between gap-4">
-                <h3 className="font-bold mb-4 text-stroke-800 max-md:text-base text-lg">
-                  نت‌های اولیه
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => appendTop("")}
-                  className="btn btn--success text-xs py-1 px-2 rounded-lg text-nowrap"
-                >
-                  افزودن نت
-                </button>
-              </div>
-              {topFields.map((field, i) => (
-                <div key={field.id} className="flex gap-3 mb-2">
-                  <input
-                    {...register(`notes.top.${i}`)}
-                    onChange={(e) => {
-                      register(`notes.top.${i}`).onChange(e);
-                      handleNoteChange(i, "notes.top", e.target.value);
-                    }}
-                    className="rounded-2xl w-full"
-                  />
-                  {topFields.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeTop(i)}
-                      className="flex items-center justify-center bg-primary text-stroke-0 text-xl py-1 px-3 h-full rounded-full"
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Middle Notes */}
-            <div className="max-sm:w-full">
-              <div className="flex items-center justify-between gap-4">
-                <h3 className="font-bold mb-4 text-stroke-800 max-md:text-base text-lg">
-                  نت‌های میانی
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => appendMiddle("")}
-                  className="btn btn--success text-xs py-1 px-2 rounded-lg"
-                >
-                  افزودن نت
-                </button>
-              </div>
-              {middleFields.map((field, i) => (
-                <div key={field.id} className="flex gap-3 mb-2">
-                  <input
-                    {...register(`notes.middle.${i}`)}
-                    onChange={(e) => {
-                      register(`notes.middle.${i}`).onChange(e);
-                      handleNoteChange(i, "notes.middle", e.target.value);
-                    }}
-                    className="rounded-2xl w-full"
-                  />
-                  {middleFields.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeMiddle(i)}
-                      className="flex items-center justify-center bg-primary text-stroke-0 text-xl py-1 px-3 h-full rounded-full"
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Base Notes */}
-            <div className="max-sm:w-full">
-              <div className="flex items-center justify-between gap-4">
-                <h3 className="font-bold mb-4 text-stroke-800 max-md:text-base text-lg">
-                  نت‌های پایانی
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => appendBase("")}
-                  className="btn btn--success text-xs py-1 px-2 rounded-lg"
-                >
-                  افزودن نت
-                </button>
-              </div>
-              {baseFields.map((field, i) => (
-                <div key={field.id} className="flex gap-3 mb-2">
-                  <input
-                    {...register(`notes.base.${i}`)}
-                    onChange={(e) => {
-                      register(`notes.base.${i}`).onChange(e);
-                      handleNoteChange(i, "notes.base", e.target.value);
-                    }}
-                    className="rounded-2xl w-full"
-                  />
-                  {baseFields.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeBase(i)}
-                      className="flex items-center justify-center bg-primary text-stroke-0 text-xl py-1 px-3 h-full rounded-full"
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+            {/* Notes */}
+            {NotsFieldData?.map((note) => (
+              <Notes
+                key={note.id}
+                label={note.label}
+                addField={note.addField}
+                removeField={note.removeField}
+                noteFields={note.noteFields}
+                name={note.name}
+                register={register}
+                handleNoteChange={handleNoteChange}
+              />
+            ))}
           </div>
         </div>
 
@@ -688,13 +618,16 @@ function ProductForm({ productToEdit }) {
             <button
               type="button"
               onClick={() => sealedFields.append({ volume: "", price: "" })}
-              className="btn btn--success text-sm py-1.5 px-2.5 rounded-xl"
+              className="btn btn--success text-sm py-1.5 px-2.5"
             >
               اضافه کردن
             </button>
           </div>
           {sealedFields.fields.map((field, i) => (
-            <div key={field.id} className="flex items-end gap-4 mb-2 h-full">
+            <div
+              key={field.id}
+              className="relative flex items-end gap-4 mb-2 h-full"
+            >
               <RHFTextField
                 errors={errors}
                 textClassName="font-bold"
@@ -715,13 +648,7 @@ function ProductForm({ productToEdit }) {
                 validationSchema={{ required: "قیمت ضروری است" }}
                 placeholder="قیمت(تومان)"
               />
-              <button
-                type="button"
-                onClick={() => sealedFields.remove(i)}
-                className="flex items-center justify-center bg-primary text-stroke-0 text-xl py-1 px-3 h-full rounded-full"
-              >
-                ×
-              </button>
+              <DeleteButton onClick={() => sealedFields.remove(i)} />
             </div>
           ))}
         </div>
@@ -826,3 +753,60 @@ function ProductForm({ productToEdit }) {
 }
 
 export default ProductForm;
+
+function Notes({
+  label,
+  addField,
+  removeField,
+  noteFields,
+  name,
+  register,
+  handleNoteChange,
+}) {
+  return (
+    <div className="w-full shrink grow">
+      <div className="flex items-center justify-between gap-4 mb-4">
+        <h3 className="font-bold text-stroke-800 max-md:text-base text-lg">
+          {label}
+        </h3>
+        <button
+          type="button"
+          onClick={addField}
+          className="btn btn--success text-sm py-1 px-2"
+        >
+          افزودن نت
+        </button>
+      </div>
+      {noteFields.map((field, i) => (
+        <div
+          key={field.id}
+          className="relative h-full flex flex-col gap-3 mb-2"
+        >
+          <input
+            {...register(`${name}.${i}`)}
+            onChange={(e) => {
+              register(`${name}.${i}`).onChange(e);
+              handleNoteChange(i, name, e.target.value);
+            }}
+            className="textField__input rounded-5xl size-full"
+          />
+          {noteFields.length >= 1 && (
+            <DeleteButton onClick={() => removeField(i)} />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DeleteButton({ onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="absolute z-10 top-1/2 -translate-y-1/2 left-1 flex items-center justify-center hover:bg-primary text-primary hover:text-white border border-primary text-xl h-[85%] aspect-square rounded-full transition-all duration-200"
+    >
+      <XMarkIcon className="size-5 stroke-3" />
+    </button>
+  );
+}

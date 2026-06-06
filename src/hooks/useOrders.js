@@ -1,15 +1,25 @@
 import {
-  getAllOrdersApi,
   getOrderByIdApi,
   createOrderApi,
+  getUserOrdersApi,
+  getOrdersByUserIdApi,
+  getAdminOrdersApi,
 } from "@/services/orderServices";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
+export const useGetAdminOrders = (params) =>
+  useQuery({
+    queryKey: ["admin-orders", params],
+    queryFn: () => getAdminOrdersApi(params),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
 export const useGetOrders = () =>
   useQuery({
     queryKey: ["orders"],
-    queryFn: getAllOrdersApi,
+    queryFn: getUserOrdersApi,
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -19,6 +29,14 @@ export const useGetOrderById = (id) =>
     queryKey: ["orders", id],
     queryFn: () => getOrderByIdApi(id),
     enabled: !!id,
+    retry: false,
+  });
+
+export const useGetOrdersByUserId = (userId) =>
+  useQuery({
+    queryKey: ["orders2", userId],
+    queryFn: () => getOrdersByUserIdApi(userId),
+    enabled: !!userId,
     retry: false,
   });
 
@@ -40,12 +58,3 @@ export function useCreateOrder() {
 
   return { isCreating, createOrder };
 }
-
-export const useGetAllOrdersByStatus = (status) =>
-  useQuery({
-    queryKey: ["orders-by-status", status],
-    queryFn: () => fetchOrders(status),
-    retry: false,
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-  });

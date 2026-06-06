@@ -4,10 +4,6 @@ export function getUserApi() {
   return app.get("/users/me").then(({ data }) => data);
 }
 
-// export function getUsersApi() {
-//   return app.get("/users").then(({ data }) => data);
-// }
-
 export function getUserByIdApi(id) {
   return app.get(`/users/${id}`).then(({ data }) => data);
 }
@@ -24,11 +20,6 @@ export function removeUserApi(id) {
   return app.delete(`/users/${id}`).then(({ data }) => data);
 }
 
-export async function getAllUsersApi() {
-  const { data } = await app.get("/users");
-
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
-
-  return [];
+export function getAllUsersApi() {
+  return app.get("/users/admin").then((res) => res.data.data);
 }

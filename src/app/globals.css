@@ -193,7 +193,7 @@
     @apply bg-primary text-white py-3 px-2;
   }
   .table__td {
-    @apply text-stroke-800 py-4 text-ellipsis whitespace-nowrap overflow-y-auto;
+    @apply text-stroke-800 py-4 h-full text-ellipsis whitespace-nowrap overflow-y-auto;
   }
   .tdBase {
     @apply flex items-center justify-center text-nowrap;
