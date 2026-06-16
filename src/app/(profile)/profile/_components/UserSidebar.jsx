@@ -21,12 +21,12 @@ function UserSidebar() {
       baseHref: "/profile/me",
       label: "اطلاعات حساب کاربری",
     },
-    {
-      id: 3,
-      href: "/profile/notifs/all",
-      baseHref: "/profile/notifs",
-      label: "پیام‌ها",
-    },
+    // {
+    //   id: 3,
+    //   href: "/profile/notifs/all",
+    //   baseHref: "/profile/notifs",
+    //   label: "پیام‌ها",
+    // },
   ];
   return (
     <ProfileLayout label="پروفایل کاربری" correctPathName="/profile">

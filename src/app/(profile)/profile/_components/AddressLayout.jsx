@@ -28,7 +28,7 @@ function AddressLayout() {
           <p>افزودن آدرس جدید</p>
         </Link>
       </div>
-      {data.map((item) => (
+      {data?.map((item) => (
         <Address
           key={item.id}
           label={item.label}

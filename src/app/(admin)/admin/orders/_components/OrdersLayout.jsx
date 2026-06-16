@@ -1,12 +1,12 @@
 "use client";
 
-import OrderStatusPage from "@/app/(profile)/profile/orders/_components/OrderStatusPage";
-import PagesNumber from "@/components/PagesNumber";
-import { userStatusConfig } from "@/constants/orderStatus";
-import { useGetOrders } from "@/hooks/useOrders";
+import { useMemo, useCallback } from "react";
+import { useGetAdminOrders } from "@/hooks/useOrders";
+import OrdersListTable from "./OrdersListTable";
 import OrderStatusButton from "@/ui/OrderStatusButton";
+import { adminStatusConfig } from "@/constants/orderStatus";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import PagesNumber from "@/components/PagesNumber";
 
 function OrdersLayout() {
   const router = useRouter();
@@ -19,7 +19,7 @@ function OrdersLayout() {
   }, [searchParams]);
 
   const status = useMemo(() => {
-    return searchParams.get("status") ||"PENDING"|| undefined;
+    return searchParams.get("status") || undefined;
   }, [searchParams]);
 
   const updateParams = useCallback(
@@ -53,26 +53,22 @@ function OrdersLayout() {
     [updateParams],
   );
 
-  const {
-    data: orders,
-    isLoading,
-    error,
-  } = useGetOrders({
+  const { data: orders, isLoading } = useGetAdminOrders({
     page,
-    limit: 10,
+    limit: 15,
     status,
   });
 
   const totalPages = isLoading ? 0 : (orders?.meta?.totalPages ?? 1);
 
   return (
-    <div className="flex flex-col justify-between lg:gap-6 pb-28 max-md:border-t-[1.5px] border-stroke-200 w-full">
+    <div className="flex flex-col justify-between lg:gap-6 pb-28 max-md:border-t border-stroke-200 w-full max-lg:p-6">
       <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-start max-lg:p-6 gap-8 snap-x overflow-x-scroll scrollbar-none">
-          {userStatusConfig?.map((s) => (
+        <div className="flex items-center gap-8 overflow-x-auto scrollbar-none">
+          {adminStatusConfig.map((s) => (
             <OrderStatusButton
-              user
               key={s.id}
+              admin
               statusBtnData={s}
               orders={orders}
               isLoading={isLoading}
@@ -81,13 +77,14 @@ function OrdersLayout() {
             />
           ))}
         </div>
-        <OrderStatusPage
-          currentStatus={status}
+
+        <OrdersListTable
           orders={orders?.data}
           isLoading={isLoading}
-          error={error}
+          status={status}
         />
       </div>
+
       <PagesNumber
         page={page}
         setPage={setPage}

@@ -10,7 +10,7 @@ function ProductsLayout() {
   const { data, isPending, error } = useGetAllProducts();
 
   return (
-    <div className="space-y-2 w-full px-6">
+    <div className="space-y-2 w-full max-lg:px-6">
       <div className="flex items-center gap-4 justify-between pb-6 w-full">
         <h1 className="font-bold text-stroke-800 text-xl">محصولات</h1>
         <Link

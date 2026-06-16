@@ -3,7 +3,7 @@
 import Error from "@/components/Error";
 import Loading from "@/components/Loading";
 import { Order } from "@/components/SingleOrderPage";
-import { statusConfig } from "@/constants/orderStatus";
+import { adminStatusConfig } from "@/constants/orderStatus";
 import { useGetAdminOrders, useGetOrderById } from "@/hooks/useOrders";
 import React from "react";
 
@@ -18,8 +18,8 @@ function page({ params }) {
     userId: correctParams?.id,
     status: order?.status,
   });
-  const numOfOrder = orders?.findIndex((o) => o.id === order?.id);
-  const currentStatus = statusConfig?.find((s) => s.value === order?.status);
+  const numOfOrder = orders?.data?.findIndex((o) => o.id === order?.id);
+  const currentStatus = adminStatusConfig?.find((s) => s.value === order?.status);
 
   if (isLoading)
     return (
@@ -38,7 +38,7 @@ function page({ params }) {
   return (
     <Order
       order={order}
-      orders={orders}
+      orders={orders?.data}
       numOfOrder={numOfOrder}
       currentStatus={currentStatus}
     />

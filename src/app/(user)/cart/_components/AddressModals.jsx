@@ -33,7 +33,7 @@ export function AllAddresses({
 
   return (
     <Modal className="h-1/2" isOpen={isListOpen} onClose={onClose}>
-      <div className="flex flex-col items-center justify-between gap-2 text-stroke-800 bg-white h-full w-full p-6 pb-2 pl-2">
+      <div className="flex flex-col items-center justify-between gap-2 text-stroke-800 bg-stroke-0 h-full w-full p-6 pb-2 pl-2">
         <div className="flex items-center justify-between pb-4 border-b border-stroke-250  w-full h-fit pl-4">
           <h2 className="flex items-center justify-start gap-1 text-stroke-800 font-bold md:text-xl"><p className="md:font-normal">انتخاب</p><p>آدرس</p></h2>
           <button

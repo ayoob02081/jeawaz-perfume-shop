@@ -7,7 +7,6 @@ const app = axios.create({
   withCredentials: true,
 });
 
-let isRefreshing = false;
 let refreshPromise = null;
 
 app.interceptors.response.use(
@@ -25,9 +24,7 @@ app.interceptors.response.use(
 
       try {
         if (!refreshPromise) {
-          isRefreshing = true;
           refreshPromise = app.post("/auth/refresh").finally(() => {
-            isRefreshing = false;
             refreshPromise = null;
           });
         }

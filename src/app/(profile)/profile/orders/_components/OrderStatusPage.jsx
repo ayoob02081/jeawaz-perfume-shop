@@ -8,15 +8,17 @@ import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
-import { statusConfig } from "@/constants/orderStatus";
-import { useGetOrders } from "@/hooks/useOrders";
+import { userStatusConfig } from "@/constants/orderStatus";
 import { toLocalDateString } from "@/utils/toLocalDate";
 
-export default function OrderStatusPage({ status }) {
-  const { data: orders, isLoading, error } = useGetOrders();
-  const currentStatus = statusConfig?.find((s) => s.label === status);
-  const ordersByStatus = orders?.filter(
-    (o) => o.status === currentStatus?.value,
+export default function OrderStatusPage({
+  currentStatus,
+  orders,
+  isLoading,
+  error,
+}) {
+  const currentStatusData = userStatusConfig?.find(
+    (s) => s.value === currentStatus,
   );
 
   if (isLoading)
@@ -34,22 +36,18 @@ export default function OrderStatusPage({ status }) {
     );
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center lg:rounded-xl lg:gap-6 `}
-    >
-      {ordersByStatus?.length === 0 || undefined || null
+    <div className="flex flex-col items-center justify-center lg:rounded-xl lg:gap-6 w-full">
+      {orders?.length === 0 || undefined || null
         ? "سفارشی یافت نشد"
-        : ordersByStatus?.map((order) => (
+        : orders?.map((order) => (
             <StatusOrderCard
               key={order.id}
               id={order.id}
               date={order.orderDate}
               orderItems={order.items}
               orderNumber={order.orderNumber}
-              shipping={order.shipping}
               pricing={order.pricing}
-              status={order.status}
-              currentStatus={currentStatus}
+              currentStatusData={currentStatusData}
             />
           ))}
     </div>
@@ -61,21 +59,20 @@ export function StatusOrderCard({
   date,
   orderItems,
   orderNumber,
-  shipping,
   pricing,
-  status,
-  currentStatus,
+  currentStatusData,
 }) {
   const pathName = usePathname();
   const router = useRouter();
-  const { title, label, color, src, des } = currentStatus || {};
+  const { title, color, icon: Icon, textColor, des } = currentStatusData || {};
 
   return (
     <div className="flex flex-col justify-between gap-6 w-full max-lg:border-t border-stroke-800/20 dark:border-stroke-800/40 p-6 lg:border lg:rounded-2xl">
       <div
         className={`flex items-center justify-start gap-1 h-11 w-fit px-2 rounded-5xl ${color}`}
       >
-        <AppImage src={src} alt={`${label}-icon`} width="size-7" sizes="10vw" />
+        <Icon className={`size-7 ${textColor}`} />
+
         <p className="text-xs font-bold text-stroke-800">{title}</p>
       </div>
       <div className="flex max-sm:flex-col sm:flex-row sm:items-end justify-between w-full">

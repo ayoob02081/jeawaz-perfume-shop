@@ -26,7 +26,7 @@ function CategoriesLayout() {
   return (
     <div className="flex flex-col items-start justify-start gap-16">
       {/* Brands */}
-      <div className="w-full px-6">
+      <div className="w-full max-lg:px-6">
         <div className="flex items-center gap-4 justify-between pb-6 w-full">
           <h1 className="font-bold text-stroke-800 text-xl">برند‌ها</h1>
           <Link
@@ -47,7 +47,7 @@ function CategoriesLayout() {
       </div>
 
       {/* Accords */}
-      <div className="w-full px-6">
+      <div className="w-full max-lg:px-6">
         <div className="flex items-center gap-4 justify-between pb-6 w-full">
           <h1 className="font-bold text-stroke-800 text-xl">رایحه‌ها</h1>
           <Link
@@ -68,7 +68,7 @@ function CategoriesLayout() {
       </div>
 
       {/* Genders */}
-      <div className="w-full px-6">
+      <div className="w-full max-lg:px-6">
         <div className="flex items-center gap-4 justify-between pb-6 w-full">
           <h1 className="font-bold text-stroke-800 text-xl">جنسیت</h1>
           <Link

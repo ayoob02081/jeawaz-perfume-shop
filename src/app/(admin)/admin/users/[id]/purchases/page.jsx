@@ -3,7 +3,7 @@
 import Error from "@/components/Error";
 import Loading from "@/components/Loading";
 import { StatusOrderCard } from "@/app/(profile)/profile/orders/_components/OrderStatusPage";
-import { statusConfig } from "@/constants/orderStatus";
+import { adminStatusConfig } from "@/constants/orderStatus";
 import { useGetAdminOrders } from "@/hooks/useOrders";
 import React from "react";
 
@@ -30,8 +30,8 @@ function page({ params }) {
       </div>
     );
 
-  return orders?.map((order) => {
-    const currentStatus = statusConfig?.find((s) => s.value === order?.status);
+  return orders?.data?.map((order) => {
+    const currentStatus = adminStatusConfig?.find((s) => s.value === order?.status);
     return (
       <StatusOrderCard
         key={order.id}
@@ -42,7 +42,7 @@ function page({ params }) {
         shipping={order.shipping}
         pricing={order.pricing}
         status={order.status}
-        currentStatus={currentStatus}
+        currentStatusData={currentStatus}
       />
     );
   });

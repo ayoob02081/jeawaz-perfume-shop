@@ -31,7 +31,11 @@ import RHFTextField from "@/ui/RHFTextField";
 import { useForm } from "react-hook-form";
 import { AllAddresses } from "./AddressModals";
 import AddressForm from "@/components/AddressForm";
-import { useCreateAddress, useGetAddresses } from "@/hooks/useAddress";
+import {
+  useCreateAddress,
+  useGetAddressById,
+  useGetAddresses,
+} from "@/hooks/useAddress";
 import { useCreateOrder } from "@/hooks/useOrders";
 import Modal from "@/components/Modal";
 
@@ -345,11 +349,13 @@ function CartOverview({ cart, step, setStep }) {
 }
 
 function Checkout({ cart, setStep, shippingMethod }) {
+  const [addressId, setAddressId] = useState(null);
   const router = useRouter();
   const { data: addresses, isLoading: addressesLoading } = useGetAddresses();
+  const { data: address, isLoading: isAddressLoading } =
+    useGetAddressById(addressId);
   const { createAddress, isCreating: isAddressCreating } = useCreateAddress();
   const { createOrder, isCreating: isOrderCreating } = useCreateOrder();
-  const [addressId, setAddressId] = useState(null);
   const selectedAddress = addresses?.find((a) => a.id === addressId);
 
   const { totalProducts = 0 } = cart;
@@ -375,6 +381,14 @@ function Checkout({ cart, setStep, shippingMethod }) {
       addressLine: "",
     },
   });
+  const finalAddress =
+    watch("addressLine") === address?.addressLine &&
+    watch("fullName") === address?.fullName &&
+    watch("label") === address?.label &&
+    watch("ostan") === address?.ostan &&
+    watch("phoneNumber") === address?.phoneNumber &&
+    watch("postalCode") === address?.postalCode &&
+    watch("shahr") === address?.shahr;
 
   useEffect(() => {
     if (!addresses || addressId) return;
@@ -407,7 +421,7 @@ function Checkout({ cart, setStep, shippingMethod }) {
         finalAddressId = addressData.id;
       }
 
-      if (finalAddressId) {
+      if (finalAddress) {
         await createOrder({
           addressId: finalAddressId,
           shippingMethod,
@@ -418,12 +432,8 @@ function Checkout({ cart, setStep, shippingMethod }) {
           receiverPhone: data.phoneNumber,
           ostan: data.ostan,
           shahr: data.shahr,
-          fullAddress: [
-            data.addressLine,
-            data.postalCode ? `کد پستی: ${data.postalCode}` : null,
-          ]
-            .filter(Boolean)
-            .join(" - "),
+          fullAddress: data.addressLine,
+          postalCode: data.postalCode,
           shippingMethod,
         });
       }

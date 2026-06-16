@@ -43,7 +43,7 @@ function Login({ closeBtn }) {
       if (phoneNumber && !/^09\d{9}$/.test(phoneNumber))
         return toast.error("شماره موبایل نامعتبر است");
 
-      if (phoneNumber) {
+      if (phoneNumber && remaining <= 0) {
         const res = await requestOtpApi({ phoneNumber });
         const expiresAt = new Date(res.expiresAt).getTime();
         setStep(2);
