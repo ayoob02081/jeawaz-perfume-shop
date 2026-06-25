@@ -12,10 +12,11 @@ import { useMemo } from "react";
 import toast from "react-hot-toast";
 
 function CategoriesListTable({ categories, brands, accords, genders }) {
-  const { data: products, isPending, error } = useGetAllProducts();
+  const { data, isPending, error } = useGetAllProducts();
   const { isDeleting: isDeletingCategory, removeCategory } =
     useRemoveCategory();
   const { isDeleting: isDeletingBrand, removeBrand } = useRemoveBrand();
+  const products = data?.data || [];
 
   const productCounts = useMemo(() => {
     if (!Array.isArray(products)) {

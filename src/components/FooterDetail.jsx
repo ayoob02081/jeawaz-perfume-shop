@@ -12,7 +12,7 @@ function FooterDetail({
 }) {
   return (
     <div
-      className={`flex ${direction} items-center justify-between gap-4 h-16 min-w-3xs`}
+      className={`flex ${direction} items-center justify-start gap-4 h-16 max-lg:min-w-3xs`}
     >
       <div className={`relative ${bg} p-4 rounded-full`}>
         <AppImage
@@ -24,7 +24,7 @@ function FooterDetail({
         />
         <div className="absolute top-4 left-4 bg-primary/50 dark:bg-primary/80 size-4 rounded-full"></div>
       </div>
-      <div className={`grow flex flex-col ${items} justify-between gap-1 `}>
+      <div className={`flex flex-col ${items} justify-between gap-1`}>
         <p className="font-bold text-stroke-800">{title}</p>
         <p className="text-stroke-600 text-xs">{discription}</p>
       </div>

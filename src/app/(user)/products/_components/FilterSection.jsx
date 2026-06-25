@@ -4,22 +4,36 @@ import AppImage from "@/components/AppImage";
 import { Badge } from "@/ui/Badge";
 import BreadCrumbBase from "@/ui/BreadCrumbBase";
 import BreadCrumb from "@/ui/BreadCrumb";
-import { useGetAllBrandCategories } from "@/hooks/useCategories";
-import { useRef, useState } from "react";
+import {
+  useGetAllBrandCategories,
+  useGetAllCategories,
+} from "@/hooks/useCategories";
+import { useEffect, useRef, useState } from "react";
 import Loading from "@/components/Loading";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import Modal from "@/components/Modal";
-import FilterModes from "./FilterModes";
 import { useFilters } from "@/hooks/useFilters";
 import SortSection from "@/components/SortSection";
 import FilterCheckBox from "@/ui/FilterCheckBox";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { emptyFilters } from "@/contexts/filters/initialStateFilters";
+import FiltersModal from "./FiltersModal";
+import {
+  buildQueryFromFilters,
+  getFiltersFromSearchParams,
+} from "@/utils/queryFilters";
+import { useForm } from "react-hook-form";
 
 function FilterSection() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
+
   const { state, dispatch } = useFilters();
 
   const brandsRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [brandsFilter, setBrandsFilter] = useState([]);
   const [mode, setMode] = useState("all");
 
   const {
@@ -27,23 +41,27 @@ function FilterSection() {
     isLoading: brandsLoading,
     error,
   } = useGetAllBrandCategories();
+  const { data: categories, isLoading: categoriesLoading } =
+    useGetAllCategories();
+  const filtersFromUrl = getFiltersFromSearchParams(searchParams);
+  const isGenderFilter = filtersFromUrl?.gender;
+  const currentGenderData =
+    isGenderFilter &&
+    categories.find((category) => category.value === isGenderFilter);
 
-  const handeleScroll = (e) => {
-    e.preventDefault();
-    if (!brandsRef.current) return;
-    brandsRef.current.scrollBy({ left: -300, behavior: "smooth" });
-  };
-
-  function OnChange(e) {
-    const brandValue = e.target.value;
-
-    if (!brandsFilter.includes(brandValue)) {
-      setBrandsFilter([...brandsFilter, brandValue]);
-    } else {
-      const filteredBrands = brandsFilter.filter((e) => e !== brandValue);
-      setBrandsFilter([...filteredBrands]);
-    }
-  }
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      minPrice: filtersFromUrl?.priceRange[0] || null,
+      maxPrice: filtersFromUrl?.priceRange[1] || null,
+    },
+  });
 
   function addFilter(actionType, itemKey, itemValue) {
     dispatch({ type: actionType, key: itemKey, value: itemValue });
@@ -66,20 +84,61 @@ function FilterSection() {
     setMode("all");
   };
 
-  const HandlefilterData = () => {
-    // e?.preventDefault();
-    // setIsModalOpen(false);
+  const HandleSubmitfilter = () => {
+    applyFilter();
+    setIsModalOpen(false);
   };
 
   function applyFilter() {
-    submitFilters("APPLY_FILTERS");
+    const query = buildQueryFromFilters(state.draft, searchParams);
+
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
+
+    dispatch({ type: "APPLY_FILTERS" });
     CloseModal();
   }
 
   function resetAllFilters() {
     setMode("all");
-    submitFilters("RESET_ALL_APPLY");
+
+    reset({
+      minPrice: null,
+      maxPrice: null,
+    });
+
+    router.replace(pathname, { scroll: false });
+
+    dispatch({ type: "RESET_ALL_APPLY" });
   }
+
+  function resetOneAndSync(key) {
+    const newDraft = {
+      ...state.draft,
+      [key]: emptyFilters[key],
+    };
+
+    const query = buildQueryFromFilters(newDraft, searchParams);
+
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
+
+    dispatch({ type: "RESET_ONE", key });
+  }
+
+  useEffect(() => {
+    dispatch({
+      type: "HYDRATE_FROM_URL",
+      payload: filtersFromUrl,
+    });
+
+    reset({
+      minPrice: filtersFromUrl?.priceRange[0] || null,
+      maxPrice: filtersFromUrl?.priceRange[1] || null,
+    });
+  }, [search, dispatch, reset]);
 
   return (
     <article>
@@ -103,38 +162,53 @@ function FilterSection() {
               </button>
 
               {/* Filters Badge */}
-              {state.draft.priceRange[1] !== 300000000 && (
+              {(filtersFromUrl?.priceRange[0] !== null ||
+                filtersFromUrl?.priceRange[1] !== null) && (
                 <Badge
                   title="قیمت"
-                  onClick={() => resetFilter("RESET_ONE", "priceRange")}
+                  onClick={() => resetOneAndSync("priceRange")}
                   error
                 />
               )}
-              {state.draft.accords.length > 0 && (
+              {filtersFromUrl?.accords.length > 0 && (
                 <Badge
                   title="رایحه"
-                  onClick={() => resetFilter("RESET_ONE", "accords")}
+                  onClick={() => resetOneAndSync("accords")}
                   error
                 />
               )}
-              {state.draft.brands.length > 0 && (
+              {filtersFromUrl?.brandIds.length > 0 && (
                 <Badge
                   title="برند"
-                  onClick={() => resetFilter("RESET_ONE", "brands")}
+                  onClick={() => resetOneAndSync("brandIds")}
                   error
                 />
               )}
-              {state.draft.volumes.length > 0 && (
+              {filtersFromUrl?.volumes.length > 0 && (
                 <Badge
                   title="حجم"
-                  onClick={() => resetFilter("RESET_ONE", "volumes")}
+                  onClick={() => resetOneAndSync("volumes")}
                   error
                 />
               )}
-              {state.draft.gender?.length > 0 && (
+              {filtersFromUrl?.gender && (
                 <Badge
                   title="جنسیت"
-                  onClick={() => resetFilter("RESET_ONE", "gender")}
+                  onClick={() => resetOneAndSync("gender")}
+                  error
+                />
+              )}
+              {filtersFromUrl?.original && (
+                <Badge
+                  title="اورجینال"
+                  onClick={() => resetOneAndSync("original")}
+                  error
+                />
+              )}
+              {filtersFromUrl?.inStock && (
+                <Badge
+                  title="موجود"
+                  onClick={() => resetOneAndSync("inStock")}
                   error
                 />
               )}
@@ -146,10 +220,10 @@ function FilterSection() {
           ) : (
             <BrandsFilter
               brands={brands}
-              OnChange={OnChange}
               ref={brandsRef}
-              state={state.draft?.brands}
+              state={state.draft?.brandIds}
               addFilter={addFilter}
+              resetOneAndSync={resetOneAndSync}
               applyFilter={applyFilter}
             />
           )}
@@ -162,7 +236,7 @@ function FilterSection() {
                 href={"/products"}
                 label={"محصولات"}
                 chevron
-                className="!text-primary font-bold"
+                className="text-primary! font-bold"
               />
             </BreadCrumbBase>
           </section>
@@ -172,14 +246,15 @@ function FilterSection() {
         <Modal isOpen={isModalOpen} onClose={CloseModal}>
           <form
             className="flex flex-col items-center justify-between gap-4 size-full"
-            onSubmit={HandlefilterData()}
+            onSubmit={handleSubmit(HandleSubmitfilter)}
           >
-            <FilterModes
+            <FiltersModal
               mode={mode}
               setMode={setMode}
               onClose={CloseModal}
               addFilter={addFilter}
-              applyFilter={applyFilter}
+              control={control}
+              watch={watch}
               resetAllFilters={resetAllFilters}
               resetFilter={resetFilter}
             />
@@ -189,8 +264,12 @@ function FilterSection() {
       <section className="w-full flex items-center justify-between py-6">
         {/* Products Genders Mode Info */}
         <div className=" flex items-center justify-center gap-2">
-          <div className="bg-primary h-3 w-[3px] rounded-full"></div>
-          <p className="text-xl font-bold text-stroke-800">عطر های مردانه</p>
+          <div className="bg-primary h-3 w-0.75 rounded-full"></div>
+          <p className="text-xl font-bold text-stroke-800">
+            {isGenderFilter
+              ? " ادکلن‌های" + currentGenderData?.title
+              : "همه ادکلن‌ها"}
+          </p>
         </div>
 
         {/* Sort Button */}
@@ -204,9 +283,19 @@ function FilterSection() {
 
 export default FilterSection;
 
-function BrandsFilter({ brands, ref, state, addFilter, applyFilter }) {
+function BrandsFilter({
+  brands,
+  ref,
+  state,
+  addFilter,
+  applyFilter,
+  resetOneAndSync,
+}) {
+  const selectedBrandIds = Array.isArray(state)
+    ? state.map(Number).filter(Boolean)
+    : [];
   return (
-    <form className="relative max-md:hidden flex items-center gap-2 w-full h-14 lg:h-[72px] overflow-hidden">
+    <form className="relative max-md:hidden flex items-center gap-2 w-full h-14 lg:h-18 overflow-hidden">
       <div className=" flex items-center justify-center border border-primary/10 dark:border-stroke-200 bg-stroke-50 rounded-full text-primary dark:text-stroke-800 lg:text-lg font-bold h-full aspect-square">
         برندها
       </div>
@@ -216,15 +305,20 @@ function BrandsFilter({ brands, ref, state, addFilter, applyFilter }) {
           className="flex items-center justify-between gap-2 p-2 size-full rounded-full overflow-x-auto scrollbar-none snap-x scroll-smooth"
         >
           {brands?.map((brand) => {
-            const isChecked = state.includes(brand.value);
+            const isChecked = selectedBrandIds.includes(Number(brand.id));
 
             return (
               <FilterCheckBox
                 key={brand.id}
-                checkId={brand.value}
+                checkId={brand.id}
                 imageSrc={brand.iconUrl}
                 name={"brandFilter"}
-                onChange={() => addFilter("SET_ITEMS", "brands", brand.value)}
+                onChange={() =>
+                  selectedBrandIds?.length === 1 &&
+                  selectedBrandIds?.includes(brand.id)
+                    ? resetOneAndSync("brandIds")
+                    : addFilter("SET_ITEMS", "brandIds", Number(brand.id))
+                }
                 checked={isChecked}
                 className={`justify-center text-nowrap has-checked:*:border-2 dark:has-checked:*:border-[1.5px] has-checked:*:bg-white  dark:has-checked:*:bg-stroke-0  *:border-primary dark:*:border-stroke-200 has-checked:*:border-primary dark:has-checked:*:border-stroke-200 size-full snap-center`}
                 imageClassName="p-2 lg h-10 lg:h-12 w-32 rounded-full duration-200 dark:*:invert "
@@ -235,8 +329,8 @@ function BrandsFilter({ brands, ref, state, addFilter, applyFilter }) {
       </div>
       <button
         type="button"
-        onClick={state.length > 0 ? applyFilter : null}
-        disabled={state.length > 0 ? false : true}
+        onClick={applyFilter}
+        disabled={selectedBrandIds?.length === 0}
         className="flex items-center justify-center border-2 rounded-full h-full aspect-square border-primary dark:border-stroke-200 bg-stroke-0 disabled:border-stroke-150 dark:disabled:border-stroke-50 disabled:*:text-stroke-600/20 duration-200"
       >
         <ChevronLeftIcon className="md:size-6 lg:size-8 text-primary dark:text-stroke-200 duration-200" />

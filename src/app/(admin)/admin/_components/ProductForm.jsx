@@ -97,9 +97,18 @@ function ProductForm({ productToEdit }) {
         .map((img) => ({ url: img })) || [];
     const imagesWithEmptySlot = [...existingImages, { url: "" }];
 
-    const volumesString = (
-      productToEdit?.modes?.decant?.availableVolumes || []
-    ).join(",");
+    const decantVariants =
+      productToEdit?.variants?.filter((v) => v.type === "decant") || [];
+
+    const sealedProductVariants =
+      productToEdit?.variants?.filter((v) => v.type === "sealed") || [];
+
+    const volumesString = decantVariants.map((v) => v.volume).join(",");
+
+    const pricePerMl =
+      decantVariants.length && decantVariants[0].volume
+        ? decantVariants[0].price / decantVariants[0].volume
+        : "";
 
     if (!productToEdit) {
       return {
@@ -158,15 +167,19 @@ function ProductForm({ productToEdit }) {
       },
       modes: {
         decant: {
-          pricePerMl: productToEdit?.modes?.decant?.pricePerMl || "",
+          pricePerMl,
           availableVolumes: volumesString,
         },
         sealed: {
-          variants: productToEdit?.modes?.sealed?.variants?.length
-            ? productToEdit.modes.sealed.variants
+          variants: sealedProductVariants.length
+            ? sealedProductVariants.map((v) => ({
+                volume: v.volume,
+                price: v.price,
+              }))
             : [{ volume: "", price: "" }],
         },
       },
+
       details: {
         madeIn: productToEdit?.details?.madeIn || "",
         designedIn: productToEdit?.details?.designedIn || "",
@@ -273,8 +286,36 @@ function ProductForm({ productToEdit }) {
 
     const { genderId, accordIds, images, ...rest } = data;
 
+    const decantPricePerMl = Number(data.modes?.decant?.pricePerMl);
+
+    const decantVolumes = String(data.modes?.decant?.availableVolumes || "")
+      .split(/[,،]+/)
+      .map((v) => Number(v.trim()))
+      .filter((v) => !isNaN(v) && v > 0);
+
+    const sealedVariants = (data.modes?.sealed?.variants || [])
+      .map((v) => ({
+        type: "sealed",
+        volume: Number(v.volume),
+        price: Number(v.price),
+        stock: Number(data.stock) || 0,
+      }))
+      .filter((v) => v.volume > 0 && v.price > 0);
+
+    const decantVariants = decantVolumes
+      .map((volume) => ({
+        type: "decant",
+        volume,
+        price: decantPricePerMl * volume,
+        stock: Number(data.stock) || 0,
+      }))
+      .filter((v) => v.volume > 0 && v.price > 0);
+
+    const variants = [...sealedVariants, ...decantVariants];
+
     const payload = {
       ...rest,
+
       stock: Number(data.stock),
       offValue: Number(data.offValue),
       original: !!data.original,
@@ -293,22 +334,28 @@ function ProductForm({ productToEdit }) {
         base: data.notes?.base?.filter(Boolean) || [],
       },
 
+      details: {
+        ...data.details,
+        seasons: data.details?.seasons || [],
+      },
+
+      variants,
+
       modes: {
         decant: {
-          pricePerMl: Number(data.modes?.decant?.pricePerMl),
-          availableVolumes: String(data.modes?.decant?.availableVolumes || "")
-            .split(/[,،]+/)
-            .map((v) => Number(v.trim()))
-            .filter((v) => !isNaN(v) && v > 0),
+          pricePerMl: decantPricePerMl,
+          availableVolumes: decantVolumes,
         },
         sealed: {
-          variants: (data.modes?.sealed?.variants || []).map((v) => ({
-            volume: Number(v.volume),
-            price: Number(v.price),
+          variants: sealedVariants.map((v) => ({
+            volume: v.volume,
+            price: v.price,
           })),
         },
       },
     };
+
+    // console.log("PRODUCT PAYLOAD:", payload);
 
     productToEdit ? editProduct(payload) : addProduct(payload);
   };

@@ -5,6 +5,9 @@ import axios from "axios";
 const app = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
+  paramsSerializer: {
+    indexes: null,
+  },
 });
 
 let refreshPromise = null;

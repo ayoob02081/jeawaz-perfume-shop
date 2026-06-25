@@ -2,10 +2,11 @@ import Link from "next/link";
 import AppImage from "../components/AppImage";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import OptionsFooter from "@/components/OptionsFooter";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Footer() {
   return (
-    <article className="max-w-[120rem] mx-auto 2xl:rounded-t-4xl overflow-hidden">
+    <article className="max-w-480 mx-auto 2xl:rounded-t-4xl overflow-hidden">
       <OptionsFooter />
       <section className="bg-black size-full max-md:hidden px-16 py-8">
         <div className="flex flex-col items-center gap-6 py-6">
@@ -64,16 +65,22 @@ function Footer() {
                 </li>
                 <div className="footer--link grid-cols-3 *:even:col-span-2">
                   <li>
-                    <Link href={"/products"}>جدیدترین</Link>
+                    <Link href={"/products?sort=newest"}>جدیدترین</Link>
                   </li>
                   <li>
-                    <Link href={"/products"}>محصولات پر تخفیف</Link>
+                    <Link
+                      href={"/products?sort=most_discounted&discounted=true"}
+                    >
+                      محصولات پرتخفیف
+                    </Link>
                   </li>
                   <li>
                     <Link href={"/products"}>محصولات</Link>
                   </li>
                   <li>
-                    <Link href={"/products"}>محصولات پرفروش</Link>
+                    <Link href={"/products?sort=best_selling"}>
+                      محصولات پرفروش
+                    </Link>
                   </li>
                 </div>
               </ul>
@@ -82,15 +89,15 @@ function Footer() {
           <article className="flex  items-center justify-between w-full px-16 text-white">
             <section className="flex flex-col justify-between gap-4">
               <div className="flex items-center justify-between">
-                <Link href={"tel:+989180522273"} className="flex items-center">
+                <Link href={"tel:+989302125151"} className="flex items-center">
                   <p className="text-3xl text-white ">
-                    {toPersianNumbers("2273")}
+                    {toPersianNumbers("5151")}
                   </p>
                   <p className="text-3xl text-primary ">
-                    {toPersianNumbers("052")}
+                    {toPersianNumbers("212")}
                   </p>
                   <p className="text-xl text-stroke-450 ">
-                    {toPersianNumbers("0918")}
+                    {toPersianNumbers("0930")}
                   </p>
                 </Link>
                 <Link href={"tel:+989180522273"} className="flex items-center">
@@ -142,43 +149,27 @@ function Footer() {
           <nav>
             <ul className="flex items-center justify-between gap-2">
               <li>
-                <Link href={"/"}>
-                  <AppImage
-                    width="size-7"
-                    src="/images/whatsapp-icon.svg"
-                    alt="whatsapp-icon"
-                    sizes="10vw"
-                  />
+                <Link
+                  href={"/"}
+                  className="text-white hover:text-green-500 hover:fill-stroke-200 duration-200"
+                >
+                  <i className="fa-brands fa-whatsapp fa-xl "></i>
                 </Link>
               </li>
               <li>
-                <Link href="https://t.me/jeaawazperfume">
-                  <AppImage
-                    width="size-7"
-                    src="/images/telegram-icon.svg"
-                    alt="telegram-icon"
-                    sizes="10vw"
-                  />
+                <Link
+                  href="https://t.me/jeaawazperfume"
+                  className="text-white hover:text-cyan-500 hover:fill-stroke-200 duration-200"
+                >
+                  <i className="fa-brands fa-telegram fa-xl "></i>
                 </Link>
               </li>
               <li>
-                <Link href="https://www.instagram.com/jeawaz_perfume/">
-                  <AppImage
-                    width="size-7"
-                    src="/images/insta-icon.svg"
-                    alt="insta-icon"
-                    sizes="10vw"
-                  />
-                </Link>
-              </li>
-              <li>
-                <Link href={"/"}>
-                  <AppImage
-                    width="size-7"
-                    src="/images/facebook-icon.svg"
-                    alt="facebook-icon"
-                    sizes="10vw"
-                  />
+                <Link
+                  href="https://www.instagram.com/jeawaz_perfume/"
+                  className="text-white hover:text-rose-700 hover:fill-stroke-200 duration-200"
+                >
+                  <i className="fa-brands fa-instagram fa-xl "></i>
                 </Link>
               </li>
             </ul>

@@ -20,7 +20,7 @@ import CategorySideBar from "@/app/(user)/_components/CategorySideBar";
 import SideBar from "./SideBar";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useGetAllCartItems } from "@/hooks/useCart";
 import { useAuth } from "@/contexts/filters/auth/AuthContext";
 import CompleteUserData from "@/components/CompleteUserData";
@@ -29,6 +29,11 @@ import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 function HeaderLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [searchValue, setSearchValue] = useState(
+    searchParams.get("search") || "",
+  );
   const { user, isAuthenticated, loading } = useAuth();
   const { data: cartItems, isLoading } = useGetAllCartItems();
   const [dark, setDark] = useState(false);
@@ -53,6 +58,26 @@ function HeaderLayout() {
     setSidebarOpen((prevState) => !prevState);
   };
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+
+    const value = searchValue.trim();
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (value) {
+      params.set("search", value);
+    } else {
+      params.delete("search");
+    }
+
+    params.set("page", "1");
+    params.set("limit", "12");
+
+    const query = params.toString();
+
+    router.replace(`/products${query ? `?${query}` : ""}`);
+  };
+
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
@@ -68,7 +93,11 @@ function HeaderLayout() {
         isAuthenticated={isAuthenticated}
         toggleTheme={toggleTheme}
         dark={dark}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        handleSearchSubmit={handleSearchSubmit}
       />
+
       <MobileHeader
         totalProducts={cartItems?.totalProducts}
         toggleSideBar={toggleSideBar}
@@ -76,7 +105,11 @@ function HeaderLayout() {
         sidebarOpen={sidebarOpen}
         toggleTheme={toggleTheme}
         dark={dark}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        handleSearchSubmit={handleSearchSubmit}
       />
+
       <CategorySideBar
         toggleCategory={toggleCategory}
         categoryOpen={categoryOpen}
@@ -98,6 +131,9 @@ function DesktopHeader({
   totalProducts,
   dark,
   loading,
+  searchValue,
+  setSearchValue,
+  handleSearchSubmit,
 }) {
   const router = useRouter();
   const pathName = usePathname();
@@ -119,7 +155,12 @@ function DesktopHeader({
                 </Link>
               </li>
               <li className="flex relative grow col-span-3 ">
-                <SearchSection placeholder="نام ادکلن ، دسته بندی ، برند و ..." />
+                <SearchSection
+                  placeholder="نام ادکلن ، دسته بندی ، برند و ..."
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  onSubmit={handleSearchSubmit}
+                />
               </li>
             </div>
             <li>
@@ -132,13 +173,7 @@ function DesktopHeader({
                   className={`absolute flex items-center justify-center h-full aspect-square from-yellow-400 to-yellow-700 dark:from-blue-700 dark:to-blue-950 bg-gradient-to-r rounded-full ${
                     !dark ? "right-0" : "right-0 -translate-x-full"
                   } shadow duration-200`}
-                >
-                  {!!dark ? (
-                    <div className="text-stroke-800" />
-                  ) : (
-                    <div className="text-stroke-800" />
-                  )}
-                </div>
+                />
                 <div className="flex items-center justify-between w-full">
                   <div className="text-stroke-800 z-10">
                     {!!dark ? (
@@ -278,7 +313,7 @@ function DesktopHeader({
             <div className="flex items-center justify-start gap-4">
               <li className="">
                 <Link
-                  href={"/products"}
+                  href={"/products?sort=best_selling"}
                   className="text-stroke-800 hover:text-primary duration-200"
                 >
                   <div className="flex items-center justify-center gap-2 ">
@@ -295,7 +330,7 @@ function DesktopHeader({
               </li>
               <li className="">
                 <Link
-                  href={"/products"}
+                  href={"/products?sort=newest"}
                   className="text-stroke-800 hover:text-primary duration-200"
                 >
                   <div className="flex items-center justify-center gap-2 ">
@@ -312,7 +347,7 @@ function DesktopHeader({
               </li>
               <li className="">
                 <Link
-                  href={"/products"}
+                  href={"/products?sort=most_discounted&discounted=true"}
                   className="text-stroke-800 hover:text-primary duration-200"
                 >
                   <div className="flex items-center justify-center gap-2 ">
@@ -361,6 +396,9 @@ function MobileHeader({
   totalProducts,
   toggleTheme,
   dark,
+  searchValue,
+  setSearchValue,
+  handleSearchSubmit,
 }) {
   const router = useRouter();
   const showElement = useHideOnScroll();
@@ -417,7 +455,12 @@ function MobileHeader({
           }`}
         >
           <div className=" w-full h-12">
-            <SearchSection placeholder="نام ادکلن ، دسته بندی ، برند و ..." />
+            <SearchSection
+              placeholder="نام ادکلن ، دسته بندی ، برند و ..."
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onSubmit={handleSearchSubmit}
+            />
           </div>
         </li>
       </ul>

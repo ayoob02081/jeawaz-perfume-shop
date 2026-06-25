@@ -1,7 +1,6 @@
 "use client";
 
 import { ArrowRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
 import Modal from "@/components/Modal";
 import RadioButton from "@/ui/RadioButton";
 import AppImage from "@/components/AppImage";
@@ -13,33 +12,36 @@ import {
 import { volumes } from "@/constants/filterItems";
 import FilterCheckBox from "@/ui/FilterCheckBox";
 import Loading from "@/components/Loading";
+import { buildQueryFromFilters } from "@/utils/queryFilters";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toPersianNumbers } from "@/utils/toPersianNumbers";
 
 const priceRanges = [
   {
     id: 1,
-    fromPrice: 0,
-    toPrice: 999999,
+    minPrice: 0,
+    maxPrice: 999999,
     value: "until-one-million",
     label: "تا یک میلیون",
   },
   {
     id: 2,
-    fromPrice: 0,
-    toPrice: 3000000,
+    minPrice: 0,
+    maxPrice: 3000000,
     value: "until-three-million",
     label: "تا سه میلیون",
   },
   {
     id: 3,
-    fromPrice: 0,
-    toPrice: 5000000,
+    minPrice: 0,
+    maxPrice: 5000000,
     value: "until-five-million",
     label: "تا پنج میلیون",
   },
   {
     id: 4,
-    fromPrice: 5000001,
-    toPrice: 199999999,
+    minPrice: 5000001,
+    maxPrice: 199999999,
     value: "over-five-million",
     label: "بالای پنج میلیون",
   },
@@ -51,22 +53,24 @@ function CategorySideBar({
   setCategoryOpen,
   onClose,
 }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const { data: categories, isPending, error } = useGetAllCategories();
   const genderCategories = categories?.filter((c) => c.type === "gender");
   const accordCategories = categories?.filter((c) => c.type === "accord");
   const { data: brandCategories } = useGetAllBrandCategories();
 
   const { state, dispatch } = useFilters();
-  const activeGender = genderCategories?.filter(
+  const activeGender = genderCategories?.find(
     (g) => g.value === state.draft.gender,
   );
 
   const isFilter =
     (state.draft.gender?.length ||
-      state.draft.brands?.length ||
+      state.draft.brandIds?.length ||
       state.draft.accords?.length ||
       state.draft.inStock?.length ||
-      state.draft.isOriginal?.length ||
+      state.draft.original?.length ||
       state.draft.volumes?.length) > 0;
 
   const isPriceFilter = state.draft.priceRange[1] !== 300000000;
@@ -80,8 +84,18 @@ function CategorySideBar({
   }
 
   function submitFilters(actionType) {
+    const query = buildQueryFromFilters(state.draft, searchParams);
+
+    router.replace(query ? `${"/products"}?${query}` : "/products", {
+      scroll: false,
+    });
+
     dispatch({ type: actionType });
   }
+
+  const selectedBrandIds = Array.isArray(state.draft.brandIds)
+    ? state.draft.brandIds?.map(Number).filter(Boolean)
+    : [];
 
   return (
     <Modal isOpen={categoryOpen} onClose={onClose} category>
@@ -109,28 +123,28 @@ function CategorySideBar({
               >
                 <div className="flex md:flex-col items-center max-md:justify-evenly max-sm:gap-4 sm:gap-6 md:gap-2 max-sm:px-4 max-md:px-6 size-full">
                   {genderCategories?.map((gender) => {
-                    const currectGrnder = state.draft.gender === gender.value;
-                    const defaultValue = currectGrnder === true && gender.value;
+                    const isChecked = state.draft.gender === gender.value;
+
                     return (
                       <RadioButton
                         key={gender.id}
-                        className="flex max-md:flex-col md:flex-row items-center justify-between max-md:h-full w-full md:w-56 max-sm:text-xs
-                    border-primary md:text-sm max-md:rounded-b-lg md:rounded-r-lg p-2 text-stroke-800 *:[div]:bg-stroke-0
-                      has-checked:border max-md:has-checked:border-t-0 md:has-checked:border-l-0 has-checked:font-bold
-                    has-checked:bg-stroke-0 has-checked:*:[div]:bg-stroke-100 duration-200"
+                        className={`flex max-md:flex-col md:flex-row items-center justify-between max-md:h-full w-full md:w-56 max-sm:text-xs
+                           border-primary md:text-sm max-md:rounded-b-lg md:rounded-r-lg p-2 text-stroke-800 max-md:text-center duration-200
+                           ${isChecked && "border max-md:border-t-0 md:border-l-0 font-bold bg-stroke-0"}`}
                         id={gender.value}
                         name={"gender"}
                         value={gender.value}
-                        label={"عطرهای " + gender.title}
+                        label={"ادکلن‌های " + gender.title}
                         chevron="md:block size-4"
                         onChange={() =>
                           addFilter("SET_ITEM", "gender", gender.value)
                         }
-                        checked={
-                          defaultValue || null === gender.value ? true : false
-                        }
+                        checked={isChecked}
                       >
-                        <div className="flex items-center justify-center max-sm:size-10 sm:size-14 rounded-md duration-200 overflow-hidden">
+                        <div
+                          className={`flex items-center justify-center max-sm:size-10 sm:size-14 rounded-md duration-200 overflow-hidden
+                          ${isChecked ? "bg-stroke-100" : "bg-stroke-0"}`}
+                        >
                           <AppImage
                             src={gender.imageUrl}
                             alt={gender.value + `-image`}
@@ -154,13 +168,18 @@ function CategorySideBar({
             </GenderCategoriesFilter>
             {state.draft.gender && (
               <div className="md:hidden bg-stroke-0 rounded-2xl m-4">
-                <Link
-                  href={"/"}
-                  className="flex items-center justify-between p-6 text-primary "
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.replace(`/products?gender=${activeGender?.value}`);
+                    onClose();
+                  }}
+                  className="flex items-center justify-between p-6 text-primary w-full"
                 >
-                  <span>همه عطر های {activeGender[0]?.title}</span>
+                  <span>همه ادکلن‌های {activeGender?.title}</span>
                   <ChevronLeftIcon className="text-primary size-4" />
-                </Link>
+                </button>
               </div>
             )}
 
@@ -176,8 +195,8 @@ function CategorySideBar({
                     {/* Brands Filter */}
                     <CategriesFilter fieldsetId="brand-value" title="برند">
                       {brandCategories?.map((brand) => {
-                        const defaultValue = state.draft.brands.filter(
-                          (v) => v == brand.value,
+                        const isChecked = selectedBrandIds.includes(
+                          Number(brand.id),
                         );
 
                         return (
@@ -185,14 +204,12 @@ function CategorySideBar({
                             className="flex flex-col items-end justify-start size-full text-xs has-checked:font-bold duration-200"
                             textClassName="py-2"
                             key={brand.id}
-                            checkId={brand.value}
-                            name="brands"
+                            checkId={brand.id}
+                            name="brandIds"
                             label={brand.title}
-                            checked={
-                              defaultValue[0] === brand.value ? true : false
-                            }
+                            checked={isChecked}
                             onChange={() =>
-                              addFilter("SET_ITEMS", "brands", brand.value)
+                              addFilter("SET_ITEMS", "brandIds", brand.id)
                             }
                           />
                         );
@@ -201,24 +218,22 @@ function CategorySideBar({
 
                     {/* Volumes Filter */}
                     <CategriesFilter fieldsetId="volume-value" title="حجم">
-                      {volumes.map((volume, i) => {
-                        const defaultValue = state.draft.volumes.filter(
-                          (v) => v == volume.value,
+                      {volumes.map((item, i) => {
+                        const isChecked = state.draft.volumes.includes(
+                          Number(item.quantity),
                         );
 
                         return (
                           <FilterCheckBox
-                            className="flex flex-col items-end justify-start size-full text-xs has-checked:font-bold duration-200"
-                            textClassName="py-2"
-                            key={volume.id}
-                            checkId={volume.value}
+                            className="flex flex-col  items-end justify-start size-full text-xs has-checked:font-bold duration-200"
+                            textClassName="py-2 flex flex-row-reverse"
+                            key={item.id}
+                            checkId={item.quantity}
                             name="volume"
-                            label={volume.title}
-                            checked={
-                              defaultValue[0] === volume.value ? true : false
-                            }
+                            label={`${toPersianNumbers(item.quantity)} میل`}
+                            checked={isChecked}
                             onChange={() =>
-                              addFilter("SET_ITEMS", "volumes", volume.value)
+                              addFilter("SET_ITEMS", "volumes", item.quantity)
                             }
                           />
                         );
@@ -228,8 +243,8 @@ function CategorySideBar({
                     {/* Accords Filter */}
                     <CategriesFilter fieldsetId="scent-type" title="رایحه">
                       {accordCategories?.map((accord) => {
-                        const defaultValue = state.draft.accords.filter(
-                          (a) => a === accord.value,
+                        const isChecked = state.draft.accords.includes(
+                          accord.value,
                         );
                         return (
                           <FilterCheckBox
@@ -239,9 +254,7 @@ function CategorySideBar({
                             checkId={accord.value}
                             name="accord"
                             label={accord.title}
-                            checked={
-                              defaultValue[0] === accord.value ? true : false
-                            }
+                            checked={isChecked}
                             onChange={() =>
                               addFilter("SET_ITEMS", "accords", accord.value)
                             }
@@ -258,7 +271,7 @@ function CategorySideBar({
                     >
                       {priceRanges.map((price) => {
                         const isExisted =
-                          state.draft.priceRange[1] === price.toPrice;
+                          state.draft.priceRange[1] === price.maxPrice;
                         const defaultValue = isExisted && price;
 
                         return (
@@ -267,11 +280,11 @@ function CategorySideBar({
                             radioId={price.value}
                             name="price"
                             label={price.label}
-                            defaultValue={defaultValue.value}
+                            defaultValue={defaultValue?.value}
                             onChange={() =>
                               addFilter("SET_ITEM", "priceRange", [
-                                price.fromPrice,
-                                price.toPrice,
+                                price.minPrice,
+                                price.maxPrice,
                               ])
                             }
                           />
@@ -320,22 +333,22 @@ export default CategorySideBar;
 function CategriesFilter({ title, fieldsetId, children, className }) {
   return (
     <div
-      dir="rtl"
+      // dir="rtl"
       className={`flex flex-col items-start gap-2 overflow-hidden text-sm h-full max-h-1/2 ${className}`}
     >
       <div className="flex items-center gap-1">
+        <h5 className="text-stroke-800">{title}</h5>
         <AppImage
           src="/images/star-2-primery-icon.svg"
           alt="star-icon"
           width="size-4"
           sizes="10vw"
         />
-        <h5 className="text-stroke-800">{title}</h5>
       </div>
       <fieldset
-        dir="ltr"
+        // dir="ltr"
         id={fieldsetId}
-        className="flex flex-col items-end pr-2 size-full overflow-y-auto scrollbar--primary scrollbar-w-1"
+        className="flex flex-col items-end pr-2 size-full overflow-y-auto scrollbar-none"
       >
         {children}
       </fieldset>

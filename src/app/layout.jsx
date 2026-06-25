@@ -1,3 +1,4 @@
+import Script from "next/script";
 import Header from "./Header";
 import Providers from "./Providers";
 import Footer from "./Footer";
@@ -16,8 +17,12 @@ export default function RootLayout({ children, modal }) {
     <html lang="fa" dir="rtl">
       <body
         dir="rtl"
-        className="font-display antialiased scrollbar-none !bg-stroke-0 duration-200"
+        className="font-display antialiased scrollbar-none bg-stroke-0! duration-200"
       >
+      <Script
+        src="https://kit.fontawesome.com/0d5a818c03.js"
+        crossOrigin="anonymous"
+      />
         <Providers>
           <Toaster />
           <Header />

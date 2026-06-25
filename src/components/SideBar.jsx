@@ -6,33 +6,39 @@ import {
   SunIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { MoonIcon as MoonSolidIcon, SunIcon as SunSolidIcon } from "@heroicons/react/24/solid";
+import {
+  MoonIcon as MoonSolidIcon,
+  SunIcon as SunSolidIcon,
+} from "@heroicons/react/24/solid";
 import Link from "next/link";
 import AppImage from "./AppImage";
 import useOutsideClick from "@/hooks/useOutsideClick";
-import { usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 const filterLinks = [
   {
     id: 1,
-    href: "/products",
+    href: "/products?sort=best_selling&page=1&limit=12",
     src: "/images/warranty-check-icon.svg",
     alt: "popular-icon",
     title: "پرفروش ترین ها",
+    sort: "best_selling",
   },
   {
     id: 2,
-    href: "/products",
+    href: "/products?sort=newest&page=1&limit=12",
     src: "/images/two-tag-icon.svg",
     alt: "tag-icon",
     title: "جدیدترین ها",
+    sort: "newest",
   },
   {
     id: 3,
-    href: "/products",
+    href: "/products?sort=most_discounted&discounted=true&page=1&limit=12",
     src: "/images/special-offer-2-icon.svg",
     alt: "offer-icon",
     title: "تخفیف دار",
+    sort: "most_discounted",
   },
 ];
 
@@ -152,6 +158,7 @@ function SideBar({
               {filterLinks.map((item) => (
                 <SideBarLink
                   key={item.id}
+                  sort={item.sort}
                   toggleSideBar={toggleSideBar}
                   href={item.href}
                   title={item.title}
@@ -180,15 +187,16 @@ function SideBar({
 
 export default SideBar;
 
-function SideBarLink({ href, src, alt, title, toggleSideBar, id }) {
-  const pathName = usePathname();
+function SideBarLink({ href, src, alt, title, sort, toggleSideBar, id }) {
+  const searchParams = useSearchParams();
 
   return (
     <li className="flex flex-col items-center px-6">
       <Link
         onClick={toggleSideBar}
         className={`${
-          pathName.endsWith(href) && "*:text-primary *:dark: *:font-bold"
+          searchParams.get("sort") === sort &&
+          "*:text-primary *:dark: *:font-bold"
         } flex items-center gap-2 ${src ? "text-xs" : "text-sm text-stroke-800"} w-full`}
         href={href}
       >
@@ -200,7 +208,7 @@ function SideBarLink({ href, src, alt, title, toggleSideBar, id }) {
               width="size-6"
               sizes="10vw"
               className={
-                !pathName.endsWith(href)
+                !searchParams.get("sort") === sort
                   ? "mix-blend-luminosity dark:mix-blend-plus-lighter dark:invert-50"
                   : "dark:saturate-150 dark:brightness-200"
               }

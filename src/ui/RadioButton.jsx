@@ -24,10 +24,12 @@ function RadioButton({
         disabled={disabled}
         className="sr-only size-0"
       />
+      <div className="flex max-md:flex-col items-center justify-start gap-2">
       {children}
       {label && <p>{label}</p>}
+      </div>
       {chevron && (
-        <span className={`max-md:!hidden ${chevron}`}>
+        <span className={`max-md:hidden! ${chevron}`}>
           <ChevronLeftIcon className="size-full" />
         </span>
       )}

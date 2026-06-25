@@ -4,16 +4,22 @@ export function filtersReducer(state, action) {
   switch (action.type) {
     /* ========= DRAFT (UI only) ========= */
 
-    case "SET_ITEMS":
+    case "SET_ITEMS": {
+      const currentItems = state.draft[action.key] || [];
+      const value = action.value;
+
+      const exists = currentItems.some((v) => Number(v) === Number(value));
+
       return {
         ...state,
         draft: {
           ...state.draft,
-          [action.key]: state.draft[action.key].includes(action.value)
-            ? state.draft[action.key].filter((v) => v !== action.value)
-            : [...state.draft[action.key], action.value],
+          [action.key]: exists
+            ? currentItems.filter((v) => Number(v) !== Number(value))
+            : [...currentItems, value],
         },
       };
+    }
 
     case "SET_ITEM":
       return {

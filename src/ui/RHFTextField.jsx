@@ -29,6 +29,7 @@ export default function RHFTextField({
   icon: Icon,
   validationSchema = {},
   isPrice = false,
+  children,
   ...rest
 }) {
   const hasError = getNestedError(errors, name);
@@ -97,6 +98,7 @@ export default function RHFTextField({
               className={inputBaseClass}
             />
           )}
+        {children}
         </div>
         {hasError && (
           <span className="absolute -bottom-5 right-2 text-error block text-[10px] md:text-xs animate-fadeIn">

@@ -20,7 +20,7 @@ function ProductCard({ product }) {
 
   const minDecant = modes?.decant.availableVolumes[0];
   const pricePerMl = modes?.decant.pricePerMl;
-  const isStock = stock > minDecant;
+  const inStock = stock >= minDecant;
 
   const productAccords = categories?.accords.map((accord) => {
     const accords = allCategories?.find((item) => item.value === accord);
@@ -45,7 +45,7 @@ function ProductCard({ product }) {
 
   return (
     <article
-      className={`flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${isStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
+      className={`flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${inStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
     >
       {/* Mobile Mode Base Image */}
       <div className="flex items-start justify-between gap-4 w-full h-full">
@@ -60,23 +60,23 @@ function ProductCard({ product }) {
         <div className="flex grow flex-col w-full h-full">
           {/* Categories Icon */}
           <div className="flex flex-none items-center justify-between max-md:mb-4 mb-1">
-            {productAccords.map((accord) => (
+            {productAccords?.map((accord) => (
               <CardIconResponsive
-                key={accord.id}
+                key={accord?.id}
                 accord={accord}
-                src={accord.iconUrl}
-                alt={accord.vlaue + "-icon"}
-                title={accord.title}
-                type={accord.value}
+                src={accord?.iconUrl}
+                alt={accord?.vlaue + "-icon"}
+                title={accord?.title}
+                type={accord?.value}
                 className="max-md:h-8 md:h-10"
                 size="max-md:size-4 md:size-6"
               />
             ))}
             <CardIconResponsive
-              src={productGender.iconUrl}
-              alt={productGender.value + "-icon"}
-              title={productGender.title}
-              type={productGender.value}
+              src={productGender?.iconUrl}
+              alt={productGender?.value + "-icon"}
+              title={productGender?.title}
+              type={productGender?.value}
               className="max-md:h-8 md:h-10"
               size="max-md:size-4 md:size-6"
             />
@@ -121,7 +121,7 @@ function ProductCard({ product }) {
 
             {/* Products Price */}
             <div
-              className={`flex flex-none items-center md:items-end gap-4 w-full pt-2 ${isStock ? "justify-between" : "justify-end"}`}
+              className={`flex flex-none items-center md:items-end gap-4 w-full pt-2 ${inStock ? "justify-between" : "justify-end"}`}
             >
               {product.stock >= 3 && (
                 <PriceSection
@@ -137,7 +137,7 @@ function ProductCard({ product }) {
 
               {/* Products Order Button */}
               <div>
-                {isStock ? (
+                {inStock ? (
                   <p className="btn border border-primary text-primary bg-stroke-50 active:bg-primary active:text-white  rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
                     سفارش
                   </p>

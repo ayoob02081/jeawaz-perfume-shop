@@ -13,11 +13,19 @@ function AccordCategoriesLayout() {
   const { data: categories, isLoading, error } = useGetAllCategories();
   const accordCategories = categories?.filter((c) => c.type === "accord");
 
-  if (isLoading) {
+  const {
+    data,
+    isLoading: isProductsLoading,
+    error: isProductsError,
+  } = useGetAllProducts();
+
+  const products = data?.data || [];
+
+  if (isLoading || isProductsLoading) {
     return <Loading />;
   }
 
-  if (error) {
+  if (error || isProductsError) {
     return <Error />;
   }
 
@@ -41,6 +49,7 @@ function AccordCategoriesLayout() {
           accordCategories.map((accord) => (
             <FilterCard
               key={accord.id}
+              products={products}
               src={accord.imageUrl}
               alt={accord.value + "-image"}
               value={accord.value}
@@ -55,17 +64,21 @@ function AccordCategoriesLayout() {
 
 export default AccordCategoriesLayout;
 
-function FilterCard({ src, alt, value, label }) {
-  const { data, isLoading, error } = useGetAllProducts();
+function FilterCard({ src, alt, value, label, products }) {
 
   const router = useRouter();
-  const product = data?.filter((p) => p.categories.accords.includes(value));
+  const product = products?.filter((p) => p.categories.accords.includes(value));
 
   const quantity = product?.length || 0;
 
   return (
     <div className="snap-center">
-      <div className="flex h-24 sm:!h-[7.5rem] aspect-[9/3] sm:aspect-[5/2] justify-between items-center px-3 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ">
+      <button
+        onClick={() =>
+          router.push(`/products?accords=${encodeURIComponent(value)}`)
+        }
+        className="flex h-24 sm:h-30! aspect-9/3 sm:aspect-5/2 justify-between items-center px-3 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 "
+      >
         <div className="relative flex items-center justify-center h-full px-4">
           <div className=" flex items-center justify-center aspect-square h-16 md:h-20 rounded-xl">
             <AppImage
@@ -89,13 +102,10 @@ function FilterCard({ src, alt, value, label }) {
             {toPersianNumbers(quantity)} محصول
           </p>
         </div>
-        <button
-          onClick={() => router.push("/products")}
-          className="flex-none justify-self-end self-end px-2 pb-5"
-        >
+        <div className="flex-none justify-self-end self-end px-2 pb-5">
           <ArrowLeftIcon className="size-5 text-stroke-800" />
-        </button>
-      </div>
+        </div>
+      </button>
     </div>
   );
 }

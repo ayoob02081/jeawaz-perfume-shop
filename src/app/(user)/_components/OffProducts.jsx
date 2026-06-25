@@ -7,7 +7,21 @@ import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 
 function OffProducts() {
-  const { data: products, isLoading, error } = useGetAllProducts();
+  const { data, isLoading, error } = useGetAllProducts({
+    sort: "most_discounted",
+    page: 1,
+    limit: 8,
+  });
+
+  const getFullHrefParams = () => {
+    const params = new URLSearchParams();
+    params.set("page", "1");
+    params.set("limit", "12");
+    params.set("sort", "most_discounted");
+    return params;
+  };
+
+  const products = data?.data || [];
 
   if (isLoading) {
     return <Loading />;
@@ -16,9 +30,9 @@ function OffProducts() {
   if (error) {
     return <Error />;
   }
-
   return (
     <HomePageProducts
+      params={getFullHrefParams()}
       titleOne={"پرتخفیف ترین"}
       titleTwo={"محصولات"}
       desc={"پرتخفیف ترین رایحه ها ، همین‌جاست."}

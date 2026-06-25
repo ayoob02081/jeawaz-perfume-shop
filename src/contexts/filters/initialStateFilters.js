@@ -1,14 +1,16 @@
 export const emptyFilters = {
   accords: [],
-  brands: [],
+  brandIds: [],
   volumes: [],
-  priceRange: [0, 300000000],
+  minPrice: null,
+  maxPrice: null,
+  priceRange: [null, null],
   inStock: null,
-  isOriginal: null,
+  original: null,
   gender: null,
 };
 
 export const initialFilters = {
-  draft: emptyFilters,
-  applied: emptyFilters,
+  draft: structuredClone(emptyFilters),
+  applied: structuredClone(emptyFilters),
 };
