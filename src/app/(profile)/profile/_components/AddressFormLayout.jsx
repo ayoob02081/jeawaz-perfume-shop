@@ -62,7 +62,6 @@ function AddressFormLayout({ addressToEdit }) {
       ...data,
       isDefault: isDefault,
     };
-    console.log("Final Data:", payload);
     if (!addressToEdit) {
       await createAddress(payload);
       router.back();

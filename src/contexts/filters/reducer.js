@@ -8,14 +8,14 @@ export function filtersReducer(state, action) {
       const currentItems = state.draft[action.key] || [];
       const value = action.value;
 
-      const exists = currentItems.some((v) => Number(v) === Number(value));
+      const exists = currentItems.some((v) => v === value);
 
       return {
         ...state,
         draft: {
           ...state.draft,
           [action.key]: exists
-            ? currentItems.filter((v) => Number(v) !== Number(value))
+            ? currentItems.filter((v) => v !== value)
             : [...currentItems, value],
         },
       };

@@ -10,20 +10,16 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
 function GenderCategoriesLayout() {
-  const { data: categories, isLoading, error } = useGetAllCategories();
-
+  const { data: categories, isPending, error } = useGetAllCategories();
   const genders = categories?.filter((item) => item.type === "gender");
+
   const {
     data,
-    isLoading: isProductsLoading,
+    isPending: isProductsPending,
     error: isProductsError,
   } = useGetAllProducts();
 
   const products = data?.data || [];
-
-  if (isLoading || isProductsLoading) {
-    return <Loading />;
-  }
 
   if (error || isProductsError) {
     return <Error />;
@@ -43,13 +39,13 @@ function GenderCategoriesLayout() {
         <h2 className="text-stroke-800">محصولات ما</h2>
       </div>
       <div className="mx-6 flex flex-col w-full sm:px-36 md:px-6 md:flex-row gap-4 sm:gap-6 items-center justify-between overflow-x-auto scrollbar-none sm:rounded-2xl">
-        {isLoading ? (
+        {isPending || isProductsPending ? (
           <Loading />
         ) : (
           genders?.map((category) => (
             <div key={category.id} className="sm:snap-center">
               <CategoreyCard
-                products={products}
+                allProducts={products}
                 src={category.imageUrl}
                 alt={category.value + "-image"}
                 value={category.value}
@@ -65,11 +61,13 @@ function GenderCategoriesLayout() {
 
 export default GenderCategoriesLayout;
 
-function CategoreyCard({ src, alt, value, label, products }) {
+function CategoreyCard({ src, alt, value, label, allProducts }) {
   const router = useRouter();
-  const product = products?.filter((p) => p.categories.gender === value);
+  const filteredProducts = allProducts?.filter((p) =>
+    p.categories?.some((i) => i.value === value),
+  );
 
-  const quantity = product?.length || 0;
+  const quantity = filteredProducts?.length || 0;
 
   return (
     <button
@@ -90,7 +88,7 @@ function CategoreyCard({ src, alt, value, label, products }) {
           <div className="absolute bottom-1/6 blur-md w-2/3 h-1 md:h-1.5 bg-stroke-600 rounded-full"></div>
         </div>
       </div>
-      <div className="grow flex flex-col gap-1 p-4">
+      <div className="grow flex flex-col gap-1 p-4 justify-center items-start">
         <span className="flex items-center justify-start gap-1 font-bold text-sm sm:text-xl">
           <p className="text-stroke-800">عطرهای</p>
           <p className="text-primary">{label}</p>

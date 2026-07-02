@@ -7,8 +7,8 @@ import NotExisted from "@/components/NotExisted";
 import Loading from "@/components/Loading";
 
 function ProductsLayout() {
-  const { data, isLoading, error } = useGetAllProducts();
- const products = data?.data || [];
+  const { data, isPending, error } = useGetAllProducts();
+  const products = data?.data || [];
   const meta = data?.meta;
   return (
     <div className="space-y-2 w-full max-lg:px-6">
@@ -21,8 +21,8 @@ function ProductsLayout() {
           اضافه کردن محصول
         </Link>
       </div>
-      {isLoading ? <Loading /> : <ProductsListTable products={products} />}
-      {products && products?.length === 0 && (
+      {isPending ? <Loading /> : <ProductsListTable products={products} />}
+      {products && !isPending && products?.length === 0 && (
         <NotExisted className="h-96">محصولی تعریف نشده است!</NotExisted>
       )}
     </div>

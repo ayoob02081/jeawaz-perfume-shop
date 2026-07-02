@@ -1,41 +1,29 @@
 import AppImage from "@/components/AppImage";
 import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
-import {
-  useGetAllBrandCategories,
-  useGetAllCategories,
-} from "@/hooks/useCategories";
 import { useRouter } from "next/navigation";
 
-function ProductCard({ product }) {
+function ProductCard({ product ,isPending,error}) {
   const router = useRouter();
-  const { data: allCategories, isLoading, error } = useGetAllCategories();
   const {
-    data: allBrands,
-    isLoading: brandsLoading,
-    error: brandsError,
-  } = useGetAllBrandCategories();
-  const { id, original, enTitle, perTitle, stock, images, categories, modes } =
-    product || {};
+    id,
+    original,
+    enTitle,
+    perTitle,
+    stock,
+    images,
+    categories,
+    modes,
+    brand: productBrand,
+  } = product || {};
 
   const minDecant = modes?.decant.availableVolumes[0];
   const pricePerMl = modes?.decant.pricePerMl;
   const inStock = stock >= minDecant;
+  const productAccords = categories?.filter((item) => item.type === "accord");
+  const productGender = categories?.find((item) => item.type === "gender");
 
-  const productAccords = categories?.accords.map((accord) => {
-    const accords = allCategories?.find((item) => item.value === accord);
-    return accords;
-  });
-
-  const productGender = allCategories?.find(
-    (item) => item.value === categories.gender,
-  );
-
-  const productBrand = allBrands?.find(
-    (brand) => brand.title === categories?.brand,
-  );
-
-  if (isLoading) {
+  if (isPending) {
     return <Loading />;
   }
 

@@ -20,6 +20,7 @@ function FiltersModal({
   resetAllFilters,
   addFilter,
   resetFilter,
+  filtersFromUrl,
   control,
   watch,
 }) {
@@ -30,36 +31,23 @@ function FiltersModal({
 
   const { state } = useFilters();
 
-  const isFilter =
-    Boolean(state.draft.gender) ||
-    state.draft.brandIds?.length > 0 ||
-    state.draft.accords?.length > 0 ||
-    Boolean(state.draft.inStock) ||
-    Boolean(state.draft.original) ||
-    state.draft.volumes?.length > 0;
+  const hasFilters =
+    filtersFromUrl?.priceRange[0] !== null ||
+    filtersFromUrl?.priceRange[1] !== null ||
+    filtersFromUrl?.accords.length > 0 ||
+    filtersFromUrl?.brandIds.length > 0 ||
+    filtersFromUrl?.volumes.length > 0 ||
+    filtersFromUrl?.gender ||
+    filtersFromUrl?.original ||
+    filtersFromUrl?.inStock;
 
-  const isPriceFilter =
-    state.draft.priceRange?.[0] !== null ||
-    state.draft.priceRange?.[1] !== null;
-
-  const modeTitle = () => {
-    switch (mode) {
-      case "all":
-        return "فیلترها";
-      case "brand":
-        return "برند";
-      case "accord":
-        return "رایحه‌";
-      case "volume":
-        return "حجم‌";
-      case "gender":
-        return "جنسیت";
-      case "price":
-        return "قیمت";
-
-      default:
-        break;
-    }
+  const titles = {
+    all: "فیلترها",
+    brand: "برند",
+    accord: "رایحه",
+    volume: "حجم",
+    gender: "جنسیت",
+    price: "قیمت",
   };
 
   const renderTypes = () => {
@@ -91,16 +79,6 @@ function FiltersModal({
                 type="accords"
               />
 
-              <FilterOption title="جنسیت">
-                <GendersFilter
-                  data={genderCategories}
-                  state={state.draft?.gender}
-                  setMode={setMode}
-                  addFilter={addFilter}
-                  resetFilter={resetFilter}
-                  hidden
-                />
-              </FilterOption>
               <FilterOption
                 title="حجم"
                 button
@@ -113,6 +91,16 @@ function FiltersModal({
                 addFilter={addFilter}
                 resetFilter={resetFilter}
               />
+              <FilterOption title="جنسیت">
+                <GendersFilter
+                  data={genderCategories}
+                  state={state.draft?.gender}
+                  setMode={setMode}
+                  addFilter={addFilter}
+                  resetFilter={resetFilter}
+                  hidden
+                />
+              </FilterOption>
               <FilterOption title="قیمت">
                 <PriceFilter
                   addFilter={addFilter}
@@ -128,12 +116,8 @@ function FiltersModal({
                 <button
                   type="button"
                   onClick={(e) => {
-                    (e.preventDefault(),
-                      addFilter(
-                        "SET_ITEM",
-                        "original",
-                        !state?.draft?.original,
-                      ));
+                    e.preventDefault();
+                    addFilter("SET_ITEM", "original", !state?.draft?.original);
                   }}
                   className="flex items-center justify-between size-full gap-3"
                 >
@@ -187,7 +171,6 @@ function FiltersModal({
             </div>
           </div>
         );
-
       case "brand":
         return (
           <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl px-4 ">
@@ -233,7 +216,6 @@ function FiltersModal({
             />
           </div>
         );
-
       case "price":
         return (
           <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl px-4">
@@ -255,11 +237,9 @@ function FiltersModal({
   return (
     <div className=" flex flex-col max-md:py-4 md:p-6 size-full max-md:gap-4 gap-6">
       <div className="flex items-center justify-between border-b-[1.5px] border-stroke-250 max-md:px-4 pb-6">
-        <p className="md:text-xl font-bold text-stroke-800">
-          {modeTitle(mode)}
-        </p>
+        <p className="md:text-xl font-bold text-stroke-800">{titles[mode]}</p>
         <button
-          disabled={isFilter || isPriceFilter ? false : true}
+          disabled={!hasFilters}
           type="button"
           onClick={resetAllFilters}
           className="btn btn--primary--2 disabled:text-stroke-600 border-[1.5px] flex items-center justify-center h-8 md:h-12 gap-2 px-4 text-xs md:text-lg"
@@ -267,13 +247,12 @@ function FiltersModal({
           حذف فیلتر ها
         </button>
       </div>
-      <div className="h-full max-md:mx-4 overflow-y-auto scrollbar--primary scrollbar-w-2">
+      <div className="h-full max-md:mx-4 overflow-y-auto scrollbar--primary">
         {renderTypes()}
       </div>
       <div className="flex items-center justify-between md:justify-end flex-row-reverse gap-4 w-full h-10 sm:h-12 max-md:px-4">
         <button
           type="submit"
-          // disabled={isFilter || isPriceFilter ? false : true}
           className="btn btn--primary border-none px-6 md:px-18 size-full"
         >
           <p className="text-sm sm:text-base ">اعمال فیلتر</p>
@@ -306,6 +285,17 @@ function FilterOption({
   data,
   type,
 }) {
+  const getItem = (item) => {
+    if (!Array.isArray(data)) return null;
+    switch (type) {
+      case "brandIds":
+        return data.find((c) => c.id === Number(item));
+      case "accords":
+        return data.find((c) => c.value === item);
+      case "volumes":
+        return data.find((c) => c.quantity === Number(item));
+    }
+  };
   return (
     <div className="flex flex-col items-start justify-start gap-4 p-4 max-md:border-b md:border border-stroke-200 md:rounded-2xl">
       {title && (
@@ -334,24 +324,19 @@ function FilterOption({
             </button>
           </div>
           <div className="w-full flex flex-wrap items-center justify-start gap-2 ">
-            {state?.map((item) => {
-              const itemData =
-                (type === "brandIds" &&
-                  data.find((c) => c.id === Number(item))) ||
-                (type === "volumes" &&
-                  data.find((c) => c.quantity === Number(item))) ||
-                (type === "accords" && data.find((c) => c.value === item));
-              console.log(itemData.quantity);
+            {Array.isArray(state) &&
+              state.map((item) => {
+                const itemData = getItem(item);
 
-              return (
-                <Badge
-                  key={itemData?.id + itemData?.title}
-                  title={itemData?.title}
-                  onClick={() => addFilter("SET_ITEM", type, item)}
-                  error
-                />
-              );
-            })}
+                return (
+                  <Badge
+                    key={`${type}-${item}`}
+                    title={itemData?.title}
+                    onClick={() => addFilter("SET_ITEMS", type, item)}
+                    error
+                  />
+                );
+              })}
           </div>
         </div>
       ) : (
@@ -365,7 +350,7 @@ function BrandsFilter({ state, brands, type, addFilter }) {
   return (
     <div className="flex flex-col justify-between gap-6 dark:py-3 dark:pl-4 size-full overflow-auto scrollbar-none">
       {brands?.map((brand, index) => {
-        const isChecked = state.includes(brand.id);
+        const isChecked = state?.includes(brand.id);
 
         return (
           <FilterCheckBox
@@ -429,7 +414,7 @@ export function GendersFilter({
           hidden ? "md:hidden" : "hidden"
         } `}
       >
-        {state?.length ? (
+        {state ? (
           <Badge
             title="انتخاب جنسیت عطر"
             onClick={() => resetFilter("RESET_ONE", "gender")}
@@ -499,7 +484,7 @@ function AccordsFilter({ state, accords, type, addFilter }) {
   return (
     <div className="flex flex-col justify-between gap-4 size-full overflow-auto scrollbar-none">
       {accords?.map((accord, index) => {
-        const isChecked = state.includes(accord.value);
+        const isChecked = state?.includes(accord.value);
 
         return (
           <FilterCheckBox
@@ -525,8 +510,7 @@ function VolumesFilter({ state, volumes, type, addFilter }) {
   return (
     <div className="flex flex-col items-start justify-between gap-4 h-full py-2 overflow-auto scrollbar-none">
       {volumes?.map((item, index) => {
-        const isChecked = state.includes(item.quantity);
-        console.log(state, item.quantity, isChecked);
+        const isChecked = state?.includes(item.quantity);
 
         return (
           <FilterCheckBox

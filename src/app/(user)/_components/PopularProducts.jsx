@@ -43,7 +43,7 @@ function PopularProducts() {
       params={getFullHrefParams()}
       genderType="true"
       section={"popular"}
-      titleOne={"پر فروش ترین"}
+      titleOne={"پرفروش ترین"}
       titleTwo={"محصولات ما"}
       desc={"رایحه هایی که همیشه می درخشن"}
       className={

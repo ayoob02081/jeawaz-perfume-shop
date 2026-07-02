@@ -10,20 +10,16 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
 function AccordCategoriesLayout() {
-  const { data: categories, isLoading, error } = useGetAllCategories();
+  const { data: categories, isPending, error } = useGetAllCategories();
   const accordCategories = categories?.filter((c) => c.type === "accord");
 
   const {
     data,
-    isLoading: isProductsLoading,
+    isPending: isProductsPending,
     error: isProductsError,
   } = useGetAllProducts();
 
   const products = data?.data || [];
-
-  if (isLoading || isProductsLoading) {
-    return <Loading />;
-  }
 
   if (error || isProductsError) {
     return <Error />;
@@ -43,13 +39,13 @@ function AccordCategoriesLayout() {
         <h2 className="text-stroke-800">دنیایی متفاوت</h2>
       </div>
       <div className="flex gap-4 justify-between items-center w-full px-16 my-6 scroll--x rounded-2xl">
-        {isLoading ? (
+        {isPending || isProductsPending ? (
           <Loading />
         ) : (
           accordCategories.map((accord) => (
             <FilterCard
               key={accord.id}
-              products={products}
+              allProducts={products}
               src={accord.imageUrl}
               alt={accord.value + "-image"}
               value={accord.value}
@@ -64,12 +60,13 @@ function AccordCategoriesLayout() {
 
 export default AccordCategoriesLayout;
 
-function FilterCard({ src, alt, value, label, products }) {
-
+function FilterCard({ src, alt, value, label, allProducts }) {
   const router = useRouter();
-  const product = products?.filter((p) => p.categories.accords.includes(value));
+  const filteredProducts = allProducts?.filter((p) =>
+    p.categories?.some((i) => i.value === value),
+  );
 
-  const quantity = product?.length || 0;
+  const quantity = filteredProducts?.length || 0;
 
   return (
     <div className="snap-center">
@@ -91,14 +88,14 @@ function FilterCard({ src, alt, value, label, products }) {
           </div>
           <div className="absolute bottom-1/6 blur-[10px] w-1/2 h-1 sm:h-1.5 bg-stroke-600 rounded-full"></div>
         </div>
-        <div className="grow flex flex-col gap-2 py-4 justify-self-start">
-          <span className="flex items-center justify-start gap-1">
+        <div className="grow flex flex-col gap-1 p-4 justify-center items-start">
+          <span className="flex items-center justify-start gap-1 font-bold text-sm sm:text-xl">
             <p className="text-stroke-600 text-xs sm:text-sm">رایحه</p>
             <p className="font-bold text-stroke-800 text-base sm:text-lg">
               {label}
             </p>
           </span>
-          <p className="text-stroke-600 text-xs sm:text-sm">
+          <p className="text-stroke-600 text-sm sm:text-lg md:font-bold">
             {toPersianNumbers(quantity)} محصول
           </p>
         </div>

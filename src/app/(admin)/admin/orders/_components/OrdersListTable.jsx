@@ -293,11 +293,12 @@ function OrdersListTable({ orders, isLoading, status }) {
                           </button>
                         );
                       })}
-                      {nextPossibleStatuses?.length === 0 && (
-                        <span className="text-stroke-800 text-xs">
-                          نهایی شده
-                        </span>
-                      )}
+                      {status !== undefined &&
+                        nextPossibleStatuses?.length === 0 && (
+                          <span className="text-stroke-800 text-xs">
+                            نهایی شده
+                          </span>
+                        )}
                     </td>
                   </Table.Row>
                 );

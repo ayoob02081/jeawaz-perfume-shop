@@ -41,9 +41,11 @@ function CategoriesLayout() {
         ) : (
           <CategoriesListTable categories={brandCategoriess} brands />
         )}
-        {brandCategoriess && brandCategoriess?.length === 0 && (
-          <NotExisted className="h-96">برندی وجود نداره!</NotExisted>
-        )}
+        {brandCategoriess &&
+          !isBrandsPending &&
+          brandCategoriess?.length === 0 && (
+            <NotExisted className="h-96">برندی وجود نداره!</NotExisted>
+          )}
       </div>
 
       {/* Accords */}
@@ -62,9 +64,11 @@ function CategoriesLayout() {
         ) : (
           <CategoriesListTable categories={accordCategories} accords />
         )}
-        {accordCategories && accordCategories?.length === 0 && (
-          <NotExisted className="h-96">رایحه‌ای وجود نداره!</NotExisted>
-        )}
+        {accordCategories &&
+          !isCategoriesPending &&
+          accordCategories?.length === 0 && (
+            <NotExisted className="h-96">رایحه‌ای وجود نداره!</NotExisted>
+          )}
       </div>
 
       {/* Genders */}
@@ -83,9 +87,11 @@ function CategoriesLayout() {
         ) : (
           <CategoriesListTable categories={genderCategories} genders />
         )}
-        {genderCategories && genderCategories?.length === 0 && (
-          <NotExisted className="h-96">جنسیتی وجود نداره!</NotExisted>
-        )}
+        {genderCategories &&
+          !isCategoriesPending &&
+          genderCategories?.length === 0 && (
+            <NotExisted className="h-96">جنسیتی وجود نداره!</NotExisted>
+          )}
       </div>
     </div>
   );

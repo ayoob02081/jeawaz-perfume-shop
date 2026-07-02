@@ -9,13 +9,9 @@ import Accordion from "@/ui/Accordion";
 import { useState } from "react";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import ImageSwiper from "@/ui/ImageSwiper";
-import {
-  useGetAllBrandCategories,
-  useGetAllCategories,
-} from "@/hooks/useCategories";
+import { useGetAllCategories } from "@/hooks/useCategories";
 import BreadCrumbBase from "@/ui/BreadCrumbBase";
 import BreadCrumb from "@/ui/BreadCrumb";
-
 import { useRouter } from "next/navigation";
 import { useQuantityHandler } from "@/hooks/useQuantityHandler";
 import { calculateProductPrice } from "@/utils/priceCalculator";
@@ -65,12 +61,7 @@ export default SingleProductPage;
 
 function ProductDes({ product }) {
   const router = useRouter();
-  const { data: allBrands } = useGetAllBrandCategories();
-
-  const productBrand = allBrands?.find(
-    (brand) => brand.title === product?.categories.brand,
-  );
-
+  const productBrand = product?.brand;
   const [volumeMode, setVolumeMode] = useState("decant");
 
   const volumes =

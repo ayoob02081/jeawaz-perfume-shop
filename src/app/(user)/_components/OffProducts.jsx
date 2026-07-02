@@ -7,7 +7,7 @@ import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 
 function OffProducts() {
-  const { data, isLoading, error } = useGetAllProducts({
+  const { data, isPending, error } = useGetAllProducts({
     sort: "most_discounted",
     page: 1,
     limit: 8,
@@ -23,7 +23,7 @@ function OffProducts() {
 
   const products = data?.data || [];
 
-  if (isLoading) {
+  if (isPending) {
     return <Loading />;
   }
 
@@ -40,7 +40,7 @@ function OffProducts() {
       bgColor="bg-stroke-50 dark:bg-stroke-50/50 rounded-2xl py-6"
     >
       {products?.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product.id} product={product} isPending={isPending} error={error} />
       ))}
     </HomePageProducts>
   );

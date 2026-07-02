@@ -23,8 +23,8 @@ export function useAddToCart() {
     mutate: addToCart,
   } = useMutation({
     mutationFn: addToCartApi,
-    onSuccess: (data) => {
-      toast.success(data.message, { id: "cart-success" });
+    onSuccess: () => {
+      toast.success("محصول به سبدتون اضافه شد", { id: "cart-success" });
       queryClient.invalidateQueries({
         queryKey: ["cart-items"],
         exact: true,
@@ -53,6 +53,7 @@ export function useUpdateQuantity() {
   return useMutation({
     mutationFn: updateQuantityApi,
     onSuccess: () => {
+      toast.success("سبدتون به روز شد");
       queryClient.invalidateQueries({ queryKey: ["cart-items"], exact: true });
     },
     onError: showApiError,
@@ -76,6 +77,7 @@ export function useRemoveFromCart() {
   const { isPending: isDeleting, mutateAsync: removeFromCart } = useMutation({
     mutationFn: removeFromCartApi,
     onSuccess: () => {
+      toast.success("محصول از سبدتون حذف شد");
       queryClient.invalidateQueries({ queryKey: ["cart-items"], exact: true });
     },
     onError: showApiError,

@@ -3,10 +3,6 @@
 import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
 import AppImage from "@/components/AppImage";
 import { productTHeads } from "@/constants/tableHeads";
-import {
-  useGetAllBrandCategories,
-  useGetAllCategories,
-} from "@/hooks/useCategories";
 import { useRemoveProduct } from "@/hooks/useProducts";
 import Table from "@/ui/Table";
 import {
@@ -17,20 +13,8 @@ import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import findCategories from "@/utils/findCategories";
 
 function ProductsListTable({ products }) {
-  const {
-    data: brands,
-    isLoading: brandsLoading,
-    error: brandsError,
-  } = useGetAllBrandCategories();
-  const {
-    data: categories,
-    isLoading: categoriesLoading,
-    error: categoriesError,
-  } = useGetAllCategories();
-
   const { isDeleting, removeProduct } = useRemoveProduct();
   const queryClient = useQueryClient();
 
@@ -58,8 +42,13 @@ function ProductsListTable({ products }) {
         <Table.body>
           {products &&
             products?.map((product, index) => {
-              const { productAccords, productBrand, productGender } =
-                findCategories({ product, brands, categories });
+              const productAccords = product.categories?.filter(
+                (i) => i.type === "accord",
+              );
+              const productGender = product.categories?.find(
+                (i) => i.type === "gender",
+              );
+              const productBrand = product?.brand;
               return (
                 <Table.Row key={product.id} className="even:bg-primary/5">
                   <td className="table__td px-3 font-bold rounded-r-full">

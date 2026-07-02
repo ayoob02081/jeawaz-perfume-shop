@@ -120,7 +120,7 @@
   }
 
   .scrollbar--primary {
-    @apply scrollbar scrollbar-thumb-primary scrollbar-thumb-rounded-full scrollbar-track-stroke-100 dark:scrollbar-track-stroke-800 scrollbar-track-rounded-full;
+    @apply scrollbar scrollbar-thin scrollbar-thumb-primary scrollbar-track-stroke-0;
   }
   .banner--primary--size {
     @apply h-56 sm:h-[13.04rem] md:h-[15.65rem] lg:h-[20.86rem] xl:h-[26.8rem] aspect-15/10 sm:aspect-26/10;
@@ -236,6 +236,32 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: "Vazirmatn", sans-serif;
+}
+
+html{
+  scrollbar-gutter: stable;
+
+}
+html,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-stroke-0);
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: var(--color-stroke-0);
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 9999px;
 }
 
 button {

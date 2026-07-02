@@ -19,7 +19,6 @@ import {
   useRemoveProduct,
 } from "@/hooks/useProducts";
 import { useRouter } from "next/navigation";
-import findCategories from "@/utils/findCategories";
 import { useEffect, useMemo } from "react";
 import RHFUploadFile from "@/ui/RHFUploadFile";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
@@ -80,11 +79,9 @@ function ProductForm({ productToEdit }) {
   const { addProduct, isAdding } = useAddProduct();
   const { editProduct, isEditing } = useEditProduct(productToEdit?.id);
 
-  const { productAccords, productBrand, productGender } = findCategories({
-    product: productToEdit,
-    brands,
-    categories,
-  });
+  const productAccords = productToEdit?.categories.accords;
+  const productGender = productToEdit?.categories.gender;
+  const productBrand = productToEdit?.brand;
 
   const genderCategories = categories?.filter((c) => c.type === "gender") || [];
   const accordCategories = categories?.filter((c) => c.type === "accord") || [];
@@ -354,8 +351,6 @@ function ProductForm({ productToEdit }) {
         },
       },
     };
-
-    // console.log("PRODUCT PAYLOAD:", payload);
 
     productToEdit ? editProduct(payload) : addProduct(payload);
   };

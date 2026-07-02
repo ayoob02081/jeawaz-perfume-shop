@@ -16,6 +16,9 @@ function UsersLayout() {
         اطلاعات کاربران
       </h1>
       {isPending ? <Loading /> : <UsersListTable users={users} />}
+      {users && !isPending && users?.length === 0 && (
+        <NotExisted className="h-96">کاربری وجود ندارد!</NotExisted>
+      )}
     </div>
   );
 }

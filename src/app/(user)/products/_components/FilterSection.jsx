@@ -255,8 +255,8 @@ function FilterSection() {
               addFilter={addFilter}
               control={control}
               watch={watch}
+              filtersFromUrl={filtersFromUrl}
               resetAllFilters={resetAllFilters}
-              resetFilter={resetFilter}
             />
           </form>
         </Modal>
@@ -267,7 +267,7 @@ function FilterSection() {
           <div className="bg-primary h-3 w-0.75 rounded-full"></div>
           <p className="text-xl font-bold text-stroke-800">
             {isGenderFilter
-              ? " ادکلن‌های" + currentGenderData?.title
+              ? "ادکلن‌های " + currentGenderData?.title
               : "همه ادکلن‌ها"}
           </p>
         </div>
