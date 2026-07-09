@@ -7,7 +7,7 @@ import AppImage from "@/components/AppImage";
 import { useFilters } from "@/hooks/useFilters";
 import {
   useGetAllBrandCategories,
-  useGetAllCategories,
+  useGetCategoriesByType,
 } from "@/hooks/useCategories";
 import { volumes } from "@/constants/filterItems";
 import FilterCheckBox from "@/ui/FilterCheckBox";
@@ -55,9 +55,10 @@ function CategorySideBar({
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: categories, isPending, error } = useGetAllCategories();
-  const genderCategories = categories?.filter((c) => c.type === "gender");
-  const accordCategories = categories?.filter((c) => c.type === "accord");
+  const { data: genderCategories, isPending: isGenderPending } =
+    useGetCategoriesByType("gender");
+  const { data: accordCategories, isPending: isAccordPending } =
+    useGetCategoriesByType("accord");
   const { data: brandCategories } = useGetAllBrandCategories();
 
   const { state, dispatch } = useFilters();
@@ -113,8 +114,8 @@ function CategorySideBar({
         </div>
 
         {/* Category Form */}
-        {isPending && <Loading />}
-        {!isPending && (
+        {(isGenderPending || isAccordPending) && <Loading />}
+        {(!isGenderPending || !isAccordPending) && (
           <form className="flex max-md:flex-col justify-start md:justify-between md:items-stretch h-full md:h-117.5 max-md:w-full bg-stroke-100">
             {/* Gender Categories */}
             <GenderCategoriesFilter fieldsetId="category-section">
@@ -128,9 +129,10 @@ function CategorySideBar({
                     return (
                       <RadioButton
                         key={gender.id}
-                        className={`flex max-md:flex-col md:flex-row items-center justify-between max-md:h-full w-full md:w-56 max-sm:text-xs
+                        className={`flex max-md:flex-col md:flex-row items-center justify-between max-md:h-full w-full md:w-56 max-[25rem]:text-[10px] max-sm:text-xs
                            border-primary md:text-sm max-md:rounded-b-lg md:rounded-r-lg p-2 text-stroke-800 max-md:text-center duration-200
                            ${isChecked && "border max-md:border-t-0 md:border-l-0 font-bold bg-stroke-0"}`}
+                        childrenClassName="max-md:flex-col items-center justify-start"
                         id={gender.value}
                         name={"gender"}
                         value={gender.value}
@@ -185,12 +187,12 @@ function CategorySideBar({
 
             {/* Other Categories */}
             {state.draft.gender && (
-              <div className="flex flex-col gap-6 md:gap-4 w-full h-ful max-md:p-4 md:py-4 md:pl-4 max-md:border-t border-stroke-200 ">
+              <div className="flex flex-col gap-6 md:gap-4 max-md:p-4 md:py-4 md:pl-4 max-md:border-t border-stroke-200 ">
                 {/* Categories */}
-                <div className="size-full rounded-2xl bg-stroke-0 py-4 overflow-hidden">
+                <div className="size-full rounded-2xl bg-stroke-0 py-4 overflow-hidden max-sm:mb-10">
                   <div
-                    dir="ltr"
-                    className="flex flex-wrap flex-row-reverse items-start justify-start size-full overflow-y-auto scrollbar-none gap-6 pr-4 scroll-smooth **:scroll-smooth"
+                    // dir="ltr"
+                    className="flex flex-wrap items-start justify-start size-full overflow-y-auto scrollbar-none gap-6 pr-4 scroll-smooth **:scroll-smooth"
                   >
                     {/* Brands Filter */}
                     <CategriesFilter fieldsetId="brand-value" title="برند">
@@ -201,11 +203,11 @@ function CategorySideBar({
 
                         return (
                           <FilterCheckBox
-                            className="flex flex-col items-end justify-start size-full text-xs has-checked:font-bold duration-200"
+                            className="flex flex-col items-start justify-start size-full text-xs has-checked:font-bold duration-200"
                             textClassName="py-2"
-                            key={brand.id}
+                            key={brand.id + brand.title}
                             checkId={brand.id}
-                            name="brandIds"
+                            name="brandId"
                             label={brand.title}
                             checked={isChecked}
                             onChange={() =>
@@ -225,7 +227,7 @@ function CategorySideBar({
 
                         return (
                           <FilterCheckBox
-                            className="flex flex-col  items-end justify-start size-full text-xs has-checked:font-bold duration-200"
+                            className="flex flex-col items-start justify-start size-full text-xs has-checked:font-bold duration-200"
                             textClassName="py-2 flex flex-row-reverse"
                             key={item.id}
                             checkId={item.quantity}
@@ -248,7 +250,7 @@ function CategorySideBar({
                         );
                         return (
                           <FilterCheckBox
-                            className="flex flex-col items-end justify-start size-full text-xs has-checked:font-bold duration-200"
+                            className="flex flex-col items-start justify-start size-full text-xs has-checked:font-bold duration-200"
                             textClassName="py-2"
                             key={accord.id}
                             checkId={accord.value}
@@ -295,8 +297,8 @@ function CategorySideBar({
                 </div>
 
                 {/* Categories Submit Button */}
-                <div className="flex items-center justify-start md:justify-end w-full">
-                  <div className="flex items-center justify-between  justify-items-center gap-4 max-[30rem]:w-full w-fit md:-full h-8">
+                <div className=" flex items-center justify-start md:justify-end w-full">
+                  <div className="max-sm:fixed max-sm:bottom-4 max-sm:inset-x-0 max-sm:px-4 flex items-center justify-between  justify-items-center gap-4 max-[30rem]:w-full w-fit md:-full h-8">
                     <button
                       type="button"
                       disabled={!isFilter && !isPriceFilter ? true : false}
@@ -304,14 +306,14 @@ function CategorySideBar({
                         (submitFilters("APPLY_FILTERS"),
                           setCategoryOpen(false));
                       }}
-                      className="btn btn--primary border-none px-6 md:px-8 size-full"
+                      className="btn btn--primary shadow-xl shadow-stroke-800/20 dark:shadow-stroke-800/10 border-none px-6 md:px-8 size-full"
                     >
                       <p className="text-sm sm:text-xs ">اعمال فیلتر</p>
                     </button>
                     <button
                       type="button"
                       onClick={() => setCategoryOpen(false)}
-                      className="btn btn--secondary--2 bg-stroke-0 border-stroke-0 px-6 h-full w-1/2 disabled:bg-amber-50"
+                      className="btn btn--secondary--2 shadow-xl shadow-stroke-800/20 dark:shadow-stroke-800/10 bg-stroke-0 border-stroke-0 px-6 h-full w-1/2 disabled:bg-amber-50"
                     >
                       <p className="text-sm sm:text-xs text-stroke-800">
                         انصراف
@@ -334,21 +336,21 @@ function CategriesFilter({ title, fieldsetId, children, className }) {
   return (
     <div
       // dir="rtl"
-      className={`flex flex-col items-start gap-2 overflow-hidden text-sm h-full max-h-1/2 ${className}`}
+      className={`flex flex-col items-end justify-start gap-2 overflow-hidden text-sm w-ful h-full max-h-1/2 ${className}`}
     >
-      <div className="flex items-center gap-1">
-        <h5 className="text-stroke-800">{title}</h5>
+      <div className="flex justify-start items-center gap-1 w-full">
         <AppImage
           src="/images/star-2-primery-icon.svg"
           alt="star-icon"
           width="size-4"
           sizes="10vw"
         />
+        <h5 className="text-stroke-800">{title}</h5>
       </div>
       <fieldset
         // dir="ltr"
         id={fieldsetId}
-        className="flex flex-col items-end pr-2 size-full overflow-y-auto scrollbar-none"
+        className="flex flex-col items-start w-full overflow-y-auto scrollbar-none"
       >
         {children}
       </fieldset>
@@ -370,7 +372,7 @@ function FilterRadioBtn({ radioId, name, label, onChange, defaultValue }) {
   const checked = defaultValue === radioId ? true : false;
   return (
     <RadioButton
-      className="flex flex-col items-end justify-start size-full text-xs text-stroke-600 dark:text-stroke-500 has-checked:text-primary has-checked:font-bold duration-200"
+      className="flex flex-col items-start justify-start size-full text-xs text-stroke-600 dark:text-stroke-500 has-checked:text-primary has-checked:font-bold duration-200"
       id={radioId}
       name={name}
       value={radioId}
@@ -378,12 +380,12 @@ function FilterRadioBtn({ radioId, name, label, onChange, defaultValue }) {
       checked={checked}
     >
       <span className="flex items-center justify-start gap-1">
-        <p className="py-2">{label}</p>
         <div
           className={`h-2 w-0.5 rounded-full ${
             checked ? "bg-primary" : "bg-stroke-50"
           } duration-200`}
         ></div>
+        <p className="py-2">{label}</p>
       </span>
     </RadioButton>
   );

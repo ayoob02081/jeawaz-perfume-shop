@@ -17,8 +17,8 @@ function FilterCheckBox({
 }) {
   return (
     <CheckBox
-      className={`${className} cursor-pointer scroll-smooth duration-200`}
-      id={checkId}
+      className={`${className} w-full cursor-pointer scroll-smooth duration-200`}
+      id={checkId + "-" + name}
       name={name}
       value={checkId}
       onChange={onChange}
@@ -58,17 +58,17 @@ function FilterCheckBox({
             </p>
           </span>
         ) : (
-          <span className="flex items-center justify-start gap-1">
-            <p
-              className={`${textClassName} ${checked ? "text-primary" : "text-stroke-800 dark:text-stroke-500"} duration-200`}
-            >
-              {label}
-            </p>
+          <span className="flex items-center justify-start gap-1 w-full">
             <div
               className={`h-2 w-0.5 rounded-full ${
                 checked ? "bg-primary" : "bg-stroke-50 dark:bg-stroke-150"
               } duration-200`}
             ></div>
+            <p
+              className={`${textClassName} ${checked ? "text-primary" : "text-stroke-800 dark:text-stroke-500"} duration-200`}
+            >
+              {label}
+            </p>
           </span>
         ))}
     </CheckBox>

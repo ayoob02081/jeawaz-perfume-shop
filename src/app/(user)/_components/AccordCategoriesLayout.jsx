@@ -3,25 +3,19 @@
 import Error from "@/components/Error";
 import AppImage from "@/components/AppImage";
 import Loading from "@/components/Loading";
-import { useGetAllCategories } from "@/hooks/useCategories";
-import { useGetAllProducts } from "@/hooks/useProducts";
+import { useGetCategoriesByType } from "@/hooks/useCategories";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
 function AccordCategoriesLayout() {
-  const { data: categories, isPending, error } = useGetAllCategories();
-  const accordCategories = categories?.filter((c) => c.type === "accord");
-
   const {
-    data,
-    isPending: isProductsPending,
-    error: isProductsError,
-  } = useGetAllProducts();
+    data: accordCategories,
+    isPending,
+    error,
+  } = useGetCategoriesByType("accord");
 
-  const products = data?.data || [];
-
-  if (error || isProductsError) {
+  if (error) {
     return <Error />;
   }
 
@@ -39,17 +33,17 @@ function AccordCategoriesLayout() {
         <h2 className="text-stroke-800">دنیایی متفاوت</h2>
       </div>
       <div className="flex gap-4 justify-between items-center w-full px-16 my-6 scroll--x rounded-2xl">
-        {isPending || isProductsPending ? (
+        {isPending ? (
           <Loading />
         ) : (
-          accordCategories.map((accord) => (
+          accordCategories.map((item) => (
             <FilterCard
-              key={accord.id}
-              allProducts={products}
-              src={accord.imageUrl}
-              alt={accord.value + "-image"}
-              value={accord.value}
-              label={accord.title}
+              key={item.id}
+              src={item.imageUrl}
+              alt={item.value + "-image"}
+              value={item.value}
+              label={item.title}
+              productsCount={item.productsCount}
             />
           ))
         )}
@@ -60,13 +54,8 @@ function AccordCategoriesLayout() {
 
 export default AccordCategoriesLayout;
 
-function FilterCard({ src, alt, value, label, allProducts }) {
+function FilterCard({ src, alt, value, label, productsCount }) {
   const router = useRouter();
-  const filteredProducts = allProducts?.filter((p) =>
-    p.categories?.some((i) => i.value === value),
-  );
-
-  const quantity = filteredProducts?.length || 0;
 
   return (
     <div className="snap-center">
@@ -96,7 +85,7 @@ function FilterCard({ src, alt, value, label, allProducts }) {
             </p>
           </span>
           <p className="text-stroke-600 text-sm sm:text-lg md:font-bold">
-            {toPersianNumbers(quantity)} محصول
+            {toPersianNumbers(productsCount)} محصول
           </p>
         </div>
         <div className="flex-none justify-self-end self-end px-2 pb-5">

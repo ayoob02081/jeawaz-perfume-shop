@@ -1,10 +1,14 @@
+"use client";
+
 import {
   getAllUsersApi,
   getUserApi,
   getUserByIdApi,
   updateUserApi,
 } from "@/services/usersServices";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export const useGetUser = () =>
   useQuery({
@@ -26,16 +30,28 @@ export const useGetAllUsers = () =>
 
 export const useGetUserbyId = (id) =>
   useQuery({
-    queryKey: ["get-product", id],
+    queryKey: ["user", id],
     queryFn: () => getUserByIdApi(id),
     enabled: !!id,
     retry: false,
     refetchOnWindowFocus: false,
   });
 
-export function useUpdateUser() {
-  const { isPending: isUpdating, mutateAsync: updateUser } = useMutation({
+export function useUpdateUser(userId) {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const { isPending: isUpdating, mutate: updateUser } = useMutation({
     mutationFn: updateUserApi,
+    onSuccess: (data) => {
+      toast.success("اطلاعات حساب کاربری شما با موفقیت ویرایش شد");
+      queryClient.setQueryData(["user"], data);
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      router.refresh();
+      router.back();
+    },
+    onError: (err) => {
+      toast.error("اطلاعات حساب کاربری شما با خطا مواجه شد");
+    },
   });
 
   return { isUpdating, updateUser };

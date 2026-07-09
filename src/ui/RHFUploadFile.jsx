@@ -12,6 +12,7 @@ export default function RHFUploadFile({
   onRemove,
   uploadUrl = "/upload/image",
   deleteUrl = "/upload/delete",
+  type,
 }) {
   const [isUploading, setIsUploading] = useState(false);
 
@@ -64,13 +65,13 @@ export default function RHFUploadFile({
 
   return (
     <div className="relative group">
-      <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-stroke-300 rounded-2xl cursor-pointer hover:bg-stroke-0 transition-all overflow-hidden select-none">
+      <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-stroke-300 rounded-2xl cursor-pointer bg-stroke-0 transition-all overflow-hidden select-none">
         {value ? (
           <AppImage
             src={value}
             alt="uploaded-file"
             priority={true}
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover ${type === "brand" && "dark:invert"}`}
           />
         ) : (
           <div className="flex flex-col items-center justify-center text-stroke-400">
@@ -78,8 +79,8 @@ export default function RHFUploadFile({
               <span className="loading loading-spinner loading-sm text-primary"></span>
             ) : (
               <>
-                <CloudArrowUpIcon className="size-7 text-stroke-600 group-hover:text-primary transition-colors" />
-                <span className="text-[10px] mt-1 text-stroke-600 group-hover:text-primary font-medium">
+                <CloudArrowUpIcon className="size-7 text-stroke-600 group-hover:text-primary transition-colors duration-200" />
+                <span className="text-[10px] mt-1 text-stroke-600 group-hover:text-primary font-medium duration-200">
                   {label}
                 </span>
               </>

@@ -139,7 +139,7 @@ function DesktopHeader({
   const pathName = usePathname();
 
   return (
-    <nav className="max-md:hidden md:fixed inset-0 top-0 right-0 left-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-90 bg-stroke-0 shadow-md dark:shadow-stroke-800/10 duration-200">
+    <nav className="max-md:hidden relative md:fixed h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl bg-stroke-0 shadow-md dark:shadow-stroke-800/10 z-90 duration-200">
       <ul className="flex flex-col justify-between gap-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex grow items-center justify-betwee gap-4">
@@ -366,13 +366,13 @@ function DesktopHeader({
           </div>
           <li className="flex items-center justify-between gap-4">
             <Link
-              href={"tel:+989180522273"}
+              href={"tel:+989302125151"}
               className="flex items-center justify-between gap-4"
             >
               <div className="flex items-center justify-center text-xl pl-4 border-l-[1.5px] border-stroke-200">
-                <p className="text-stroke-800 ">{toPersianNumbers("2273")}</p>
-                <p className="text-stroke-800 ">{toPersianNumbers("052")}</p>
-                <p className="text-primary ">{toPersianNumbers("0918")}</p>
+                <p className="text-stroke-800 ">{toPersianNumbers("5151")}</p>
+                <p className="text-stroke-800 ">{toPersianNumbers("212")}</p>
+                <p className="text-primary ">{toPersianNumbers("0930")}</p>
               </div>
               <CardIconResponsive
                 src="/images/call-ringing-4-primary-icon.svg"
@@ -404,8 +404,8 @@ function MobileHeader({
   const showElement = useHideOnScroll();
 
   return (
-    <nav className="md:hidden fixed inset-0 top-0 right-0 left-0 h-fit w-[95%] container mx-auto xl:max-w-7xl p-4 rounded-b-4xl z-50 bg-stroke-0 shadow-md dark:shadow-stroke-800/10 duration-200">
-      <ul className="grid grid-cols-3 p-2 gap-x-10 relative">
+    <nav className="md:hidden max-md:fixed max-md:top-0 inset-x-0 max-sm:px-4 h-fit w-full z-50">
+      <ul className="grid grid-cols-3 gap-x-10 relative container mx-auto xl:max-w-7xl p-4 rounded-b-4xl bg-stroke-0 shadow-md dark:shadow-stroke-800/10 duration-200">
         <li className="justify-items-start">
           <button
             type="button"

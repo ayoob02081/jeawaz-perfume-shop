@@ -3,58 +3,22 @@
 import AppImage from "@/components/AppImage";
 import { categoryTHeads } from "@/constants/tableHeads";
 import { useRemoveBrand, useRemoveCategory } from "@/hooks/useCategories";
-import { useGetAllProducts } from "@/hooks/useProducts";
+import ConfirmModal from "@/ui/ConfirmModal";
 import Table from "@/ui/Table";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
-import { useMemo } from "react";
-import toast from "react-hot-toast";
+import { useState } from "react";
 
 function CategoriesListTable({ categories, brands, accords, genders }) {
-  const { data, isPending, error } = useGetAllProducts();
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [category, setCategory] = useState(false);
+
   const { isDeleting: isDeletingCategory, removeCategory } =
     useRemoveCategory();
   const { isDeleting: isDeletingBrand, removeBrand } = useRemoveBrand();
-  const products = data?.data || [];
 
-  const productCounts = useMemo(() => {
-    if (!Array.isArray(products)) {
-      return { genders: {}, brands: {}, accords: {} };
-    }
-
-    const counts = {
-      genders: {},
-      brands: {},
-      accords: {},
-    };
-
-    for (const p of products) {
-      const categories = p?.categories;
-
-      if (!categories) continue;
-
-      if (categories.gender) {
-        counts.genders[categories.gender] =
-          (counts.genders[categories.gender] || 0) + 1;
-      }
-
-      if (categories.brand) {
-        counts.brands[categories.brand] =
-          (counts.brands[categories.brand] || 0) + 1;
-      }
-
-      if (Array.isArray(categories.accords)) {
-        for (const acc of categories.accords) {
-          counts.accords[acc] = (counts.accords[acc] || 0) + 1;
-        }
-      }
-    }
-
-    return counts;
-  }, [products]);
-
-  const removeCategoryHandler = async (category) => {
+  const removeCategoryHandler = async () => {
     const { id } = category;
 
     if (accords || genders) {
@@ -62,20 +26,21 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
     } else {
       await removeBrand(id);
     }
+    setConfirmModalOpen(false);
   };
 
-  if (isPending) {
-    return <div className="p-6 text-center">در حال دریافت محصولات...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="p-6 text-center text-red-500">خطا در دریافت محصولات</div>
-    );
-  }
+  const handleModal = (data) => {
+    if (!data.id) {
+      setConfirmModalOpen(false);
+    }
+    if (data?.id) {
+      setConfirmModalOpen(true);
+      setCategory(data);
+    }
+  };
 
   return (
-    <div className="w-full overflow-auto max-h-[50vh] pb-0.5 rounded-xl shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-w-1 scrollbar-track-stroke-100/0">
+    <div className="w-full overflow-x-auto max-h-screen pb-0.5 rounded-xl max-lg:shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-w-1 scrollbar-track-stroke-100/0">
       <Table className="overflow-auto">
         <Table.Header>
           {categoryTHeads.map((item) => (
@@ -87,9 +52,6 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
 
         <Table.body>
           {categories?.map((category, index) => {
-            const gendersQuantity = productCounts.genders[category.value] || 0;
-            const brandsQuantity = productCounts.brands[category.title] || 0;
-            const accordsQuantity = productCounts.accords[category.value] || 0;
             const type = brands ? "brands" : accords ? "accords" : "genders";
 
             return (
@@ -125,9 +87,7 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
 
                 <td className="table__td px-6">
                   <span className="badge badge--primary font-bold">
-                    {accords && toPersianNumbers(accordsQuantity)}
-                    {brands && toPersianNumbers(brandsQuantity)}
-                    {genders && toPersianNumbers(gendersQuantity)}
+                    {toPersianNumbers(category?.productsCount || 0)}
                   </span>
                 </td>
 
@@ -142,7 +102,7 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
 
                     <button
                       disabled={isDeletingCategory || isDeletingBrand}
-                      onClick={() => removeCategoryHandler(category)}
+                      onClick={() => handleModal(category)}
                       className="text-stroke-450 hover:text-primary duration-200 disabled:opacity-40"
                     >
                       <TrashIcon className="size-5" />
@@ -154,6 +114,19 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
           })}
         </Table.body>
       </Table>
+      {confirmModalOpen && (
+        <ConfirmModal
+          cancellBtn={handleModal}
+          confirmBtn={removeCategoryHandler}
+          isOpen={confirmModalOpen}
+          onClose={setConfirmModalOpen}
+        >
+          <span className="flex flex-wrap items-center justify-center gap-2 text-stroke-800 max-md:text-xl md:text-2xl">
+            <p>{category.description}</p>
+            <p>حذف شود؟</p>
+          </span>
+        </ConfirmModal>
+      )}
     </div>
   );
 }

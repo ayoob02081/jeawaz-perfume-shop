@@ -1,11 +1,10 @@
 "use client";
-import toast, { Toaster } from "react-hot-toast";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import RHFTextField from "@/ui/RHFTextField";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useGetUser, useUpdateUser } from "@/hooks/useUsers";
-import PersianDateRHForm from "./PersianDateRHForm";
+import PersianDateRHForm from "../../../../ui/PersianDateRHForm";
+import { useEffect } from "react";
 
 const basicInfoData = [
   {
@@ -46,7 +45,6 @@ const basicInfoData = [
     name: "email",
     placeholder: "example@gmail.com",
     type: "email",
-    // isRequired: true,
   },
   {
     id: 4,
@@ -54,61 +52,55 @@ const basicInfoData = [
     name: "nationalCode",
     placeholder: "۰۱۲۳۴۵۶۷۸۹",
     type: "number",
-    // isRequired: true,
   },
-  // {
-  //   id: 7,
-  //   label: "تلفن ثابت",
-  //   name: "tellNumber",
-  //   placeholder: "۰۹۱-۳۴۵۶۷۸۹",
-  //   type: "number",
-  // },
-  // {
-  //   id: 8,
-  //   label: "تولد",
-  //   name: "birthday",
-  //   placeholder: "۱۳۸۱/۲/۴",
-  //   type: "date",
-  // },
 ];
 
 function EditProfileForm() {
-  const queryClient = useQueryClient();
   const router = useRouter();
   const { data: userToEdit, isLoading, error } = useGetUser();
-  const { isUpdating, updateUser } = useUpdateUser();
+  const { isUpdating, updateUser } = useUpdateUser(userToEdit?.id);
   const {
     firstName,
     lastName,
     phoneNumber,
-    tellNumber,
     nationalCode,
     birthday,
     email,
     username,
-    password,
   } = userToEdit || {};
-
-  //   const { editUser, isEditing } = useEditUser(id);
 
   const {
     register,
     control,
     handleSubmit,
     watch,
+    reset,
     formState: { isSubmitting },
   } = useForm({
     defaultValues: {
-      firstName: firstName || "",
-      lastName: lastName || "",
-      phoneNumber: phoneNumber || "",
-      nationalCode: nationalCode || "",
-      birthday: birthday || "",
-      email: email || "",
-      username: username || "",
-      password: password || "",
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
+      nationalCode: undefined,
+      birthday: undefined,
+      email: undefined,
+      username: undefined,
     },
   });
+
+  useEffect(() => {
+    if (!userToEdit) return;
+
+    reset({
+      firstName: firstName ?? "",
+      lastName: lastName ?? "",
+      phoneNumber: phoneNumber ?? "",
+      nationalCode: nationalCode || undefined,
+      birthday: birthday || undefined,
+      email: email || undefined,
+      username: username || undefined,
+    });
+  }, [userToEdit, reset]);
 
   const onSubmit = async (data) => {
     const payload = {
@@ -117,34 +109,15 @@ function EditProfileForm() {
       phoneNumber: data.phoneNumber,
       nationalCode: data.nationalCode,
       birthday: data.birthday,
-      email: data.email,
+      email: data.email || undefined,
       username: data.username,
-      password: data.password,
     };
 
-    // if (!!userToEdit) {
-
-    try {
-      await updateUser({
-        id: userToEdit?.id,
-        payload,
-      });
-      toast.success(
-        `اطلاعات حساب کاربری ${data?.title || data?.phoneNumber} با موفقیت ویرایش شد`,
-      );
-      // router.back();
-    } catch (error) {
-      console.log(error);
-      toast.error(`ویرایش اطلاعات حساب کاربری ${data?.title} با خطا مواجه شد`);
-      error;
-    }
-    // }
+    await updateUser(payload);
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 md:p-6 w-full">
-      <Toaster />
-
+    <div className="max-w-6xl mx-auto w-full">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
         {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -157,7 +130,7 @@ function EditProfileForm() {
                 label={item.label}
                 name={item.name}
                 type={item.type}
-                className="  rounded-xl w-full"
+                className="w-full"
                 validationSchema={{ required: true }}
                 placeholder={`مثال: ${item.placeholder}`}
               />
@@ -168,7 +141,7 @@ function EditProfileForm() {
                 label={item.label}
                 name={item.name}
                 type={item.type}
-                className="  rounded-xl w-full"
+                className="w-full"
                 placeholder={`مثال: ${item.placeholder}`}
               />
             ),
@@ -177,18 +150,8 @@ function EditProfileForm() {
             control={control}
             name="birthday"
             label="تولد"
-            className="  rounded-xl w-full"
+            className="w-full"
             placeholder="مثال: ۱۳۸۱/۲/۴"
-          />
-          <RHFTextField
-            register={register}
-            isRequired
-            label="رمز ورود"
-            name="password"
-            type="password"
-            className="  rounded-xl w-full"
-            validationSchema={{ required: true }}
-            // placeholder={`مثال: ${item.placeholder}`}
           />
         </div>
 
@@ -203,7 +166,7 @@ function EditProfileForm() {
             </button>
             <div
               onClick={() => router.back()}
-              className="btn btn--primary--2 border-2 border-primary py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
+              className="btn btn--primary--2 border-2 border-primary py-3.5 px-7 disabled:opacity-50 max-md:w-full md:w-44"
             >
               بازگشت
             </div>

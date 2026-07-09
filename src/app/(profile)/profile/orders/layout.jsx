@@ -21,8 +21,6 @@ export default function OrdersPageLayout({ children }) {
       fontStyle="text-base font-bold"
       justify="between"
       overflow="overflow-y-auto w-full"
-      max="true"
-      min="true"
     >
       {children}
     </AdaptiveOverlayPage>

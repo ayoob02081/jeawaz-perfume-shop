@@ -1,6 +1,6 @@
 "use client";
 
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { Controller, useForm } from "react-hook-form";
 import {
   useAddCategory,
@@ -85,7 +85,7 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-10">
+    <div className="max-w-6xl mx-auto">
       <Toaster />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">

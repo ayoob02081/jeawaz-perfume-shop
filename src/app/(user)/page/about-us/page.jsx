@@ -9,7 +9,7 @@ export const metadata = {
 
 function AboutUsPage() {
   return (
-    <main className="container mx-auto xl:max-w-7xl mb-8 mt-48 md:mt-40">
+    <main className="container mx-auto xl:max-w-7xl mb-8">
       <div className="flex flex-col w-full">
         {/* about us */}
         <section className="flex flex-col items-center w-full gap-6 px-6 mb-20 md:mb-28 lg:mb-36 xl:mb-48">

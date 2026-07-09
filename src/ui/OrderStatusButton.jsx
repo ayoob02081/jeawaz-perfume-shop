@@ -52,7 +52,7 @@ function OrderStatusButton({
         max-md:p-6 md:p-4 rounded-2xl 
         max-md:max-w-56 md:max-w-52 w-full h-full 
         max-lg:max-h-20 lg:max-h-28
-        transition-all duration-200
+        transition-all duration-200 bg-stroke-0
         ${isActive ? "border-[1.5px] border-primary" : "border border-stroke-250"}
         ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:shadow-sm"}
         snap-center`}

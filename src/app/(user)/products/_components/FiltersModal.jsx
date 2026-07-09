@@ -3,7 +3,7 @@
 import { volumes } from "@/constants/filterItems";
 import {
   useGetAllBrandCategories,
-  useGetAllCategories,
+  useGetCategoriesByType,
 } from "@/hooks/useCategories";
 import { useFilters } from "@/hooks/useFilters";
 import { Badge } from "@/ui/Badge";
@@ -24,9 +24,8 @@ function FiltersModal({
   control,
   watch,
 }) {
-  const { data: categories, isPending, error } = useGetAllCategories();
-  const genderCategories = categories?.filter((c) => c.type === "gender");
-  const accordCategories = categories?.filter((c) => c.type === "accord");
+  const { data: genderCategories } = useGetCategoriesByType("gender");
+  const { data: accordCategories } = useGetCategoriesByType("accord");
   const { data: brandCategories } = useGetAllBrandCategories();
 
   const { state } = useFilters();
@@ -109,7 +108,7 @@ function FiltersModal({
                   setMode={setMode}
                   control={control}
                   watch={watch}
-                  hidden
+                  hidde
                 />
               </FilterOption>
               <FilterOption>
@@ -447,34 +446,43 @@ export function PriceFilter({ addFilter, control, watch, hidden }) {
   }, [minPrice, maxPrice]);
 
   return (
-    <div className="flex items-center justify-between gap-2 w-full">
+    <div className="flex flex-col items-start justify-center w-full gap-4 ">
+      <div
+        className={`max-md:flex md:hidden items-center justify-start gap-2 w-full`}
+      >
+        <Badge title="قیمت" />
+      </div>
       <div
         className={`
           ${hidden && "max-md:hidden"}
-             flex items-center justify-between gap-2 w-full h-11`}
+          flex items-center justify-between gap-2 w-full h-11`}
       >
-        <RHFTextField
-          textClassName="font-bold"
-          control={control}
-          isPrice={true}
-          name="minPrice"
-          className="rounded-xl w-full px-3"
-          placeholder="حداقل"
-          containerClassName="size-full *:pr-0"
-        >
-          <p>تومان</p>
-        </RHFTextField>
-        <RHFTextField
-          textClassName="font-bold"
-          control={control}
-          isPrice={true}
-          name="maxPrice"
-          className="rounded-xl w-full px-3"
-          placeholder="حداکثر"
-          containerClassName="size-full *:pr-0"
-        >
-          <p>تومان</p>
-        </RHFTextField>
+        <div className="flex items-center justify-between gap-2 w-full">
+          <RHFTextField
+            textClassName="font-bold"
+            control={control}
+            isPrice={true}
+            name="minPrice"
+            className="w-full px-3"
+            placeholder="حداقل"
+            containerClassName="size-full *:pr-0"
+            isPrimary
+          >
+            <p>تومان</p>
+          </RHFTextField>
+          <RHFTextField
+            textClassName="font-bold"
+            control={control}
+            isPrice={true}
+            name="maxPrice"
+            className="w-full px-3"
+            placeholder="حداکثر"
+            containerClassName="size-full *:pr-0"
+            isPrimary
+          >
+            <p>تومان</p>
+          </RHFTextField>
+        </div>
       </div>
     </div>
   );

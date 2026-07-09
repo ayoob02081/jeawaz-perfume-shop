@@ -118,6 +118,7 @@ function Login({ closeBtn }) {
                   message: "شماره موبایل نامعتبر است",
                 },
               }}
+              isPrimary
             />
             {isPasswordType === true && (
               <PassInput
@@ -137,7 +138,7 @@ function Login({ closeBtn }) {
                     message: "رمز عبور باید حداقل ۶ کاراکتر باشد",
                   },
                 }}
-                className="  w-full"
+                className="w-full"
                 placeholder="رمز عبور"
               />
             )}

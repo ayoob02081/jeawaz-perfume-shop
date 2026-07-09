@@ -143,7 +143,7 @@ function FilterSection() {
   return (
     <article>
       <div className="border-b border-stroke-200">
-        <section className="flex flex-col items-start justify-between size-full gap-6 py-4">
+        <section className="flex flex-col items-start justify-between size-full gap-6 max-md:pb-4 max-md:pt-3">
           <div className="w-full ">
             <section className="flex items-center justify-start gap-2 snap-x overflow-x-scroll scrollbar-none w-full">
               {/* Filters Modal Button */}

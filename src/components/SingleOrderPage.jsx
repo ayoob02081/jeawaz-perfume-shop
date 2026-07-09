@@ -1,6 +1,5 @@
 "use client";
 
-import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
 import AppImage from "@/components/AppImage";
 import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
@@ -35,41 +34,11 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
         (s) => s.value === renderUserStatuses(order?.status),
       );
 
-  return (
-    <AdaptiveOverlayPage
-      isOpen={openOrder}
-      label="جزئیات سفارش"
-      side="right"
-      className="size-4"
-      fontStyle="text-base font-bold"
-      justify="between"
-      overflow="overflow-y-auto"
-      max="true"
-      min="true"
-    >
-      <Order order={order} currentStatus={currentStatus} />
-    </AdaptiveOverlayPage>
-  );
-}
-
-export default SingleOrderPage;
-
-function OrderDetail({ label, title, children }) {
-  return (
-    <span className="flex items-start justify-start gap-1">
-      <p className="text-stroke-600 text-nowrap">{label}</p>
-      {title && <p className="font-bold text-stroke-800">{title}</p>}
-      {children}
-    </span>
-  );
-}
-
-export function Order({ order, currentStatus }) {
   const { orderNumber, items, orderDate, pricing, shipping } = order || {};
   const { title, textColor, icon: Icon, des } = currentStatus || {};
 
   return (
-    <div className="max-lg:px-4 lg:p-6 flex flex-col items-start justify-start lg:border border-stroke-200 lg:rounded-2.5xl">
+    <div className=" flex flex-col items-start justify-start">
       <div className="max-lg:hidden">
         <GoBack
           label="جزئیات سفارش"
@@ -81,8 +50,8 @@ export function Order({ order, currentStatus }) {
       </div>
 
       {/* Order Details */}
-      <div className="flex flex-col justify-center items-start w-full max-lg:p-4 max-lg:border-[1.5px] border-stroke-200 max-lg:rounded-2.5xl">
-        <div className="flex flex-wrap w-full max-md:gap-4 md:gap-6 py-6">
+      <div className="flex flex-col justify-center items-start w-full max-lg:rounded-2.5xl">
+        <div className="flex flex-wrap w-full max-md:gap-4 md:gap-6 max-lg:pb-4 lg:py-4">
           <OrderDetail
             label="تاریخ ثبت سفارش :"
             title={toLocalDateString(orderDate)}
@@ -92,8 +61,8 @@ export function Order({ order, currentStatus }) {
             title={toPersianNumbers(orderNumber)}
           />
         </div>
-        <div className="flex w-full flex-wrap py-6 border-t border-stroke-250 max-md:gap-4 md:gap-6">
-          <div className="flex max-md:flex-col items-start justify-center max-md:gap-4 md:gap-6">
+        <div className="flex w-full flex-wrap pt-4 border-t border-stroke-250 gap-4">
+          <div className="flex max-md:flex-col items-start justify-center max-lg:gap-4 md:gap-6">
             <OrderDetail label="تحویل گیرنده :" title={shipping?.receiver} />
             <OrderDetail
               label="شماره تماس :"
@@ -101,9 +70,12 @@ export function Order({ order, currentStatus }) {
             />
           </div>
           <OrderDetail label="آدرس ارسال مرسوله :" title={shipping?.address} />
-          <OrderDetail label="کد پستی :" title={toPersianNumbers(shipping?.postalCode)} />
+          <OrderDetail
+            label="کد پستی :"
+            title={toPersianNumbers(shipping?.postalCode)}
+          />
         </div>
-        <div className="flex w-full flex-wrap py-6 border-(ttoPersianNumbers border-s)troke-250 max-md:gap-4 md:gap-6">
+        <div className="flex w-full flex-wrap py-4 border-(ttoPersianNumbers border-s)troke-250 max-md:gap-4 md:gap-6">
           <OrderDetail
             label="مبلغ کل :"
             title={
@@ -129,7 +101,7 @@ export function Order({ order, currentStatus }) {
         </div>
 
         {/* Factor */}
-        <div className="bg-stroke-100 dark:bg-stroke-50 rounded-2xl p-4 md:p-5 w-full">
+        <div className="bg-stroke-0 dark:bg-stroke-50 rounded-2xl p-4 md:p-5 w-full max-lg:bg-stroke-100">
           <div className="w-full">
             <div className="flex items-start justify-between w-full mb-5">
               <div className="flex flex-wrap items-center justify-start gap-4">
@@ -180,7 +152,7 @@ export function Order({ order, currentStatus }) {
                   title={
                     "پس از ارسال مرسوله، کد رهگیری به شماره " +
                     toPersianNumbers(shipping?.phone) +
-                    " .پیامک میشود"
+                    " پیامک میشود."
                   }
                 />
               </div>
@@ -192,12 +164,13 @@ export function Order({ order, currentStatus }) {
             </div>
             <div className="w-full flex flex-col justify-center max-lg:gap-4">
               {items?.map((item) => (
-                <div
+                <Link
+                  href={`/products/${item.productId}`}
                   className="flex items-center justify-between gap-1 lg:border-t border-stroke-200 max-lg:bg-stroke-0 p-4 max-lg:rounded-xl"
                   key={item.id}
                 >
                   <div className="flex items-center justify-start gap-2 md:gap-4">
-                    <div className="flex items-center justify-center max-lg:h-16 lg:size-16 lg:rounded-xl lg:bg-stroke-0 ">
+                    <div className="flex items-center justify-center max-lg:h-16 lg:size-16 lg:rounded-xl lg:bg-stroke-100 ">
                       <AppImage
                         src={item.imageUrl}
                         alt={`${item.title}-image`}
@@ -221,24 +194,34 @@ export function Order({ order, currentStatus }) {
                       textClassName="text-[10px]"
                     />
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
             <div className="flex items-center flex-wrap justify-start p-6 mt-6 bg-warning/20 dark:bg-stroke-900 rounded-xl text-start text-stroke-800">
               در صورت عدم دریافت پیامک کد رهگیری مرسوله، لطفا به شماره{" "}
-              {
-                <Link
-                  className="px-1 text-primary font-bold"
-                  href="tel:+989302125151"
-                >
-                  ۰۹۳۰۲۱۲۵۱۵۱
-                </Link>
-              }
+              <Link
+                className="px-1 text-primary font-bold"
+                href="tel:+989302125151"
+              >
+                ۰۹۳۰۲۱۲۵۱۵۱
+              </Link>
               در واتساپ یا روبیکا پیام دهید.
             </div>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default SingleOrderPage;
+
+function OrderDetail({ label, title, children }) {
+  return (
+    <span className="flex items-start justify-start gap-1">
+      <p className="text-stroke-600 text-nowrap">{label}</p>
+      {title && <p className="font-bold text-stroke-800">{title}</p>}
+      {children}
+    </span>
   );
 }

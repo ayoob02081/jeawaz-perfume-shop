@@ -9,6 +9,7 @@ import {
   addBrandApi,
   updateCategoryApi,
   updateBrandApi,
+  getCategoriesByTypeApi,
 } from "@/services/categoriesServices";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -27,6 +28,16 @@ export const useGetAllBrandCategories = () =>
   useQuery({
     queryKey: ["get-brands"],
     queryFn: getAllBrandsApi,
+    retry: false,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+  });
+
+export const useGetCategoriesByType = (type) =>
+  useQuery({
+    queryKey: ["categories", type],
+    queryFn: () => getCategoriesByTypeApi(type),
+    enabled: !!type,
     retry: false,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,

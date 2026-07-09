@@ -50,10 +50,10 @@ export default function ContactUsForm() {
               type={item.type}
               label={item.label}
               name={item.name}
-              textClassName="!text-sm"
-              className="  rounded-xl w-full"
+              textClassName="text-sm!"
               validationSchema={{ required: true }}
               placeholder={`مثال: ${item.placeholder}`}
+              isPrimary
             />
           ))}
           <RHFTextAreaField
@@ -63,10 +63,14 @@ export default function ContactUsForm() {
             register={register}
             placeholder="پیام خود را بنویسید ..."
             validationSchema={{ required: true }}
-            className="  rounded-xl w-full h-32"
+            className="rounded-xl h-32"
+            isPrimary
           />
         </div>
-        <button className="btn btn--primary px-8 py-2 font-bold rounded-xl text-base">
+        <button
+          type="submit"
+          className="btn btn--primary px-8 py-2 font-bold rounded-xl text-base"
+        >
           ارسال پیام
         </button>
       </form>

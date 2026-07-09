@@ -21,13 +21,14 @@ import {
   TagIcon as TagSolidIcon,
   UserGroupIcon as UserGroupSolidIcon,
   UserIcon as UserSolidIcon,
+  ReceiptPercentIcon as ReceiptPercentSolidIcon,
 } from "@heroicons/react/24/solid";
 import { useAuth } from "@/contexts/filters/auth/AuthContext";
 
 export default function ProfileLinks({ children }) {
   return (
-    <div className=" flex items-center justify- gap-2 max-lg:w-full lg:w-fit min-w-xs max-lg:border-t-[1.5px] border-stroke-300 max-lg:*:*:*:first:border-none ">
-      <div className="flex flex-col items-start justify-center size-full lg:max-w-xs lg:pb-34 lg:gap-2 max-lg:px-4 py-4 lg:px-4 lg:bg-stroke-100 dark:lg:bg-stroke-50 lg:rounded-2.5xl">
+    <div className=" flex items-center gap-2 w-full min-w-xs max-lg:*:*:*:first:border-none">
+      <div className="flex flex-col items-start justify-center size-full lg:max-w-xs lg:pb-34 lg:gap-2">
         {children}
       </div>
     </div>
@@ -136,7 +137,7 @@ export function ProfileLink({
         <button
           onClick={LogoutHandler}
           className="flex items-center justify-start gap-4 hover:bg-stroke-250 hover:*:*:*:last:*:last:duration-200 text-stroke-800
-              max-lg:py-2 lg:py-2 size-full px-2 rounded-[44px] duration-200"
+              max-lg:py-2 lg:py-2 px-2 size-full rounded-[44px] duration-200"
         >
           <div className="flex items-center justify-start gap-2 w-full">
             <div className="flex items-center justify-center size-11">
@@ -152,7 +153,7 @@ export function ProfileLink({
   if (userProfileMode) {
     return (
       <div className="flex flex-col items-center justify-center size-full">
-        <div className="flex items-center justify-start gap-4 max-lg:py-2 size-full lg:mb-2 lg:py-4 px-4 rounded-3xl">
+        <div className="flex items-center justify-start gap-4 max-lg:py-2 size-full lg:mb-2 lg:py-2 rounded-3xl">
           <div className="flex items-center justify-between gap-4 w-full h-full">
             <Link
               href={"/profile/me"}

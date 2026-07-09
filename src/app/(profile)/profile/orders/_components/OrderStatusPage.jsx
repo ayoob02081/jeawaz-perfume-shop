@@ -65,9 +65,10 @@ export function StatusOrderCard({
   const pathName = usePathname();
   const router = useRouter();
   const { title, color, icon: Icon, textColor, des } = currentStatusData || {};
+  console.log(orderItems.length >= 3);
 
   return (
-    <div className="flex flex-col justify-between gap-6 w-full max-lg:border-t border-stroke-800/20 dark:border-stroke-800/40 p-6 lg:border lg:rounded-2xl">
+    <div className="flex flex-col justify-between gap-6 w-full bg-stroke-0 max-lg:border-t border-stroke-800/20 dark:border-stroke-800/40 max-lg:px-0 p-6 lg:border lg:rounded-2xl">
       <div
         className={`flex items-center justify-start gap-1 h-11 w-fit px-2 rounded-5xl ${color}`}
       >
@@ -102,11 +103,15 @@ export function StatusOrderCard({
         onClick={() => router.push(pathName + "/" + id)}
         className="flex items-center justify-between p-6 bg-stroke-100 dark:bg-stroke-50 rounded-2xl h-28"
       >
-        <div className=" flex items-center justify-start *:not-first:-mr-8">
-          {orderItems?.map((item) => (
+        <div className=" flex items-center justify-start *:not-first:translate-x-8">
+          {orderItems?.map((item, index) => (
             <div
               key={item.id}
-              className="flex items-center justify-center bg-stroke-0 border-6 border-stroke-100 dark:border-stroke-50 size-20 rounded-xl z-10"
+              className={
+                index <= 1
+                  ? "flex items-center justify-center bg-stroke-0 border-6 border-stroke-100 dark:border-stroke-50 size-20 rounded-xl z-10 aspect-square"
+                  : "hidden size-0"
+              }
             >
               <AppImage
                 src={item.imageUrl}
@@ -115,6 +120,13 @@ export function StatusOrderCard({
               />
             </div>
           ))}
+          {orderItems?.length >= 3 && (
+            <div className="flex items-center justify-center text-xl translate-x-16! bg-stroke-0 border-6 border-stroke-100 dark:border-stroke-50 size-20 rounded-xl  z-10 text-stroke-800 font-bold aspect-square">
+              <p className="">
+                {"+" + toPersianNumbers(orderItems?.length - 2)}
+              </p>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2 text-primary">
           <p className="text-sm font-bold">جزئیات سفارش</p>

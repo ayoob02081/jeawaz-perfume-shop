@@ -52,7 +52,7 @@ const basicInfoData = [
 
 const detailInfoData = [
   { id: 1, label: "سازنده", name: "details.madeIn", placeholder: "امارات" },
-  { id: 2, label: "طراح", name: "details.designedIn", placeholder: "آلمان" },
+  { id: 2, label: "طراح", name: "details.designedIn", placeholder: "پیکاسو" },
   {
     id: 3,
     label: "ماندگاری",
@@ -364,7 +364,7 @@ function ProductForm({ productToEdit }) {
   if (brandsError || categoriesError) return <Error />;
 
   return (
-    <div className="max-w-6xl mx-auto max-md:p-6 p-10">
+    <div className="max-w-6xl mx-auto">
       <Toaster />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
         {/* Basic Info */}
@@ -457,12 +457,13 @@ function ProductForm({ productToEdit }) {
                   register={register}
                 >
                   <div
-                    className={`flex items-center justify-center border-primary ${isChecked ? "border-2" : "opacity-70"} px-2 py-1 h-10 lg:h-12 rounded-full duration-200 `}
+                    className={`flex items-center justify-center border-primary ${isChecked ? "border-2 bg-stroke-0" : "opacity-70"} px-2 py-1 h-10 lg:h-12 rounded-full duration-200 `}
                   >
                     <AppImage
                       width="size-full"
                       sizes="25vw"
                       ratio="aspect-[4/1]"
+                      className="dark:invert"
                       src={brand.iconUrl}
                       alt={brand.value + "-icon"}
                     />
@@ -499,7 +500,7 @@ function ProductForm({ productToEdit }) {
                   register={register}
                 >
                   <div
-                    className={`flex items-center justify-center text-lg border-2 duration-200 ${isChecked ? " border-primary text-primary font-bold" : "text-stroke-600 border-stroke-150 opacity-70"} px-2 h-12 w-32 rounded-full `}
+                    className={`flex items-center justify-center text-lg border-2 duration-200 ${isChecked ? " border-primary text-primary bg-stroke-0 font-bold" : "text-stroke-600 border-stroke-150 opacity-70"} px-2 h-12 w-32 rounded-full `}
                   >
                     <p className="duration-200">{gender.title}</p>
                   </div>
@@ -527,7 +528,7 @@ function ProductForm({ productToEdit }) {
               register={register}
             >
               <div
-                className={`flex items-center justify-center border-2 ${watch("original") === "original" ? " border-primary font-bold text-primary " : "border-stroke-150 text-stroke-600 opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
+                className={`flex items-center justify-center border-2 ${watch("original") === "original" ? " border-primary bg-stroke-0 font-bold text-primary " : "border-stroke-150 text-stroke-600 opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
               >
                 <p className="text-xl">اورجینال</p>
               </div>
@@ -556,7 +557,7 @@ function ProductForm({ productToEdit }) {
                   register={register}
                 >
                   <div
-                    className={`flex items-center justify-center border-2 ${isChecked ? "border-primary font-bold text-primary" : "border-stroke-150 text-stroke-600 opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
+                    className={`flex items-center justify-center border-2 ${isChecked ? "border-primary font-bold text-primary bg-stroke-0" : "border-stroke-150 text-stroke-600 opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-xl">{accord.title}</p>
@@ -739,7 +740,7 @@ function ProductForm({ productToEdit }) {
                   register={register}
                 >
                   <div
-                    className={`flex items-center justify-center border-2 ${isChecked ? "border-primary font-bold text-primary" : "border-stroke-150 text-stroke-600 opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
+                    className={`flex items-center justify-center border-2 ${isChecked ? "border-primary font-bold text-primary bg-stroke-0 opacity-100" : "border-stroke-150 text-stroke-600 opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
                   >
                     <p className="text-xl">{season}</p>
                   </div>
@@ -773,7 +774,7 @@ function ProductForm({ productToEdit }) {
             <button
               type="button"
               onClick={() => router.back()}
-              className="btn btn--primary--2 border-2 border-primary py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
+              className="btn btn--primary--2 border-2 border-primary py-3.5 px-7 disabled:opacity-50 max-md:w-full md:w-44"
             >
               بازگشت
             </button>
@@ -830,7 +831,7 @@ function Notes({
               register(`${name}.${i}`).onChange(e);
               handleNoteChange(i, name, e.target.value);
             }}
-            className="textField__input rounded-5xl size-full"
+            className="textField__input textField__input--secondary rounded-5xl size-full"
           />
           {noteFields.length >= 1 && (
             <DeleteButton onClick={() => removeField(i)} />

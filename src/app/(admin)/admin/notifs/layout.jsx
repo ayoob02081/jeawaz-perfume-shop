@@ -21,8 +21,6 @@ export default function NotifsPageLayout({ children }) {
       fontStyle="text-base font-normal"
       justify="between"
       overflow="overflow-y-auto"
-      max="true"
-      min="true"
     >
       {children}
     </AdaptiveOverlayPage>

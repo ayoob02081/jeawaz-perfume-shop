@@ -30,6 +30,7 @@ export default function RHFTextField({
   validationSchema = {},
   isPrice = false,
   children,
+  isPrimary = false,
   ...rest
 }) {
   const hasError = getNestedError(errors, name);
@@ -43,7 +44,7 @@ export default function RHFTextField({
       {label && (
         <label
           htmlFor={name}
-          className={`text-stroke-800 text-sm md:text-base mr-2 ${textClassName}`}
+          className={`text-stroke-800 max-md:text-base text-lg mr-2 ${textClassName}`}
         >
           {label}
           {isRequired && <span className="text-error mr-1">*</span>}
@@ -52,7 +53,7 @@ export default function RHFTextField({
 
       <div className={containerClassName + " w-full relative"}>
         <div
-          className={`textField__input rounded-5xl ${
+          className={`textField__input ${isPrimary ? "textField__input--primary" : "textField__input--secondary"} rounded-5xl ${
             hasError ? "border-error bg-red-50 dark:bg-stroke-900" : ""
           }`}
         >
@@ -98,7 +99,7 @@ export default function RHFTextField({
               className={inputBaseClass}
             />
           )}
-        {children}
+          {children}
         </div>
         {hasError && (
           <span className="absolute -bottom-5 right-2 text-error block text-[10px] md:text-xs animate-fadeIn">

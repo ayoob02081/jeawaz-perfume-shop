@@ -35,7 +35,7 @@ export default function ImageSwiper({ product, images = [] }) {
     thumbRefs.current[index]?.scrollIntoView({
       behavior: "smooth",
       block: "nearest",
-      inline: "center",
+      inline: "start",
     });
   }, [mainApi]);
 
@@ -62,10 +62,10 @@ export default function ImageSwiper({ product, images = [] }) {
   return (
     <div
       dir="ltr"
-      className="flex flex-col lg:flex-row lg:aspect-6/5 lg:pr-4 gap-4 max-sm:rounded-2xl max-md:rounded-3xl max-md:mx-4 max-md:bg-stroke-150 max-md:dark:bg-stroke-50 overflow-hidden"
+      className="flex flex-col lg:flex-row lg:aspect-6/5 lg:pr-4 gap-4 max-sm:rounded-2xl max-md:rounded-3xl max-md:bg-stroke-150 max-md:dark:bg-stroke-50"
     >
       {/* MAIN */}
-      <div className="flex-1">
+      <div className="lg:flex-1">
         <div ref={mainRef} className="relative overflow-hidden md:rounded-2xl">
           {/* Images */}
           <div className="flex">

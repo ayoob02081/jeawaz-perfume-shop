@@ -15,7 +15,7 @@ function AddressLayout() {
   }
 
   return (
-    <div className="flex flex-col items-cente justify-start gap-3 w-full border md:border-[1.5px] border-stroke-200 rounded-2xl p-4">
+    <div className="flex flex-col items-cente justify-start gap-3 w-full border md:border-[1.5px] border-stroke-200 rounded-2xl bg-stroke-0 p-4">
       <div className="flex items-center justify-between w-full pb-4">
         <p className="text-sm md:text-base text-stroke-800 font-bold">
           لیست آدرس ها

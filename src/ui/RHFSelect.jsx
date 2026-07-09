@@ -11,6 +11,7 @@ const RHFSelect = ({
   placeholder = "انتخاب کنید",
   className = "",
   disabled = false,
+  
   ...rest
 }) => {
   const hasError = errors?.[name];

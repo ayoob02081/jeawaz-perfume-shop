@@ -9,6 +9,8 @@ function RHFTextAreaField({
   className = "",
   placeholder,
   validationSchema = {},
+  isPrimary = false,
+
   ...rest
 }) {
   const hasError = errors?.[name];
@@ -26,7 +28,7 @@ function RHFTextAreaField({
         id={name}
         dir={dir}
         placeholder={placeholder}
-        className={`textField__input ${
+        className={`textField__input ${isPrimary ? "textField__input--primary" : "textField__input--secondary"} ${
           hasError ? "border-error bg-red-50 dark:bg-stroke-900" : ""
         } ${dir === "ltr" ? "text-left" : "text-right"} ${className}`}
         {...register(name, validationSchema)}

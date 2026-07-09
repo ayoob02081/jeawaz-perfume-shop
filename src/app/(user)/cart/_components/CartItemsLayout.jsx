@@ -85,7 +85,10 @@ function MobileCartLayout({ cartItem }) {
     cartItem,
   );
   return (
-    <div className="flex items-center justify-center p-3 gap-4 border-[0.094rem] border-stroke-200 shadow-xs rounded-2xl w-full ">
+    <div
+      dir="rtl"
+      className="flex items-center justify-center p-3 gap-4 border-[0.094rem] border-stroke-200 shadow-xs rounded-2xl w-full "
+    >
       <div className="flex items-center justify-start gap-4 size-full">
         <div className="flex items-start justify-center h-full">
           <AppImage

@@ -21,6 +21,7 @@ function AddressForm({
   checkBoxId,
   checkout,
   setIsListOpen,
+  isPrimary,
 }) {
   const selectedOstanId = watch("ostan");
 
@@ -48,6 +49,7 @@ function AddressForm({
         </p>
         <div className="flex flex-col lg:flex-row gap-4 w-full">
           <RHFTextField
+            isPrimary={isPrimary}
             isRequired
             register={register}
             errors={errors}
@@ -60,6 +62,7 @@ function AddressForm({
             }}
           />
           <RHFTextField
+            isPrimary={isPrimary}
             name="phoneNumber"
             type="tel"
             label="شماره تماس گیرنده"
@@ -101,7 +104,7 @@ function AddressForm({
               isRequired
               label="استان"
               name="ostan"
-              className="textField__input"
+              className={`textField__input ${isPrimary ? "textField__input--primary" : "textField__input--secondary"}`}
               register={register}
               errors={errors}
               options={ostanOptions}
@@ -111,6 +114,7 @@ function AddressForm({
               isRequired
               label="شهر"
               name="shahr"
+              className={`textField__input ${isPrimary ? "textField__input--primary" : "textField__input--secondary"}`}
               register={register}
               errors={errors}
               disabled={!selectedOstanId}
@@ -118,11 +122,11 @@ function AddressForm({
               placeholder={
                 selectedOstanId ? "انتخاب شهر" : "ابتدا استان را انتخاب کنید"
               }
-              className="textField__input"
             />
           </div>
           <div className="flex flex-col lg:flex-row w-full gap-4">
             <RHFTextField
+              isPrimary={isPrimary}
               type="tel"
               label="کدپستی"
               name="postalCode"
@@ -147,8 +151,8 @@ function AddressForm({
               placeholder=" مثال : خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک ۱۵"
               validationSchema={{ required: "نشانی ضروری است" }}
               className="rounded-2xl w-full"
+              isPrimary={isPrimary}
             />
-
             <CheckBox
               name={checkBoxName}
               id={checkBoxId}
@@ -162,7 +166,9 @@ function AddressForm({
               <div
                 className={`flex items-center justify-center size-4.5 aspect-square rounded-sm border-[1.5px] ${isChecked ? "bg-primary has-checked: border-primary" : "border-stroke-600/50"} `}
               >
-                <CheckIcon className="size-3 stroke-4 text-stroke-0" />
+                <CheckIcon
+                  className={`size-3 stroke-4 ${isPrimary ? "text-stroke-0" : "text-stroke-100"}`}
+                />
               </div>
             </CheckBox>
           </div>

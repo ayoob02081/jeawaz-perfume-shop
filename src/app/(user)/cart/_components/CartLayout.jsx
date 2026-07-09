@@ -6,7 +6,7 @@ import {
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import RadioButton from "@/ui/RadioButton";
 import {
   CheckCircleIcon,
@@ -64,8 +64,13 @@ const shippingOptions = [
 function CartLayout() {
   const pathName = usePathname();
   const [cartOpen, setCartOpen] = useState(false);
+  const [addressId, setAddressId] = useState(null);
+  const [isListOpen, setIsListOpen] = useState(false);
+
   const { loading } = useAuth();
   const { data: cart, isLoading, isError } = useGetAllCartItems();
+  const { data: addresses, isLoading: addressesLoading } = useGetAddresses();
+
   const [shippingMethod, setShippingMethod] = useState("tipax");
   const [step, setStep] = useState(1);
 
@@ -101,6 +106,10 @@ function CartLayout() {
             setStep={setStep}
             shippingMethod={shippingMethod}
             setShippingMethod={setShippingMethod}
+            addresses={addresses}
+            setIsListOpen={setIsListOpen}
+            addressId={addressId}
+            setAddressId={setAddressId}
           />
         );
       // case 3:
@@ -167,16 +176,32 @@ function CartLayout() {
   };
 
   return (
-    <AdaptiveOverlayPage
-      isOpen={cartOpen}
-      onClick={toggleCart}
-      label="سبد خرید"
-      side="right"
-      className="size-4"
-      overflow="overflow-y-auto"
-    >
-      {renderCartContent()}
-    </AdaptiveOverlayPage>
+    <>
+      <AdaptiveOverlayPage
+        isOpen={cartOpen}
+        onClick={toggleCart}
+        label="سبد خرید"
+        side="right"
+        className="size-4"
+        overflow="overflow-y-auto"
+        bgColor=""
+        cart
+      >
+        {renderCartContent()}
+      </AdaptiveOverlayPage>
+
+      {/* Modal */}
+      {isListOpen && (
+        <AllAddresses
+          addresses={addresses}
+          isListOpen={isListOpen}
+          onClose={() => setIsListOpen(false)}
+          addressId={addressId}
+          setAddressId={setAddressId}
+          isLoading={addressesLoading}
+        />
+      )}
+    </>
   );
 }
 
@@ -304,7 +329,7 @@ function CartOverview({ cart, step, setStep }) {
   return (
     <div className="flex flex-col md:flex-row justify-center gap-6 w-full">
       {/* CartItems */}
-      <div className="flex flex-col md:items-center md:justify-between gap-5 size-full max-lg:*:first:hidden">
+      <div className="flex flex-col md:items-center md:justify-between gap-5 size-full max-lg:overflow-hidden max-lg:*:first:hidden">
         <Table className="">
           <Table.Header className="*:pb-6">
             <th className="text-right px-2">
@@ -333,7 +358,10 @@ function CartOverview({ cart, step, setStep }) {
         />
 
         {/* MobileCartItems */}
-        <div className="max-lg:flex items-center justify-center flex-col gap-4 lg:hidden w-full">
+        <div
+          dir="ltr"
+          className="max-lg:flex items-center justify-start pr-2 flex-col gap-4 size-full scrollbar--secondary overflow-auto max-h-screen lg:hidden"
+        >
           {cart?.items.map((item) => (
             <CartItemsLayout.Mobile key={item.id} cartItem={item} />
           ))}
@@ -342,16 +370,21 @@ function CartOverview({ cart, step, setStep }) {
 
       {/* CartSummery */}
       <div className="flex items-center justify-center size-full max-md:mx-auto md:max-w-92">
-        <OrderSummaryCard cart={cart} step={step} setStep={setStep} />
+        <OrderSummaryCard cart={cart} setStep={setStep} />
       </div>
     </div>
   );
 }
 
-function Checkout({ cart, setStep, shippingMethod }) {
-  const [addressId, setAddressId] = useState(null);
-  const router = useRouter();
-  const { data: addresses, isLoading: addressesLoading } = useGetAddresses();
+function Checkout({
+  cart,
+  setStep,
+  shippingMethod,
+  addresses,
+  setIsListOpen,
+  addressId,
+  setAddressId,
+}) {
   const { data: address, isLoading: isAddressLoading } =
     useGetAddressById(addressId);
   const { createAddress, isCreating: isAddressCreating } = useCreateAddress();
@@ -359,7 +392,6 @@ function Checkout({ cart, setStep, shippingMethod }) {
   const selectedAddress = addresses?.find((a) => a.id === addressId);
 
   const { totalProducts = 0 } = cart;
-  const [isListOpen, setIsListOpen] = useState(false);
   const [isSave, setIsSave] = useState(false);
   const [isLabel, setIsLabel] = useState(false);
 
@@ -473,34 +505,37 @@ function Checkout({ cart, setStep, shippingMethod }) {
             </h2>
             <p className="max-md:text-sm md:text-xl">شما</p>
           </div>
-          <Modal
-            className="h-fit"
-            isOpen={isSave && !isLabel}
-            onClose={() => setIsSave(false)}
-          >
-            <div className="flex flex-col p-6 items-center justify-center gap-4 size-full">
-              <RHFTextField
-                isRequired
-                register={register}
-                errors={errors}
-                label="نام آدرس"
-                name="label"
-                className="w-full"
-                placeholder="مثال : آدرس خانه"
-                validationSchema={{
-                  required: "نام آدرس الزامی است",
-                }}
-              />
-              <button
-                type="button"
-                disabled={watch("label")?.length < 4}
-                onClick={() => setIsLabel(true)}
-                className="btn btn--primary w-full px-3 py-3"
-              >
-                تایید
-              </button>
-            </div>
-          </Modal>
+          {isSave && !isLabel && (
+            <Modal
+              className="h-fit"
+              isOpen={isSave && !isLabel}
+              onClose={() => setIsSave(false)}
+            >
+              <div className="flex flex-col p-6 items-center justify-center gap-4 size-full">
+                <RHFTextField
+                  isRequired
+                  register={register}
+                  errors={errors}
+                  label="نام آدرس"
+                  name="label"
+                  className="w-full"
+                  isPrimary={true}
+                  placeholder="مثال : آدرس خانه"
+                  validationSchema={{
+                    required: "نام آدرس الزامی است",
+                  }}
+                />
+                <button
+                  type="button"
+                  disabled={watch("label")?.length < 4}
+                  onClick={() => setIsLabel(true)}
+                  className="btn btn--primary w-full px-3 py-3"
+                >
+                  تایید
+                </button>
+              </div>
+            </Modal>
+          )}
           <AddressForm
             control={control}
             errors={errors}
@@ -508,6 +543,7 @@ function Checkout({ cart, setStep, shippingMethod }) {
             watch={watch}
             onChange={() => setIsSave((prev) => !prev)}
             isChecked={isSave}
+            isPrimary={true}
             checkBoxLabel="ذخیره آدرس برای خریدهای بعدی"
             checkBoxName="saveAddress"
             checkBoxId="saveAddress"
@@ -533,16 +569,6 @@ function Checkout({ cart, setStep, shippingMethod }) {
           </div>
         </div>
       </div>
-
-      {/* Modals */}
-      <AllAddresses
-        addresses={addresses}
-        isListOpen={isListOpen}
-        onClose={() => setIsListOpen(false)}
-        addressId={addressId}
-        setAddressId={setAddressId}
-        isLoading={addressesLoading}
-      />
 
       {/* CartSummery */}
       <div className="flex items-center justify-center md:justify-end size-full">
@@ -579,6 +605,7 @@ function ShippingOption({ cart, item }) {
     updateShippingMethod(value);
   };
 
+  const isChecked = shippingMethod === value;
   return (
     <RadioButton
       onChange={onChange}
@@ -586,16 +613,20 @@ function ShippingOption({ cart, item }) {
       id={value}
       name="post"
       value={value}
-      className="flex items-center justify-between gap-4 w-full lg:w-fit
+      className={`flex items-center justify-between gap-4 w-full lg:w-fit 
              text-xs md:text-sm max-md:rounded-lg md:rounded-5xl
-             px-4 py-3 text-stroke-800 bg-stroke-100 has-checked:*:even:*:first:bg-primary
-             has-checked:*:even:*:first:border-primary
-             border-[1.5px] border-stroke-100 has-checked:border-primary has-checked:font-bold has-checked:bg-stroke-0
-              duration-200"
+             px-4 py-3 text-stroke-800
+             border-[1.5px] 
+            ${isChecked ? "border-primary font-bold bg-stroke-0" : "border-stroke-100 bg-stroke-100"}
+             duration-200`}
+      childrenClassName="justify-between w-full"
     >
       <div className="flex items-center justify-between gap-2 overflow-hidden">
-        <div className="flex items-center justify-center size-4 aspect-square rounded-sm border-[1.25px] border-stroke-600/50 ">
-          <CheckIcon className="size-2.5 stroke-4 text-stroke-100 checked:text-success" />
+        <div
+          className={`flex items-center justify-center size-4 aspect-square
+          ${isChecked ? "bg-primary border-primary" : "border-stroke-600/50"} rounded-sm border-[1.25px]  `}
+        >
+          <CheckIcon className="size-2.5 stroke-4 text-stroke-100" />
         </div>
         <p className="text-xs text-nowrap whitespace-nowrap overflow-auto w-full py-1 scrollbar-none">
           {title}

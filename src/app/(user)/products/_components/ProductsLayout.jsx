@@ -106,7 +106,7 @@ function ProductsLayout() {
   }
 
   return (
-    <main className="container mx-auto xl:max-w-7xl py-2 px-4 w-full mt-40 md:mt-32">
+    <main className="container mx-auto xl:max-w-7xl pb-2 px-4 w-full ">
       <FilterSection />
       <section
         className={`w-auto flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-3 md:gap-6 py-6 transition-opacity duration-200 ${

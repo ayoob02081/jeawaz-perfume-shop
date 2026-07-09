@@ -30,7 +30,7 @@ function AddressFormLayout({ addressToEdit }) {
   const { isDeleting, removeAddress } = useRemoveAddress();
 
   const removeAddressHandler = async (address) => {
-    const { id, title } = address;
+    const { id } = address;
     await removeAddress(id);
     router.back();
   };
@@ -53,7 +53,7 @@ function AddressFormLayout({ addressToEdit }) {
       shahr: addressToEdit ? shahr : "",
       postalCode: addressToEdit ? postalCode : "",
       addressLine: addressToEdit ? addressLine : "",
-      isDefault: false,
+      isDefault: true,
     },
   });
 

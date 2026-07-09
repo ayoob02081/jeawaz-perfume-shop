@@ -10,9 +10,9 @@ function ProfileInfoLayout({ className, children }) {
   const [status, setStatus] = useState("");
   return (
     <div
-      className={`flex flex-col justify-center gap-4 md:gap-6 pb-28 max-lg:px-4 ${className}`}
+      className={`flex flex-col justify-center gap-4 md:gap-6 max-lg:px-4 ${className}`}
     >
-      <div className="flex items-center justify-start max-lg:p-6 gap-8 snap-x overflow-x-scroll scrollbar-none max-lg:hidden w-full">
+      <div className="flex items-center justify-start max-lg:p-6 gap-8 snap-x overflow-x-scroll scrollbar-none max-lg:hidden w-full rounded-2xl px-px">
         {userStatusConfig?.map((s) => (
           <OrderStatusButton
             user
@@ -22,7 +22,7 @@ function ProfileInfoLayout({ className, children }) {
             isLoading={isLoading}
             setStatus={setStatus}
             currentStatus={status}
-            href={"/profile/orders"}
+            href={`/profile/orders?status=${s.value}&page=1`}
             redirect={true}
           />
         ))}

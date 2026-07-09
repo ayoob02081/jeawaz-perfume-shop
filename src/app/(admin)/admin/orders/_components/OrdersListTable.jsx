@@ -177,7 +177,7 @@ function OrdersListTable({ orders, isLoading, status }) {
             </button>
           )}
       </div>
-      <div className="w-full overflow-x-auto pb-0.5 rounded-xl shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-track-stroke-100/0">
+      <div className="w-full overflow-x-auto pb-0.5 rounded-xl max-lg:shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-track-stroke-0/0">
         {isLoading ? (
           <Loading />
         ) : (
@@ -307,20 +307,22 @@ function OrdersListTable({ orders, isLoading, status }) {
           </Table>
         )}
       </div>
-      <ConfirmModal
-        cancellBtn={handleStatusModal}
-        confirmBtn={handleUpdateStatus}
-        isOpen={statusModalOpen}
-        onClose={setStatusModalOpen}
-      >
-        <span className="flex flex-wrap items-center justify-center gap-2 text-stroke-800 max-md:text-xl md:text-2xl">
-          <p>سفارش به</p>
-          <p className={`${nextStatus?.textColor} font-bold`}>
-            " {nextStatus?.title} "
-          </p>
-          <p>تغییر داده شود؟</p>
-        </span>
-      </ConfirmModal>
+      {statusModalOpen && (
+        <ConfirmModal
+          cancellBtn={handleStatusModal}
+          confirmBtn={handleUpdateStatus}
+          isOpen={statusModalOpen}
+          onClose={setStatusModalOpen}
+        >
+          <span className="flex flex-wrap items-center justify-center gap-2 text-stroke-800 max-md:text-xl md:text-2xl">
+            <p>سفارش به</p>
+            <p className={`${nextStatus?.textColor} font-bold`}>
+              " {nextStatus?.title} "
+            </p>
+            <p>تغییر داده شود؟</p>
+          </span>
+        </ConfirmModal>
+      )}
       <div className="flex items-center justify-center max-md:gap-4 md:gap-6 w-full md: *:even:w-2/3">
         {!isLoading &&
           (filteredOrders?.length >= 1 ? (

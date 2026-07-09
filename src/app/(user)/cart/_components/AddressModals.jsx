@@ -23,19 +23,21 @@ export function AllAddresses({
   };
 
   useEffect(() => {
-  if (isListOpen) setSelect(addressId);
-}, [isListOpen, addressId]);
-
+    if (isListOpen) setSelect(addressId);
+  }, [isListOpen, addressId]);
 
   if (isLoading) {
     return <Loading />;
   }
 
   return (
-    <Modal className="h-1/2" isOpen={isListOpen} onClose={onClose}>
+    <Modal isOpen={isListOpen} onClose={onClose}>
       <div className="flex flex-col items-center justify-between gap-2 text-stroke-800 bg-stroke-0 h-full w-full p-6 pb-2 pl-2">
         <div className="flex items-center justify-between pb-4 border-b border-stroke-250  w-full h-fit pl-4">
-          <h2 className="flex items-center justify-start gap-1 text-stroke-800 font-bold md:text-xl"><p className="md:font-normal">انتخاب</p><p>آدرس</p></h2>
+          <h2 className="flex items-center justify-start gap-1 text-stroke-800 font-bold md:text-xl">
+            <p className="md:font-normal">انتخاب</p>
+            <p>آدرس</p>
+          </h2>
           <button
             type="button"
             onClick={onClose}
@@ -44,7 +46,7 @@ export function AllAddresses({
             <XMarkIcon className="size-3 text-stroke-800 stroke-2" />
           </button>
         </div>
-        <div className="flex flex-col justify-start gap-4 size-full overflow-auto scrollbar--primary scrollbar-w-2 pl-4">
+        <div className="flex flex-col justify-start gap-4 size-full overflow-auto scrollbar--primary scrollbar-w-2 pl-4 pb-12">
           {(!addresses || addresses?.length === 0) && (
             <p>هنوز آدرسی ثبت نشده است</p>
           )}
@@ -55,6 +57,7 @@ export function AllAddresses({
                 <RadioButton
                   key={item.id}
                   className="w-full flex flex-col items-start gap-4 border rounded-xl border-stroke-200 has-checked:border-2 has-checked:border-primary p-4 transition-all duration-200"
+                  childrenClassName="flex-col gap-3 items-start justify"
                   name="addresses"
                   id={item.id}
                   value={item.id}
@@ -99,7 +102,7 @@ export function AllAddresses({
             type="button"
             disabled={!select}
             onClick={HandleSelectAddress}
-            className="absolute bottom-3 btn btn--primary py-2 px-3 md:px-10 max-md:w-1/3"
+            className="absolute bottom-3 btn btn--primary border! py-2 px-3 md:px-10 max-sm:w-full sm:w-1/3 md:w-fit z-10"
           >
             انتخاب آدرس
           </button>

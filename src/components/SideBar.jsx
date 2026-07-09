@@ -13,7 +13,7 @@ import {
 import Link from "next/link";
 import AppImage from "./AppImage";
 import useOutsideClick from "@/hooks/useOutsideClick";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const filterLinks = [
   {
@@ -68,7 +68,7 @@ function SideBar({
   dark,
 }) {
   const ref = useOutsideClick(toggleSideBar);
-
+  const router = useRouter();
   return (
     <ul
       className={`${
@@ -81,12 +81,19 @@ function SideBar({
           className=" pt-6 w-[75vw] h-full scrollbar-none overflow-y-auto bg-stroke-0 pb-28"
         >
           <li className="px-6 flex items-center justify-between">
-            <AppImage
-              src="/images/Jeaawaz-Logo-red-v5.0.webp"
-              alt="jeawaz-brand-icon"
-              width="size-24"
-              sizes="20vw"
-            />
+            <button
+              onClick={() => {
+                router.push("/");
+                toggleSideBar();
+              }}
+            >
+              <AppImage
+                src="/images/Jeaawaz-Logo-red-v5.0.webp"
+                alt="jeawaz-brand-icon"
+                width="size-24"
+                sizes="20vw"
+              />
+            </button>
             <div className="flex items-center justify-between gap-6">
               <button
                 type="button"
@@ -189,13 +196,14 @@ export default SideBar;
 
 function SideBarLink({ href, src, alt, title, sort, toggleSideBar, id }) {
   const searchParams = useSearchParams();
+  const pathName = usePathname();
 
   return (
     <li className="flex flex-col items-center px-6">
       <Link
         onClick={toggleSideBar}
         className={`${
-          searchParams.get("sort") === sort &&
+          (searchParams.get("sort") === sort || pathName.endsWith(href)) &&
           "*:text-primary *:dark: *:font-bold"
         } flex items-center gap-2 ${src ? "text-xs" : "text-sm text-stroke-800"} w-full`}
         href={href}

@@ -9,7 +9,6 @@ import Accordion from "@/ui/Accordion";
 import { useState } from "react";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import ImageSwiper from "@/ui/ImageSwiper";
-import { useGetAllCategories } from "@/hooks/useCategories";
 import BreadCrumbBase from "@/ui/BreadCrumbBase";
 import BreadCrumb from "@/ui/BreadCrumb";
 import { useRouter } from "next/navigation";
@@ -17,40 +16,36 @@ import { useQuantityHandler } from "@/hooks/useQuantityHandler";
 import { calculateProductPrice } from "@/utils/priceCalculator";
 
 function SingleProductPage({ product }) {
-  const { data: categories } = useGetAllCategories();
-
   if (!product) {
     return (
-      <main className=" container mx-auto xl:max-w-7xl md:mt-40">
+      <main className=" container mx-auto xl:max-w-7xl">
         <Loading />
       </main>
     );
   }
 
   return (
-    <main className=" container mx-auto xl:max-w-7xl md:mt-40">
-      <article className="px-6">
-        <section className="max-md:hidden">
-          {!product ? (
-            <Loading />
-          ) : (
-            <BreadCrumbBase>
-              <BreadCrumb href={"/"} label={"فروشگاه"} />
-              <BreadCrumb href={"/products"} label={"محصولات"} chevron />
-              <BreadCrumb
-                href={`/products/${product?.id}`}
-                label={product?.perTitle}
-                className="text-primary! font-bold"
-                chevron
-              />
-            </BreadCrumbBase>
-          )}
-        </section>
+    <main className=" md:container md:mx-auto xl:max-w-7xl h-full">
+      <article className="max-md:hidden">
+        {!product ? (
+          <Loading />
+        ) : (
+          <BreadCrumbBase>
+            <BreadCrumb href={"/"} label={"فروشگاه"} />
+            <BreadCrumb href={"/products"} label={"محصولات"} chevron />
+            <BreadCrumb
+              href={`/products/${product?.id}`}
+              label={product?.perTitle}
+              className="text-primary! font-bold"
+              chevron
+            />
+          </BreadCrumbBase>
+        )}
       </article>
       <article className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 w-ful md:p-6">
         <ImageSwiper images={product?.images} product={product} />
         <ProductDes product={product} />
-        <ProductOptions product={product} categories={categories} />
+        <ProductOptions product={product} />
         <ProductDetails product={product} />
       </article>
     </main>
@@ -91,7 +86,7 @@ function ProductDes({ product }) {
   };
 
   return (
-    <article className="grid grid-cols-1 w-full gap-y-4 xl:gap-y-10 max-md:p-6 h-fit justify-items-start">
+    <article className="grid grid-cols-1 w-full gap-y-4 xl:gap-y-10 max-md:py-6 h-fit justify-items-start">
       {/* Product Name */}
       <section className="flex flex-col gap-2 items-start justify-start w-full">
         <span className="flex items-center max-md:justify-between gap-2 md:justify-start w-full">
@@ -255,16 +250,15 @@ function ProductDes({ product }) {
   );
 }
 
-function ProductOptions({ product, categories }) {
-  const productAccords = product.categories.accords.map((accord) => {
-    const accords = categories?.find((item) => item.value === accord);
-    return accords?.title;
-  });
+function ProductOptions({ product }) {
+  const productAccords = product.categories.accords.map(
+    (accord) => accord.title,
+  );
 
   const { details, modes } = product;
 
   return (
-    <article className="grow w-full  max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:p-6 md:p-4 border-stroke-250 ">
+    <article className="grow w-full max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:pt-6 md:p-4 border-stroke-250 ">
       <section className=" flex flex-col items-center justify-start gap-6 w-full">
         <span className="flex items-center justify-start gap-2 w-full">
           <AppImage
@@ -281,7 +275,7 @@ function ProductOptions({ product, categories }) {
           <ProductOption title="پخش بو" value={details.smelling} />
           <ProductOption title="ماندگاری" value={details.longevity} />
           <ProductOption
-            title="حجم شیشه پلمپ"
+            title="نسخه‌های پلمپ"
             volumes
             data={modes?.sealed.variants}
           />
@@ -291,7 +285,7 @@ function ProductOptions({ product, categories }) {
             accords
           />
           <ProductOption
-            title="مناسب برای فصل"
+            title="فصل استفاده"
             data={details.seasons}
             accords
           />
@@ -313,19 +307,16 @@ function ProductOption({ title, value, data, accords, volumes }) {
         </p>
       ) : (
         <span className="flex items-start gap-2 text-nowrap max-sm:col-span-2 sm:col-span-3 md:col-span-1 lg:col-span-2 text-sm text-stroke-800 font-bold w-full border-b border-stroke-200 py-3">
-          {data.map((item, index) =>
-            volumes ? (
-              <p key={index}>
-                {toPersianNumbers(item.volume)} میل
-                {data.length >= 2 && " - "}
+          {data.map((item, index) => (
+            <span className="flex items-center justify-start gap-1" key={index}>
+              {index > 0 && " - "}
+              <p>
+                {volumes
+                  ? toPersianNumbers(item.volume) + " میل"
+                  : accords && item}
               </p>
-            ) : (
-              <p key={index}>
-                {accords && item}
-                {data.length >= 2 && " - "}
-              </p>
-            ),
-          )}
+            </span>
+          ))}
         </span>
       )}
     </>
@@ -336,7 +327,7 @@ function ProductDetails({ product }) {
   const { notes } = product;
 
   return (
-    <div className="grow flex flex-col items-center justify-between gap-6 w-full max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl p-6 border-stroke-250  ">
+    <div className="grow flex flex-col items-center justify-between gap-6 size-full md:px-4 max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl py-6 border-stroke-250  ">
       <div className="flex flex-col items-start justify-between gap-2 w-full">
         <span className="flex items-center justify-start gap-2">
           <AppImage
@@ -349,7 +340,7 @@ function ProductDetails({ product }) {
         </span>
         <p className="text-xs text-stroke-800">{product?.notesDescription}</p>
       </div>
-      <div className="flex flex-col items-center justify-between gap-2 size-full">
+      <div className="flex flex-col items-center justify-end gap-2 size-full max-md:min-h-[28vh]">
         <Notes type={notes.base} base />
         <Notes type={notes.middle} middle />
         <Notes type={notes.top} top />
@@ -360,42 +351,32 @@ function ProductDetails({ product }) {
 
 function Notes({ type, top, middle, base }) {
   return (
-    <div className="relative flex flex-col items-center justify-start gap-2 text-nowrap whitespace-nowrap w-full">
+    <div
+      className={`relative flex flex-col items-center justify-start gap-2 text-nowrap whitespace-nowrap w-full ${base ? "h-1/5" : middle ? "h-1/4" : "h-1/2"}`}
+    >
       <AppImage
         src={`/images/scent-background-${base ? "1" : middle ? "2" : "3"}.svg`}
         alt="shape-background"
         className="dark:mix-blend-overlay"
-        width={
-          base
-            ? "!w-[60px] !h-[53.3px]"
-            : middle
-              ? "!w-[152.46px] !h-[66.02px]"
-              : "!w-[310px] !h-[134.23px]"
-        }
+        width={`max-md:h-full ${
+          base ? "md:h-[53.3px]" : middle ? "md:h-[66.02px]" : "md:h-[134.23px]"
+        }`}
+        ratio={base ? "aspect-4/3" : middle ? "aspect-4/2" : "aspect-4/1"}
       />
-      <span className="absolute flex flex-col items-center justify-center gap-1 z-20 w-4/5">
+      <span className="absolute  flex flex-col items-center justify-center gap-1 z-20 w-4/5">
         <p className="text-xs text-stroke-800 font-bold">
           {base ? "نت‌های آغازین" : middle ? "نت‌های میانی" : "نت‌های پایانی"}
         </p>
-        <div className="flex items-center justify-center gap-2 w-full text-wrap">
-          {base &&
-            type?.map((s, index) => (
-              <p key={s + index} className="text-xs text-stroke-600 text-wrap">
-                {type.length > 1 ? s + " - " : s}
-              </p>
-            ))}
-          {middle &&
-            type?.map((s, index) => (
-              <p key={s + index} className="text-xs text-stroke-600 text-wrap">
-                {type.length > 1 ? s + " - " : s}
-              </p>
-            ))}
-          {top &&
-            type?.map((s, index) => (
-              <p key={s + index} className="text-xs text-stroke-600 text-wrap">
-                {type.length > 1 ? s + " - " : s}
-              </p>
-            ))}
+        <div className="flex items-center justify-center gap-1 w-full text-wrap text-center">
+          {type?.map((s, index) => (
+            <span
+              className="flex items-center justify-start gap-1 text-wrap"
+              key={index}
+            >
+              {index > 0 && " - "}
+              <p className="text-xs text-stroke-600 ">{s}</p>
+            </span>
+          ))}
         </div>
       </span>
     </div>

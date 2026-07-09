@@ -18,8 +18,8 @@ function ProfileLayout({ children, label, correctPathName }) {
       label={label}
       side="right"
       className="size-4"
-      max="true"
-      min="true"
+      justify="between"
+      sidebar
     >
       {children}
     </AdaptiveOverlayPage>

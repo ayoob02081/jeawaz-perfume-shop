@@ -62,9 +62,9 @@ function OrdersLayout() {
   const totalPages = isLoading ? 0 : (orders?.meta?.totalPages ?? 1);
 
   return (
-    <div className="flex flex-col justify-between lg:gap-6 pb-28 max-md:border-t border-stroke-200 w-full max-lg:p-6">
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center gap-8 overflow-x-auto scrollbar-none">
+    <div className="flex flex-col justify-between lg:gap-6 w-full">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-8 overflow-x-auto scrollbar-none px-0.5">
           {adminStatusConfig.map((s) => (
             <OrderStatusButton
               key={s.id}

@@ -16,12 +16,13 @@ export default function RootLayout({ children }) {
     <AdaptiveOverlayPage
       isOpen={openMeProfile}
       side="right"
+      label="ورود | ثبت نام"
       className="size-4"
       fontStyle="text-lg sm:text-2xl font-bold"
       justify="between"
       overflow="overflow-y-auto"
-      max="false"
-      min="false"
+      max={false}
+      product
     >
       {children}
     </AdaptiveOverlayPage>

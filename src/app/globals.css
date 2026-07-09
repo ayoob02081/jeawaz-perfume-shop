@@ -118,9 +118,11 @@
   .scroll--x {
     @apply overflow-y-hidden overflow-x-scroll snap-x snap-mandatory scrollbar-none [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full;
   }
-
   .scrollbar--primary {
     @apply scrollbar scrollbar-thin scrollbar-thumb-primary scrollbar-track-stroke-0;
+  }
+   .scrollbar--secondary {
+    @apply scrollbar scrollbar-thin scrollbar-thumb-stroke-300 dark:scrollbar-thumb-stroke-150 scrollbar-track-transparent;
   }
   .banner--primary--size {
     @apply h-56 sm:h-[13.04rem] md:h-[15.65rem] lg:h-[20.86rem] xl:h-[26.8rem] aspect-15/10 sm:aspect-26/10;
@@ -132,7 +134,7 @@
     @apply font-bold text-[8px] sm:text-[10px] xl:text-xs 2xl:text-sm rounded-4xl h-5 sm:h-6 xl:h-8 2xl:h-8 bg-stroke-0/10 backdrop-blur-md text-stroke-800 hover:*:first:text-primary duration-200;
   }
   .backdrop {
-    @apply h-screen w-screen bg-stroke-950/15 backdrop-blur-md duration-200;
+    @apply bg-stroke-950/15 backdrop-blur-md duration-200;
   }
   .backdrop--primary {
     @apply flex max-md:items-end inset-0 md:items-center justify-center max-md:pb-6 px-6 [30rem]:px-12 max-md:pt-[20%] mx-auto overflow-hidden md:py-[10%] z-100;
@@ -157,7 +159,7 @@
     @apply border-4 border-stroke-100 dark:border-stroke-0 bg-primary text-white dark:text-stroke-800 hover:bg-stroke-100 hover:**:text-primary hover:text-primary hover:border hover:border-primary active:bg-stroke-100 active:**:text-primary active:text-primary active:border active:border-primary disabled:bg-primary/30 disabled:text-white duration-200;
   }
   .btn--primary--2 {
-    @apply text-primary border-primary hover:bg-primary hover:text-stroke-100 hover:border-stroke-100 active:text-primary/70 active:border-primary/70 disabled:border-stroke-600 duration-200;
+    @apply text-primary bg-stroke-0 border-primary hover:bg-primary hover:text-stroke-100 hover:border-stroke-100 active:text-primary/70 active:border-primary/70 disabled:border-stroke-600 duration-200;
   }
   .btn--secondary {
     @apply border border-stroke-600 hover:bg-error hover:text-stroke-100 hover:border-stroke-100 active:bg-primary active:text-stroke-100 active:border-stroke-100 duration-200;
@@ -181,7 +183,7 @@
     @apply bg-stroke-100 text-stroke-600;
   }
   .badge--secondary--2 {
-    @apply bg-stroke-0 text-stroke-800 border border-stroke-250;
+    @apply bg-stroke-50 text-stroke-800 border border-stroke-250;
   }
   .profile__title {
     @apply flex items-center gap-2 py-4 w-full text-xs text-stroke-800;
@@ -208,11 +210,14 @@
     @apply hover:bg-success! hover:text-stroke-0 active:bg-success! text-stroke-800 active:text-white;
   }
   .textField__input {
-    @apply flex items-center justify-start px-3 bg-stroke-100 rounded-xl py-2 outline-0 focus:bg-stroke-0 border-[1.5px] border-stroke-100 text-stroke-800 
-    gap-2 size-full transition-all duration-200 focus-within:text-stroke-800 focus-within:bg-stroke-0 focus-within:border focus-within:border-primary;
+    @apply flex items-center justify-start px-3 rounded-5xl py-2 gap-2 size-full outline-0 border-[1.5px] text-stroke-800
+    focus-within:text-stroke-800 focus-within:bg-stroke-0 focus:bg-stroke-0 focus-within:border focus-within:border-primary transition-all duration-200;
   }
-  .textField__input--2 {
-    @apply rounded-full text-stroke-800 bg-stroke-50 focus-within:bg-stroke-0 duration-200;
+  .textField__input--primary {
+    @apply bg-stroke-100 border-stroke-100;
+  }
+  .textField__input--secondary {
+    @apply bg-stroke-100 lg:bg-stroke-0 border-stroke-100 lg:border-stroke-0;
   }
   .footer--link {
     @apply grid gap-x-6 gap-y-1 text-base text-nowrap text-stroke-600 dark:text-stroke-600/50 *:hover:text-primary *:active:text-primary *:duration-200;
@@ -238,9 +243,8 @@ body {
   font-family: "Vazirmatn", sans-serif;
 }
 
-html{
+html {
   scrollbar-gutter: stable;
-
 }
 html,
 body {

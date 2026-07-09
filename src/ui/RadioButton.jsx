@@ -8,6 +8,7 @@ function RadioButton({
   onChange,
   label,
   className,
+  childrenClassName,
   chevron = "hidden",
   children,
   disabled,
@@ -24,9 +25,9 @@ function RadioButton({
         disabled={disabled}
         className="sr-only size-0"
       />
-      <div className="flex max-md:flex-col items-center justify-start gap-2">
-      {children}
-      {label && <p>{label}</p>}
+      <div className={`flex ${childrenClassName} gap-2`}>
+        {children}
+        {label && <p>{label}</p>}
       </div>
       {chevron && (
         <span className={`max-md:hidden! ${chevron}`}>

@@ -171,14 +171,12 @@ export function useRemoveProduct() {
     mutationFn: removeProductApi,
 
     onSuccess: (_, deletedProductId) => {
+      toast.success("محصول با موفقیت حذف شد", { id: "remove-product" });
       queryClient.invalidateQueries({ queryKey: productKeys.all });
-
       queryClient.removeQueries({
         queryKey: productKeys.detail(deletedProductId),
         exact: true,
       });
-
-      toast.success("محصول با موفقیت حذف شد", { id: "remove-product" });
     },
 
     onError: (err) => {

@@ -7,7 +7,7 @@ export const metadata = {
 
 function CartPage() {
   return (
-    <div className="mt-48 md:mt-40">
+    <div className="md:mt-5">
       <CartLayout />
     </div>
   );

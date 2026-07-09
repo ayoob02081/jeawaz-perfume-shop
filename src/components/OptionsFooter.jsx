@@ -3,7 +3,7 @@ import FooterDetail from "./FooterDetail";
 function OptionsFooter() {
   return (
     <section className="bg-stroke-50">
-      <div className="flex items-center justify-center lg:justify-betwee flex-wrap gap-8 max-md:gap-y- p-6 max-md:pb-32">
+      <div className="flex items-center justify-center lg:justify-betwee flex-wrap gap-8 p-6 ">
         <FooterDetail
           src="/images/24-hours-icon.svg"
           width="max-sm:size-6 sm:size-7"

@@ -38,6 +38,8 @@ export default function ProductSinglePageLayout({ children }) {
       className="size-6"
       justify="between"
       overflow="overflow-y-auto overflow-x-hidden"
+      max={false}
+      product
     >
       {children}
     </AdaptiveOverlayPage>

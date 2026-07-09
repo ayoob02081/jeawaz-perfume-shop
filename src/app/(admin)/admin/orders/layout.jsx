@@ -15,14 +15,12 @@ export default function OrdersPageLayout({ children }) {
   return (
     <AdaptiveOverlayPage
       isOpen={openOrders}
-      label="سفارش های من"
+      label="سفارش ها"
       side="right"
       className="size-4"
       fontStyle="text-base font-bold"
       justify="between"
       overflow="overflow-y-auto"
-      max="true"
-      min="true"
     >
       {children}
     </AdaptiveOverlayPage>

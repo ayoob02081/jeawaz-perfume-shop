@@ -3,13 +3,22 @@
 import Error from "@/components/Error";
 import Loading from "@/components/Loading";
 import { useGetUser } from "@/hooks/useUsers";
-import { toPersianNumbers } from "@/utils/toPersianNumbers";
+import { toJalali } from "@/utils/date";
+import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
 import Link from "next/link";
 
 function ProfileInfo() {
   const { data: user, isLoading, error } = useGetUser();
 
-  const { email, phoneNumber, firstName, lastName } = user || {};
+  const {
+    email,
+    phoneNumber,
+    firstName,
+    lastName,
+    nationalCode,
+    username,
+    birthday,
+  } = user || {};
 
   if (isLoading) {
     return <Loading />;
@@ -20,7 +29,7 @@ function ProfileInfo() {
   }
 
   return (
-    <div className="w-full border md:border-[1.5px] border-stroke-200 rounded-2xl p-4">
+    <div className="w-full border md:border-[1.5px] border-stroke-200 rounded-2xl p-4 bg-stroke-0">
       <div className="flex items-center justify-between w-full pb-4">
         <p className="text-sm md:text-base text-stroke-800 font-bold">
           اطلاعات کاربری
@@ -35,23 +44,23 @@ function ProfileInfo() {
       <div className="flex max-md:flex-col max-md:justify-center md:justify-between md:items-center border-t border-stroke-200 pt-4 max-md:gap-6">
         <InfoSections
           titleOne="نام و نام خانوادگی :"
-          desOne={firstName + " " + lastName}
+          desOne={firstName + " " + lastName || "-"}
           titleTwo="کد ملی :"
-          desTwo={toPersianNumbers("0123456789")}
+          desTwo={toPersianNumbers(nationalCode) || "-"}
         />
         <InfoSections
           border={true}
           titleOne="شماره موبایل :"
-          desOne={toPersianNumbers(Number(phoneNumber)) + "+"}
-          titleTwo="تلفن ثابت :"
-          desTwo={toPersianNumbers("091-3564842")}
+          desOne={normalizeIranPhone(phoneNumber) || "-"}
+          titleTwo="نام کاربری :"
+          desTwo={username || "-"}
         />
         <InfoSections
           border={true}
           titleOne="تاریخ تولد  :"
-          desOne={"1381/04/12"}
+          desOne={birthday ? toJalali(new Date(birthday)) : "-"}
           titleTwo="ایمیل :"
-          desTwo={email}
+          desTwo={email || "-"}
         />
       </div>
     </div>

@@ -12,7 +12,7 @@ export const metadata = {
 
 function ContactUsPage() {
   return (
-    <main className="mt-48 md:mt-40">
+    <main className="md:mt-5">
       {/* Contact Us */}
       <article className="flex flex-col items-end justify-center container mx-auto size-full xl:max-w-7xl bg-[#FEF8FA] dark:bg-stroke-50/50 sm:px-6 md:pt-6 rounded-t-2.5xl sm:rounded-t-3xl md:rounded-t-5xl">
         <div className="flex flex-col justify-start gap-6 md:gap-15 w-full px-6 pt-6">
@@ -30,7 +30,7 @@ function ContactUsPage() {
               از خرید عطر برای شما فراهم کند
             </p>
           </section>
-          <div className="flex flex-col md:flex-row md:gap-8 md:items-start md:justify-between bg-stroke-0 !border-b-0 max-md:border-4 md:border-8 border-black/5 !rounded-b-none max-md:rounded-2.5xl md:rounded-5xl p-6 size-full">
+          <div className="flex flex-col md:flex-row md:gap-8 md:items-start md:justify-between bg-stroke-0 border-b-0! max-md:border-4 md:border-8 border-black/5 rounded-b-none! max-md:rounded-2.5xl md:rounded-5xl p-6 size-full">
             <section className="grow flex flex-col justify-start gap-8 md:gap-12 h-full max-md:w-full md:w-1/2">
               <div className="flex flex-col items-start justify-start gap-4">
                 <div className="flex items-center justify-center bg-stroke-100 rounded-xl size-12">
@@ -60,28 +60,28 @@ function ContactUsPage() {
                     sizes="10vw"
                   />
                 </div>
-                <span className="flex flex-col items-start justify-start gap-4">
+                <span className="flex flex-col items-start justify-start gap-4 overflow-x-hidden w-full">
                   <p className="max-md:text-xs md:text-sm text-stroke-600 font-bold">
                     شماره های تماس
                   </p>
-                  <div className="flex items-center justify-start">
+                  <div className="flex items-center justify-start py-0.5 pl-2 w-full max-sm:overflow-x-auto scrollbar-none">
                     <Link
-                      href={"tel:+982191016979"}
-                      className="flex items-center pl-4 text-xl md:text-[22px] font-bold  border-l-[1.5px] border-stroke-250"
+                      href={"tel:+989302125151"}
+                      className="flex items-center pl-4 text-xl md:text-[22px] font-bold border-l-[1.5px] border-stroke-250"
                     >
                       <p className=" text-stroke-800 ">
-                        {toPersianNumbers("91016979")}-
+                        {toPersianNumbers("2125151")}-
                       </p>
                       <p className=" text-primary ">
-                        {toPersianNumbers("021")}
+                        {toPersianNumbers("0930")}
                       </p>
                     </Link>
                     <Link
-                      href={"tel:+989180522273"}
+                      href={"tel:+989185987446"}
                       className="flex items-center pr-4 text-xl md:text-[22px] font-bold"
                     >
                       <p className=" text-stroke-800 ">
-                        {toPersianNumbers("0522273")}-
+                        {toPersianNumbers("5987446")}-
                       </p>
                       <p className=" text-primary ">
                         {toPersianNumbers("0918")}
@@ -114,9 +114,7 @@ function ContactUsPage() {
                         width="size-6"
                         sizes="10vw"
                       />
-                      <p className="text-sm font-bold">
-                        تلگرام
-                      </p>
+                      <p className="text-sm font-bold">تلگرام</p>
                     </Link>
                     <Link
                       href="https://www.instagram.com/jeawaz_perfume/"
@@ -128,9 +126,7 @@ function ContactUsPage() {
                         width="size-6"
                         sizes="10vw"
                       />
-                      <p className="text-sm font-bold">
-                        اینستاگرام
-                      </p>
+                      <p className="text-sm font-bold">اینستاگرام</p>
                     </Link>
                   </div>
                 </span>
@@ -143,7 +139,7 @@ function ContactUsPage() {
         </div>
       </article>
       <div className="relative w-full bg-stroke-0 z-10">
-        <div className="!mx-auto container xl:max-w-7xl max-md:hidden w-full">
+        <div className="mx-auto! container xl:max-w-7xl max-md:hidden w-full">
           <div className="relative size-full">
             <AppImage
               src="/images/rounde-border-lg.svg"
@@ -165,7 +161,7 @@ function ContactUsPage() {
             />
           </div>
         </div>
-        <div className="!mx-auto container xl:max-w-7xl md:hidden">
+        <div className="mx-auto! container xl:max-w-7xl md:hidden">
           <div className="relative size-full">
             <AppImage
               src="/images/rounde-border.svg"

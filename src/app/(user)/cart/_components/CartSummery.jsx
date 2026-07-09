@@ -4,9 +4,8 @@ import {
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import CartItemsLayout from "./CartItemsLayout";
-import Loading from "@/components/Loading";
 
-export function OrderSummaryCard({ cart, date, totalPrice, step, setStep }) {
+export function OrderSummaryCard({ cart, setStep }) {
   const { itemsTotal = 0, discountAmount = 0, totalProducts = 0 } = cart;
   return (
     <div className="flex flex-col items-start justify-between gap-6 max-md:bg-stroke-150 md:bg-stroke-100 p-4 rounded-xl size-full">
@@ -96,7 +95,7 @@ export function CheckoutCartSummery({ cart, setStep, isPending }) {
         <p className="text-[22px] font-bold">اطلاعات</p>
         <p className="text-lg">خرید</p>
       </span>
-      <div className="flex flex-col items-center justify-between size-full max-lg:hidden">
+      <div className="flex flex-col items-center justify-between size-full max-h-[80vh] scrollbar--secondary overflow-y-auto max-lg:hidden">
         {cart?.items.map((item) => (
           <CartItemsLayout.Summery key={item.id} cartItem={item} />
         ))}

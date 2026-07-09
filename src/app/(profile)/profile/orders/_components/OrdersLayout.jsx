@@ -66,9 +66,9 @@ function OrdersLayout() {
   const totalPages = isLoading ? 0 : (orders?.meta?.totalPages ?? 1);
 
   return (
-    <div className="flex flex-col justify-between lg:gap-6 pb-28 max-md:border-t-[1.5px] border-stroke-200 w-full">
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-start max-lg:p-6 gap-8 snap-x overflow-x-scroll scrollbar-none">
+    <div className="flex flex-col justify-between lg:gap-6 w-full">
+      <div className="flex flex-col lg:gap-6">
+        <div className="flex items-center justify-start max-lg:pb-6 gap-8 px-0.5 snap-x overflow-x-scroll scrollbar-none">
           {userStatusConfig?.map((s) => (
             <OrderStatusButton
               user

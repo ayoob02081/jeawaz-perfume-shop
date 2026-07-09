@@ -4,33 +4,40 @@ import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
 import AppImage from "@/components/AppImage";
 import { productTHeads } from "@/constants/tableHeads";
 import { useRemoveProduct } from "@/hooks/useProducts";
+import ConfirmModal from "@/ui/ConfirmModal";
 import Table from "@/ui/Table";
 import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import toast from "react-hot-toast";
+import { useState } from "react";
 
 function ProductsListTable({ products }) {
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [product, setProduct] = useState(false);
   const { isDeleting, removeProduct } = useRemoveProduct();
-  const queryClient = useQueryClient();
 
-  const removeProductHandler = async (product) => {
-    const { id, perTitle } = product;
-    try {
-      await removeProduct(id);
-      toast.success(`${perTitle} با موفقیت حذف شد.`);
-      queryClient.invalidateQueries(["products"]);
-    } catch (error) {
-      toast.error(error?.response?.data?.message);
-    }
+  const removeProductHandler = async () => {
+    const { id } = product;
+
+    await removeProduct(id);
+
+    setConfirmModalOpen(false);
   };
 
+  const handleModal = (data) => {
+    if (!data.id) {
+      setConfirmModalOpen(false);
+    }
+    if (data?.id) {
+      setConfirmModalOpen(true);
+      setProduct(data);
+    }
+  };
   return (
-    <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-w-1 scrollbar-track-stroke-100/0">
+    <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl max-lg:shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-w-1 scrollbar-track-stroke-100/0">
       <Table className="overflow-auto">
         <Table.Header className="">
           {productTHeads.map((item) => (
@@ -145,7 +152,8 @@ function ProductsListTable({ products }) {
                         <PencilIcon className=" size-5" />
                       </Link>
                       <button
-                        onClick={() => removeProductHandler(product)}
+                        onClick={() => handleModal(product)}
+                        // onClick={() => removeProductHandler(product)}
                         className="text-stroke-450 hover:text-primary duration-200"
                       >
                         <TrashIcon className="size-5" />
@@ -157,6 +165,19 @@ function ProductsListTable({ products }) {
             })}
         </Table.body>
       </Table>
+      {confirmModalOpen && (
+        <ConfirmModal
+          cancellBtn={handleModal}
+          confirmBtn={removeProductHandler}
+          isOpen={confirmModalOpen}
+          onClose={setConfirmModalOpen}
+        >
+          <span className="flex flex-wrap items-center justify-center gap-2 text-stroke-800 max-md:text-xl md:text-2xl">
+            <p>{product.perTitle}</p>
+            <p>حذف شود؟</p>
+          </span>
+        </ConfirmModal>
+      )}
     </div>
   );
 }

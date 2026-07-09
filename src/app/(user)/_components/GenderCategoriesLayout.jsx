@@ -3,25 +3,19 @@
 import Error from "@/components/Error";
 import AppImage from "@/components/AppImage";
 import Loading from "@/components/Loading";
-import { useGetAllCategories } from "@/hooks/useCategories";
-import { useGetAllProducts } from "@/hooks/useProducts";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
+import { useGetCategoriesByType } from "@/hooks/useCategories";
 
 function GenderCategoriesLayout() {
-  const { data: categories, isPending, error } = useGetAllCategories();
-  const genders = categories?.filter((item) => item.type === "gender");
-
   const {
-    data,
-    isPending: isProductsPending,
-    error: isProductsError,
-  } = useGetAllProducts();
+    data: genderCategories,
+    isPending,
+    error,
+  } = useGetCategoriesByType("gender");
 
-  const products = data?.data || [];
-
-  if (error || isProductsError) {
+  if (error) {
     return <Error />;
   }
 
@@ -39,17 +33,17 @@ function GenderCategoriesLayout() {
         <h2 className="text-stroke-800">محصولات ما</h2>
       </div>
       <div className="mx-6 flex flex-col w-full sm:px-36 md:px-6 md:flex-row gap-4 sm:gap-6 items-center justify-between overflow-x-auto scrollbar-none sm:rounded-2xl">
-        {isPending || isProductsPending ? (
+        {isPending ? (
           <Loading />
         ) : (
-          genders?.map((category) => (
-            <div key={category.id} className="sm:snap-center">
+          genderCategories?.map((item) => (
+            <div key={item.id} className="sm:snap-center">
               <CategoreyCard
-                allProducts={products}
-                src={category.imageUrl}
-                alt={category.value + "-image"}
-                value={category.value}
-                label={category.title}
+                src={item.imageUrl}
+                alt={item.value + "-image"}
+                value={item.value}
+                label={item.title}
+                productsCount={item.productsCount}
               />
             </div>
           ))
@@ -61,13 +55,8 @@ function GenderCategoriesLayout() {
 
 export default GenderCategoriesLayout;
 
-function CategoreyCard({ src, alt, value, label, allProducts }) {
+function CategoreyCard({ src, alt, value, label, productsCount }) {
   const router = useRouter();
-  const filteredProducts = allProducts?.filter((p) =>
-    p.categories?.some((i) => i.value === value),
-  );
-
-  const quantity = filteredProducts?.length || 0;
 
   return (
     <button
@@ -94,7 +83,7 @@ function CategoreyCard({ src, alt, value, label, allProducts }) {
           <p className="text-primary">{label}</p>
         </span>
         <p className="text-stroke-600 text-sm sm:text-lg md:font-bold">
-          {toPersianNumbers(quantity)} محصول
+          {toPersianNumbers(productsCount)} محصول
         </p>
       </div>
       <div className="justify-self-end self-end p-4">

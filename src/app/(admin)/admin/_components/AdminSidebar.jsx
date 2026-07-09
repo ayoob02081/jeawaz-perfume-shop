@@ -27,7 +27,7 @@ function AdminSidebar() {
       baseHref: "/admin/categories",
       label: "دسته‌بندی‌ها",
     },
-    {
+      {
       id: 5,
       href: "/admin/notifs/all",
       baseHref: "/admin/notifs",

@@ -3,7 +3,14 @@ import useOutsideClick from "@/hooks/useOutsideClick";
 import Backdrop from "@/ui/Backdrop";
 import { useEffect, useRef } from "react";
 
-function Modal({ children, isOpen, onClose, category, className="h-full" }) {
+function Modal({
+  children,
+  isOpen,
+  onClose,
+  category,
+  className = "h-full",
+  backdropClassName,
+}) {
   const outsideRef = useOutsideClick(onClose);
   const modalRef = useRef(null);
 
@@ -19,21 +26,9 @@ function Modal({ children, isOpen, onClose, category, className="h-full" }) {
   }, [isOpen]);
 
   return (
-    <Backdrop
-      openForm={
-        category ? "animate__fadeIn" : "transform bottom-0 animate__fadeIn"
-      }
-      closeForm={`transform ${
-        category ? "translate-x-[100vw]" : "translate-y-[100vh]"
-      } animate__fadeOut`}
-      className={`backdrop ${
-        category ? "backdrop--secondary" : "backdrop--primary"
-      } animate__animated`}
-      isOpen={isOpen}
-      category={category ? true : false}
-    >
+    <Backdrop isOpen={isOpen} category={category} className={backdropClassName}>
       <div
-        className={`flex ${category ? "justify-start md:container md:mx-auto" : "justify-center max-md:items-end md:items-center size-full container mx-auto"} xl:max-w-7xl`}
+        className={` overflow-auto flex ${category ? "justify-start md:container md:mx-auto max-md:min-h-screen md:p-2" : "max-h-[90vh] justify-center max-md:items-end md:items-center size-full container mx-auto"} xl:max-w-7xl`}
       >
         <section
           ref={(el) => {

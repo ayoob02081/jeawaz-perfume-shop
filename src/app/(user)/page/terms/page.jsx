@@ -8,7 +8,7 @@ export const metadata = {
 
 function TermsPage() {
   return (
-    <main className="mb-8 mt-48 md:mt-40">
+    <main className="mb-8 md:mt-5">
       {/* Terms */}
       <article className="flex flex-col items-cente justify-center container mx-auto size-full xl:max-w-7xl bg-[#FEF8FA] dark:bg-stroke-50/50 sm:px-6 md:p-6 rounded-2.5xl sm:rounded-3xl md:rounded-t-5xl">
         <section className="flex flex-col justify-start gap-6 md:gap-15 w-full p-6 ">

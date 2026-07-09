@@ -80,7 +80,7 @@ function BrandForm({ brandToEdit }) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-10">
+    <div className="max-w-6xl mx-auto">
       <Toaster />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -114,6 +114,7 @@ function BrandForm({ brandToEdit }) {
                   value={field.value}
                   onChange={field.onChange}
                   onRemove={() => field.onChange("")}
+                  type="brand"
                 />
               )}
             />

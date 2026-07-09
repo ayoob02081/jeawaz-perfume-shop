@@ -3,7 +3,7 @@ import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
 import { useRouter } from "next/navigation";
 
-function ProductCard({ product ,isPending,error}) {
+function ProductCard({ product, isPending, error }) {
   const router = useRouter();
   const {
     id,
@@ -33,7 +33,7 @@ function ProductCard({ product ,isPending,error}) {
 
   return (
     <article
-      className={`flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${inStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
+      className={`flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 md:hover:scale-105 ${inStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
     >
       {/* Mobile Mode Base Image */}
       <div className="flex items-start justify-between gap-4 w-full h-full">
@@ -126,7 +126,7 @@ function ProductCard({ product ,isPending,error}) {
               {/* Products Order Button */}
               <div>
                 {inStock ? (
-                  <p className="btn border border-primary text-primary bg-stroke-50 active:bg-primary active:text-white  rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
+                  <p className="btn border border-primary text-primary bg-stroke-50 active:bg-primary active:text-stroke-0 md:hover:bg-primary md:hover:text-stroke-0 rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
                     سفارش
                   </p>
                 ) : (
@@ -186,7 +186,7 @@ export function CardIconResponsive({
       bgColor = "bg-warning/20 text-orange dark:bg-warning/5";
       break;
 
-    case "men":
+    case "male":
       bgColor =
         "bg-stroke-950/10 text-stroke-950 dark:bg-stroke-800/5 dark:text-stroke-250";
       break;
