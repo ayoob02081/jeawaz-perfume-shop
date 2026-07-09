@@ -9,6 +9,7 @@ import {
   ChatBubbleLeftRightIcon,
   ClipboardDocumentListIcon,
   PencilSquareIcon,
+  ReceiptPercentIcon,
   Squares2X2Icon,
   TagIcon,
   UserGroupIcon,
@@ -95,6 +96,13 @@ export function ProfileLink({
           <TagSolidIcon className="size-7" />
         ) : (
           <TagIcon className="size-7" />
+        );
+
+      case "/admin/coupons":
+        return isPathName ? (
+          <ReceiptPercentSolidIcon className="size-7" />
+        ) : (
+          <ReceiptPercentIcon className="size-7" />
         );
 
       case "/admin/notifs":

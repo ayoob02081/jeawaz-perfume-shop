@@ -27,8 +27,14 @@ function AdminSidebar() {
       baseHref: "/admin/categories",
       label: "دسته‌بندی‌ها",
     },
-      {
+     {
       id: 5,
+      href: "/admin/coupons",
+      baseHref: "/admin/coupons",
+      label: "کد تخفیف‌ها",
+    },
+    {
+      id: 6,
       href: "/admin/notifs/all",
       baseHref: "/admin/notifs",
       label: "پیام‌ها",

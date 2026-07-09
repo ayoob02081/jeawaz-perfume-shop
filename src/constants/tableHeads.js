@@ -203,15 +203,15 @@ export const couponTHeads = [
   },
   {
     id: 2,
-    label: "کد",
+    label: "عنوان",
   },
   {
     id: 3,
-    label: "مقدار",
+    label: "کد",
   },
   {
     id: 4,
-    label: "در حال استفاده",
+    label: "مقدار",
   },
   {
     id: 5,
@@ -219,7 +219,7 @@ export const couponTHeads = [
   },
   {
     id: 6,
-    label: "محصولات",
+    label: "کاریران",
   },
   {
     id: 7,
