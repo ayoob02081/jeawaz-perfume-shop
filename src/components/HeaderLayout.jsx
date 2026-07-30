@@ -443,9 +443,11 @@ function MobileHeader({
               sizes="10vw"
             />
             {totalProducts > 0 && (
-              <p className="absolute -top-1 -right-1 flex items-center justify-center w-5 aspect-square rounded-full bg-primary text-white text-xs">
-                {toPersianNumbers(totalProducts)}
-              </p>
+              <div className="absolute -top-1 -right-1 flex items-center justify-center w-5 aspect-square rounded-full bg-primary text-white text-xs">
+                <p className="translate-y-px">
+                  {toPersianNumbers(totalProducts)}
+                </p>
+              </div>
             )}
           </button>
         </li>

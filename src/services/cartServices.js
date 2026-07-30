@@ -23,3 +23,10 @@ export function updateShippingMethodApi(shippingMethod) {
     .patch("/cart/shipping-method", { shippingMethod })
     .then(({ data }) => data);
 }
+
+export const applyCouponApi = (couponCode) =>
+  app
+    .post("/cart/apply-coupon", {
+      couponCode,
+    })
+    .then(({ data }) => data);

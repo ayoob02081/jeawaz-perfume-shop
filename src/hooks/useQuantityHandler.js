@@ -15,7 +15,7 @@ export function useQuantityHandler(
   const { addToCart } = useAddToCart();
   const { removeFromCart } = useRemoveFromCart();
   const { data: cart } = useGetAllCartItems();
-  const { mutate: updateQuantity } = useUpdateQuantity();
+  const { updateQuantity } = useUpdateQuantity();
 
   const [selectedVolume, setSelectedVolume] = useState(defaultVolume);
   const [quantity, setQuantity] = useState(0);
@@ -43,7 +43,7 @@ export function useQuantityHandler(
     }
   }, [cartItem, defaultCartItem]);
 
-  const RemoveFromCartHandler = () => {
+  const RemoveFromCartHandler = async () => {
     const item = cartItem || defaultCartItem;
     if (!item) return;
 
@@ -53,7 +53,7 @@ export function useQuantityHandler(
         quantity: quantity - 1,
       });
     } else {
-      removeFromCart(item.id);
+      await removeFromCart(item.id);
     }
 
     setQuantity((q) => Math.max(0, q - 1));

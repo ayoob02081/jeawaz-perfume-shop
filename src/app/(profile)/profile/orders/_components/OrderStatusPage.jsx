@@ -65,7 +65,6 @@ export function StatusOrderCard({
   const pathName = usePathname();
   const router = useRouter();
   const { title, color, icon: Icon, textColor, des } = currentStatusData || {};
-  console.log(orderItems.length >= 3);
 
   return (
     <div className="flex flex-col justify-between gap-6 w-full bg-stroke-0 max-lg:border-t border-stroke-800/20 dark:border-stroke-800/40 max-lg:px-0 p-6 lg:border lg:rounded-2xl">

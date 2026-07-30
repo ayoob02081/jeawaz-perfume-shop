@@ -14,6 +14,7 @@ function AdaptiveOverlayPage({
   sidebar,
   cart,
   product,
+  defaultStyle = "p-6",
   bgColor = "lg:bg-stroke-100 dark:lg:bg-stroke-50",
 }) {
   if (sidebar) {
@@ -37,7 +38,7 @@ function AdaptiveOverlayPage({
               justify={justify}
             />
           </div>
-          <div className="p-6">{children}</div>
+          {children}
         </div>
       </div>
     );
@@ -119,7 +120,7 @@ function AdaptiveOverlayPage({
             justify={justify}
           />
         </div>
-        <div className="p-6">{children}</div>
+        <div className={defaultStyle}>{children}</div>
       </div>
     </div>
   );

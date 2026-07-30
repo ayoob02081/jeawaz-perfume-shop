@@ -33,7 +33,7 @@ function ProductCard({ product, isPending, error }) {
 
   return (
     <article
-      className={`flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 md:hover:scale-105 ${inStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
+      className={`flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${inStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
     >
       {/* Mobile Mode Base Image */}
       <div className="flex items-start justify-between gap-4 w-full h-full">
@@ -211,18 +211,18 @@ export function CardIconResponsive({
   return accord ? (
     <div
       dir="rtl"
-      className={`flex items-center group rounded-5xl px-2 ${bgColor} ${className} duration-300`}
+      className={`overflow-hidden flex items-center group rounded-5xl px-2 ${bgColor} ${className} duration-300`}
     >
       <AppImage
         src={src}
         alt={alt}
-        className="text-nowrap"
+        className="text-nowrap z-10"
         width={size}
         sizes="10vw"
       />
       <p
         className={
-          "w-0 opacity-0 group-hover:opacity-100 group-hover:duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pr-2 md:text-sm font-bold"
+          "w-0 opacity-0 group-hover:opacity-100 group-hover:duration-300 group-hover:w-auto text-nowrap translate-x-full group-hover:translate-x-0 max-md:text-xs group-hover:pr-2 md:text-sm font-bold transition-all"
         }
       >
         {title}
@@ -231,18 +231,18 @@ export function CardIconResponsive({
   ) : (
     <div
       dir="ltr"
-      className={`flex items-center group rounded-5xl px-2 ${bgColor} ${className} duration-300`}
+      className={`overflow-hidden flex items-center group rounded-5xl px-2 ${bgColor} ${className} duration-200`}
     >
       <AppImage
         src={src}
         alt={alt}
-        className="text-nowrap justify-end"
+        className="text-nowrap justify-end z-10"
         width={size}
         sizes="10vw"
       />
       <p
         className={
-          "w-0 opacity-0 group-hover:opacity-100 group-hover:duration-200 group-hover:w-auto text-nowrap max-md:text-xs group-hover:pl-1 md:text-sm font-bold"
+          "w-0 opacity-0 group-hover:opacity-100 group-hover:duration-300 group-hover:w-auto text-nowrap -translate-x-full group-hover:translate-x-0 max-md:text-xs group-hover:pl-1 md:text-sm font-bold transition-all"
         }
       >
         {title}

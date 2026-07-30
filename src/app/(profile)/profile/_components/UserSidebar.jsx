@@ -14,19 +14,22 @@ function UserSidebar() {
       href: "/profile/orders",
       baseHref: "/profile/orders",
       label: "سفارش های من",
+      countUnread: false,
     },
     {
       id: 2,
       href: "/profile/me",
       baseHref: "/profile/me",
       label: "اطلاعات حساب کاربری",
+      countUnread: false,
     },
-    // {
-    //   id: 3,
-    //   href: "/profile/notifs/all",
-    //   baseHref: "/profile/notifs",
-    //   label: "پیام‌ها",
-    // },
+    {
+      id: 3,
+      href: "/profile/notifs/ALL",
+      baseHref: "/profile/notifs",
+      label: "پیام‌ها",
+      countUnread: true,
+    },
   ];
   return (
     <ProfileLayout label="پروفایل کاربری" correctPathName="/profile">
@@ -38,6 +41,7 @@ function UserSidebar() {
             href={link.href}
             baseHref={link.baseHref}
             label={link.label}
+            countUnread={link.countUnread}
           />
         ))}
         {role === "admin" && (

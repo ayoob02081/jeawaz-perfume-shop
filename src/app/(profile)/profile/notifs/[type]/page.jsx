@@ -1,11 +1,12 @@
 "use client";
 
-import NotifLayout from "../../_components/NotifLayout";
+import NotifTypePage from "@/components/NotifTypePage";
+import { useParams } from "next/navigation";
 
-function SingleNotifPage({ type }) {
-  // const correctType = React.use(type);
+function NotifsPage() {
+  const { type } = useParams();
 
-  return <NotifLayout type={type} />;
+  return <NotifTypePage type={type} />;
 }
 
-export default SingleNotifPage;
+export default NotifsPage;

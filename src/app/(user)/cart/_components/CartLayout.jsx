@@ -596,7 +596,8 @@ function Checkout({
 }
 
 function ShippingOption({ cart, item }) {
-  const { mutate: updateShippingMethod, isPending } = useUpdateShippingMethod();
+  const { isUpdatingShipping, updateShippingMethod } =
+    useUpdateShippingMethod();
 
   const { shippingMethod } = cart;
 

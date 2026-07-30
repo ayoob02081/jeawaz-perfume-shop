@@ -121,7 +121,7 @@
   .scrollbar--primary {
     @apply scrollbar scrollbar-thin scrollbar-thumb-primary scrollbar-track-stroke-0;
   }
-   .scrollbar--secondary {
+  .scrollbar--secondary {
     @apply scrollbar scrollbar-thin scrollbar-thumb-stroke-300 dark:scrollbar-thumb-stroke-150 scrollbar-track-transparent;
   }
   .banner--primary--size {
@@ -174,7 +174,7 @@
     @apply bg-stroke-0 text-stroke-800 border border-stroke-250 dark:has-checked:border-primary hover:bg-stroke-900/30 has-checked:bg-stroke-900 has-checked:text-stroke-0 dark:hover:bg-primary/40 dark:bg-stroke-50 dark:has-checked:bg-primary dark:has-checked:text-stroke-800;
   }
   .badge {
-    @apply flex items-center justify-center px-3 py-1 text-xs md:text-sm rounded-full;
+    @apply flex items-center justify-center px-3 py-1 text-[10px] md:text-xs rounded-full *:translate-y-px;
   }
   .badge--primary {
     @apply bg-primary/10 text-primary;

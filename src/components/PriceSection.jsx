@@ -19,10 +19,10 @@ function PriceSection({
 }) {
   const calculateDecantPrice = (pricePerMl, volume, offValue = 0) => {
     const basePrice = pricePerMl * volume;
-   const finalPrice =
-    basePrice && offValue > 0
-      ? normalizePrice(basePrice - (basePrice * offValue) / 100)
-      : basePrice;
+    const finalPrice =
+      basePrice && offValue > 0
+        ? normalizePrice(basePrice - (basePrice * offValue) / 100)
+        : basePrice;
 
     return normalizePrice(finalPrice);
   };
@@ -54,11 +54,12 @@ function PriceSection({
           <div
             className={`flex grow items-center ${justify} gap-1 size-full text-stroke-600`}
           >
-            <p
-              className={`absolut badge aspect-square bg-primary text-white py-0 px-1 w-6 md:w-7 ${badgeWidth}`}
-            >
-              {toPersianNumbers(offValue)}٪
-            </p>
+            <div
+            className={`absolut badge bg-primary text-white py-0 px-2 ${badgeWidth}`}
+          >
+            <p className="translate-y-0.5">%</p>
+            <p className="">{toPersianNumbers(offValue)}</p>
+          </div>
             <span className={`flex gap-1 strikeThrough ${OldPricevisibility} `}>
               <p className=" text-xs font-bold">
                 {toPersianNumbersWithComma(basePrice)}
@@ -82,13 +83,14 @@ function PriceSection({
       </div>
       {offValue > 0 && (
         <div
-          className={`flex grow items-center ${justify} gap-1 size-full text-stroke-600`}
+          className={`flex grow items-center ${justify} gap-1 size-full text-stroke-400`}
         >
-          <p
-            className={`absolut badge aspect-square bg-primary text-white py-0 px-1 w-6 md:w-7 ${badgeWidth}`}
+          <div
+            className={`absolut badge bg-primary text-white py-0 px-2 ${badgeWidth}`}
           >
-            {toPersianNumbers(offValue)}٪
-          </p>
+            <p className="translate-y-0.5">%</p>
+            <p className="">{toPersianNumbers(offValue)}</p>
+          </div>
           <span className={`flex gap-1 strikeThrough ${OldPricevisibility} `}>
             <p className="text-[10px] font-bold">از</p>
             <p className=" text-xs font-bold">

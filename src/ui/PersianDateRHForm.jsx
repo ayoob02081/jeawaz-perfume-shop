@@ -48,8 +48,6 @@ export default function PersianDateRHForm({
             onChange={(date) => {
               if (!date) return field.onChange(null);
               const jsDate = date.toDate();
-              console.log(jsDate);
-              console.log(jsDate.toISOString());
               field.onChange(jsDate.toISOString());
             }}
             inputClass={`textField__input ${isPrimary ? "textField__input--primary" : "textField__input--secondary"}

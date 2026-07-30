@@ -21,6 +21,7 @@ import toast from "react-hot-toast";
 
 export const couponKeys = {
   all: ["coupons"],
+  cart: ["cart-items"],
   lists: () => [...couponKeys.all, "list"],
   list: () => [...couponKeys.lists()],
   details: () => [...couponKeys.all, "detail"],
@@ -61,7 +62,7 @@ export function useAddCoupon() {
       router.push("/admin/coupons");
     },
 
-    onError: showApiError,
+    onError: (error) => showApiError(error),
   });
 
   return { isAdding, addCoupon };
@@ -97,7 +98,7 @@ export function useEditCoupon(couponId) {
       router.back();
     },
 
-    onError: showApiError,
+    onError: (error) => showApiError(error),
   });
 
   return { isEditing, editCoupon };
@@ -147,16 +148,25 @@ export function useToggleCouponStatus() {
       queryClient.invalidateQueries({ queryKey: couponKeys.all });
     },
 
-    onError: showApiError,
+    onError: (error) => showApiError(error),
   });
 
   return { isToggling, toggleCouponStatus };
 }
 
 export function useValidateCoupon() {
+  const queryClient = useQueryClient();
+
   const { isPending: isValidating, mutateAsync: validateCoupon } = useMutation({
     mutationFn: validateCouponApi,
-    onError: showApiError,
+    onSuccess: (data) => {
+      toast.success(data.message || "کد تخفیف اعمال شد", {
+        id: "validate-coupon-success",
+      });
+
+      queryClient.invalidateQueries({ queryKey: couponKeys.cart });
+    },
+    onError: (error) => showApiError(error),
   });
 
   return { isValidating, validateCoupon };

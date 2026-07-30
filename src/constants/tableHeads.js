@@ -88,6 +88,47 @@ export const userTHeads = [
   //   label: "محصولات لایک شده",
   // },
 ];
+
+export const NotifTHeads = [
+  {
+    id: 1,
+    label: "#",
+  },
+  {
+    id: 2,
+    label: "نام کامل",
+  },
+
+  {
+    id: 3,
+    label: "شماره موبایل",
+  },
+  {
+    id: 4,
+    label: "وضعیت خوانده شدن",
+  },
+  {
+    id: 5,
+    label: "تاریخ خواندن اعلان",
+  },
+  {
+    id: 6,
+    label: "وضعیت پیامک",
+  },
+  {
+    id: 7,
+    label: "تاریخ ارسال پیامک",
+  },
+  {
+    id: 8,
+    label: "وضعیت خطا",
+  },
+  {
+    id: 9,
+    label: "عملیات",
+  },
+];
+
 export const productTHeads = [
   {
     id: 1,

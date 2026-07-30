@@ -6,12 +6,15 @@ import { UserIcon as UserIconFill } from "@heroicons/react/24/solid";
 import AppImage from "@/components/AppImage";
 import { useAuth } from "@/contexts/filters/auth/AuthContext";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
+import { useUnreadNotificationsCount } from "@/hooks/useNotification";
 
 function MobilePannel() {
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated } = useAuth();
   const showElement = useHideOnScroll();
+  const { data } = useUnreadNotificationsCount();
+
   return (
     <nav
       className={`fixed flex items-center justify-center bottom-0 right-0 w-full md:hidden z-70
@@ -107,7 +110,7 @@ function MobilePannel() {
         </li>
         <li className="flex items-center justify-center ">
           <button
-            className="flex flex-col justify-center items-center gap-2"
+            className="relative flex flex-col justify-center items-center gap-2"
             onClick={
               isAuthenticated !== true
                 ? () => router.push("/auth/login")
@@ -130,6 +133,11 @@ function MobilePannel() {
             >
               {isAuthenticated !== true ? "ورود" : "پروفایل"}
             </p>
+            {data?.total > 0 && (
+              <div className="absolute -top-1 right-1 z-10 flex items-center justify-center aspect-square text-nowrap p-1 rounded-full max-md:bg-stroke-90 bg-primary text-stroke-0 h-2 text-xs">
+                <p className="translate-y-px"></p>
+              </div>
+            )}
           </button>
         </li>
       </ul>

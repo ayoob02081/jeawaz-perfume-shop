@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { toPersianNumbers } from "@/utils/toPersianNumbers";
+import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
 import Loading from "./Loading";
 import {
   ArrowRightStartOnRectangleIcon,
@@ -25,6 +25,7 @@ import {
   ReceiptPercentIcon as ReceiptPercentSolidIcon,
 } from "@heroicons/react/24/solid";
 import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useUnreadNotificationsCount } from "@/hooks/useNotification";
 
 export default function ProfileLinks({ children }) {
   return (
@@ -43,9 +44,9 @@ export function ProfileLink({
   baseHref,
   logoutMode,
   userProfileMode,
+  countUnread,
 }) {
   const { user, isAuthenticated, logout } = useAuth();
-
   const { phoneNumber, firstName, lastName, role } = user || {};
   const isPending = isAuthenticated === null;
   const fullName =
@@ -58,12 +59,14 @@ export function ProfileLink({
   const LogoutHandler = async () => {
     try {
       await logout();
-      localStorage.removeItem("user");
       router.replace("/");
+      localStorage.removeItem("user");
     } catch (error) {
       console.error("Error during logout:", error);
     }
   };
+
+  const { data: count } = useUnreadNotificationsCount();
 
   const renderSteps = () => {
     switch (baseHref) {
@@ -140,15 +143,15 @@ export function ProfileLink({
 
   if (logoutMode) {
     return (
-      <div className="flex flex-col items-center justify-center size-full">
-        <div className="h-[1.5px] w-full bg-stroke-300 lg:hidden my-2"></div>
+      <div className="flex flex-col items-center justify-center size-full px-2  max-lg:border-t border-stroke-300">
+        <div className="w-full max-lg:hidden order-t border-stroke-300"></div>
         <button
           onClick={LogoutHandler}
           className="flex items-center justify-start gap-4 hover:bg-stroke-250 hover:*:*:*:last:*:last:duration-200 text-stroke-800
-              max-lg:py-2 lg:py-2 px-2 size-full rounded-[44px] duration-200"
+              max-lg:py-2 lg:py- px-1 size-full rounded-[44px] duration-200"
         >
           <div className="flex items-center justify-start gap-2 w-full">
-            <div className="flex items-center justify-center size-11">
+            <div className="flex items-center justify-center size-10">
               <ArrowRightStartOnRectangleIcon className="size-7" />
             </div>
             <p>{label}</p>
@@ -160,9 +163,9 @@ export function ProfileLink({
 
   if (userProfileMode) {
     return (
-      <div className="flex flex-col items-center justify-center size-full">
-        <div className="flex items-center justify-start gap-4 max-lg:py-2 size-full lg:mb-2 lg:py-2 rounded-3xl">
-          <div className="flex items-center justify-between gap-4 w-full h-full">
+      <div className="flex flex-col items-center justify-center size-full px-6">
+        <div className="flex items-center justify-start py-4 lg:pt-6 size-full rounded-3xl">
+          <div className="flex items-center justify-between w-full h-full">
             <Link
               href={"/profile/me"}
               className="flex items-center justify-between max-lg:gap-2 lg:gap-4"
@@ -171,12 +174,17 @@ export function ProfileLink({
                 <UserIcon className="size-7 text-stroke-800" />
               </div>
               {isPending ? (
-                <Loading />
+                <Loading
+                  height={2}
+                  size={8}
+                  width={2}
+                  className="w-fit! h-full!"
+                />
               ) : (
                 <span className="flex flex-col items-start justify-between gap-2 max-[365px]:w-44 lg:w-36">
                   <p className="max-lg:font-bold text-stroke-800">{fullName}</p>
                   <p className="text-stroke-800/40 overflow-x-auto w-full py-0.5 scrollbar-none duration-200">
-                    {toPersianNumbers(Number(phoneNumber))}+
+                    {phoneNumber ? normalizeIranPhone(phoneNumber) : "-"}
                   </p>
                 </span>
               )}
@@ -189,14 +197,14 @@ export function ProfileLink({
             </Link>
           </div>
         </div>
-        <div className="h-[1.5px] w-full max-lg:hidden bg-stroke-3"></div>
+        <div className="w-full max-lg:hidden border-t border-stroke-300"></div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center size-full">
-      <div className="h-[1.5px] w-full bg-stroke-300 lg:hidden my-2"></div>
+    <div className="flex flex-col items-center justify-center size-full px-2 max-lg:border-t border-stroke-300">
+      <div className="w-full lg:hidden border-t border-stroke-300"></div>
       <Link
         href={href}
         className={`flex items-center justify-start gap-4
@@ -211,7 +219,21 @@ export function ProfileLink({
           <div className="flex items-center justify-center size-11">
             <>{renderSteps()}</>
           </div>
-          <p>{label}</p>
+          <div className="flex items-center justify-between w-full">
+            <p>{label}</p>
+          </div>
+          {!pathName.startsWith("/admin") &&
+            countUnread &&
+            count?.total > 0 && (
+              <div
+                className={`${isPathName ? "bg-stroke-0 text-primary dark:text-white " : "bg-primary dark:bg-stroke-200 text-white"} flex items-center justify-center max-md:text-sm max-md:px-2.5 px-3 aspect-square rounded-full font-bold`}
+              >
+                <p className="translate-y-px">
+
+                {toPersianNumbers(count?.total)}
+                </p>
+              </div>
+            )}
           {children}
         </div>
       </Link>

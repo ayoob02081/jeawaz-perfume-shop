@@ -4,9 +4,26 @@ import {
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import CartItemsLayout from "./CartItemsLayout";
+import { useState } from "react";
+import { useApplyCoupon } from "@/hooks/useCart";
 
 export function OrderSummaryCard({ cart, setStep }) {
-  const { itemsTotal = 0, discountAmount = 0, totalProducts = 0 } = cart;
+  const [coupon, setCoupon] = useState();
+
+  const {
+    payableTotal = 0,
+    discountAmount = 0,
+    totalProducts = 0,
+    shippingCost = 0,
+  } = cart;
+  const { applyCoupon, isApplyingCoupon } = useApplyCoupon();
+  const totalProductsPrice =
+    Number(discountAmount) + Number(cart?.coupon?.discount || 0);
+
+  const CouponHandler = async () => {
+    await applyCoupon(coupon);
+  };
+
   return (
     <div className="flex flex-col items-start justify-between gap-6 max-md:bg-stroke-150 md:bg-stroke-100 p-4 rounded-xl size-full">
       <div className="flex items-center justify-start gap-4 size-full">
@@ -47,10 +64,15 @@ export function OrderSummaryCard({ cart, setStep }) {
               name=""
               id=""
               // value={value}
+              onChange={(e) => setCoupon(e.target.value)}
               className="size-full outline-0 text-stroke-800"
               placeholder="کد تخفیف را وارد کنید"
             />
-            <button className="text-nowrap text-primary text-sm">
+            <button
+              type="button"
+              onClick={CouponHandler}
+              className="text-nowrap text-primary text-sm"
+            >
               اعمال کد
             </button>
           </label>
@@ -61,7 +83,7 @@ export function OrderSummaryCard({ cart, setStep }) {
           {toPersianNumbers(totalProducts)}
         </Details>
         <Details textStyle="text-sm" title="سود شما از این خرید" des="تومان">
-          {toPersianNumbersWithComma(discountAmount)}
+          {toPersianNumbersWithComma(totalProductsPrice)}
         </Details>
       </div>
       <div className="flex flex-col items-center justify-between gap-4 size-full border-t max-md:border-stroke-200 md:border-stroke-250 pt-3">
@@ -71,7 +93,7 @@ export function OrderSummaryCard({ cart, setStep }) {
           title="مجموع سبد خرید"
           des="تومان"
         >
-          {toPersianNumbersWithComma(itemsTotal)}
+          {toPersianNumbersWithComma(payableTotal - shippingCost)}
         </Details>
       </div>
       <div className="max-md:sticky bottom-9 flex items-center justify-center w-full">
@@ -102,7 +124,9 @@ export function CheckoutCartSummery({ cart, setStep, isPending }) {
       </div>
       <div className="flex flex-col items-center justify-between gap-4 size-full p-4 bg-stroke-0 rounded-xl">
         <Details textStyle="text-sm" title="سود خرید شما:" des="تومان">
-          {toPersianNumbersWithComma(discountAmount)}
+          {toPersianNumbersWithComma(
+            Number(discountAmount) + Number(cart?.coupon?.discount || 0),
+          )}
         </Details>
         <Details textStyle="text-sm" title="هزینه ارسال:" des="تومان">
           {toPersianNumbersWithComma(shippingCost)}

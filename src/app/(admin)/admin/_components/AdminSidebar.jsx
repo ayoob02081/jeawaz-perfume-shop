@@ -8,36 +8,42 @@ function AdminSidebar() {
       href: "/admin/orders",
       baseHref: "/admin/orders",
       label: "همه سفارش‌ها",
+      countUnread: false,
     },
     {
       id: 2,
       href: "/admin/users",
       baseHref: "/admin/users",
       label: "همه حساب‌ها",
+      countUnread: false,
     },
     {
       id: 3,
-      href: "/admin/products",
-      baseHref: "/admin/products",
-      label: "محصولات",
+      href: "/admin/notifs/ALL",
+      baseHref: "/admin/notifs",
+      label: "پیام‌ها",
+      countUnread: true,
     },
     {
       id: 4,
+      href: "/admin/products",
+      baseHref: "/admin/products",
+      label: "محصولات",
+      countUnread: false,
+    },
+    {
+      id: 5,
       href: "/admin/categories",
       baseHref: "/admin/categories",
       label: "دسته‌بندی‌ها",
-    },
-     {
-      id: 5,
-      href: "/admin/coupons",
-      baseHref: "/admin/coupons",
-      label: "کد تخفیف‌ها",
+      countUnread: false,
     },
     {
       id: 6,
-      href: "/admin/notifs/all",
-      baseHref: "/admin/notifs",
-      label: "پیام‌ها",
+      href: "/admin/coupons",
+      baseHref: "/admin/coupons",
+      label: "کد تخفیف‌ها",
+      countUnread: false,
     },
   ];
 
@@ -54,6 +60,7 @@ function AdminSidebar() {
             srcPrimary={link.srcPrimary}
             srcSecondary={link.srcSecondary}
             alt={link.alt}
+            countUnread={link.countUnread}
           />
         ))}
       </ProfileLinks>
