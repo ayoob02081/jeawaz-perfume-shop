@@ -92,6 +92,7 @@ function SideBar({
                 alt="jeawaz-brand-icon"
                 width="size-24"
                 sizes="20vw"
+                priority={true}
               />
             </button>
             <div className="flex items-center justify-between gap-6">

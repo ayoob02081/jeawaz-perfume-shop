@@ -38,7 +38,7 @@ export function cleanNumericValue(value) {
 export function normalizePhone(phone) {
   if (!phone) return "";
 
-  let value = phone;
+  let value = cleanNumericValue(phone);
 
   if (value.startsWith("98")) {
     value = "0" + value.slice(2);
@@ -58,4 +58,25 @@ export function normalizeIranPhone(phone) {
   value = toPersianNumbers(value);
 
   return value;
+}
+
+export function isValidNationalCode(code) {
+  const value = cleanNumericValue(code);
+
+  if (!/^\d{10}$/.test(value)) return false;
+
+  if (/^(\d)\1{9}$/.test(value)) return false;
+
+  const checkDigit = Number(value[9]);
+
+  const sum = value
+    .slice(0, 9)
+    .split("")
+    .reduce((sum, digit, index) => sum + Number(digit) * (10 - index), 0);
+
+  const remainder = sum % 11;
+
+  return remainder < 2
+    ? checkDigit === remainder
+    : checkDigit === 11 - remainder;
 }

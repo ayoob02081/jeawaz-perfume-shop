@@ -165,6 +165,7 @@ function CategorySideBar({
                   className=" max-md:hidden"
                   width="w-[5.75rem] h-12"
                   sizes="20vw"
+                  priority={true}
                 />
               </div>
             </GenderCategoriesFilter>

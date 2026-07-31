@@ -1,4 +1,14 @@
-import { createContext, useContext, useEffect, useState } from "react";
+"use client";
+
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
 import { loginApi, logoutApi } from "@/services/authServices";
 import { getUserApi, updateUserApi } from "@/services/usersServices";
 
@@ -6,57 +16,62 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
+    setLoading(true);
+
     try {
-      const user = await getUserApi();
-      setUser(user);
-      setIsAuthenticated(true);
+      const me = await getUserApi();
+      setUser(me);
     } catch {
       setUser(null);
-      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [checkAuth]);
 
-  const login = async (data) => {
+  const login = useCallback(async (data) => {
     await loginApi(data);
     await checkAuth();
-  };
+  }, [checkAuth]);
 
-  const updateUser = async (data) => {
+  const updateUser = useCallback(async (data) => {
     await updateUserApi(data);
     await checkAuth();
-  };
+  }, [checkAuth]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await logoutApi();
     setUser(null);
-    setIsAuthenticated(false);
-  };
+  }, []);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated,
-        loading,
-        checkAuth,
-        login,
-        updateUser,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+      isAuthenticated: !!user,
+      checkAuth,
+      login,
+      updateUser,
+      logout,
+    }),
+    [user, loading, checkAuth, login, updateUser, logout],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+
+  return context;
+}

@@ -1,23 +1,11 @@
 "use client";
 
-import {
-  getAllUsersApi,
-  getUserApi,
-  getUserByIdApi,
-  updateUserApi,
-} from "@/services/usersServices";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getAllUsersApi, getUserByIdApi } from "@/services/usersServices";
+import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-
-export const useGetUser = () =>
-  useQuery({
-    queryKey: ["user"],
-    queryFn: getUserApi,
-    retry: false,
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-  });
+import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useQuery } from "@tanstack/react-query";
 
 export const useGetAllUsers = () =>
   useQuery({
@@ -28,7 +16,7 @@ export const useGetAllUsers = () =>
     refetchOnWindowFocus: false,
   });
 
-export const useGetUserbyId = (id) =>
+export const useGetUserById = (id) =>
   useQuery({
     queryKey: ["user", id],
     queryFn: () => getUserByIdApi(id),
@@ -37,22 +25,22 @@ export const useGetUserbyId = (id) =>
     refetchOnWindowFocus: false,
   });
 
-export function useUpdateUser(userId) {
-  const queryClient = useQueryClient();
+export function useUpdateUser() {
   const router = useRouter();
-  const { isPending: isUpdating, mutate: updateUser } = useMutation({
-    mutationFn: updateUserApi,
-    onSuccess: (data) => {
+  const { updateUser } = useAuth();
+  const { mutate, isPending } = useMutation({
+    mutationFn: updateUser,
+    onSuccess: () => {
       toast.success("اطلاعات حساب کاربری شما با موفقیت ویرایش شد");
-      queryClient.setQueryData(["user"], data);
-      queryClient.invalidateQueries({ queryKey: ["user"] });
-      router.refresh();
       router.back();
     },
-    onError: (err) => {
+    onError: () => {
       toast.error("اطلاعات حساب کاربری شما با خطا مواجه شد");
     },
   });
 
-  return { isUpdating, updateUser };
+  return {
+    updateUser: mutate,
+    isUpdating: isPending,
+  };
 }

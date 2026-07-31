@@ -2,9 +2,11 @@
 import { useForm } from "react-hook-form";
 import RHFTextField from "@/ui/RHFTextField";
 import { useRouter } from "next/navigation";
-import { useGetUser, useUpdateUser } from "@/hooks/useUsers";
+import { useUpdateUser } from "@/hooks/useUsers";
 import PersianDateRHForm from "../../../../ui/PersianDateRHForm";
 import { useEffect } from "react";
+import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { isValidNationalCode, normalizePhone } from "@/utils/toPersianNumbers";
 
 const basicInfoData = [
   {
@@ -14,6 +16,21 @@ const basicInfoData = [
     placeholder: "رضا",
     type: "text",
     isRequired: true,
+    validationSchema: {
+      required: "نام الزامی است",
+      minLength: {
+        value: 2,
+        message: "نام باید حداقل ۲ کاراکتر باشد",
+      },
+      maxLength: {
+        value: 50,
+        message: "نام نمی‌تواند بیشتر از ۵۰ کاراکتر باشد",
+      },
+      pattern: {
+        value: /^[آ-یa-zA-Z\s]+$/,
+        message: "نام فقط می‌تواند شامل حروف باشد",
+      },
+    },
   },
   {
     id: 2,
@@ -22,22 +39,60 @@ const basicInfoData = [
     placeholder: "کریمی",
     type: "text",
     isRequired: true,
+    validationSchema: {
+      required: "نام خانوادگی الزامی است",
+      minLength: {
+        value: 2,
+        message: "نام خانوادگی باید حداقل ۲ کاراکتر باشد",
+      },
+      maxLength: {
+        value: 50,
+        message: "نام خانوادگی نمی‌تواند بیشتر از ۵۰ کاراکتر باشد",
+      },
+      pattern: {
+        value: /^[آ-یa-zA-Z\s]+$/,
+        message: "نام خانوادگی فقط می‌تواند شامل حروف باشد",
+      },
+    },
   },
   {
     id: 3,
     label: "شماره موبایل",
     name: "phoneNumber",
     placeholder: "۰۹۱۲۳۴۵۶۷۸۹",
-    type: "number",
+    type: "tel",
     isRequired: true,
+    validationSchema: {
+      required: "شماره موبایل الزامی است",
+      validate: (value) => {
+        const phone = normalizePhone(value);
+
+        return /^09\d{9}$/.test(phone) || "شماره موبایل معتبر نیست";
+      },
+    },
   },
   {
-    id: 6,
+    id: 4,
     label: "نام کاربری",
     name: "username",
     placeholder: "RezaJ",
     type: "text",
     isRequired: true,
+    validationSchema: {
+      required: "نام کاربری الزامی است",
+      minLength: {
+        value: 3,
+        message: "نام کاربری باید حداقل ۳ کاراکتر باشد",
+      },
+      maxLength: {
+        value: 30,
+        message: "نام کاربری نمی‌تواند بیشتر از ۳۰ کاراکتر باشد",
+      },
+      pattern: {
+        value: /^(?=.{3,30}$)[a-zA-Z0-9_]+$/,
+        message: "نام کاربری فقط می‌تواند شامل حروف انگلیسی، اعداد و _ باشد",
+      },
+    },
   },
   {
     id: 5,
@@ -45,19 +100,36 @@ const basicInfoData = [
     name: "email",
     placeholder: "example@gmail.com",
     type: "email",
+    isRequired: false,
+    validationSchema: {
+      pattern: {
+        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        message: "ایمیل معتبر نیست",
+      },
+    },
   },
   {
-    id: 4,
+    id: 6,
     label: "کد ملی",
     name: "nationalCode",
     placeholder: "۰۱۲۳۴۵۶۷۸۹",
-    type: "number",
+    type: "tel",
+    isRequired: false,
+    validationSchema: {
+      pattern: {
+        value: /^\d{10}$/,
+        message: "کد ملی باید ۱۰ رقم باشد",
+      },
+      validate: (value) => isValidNationalCode(value) || "کد ملی معتبر نیست",
+    },
   },
 ];
 
 function EditProfileForm() {
   const router = useRouter();
-  const { data: userToEdit, isLoading, error } = useGetUser();
+  const { user: userToEdit, loading:isLoading } = useAuth();
+  console.log(userToEdit);
+  
   const { isUpdating, updateUser } = useUpdateUser(userToEdit?.id);
   const {
     firstName,
@@ -75,7 +147,7 @@ function EditProfileForm() {
     handleSubmit,
     watch,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm({
     defaultValues: {
       firstName: "",
@@ -121,31 +193,21 @@ function EditProfileForm() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
         {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {basicInfoData.map((item) =>
-            item.isRequired ? (
-              <RHFTextField
-                key={item.name}
-                register={register}
-                isRequired
-                label={item.label}
-                name={item.name}
-                type={item.type}
-                className="w-full"
-                validationSchema={{ required: true }}
-                placeholder={`مثال: ${item.placeholder}`}
-              />
-            ) : (
-              <RHFTextField
-                key={item.name}
-                register={register}
-                label={item.label}
-                name={item.name}
-                type={item.type}
-                className="w-full"
-                placeholder={`مثال: ${item.placeholder}`}
-              />
-            ),
-          )}
+          {basicInfoData.map((item) => (
+            <RHFTextField
+              key={item.name}
+              register={register}
+              control={control}
+              errors={errors}
+              isRequired={item.isRequired}
+              label={item.label}
+              name={item.name}
+              type={item.type}
+              className="w-full"
+              validationSchema={item.validationSchema}
+              placeholder={`مثال: ${item.placeholder}`}
+            />
+          ))}
           <PersianDateRHForm
             control={control}
             name="birthday"

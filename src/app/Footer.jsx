@@ -19,6 +19,7 @@ function Footer() {
               alt="jeawaz-brand-icon"
               width="w-28 h-[4.25rem]"
               sizes="20vw"
+              priority={true}
             />
             <p className="text-sm">جیاواز، دنیای رایحه‌های خاصه</p>
           </Link>

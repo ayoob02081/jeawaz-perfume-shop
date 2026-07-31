@@ -70,7 +70,7 @@ function Login({ closeBtn }) {
       } else {
         if (otp.length < 5) return toast.error("کد تکمیل نشده");
         await verifyOtpApi({ phoneNumber, code: otp });
-        checkAuth();
+        await checkAuth();
       }
 
       toast.success("به جیاواز خوش آمدید!");

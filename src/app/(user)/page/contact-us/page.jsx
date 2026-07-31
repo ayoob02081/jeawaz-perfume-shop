@@ -158,6 +158,7 @@ function ContactUsPage() {
               ratio="aspect-[5/2]"
               width="md:w-10 lg:w-16"
               sizes="20vw"
+              priority={true}
             />
           </div>
         </div>
@@ -180,6 +181,7 @@ function ContactUsPage() {
               ratio="aspect-[5/2]"
               width="w-20"
               sizes="20vw"
+              priority={true}
             />
           </div>
         </div>

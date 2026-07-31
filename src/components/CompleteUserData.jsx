@@ -50,7 +50,7 @@ const formData = [
 
 function CompleteUserData() {
   const router = useRouter();
-  const { updateUser, isPending } = useAuth();
+  const {updateUser, loading: isPending } = useAuth();
 
   const {
     register,
@@ -110,6 +110,7 @@ function CompleteUserData() {
                   placeholder={item.placeholder}
                   validationSchema={item.validationSchema}
                   className="rounded-full w-full h-12 md:h-14"
+                  isPrimary
                 />
               ))}
             </div>

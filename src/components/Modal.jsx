@@ -28,7 +28,7 @@ function Modal({
   return (
     <Backdrop isOpen={isOpen} category={category} className={backdropClassName}>
       <div
-        className={` overflow-auto flex ${category ? "justify-start md:container md:mx-auto max-md:min-h-screen md:p-2" : "max-h-[90vh] justify-center max-md:items-end md:items-center size-full container mx-auto"} xl:max-w-7xl`}
+        className={`flex ${category ? "justify-start md:container md:mx-auto max-md:min-h-screen md:p-2" : "max-h-[90vh] justify-center max-md:items-end md:items-center size-full container mx-auto"} xl:max-w-7xl`}
       >
         <section
           ref={(el) => {

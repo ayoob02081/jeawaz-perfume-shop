@@ -137,7 +137,7 @@
     @apply bg-stroke-950/15 backdrop-blur-md duration-200;
   }
   .backdrop--primary {
-    @apply flex max-md:items-end inset-0 md:items-center justify-center max-md:pb-6 px-6 [30rem]:px-12 max-md:pt-[20%] mx-auto overflow-hidden md:py-[10%] z-100;
+    @apply flex max-md:items-end inset-0 justify-center max-md:pb-6 px-6 [30rem]:px-12 max-md:pt-[20%] mx-auto overflow-auto z-100;
   }
   .backdrop--secondary {
     @apply flex items-start justify-center md:justify-start top-0 inset-0 right-0 left-0 max-md:bottom-0 md:p-6 md:pt-44 max-md:overflow-y-auto scrollbar-none z-80;
@@ -147,7 +147,7 @@
   }
 
   .modal--primary {
-    @apply sm:w-[33.8rem] overflow-hidden w-full rounded-3xl shadow-md z-100;
+    @apply sm:w-[33.8rem] overflow-hidden w-full rounded-3xl shadow-md z-100 translate-y-[5%];
   }
   .modal--secondary {
     @apply md:rounded-3xl w-screen md:w-xl lg:w-3xl md:h-auto md:shadow-md md:justify-start z-90;

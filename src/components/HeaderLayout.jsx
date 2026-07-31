@@ -151,6 +151,7 @@ function DesktopHeader({
                     alt="jeawaz-brand-icon"
                     width="w-18 h-10"
                     sizes="20vw"
+                    priority={true}
                   />
                 </Link>
               </li>
