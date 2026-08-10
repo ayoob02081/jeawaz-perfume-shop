@@ -139,7 +139,7 @@ function DesktopHeader({
   const pathName = usePathname();
 
   return (
-    <nav className="max-md:hidden relative md:fixed h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl bg-stroke-0 shadow-md dark:shadow-stroke-800/10 z-90 duration-200">
+    <nav className="max-lg:hidden relative lg:fixed h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl bg-stroke-0 shadow-md dark:shadow-stroke-800/10 z-90 duration-200">
       <ul className="flex flex-col justify-between gap-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex grow items-center justify-betwee gap-4">
@@ -249,7 +249,7 @@ function DesktopHeader({
                 onClick={
                   isAuthenticated !== true
                     ? () => router.push("/auth/login")
-                    : () => router.push("/profile")
+                    : () => router.push("/profile/me")
                 }
                 disabled={isAuthenticated === null ? true : false}
                 className={`size-full ${loading && "blur-xs opacity-50"} duration-200`}
@@ -380,8 +380,8 @@ function DesktopHeader({
                 alt="call-ringing-icon"
                 title="پشتیبانی"
                 type="support"
-                className="max-md:h-8 md:h-10"
-                size="max-md:size-4 md:size-6"
+                className="max-lg:h-8 lg:h-10"
+                size="max-lg:size-4 lg:size-6"
               />
             </Link>
           </li>
@@ -405,8 +405,8 @@ function MobileHeader({
   const showElement = useHideOnScroll();
 
   return (
-    <nav className="md:hidden max-md:fixed max-md:top-0 inset-x-0 max-sm:px-4 h-fit w-full z-50">
-      <ul className="grid grid-cols-3 gap-x-10 relative container mx-auto xl:max-w-7xl p-4 rounded-b-4xl bg-stroke-0 shadow-md dark:shadow-stroke-800/10 duration-200">
+    <nav className="lg:hidden max-lg:fixed max-lg:top-0 inset-x-0 max-sm:px-4 h-fit w-full z-50">
+      <ul className="grid grid-cols-3 gap-x-10 relative container mx-auto p-4 rounded-b-4xl bg-stroke-0 shadow-md dark:shadow-stroke-800/10 duration-200">
         <li className="justify-items-start">
           <button
             type="button"

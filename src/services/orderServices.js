@@ -17,6 +17,9 @@ export const createOrderApi = (payload) =>
 export const getOrderTimelineApi = (id) =>
   app.get(`/orders/${id}/timeline`).then(({ data }) => data);
 
+export const getOrderByNumberApi = (orderNumber) =>
+  app.get(`/orders/number/${orderNumber}`).then(({ data }) => data);
+
 /* ================= ADMIN ================= */
 
 export const getAdminOrdersApi = (params = {}) =>
@@ -41,11 +44,8 @@ export const exportOrdersApi = (payload = {}) =>
 export const confirmPaymentApi = (id) =>
   app.patch(`/orders/${id}/pay`).then(({ data }) => data);
 
-export const getOrderByNumberApi = (orderNumber) =>
-  app.get(`/orders/number/${orderNumber}`).then(({ data }) => data);
-
-export const getAdminDashboardApi = () =>
-  app.get("/orders/admin/dashboard").then(({ data }) => data);
+export const getAdminOrderByIdApi = (id) =>
+  app.get(`/orders/admin/${id}`).then(({ data }) => data);
 
 export const getFullAdminDashboardApi = () =>
   app.get("/orders/admin/full-dashboard").then(({ data }) => data);

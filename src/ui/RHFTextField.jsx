@@ -53,7 +53,7 @@ export default function RHFTextField({
 
       <div className={containerClassName + " w-full relative"}>
         <div
-          className={`textField__input ${isPrimary ? "textField__input--primary" : "textField__input--secondary"} rounded-5xl ${
+          className={`textField__input rounded-5xl ${
             hasError ? "border-error bg-red-50 dark:bg-stroke-900" : ""
           }`}
         >

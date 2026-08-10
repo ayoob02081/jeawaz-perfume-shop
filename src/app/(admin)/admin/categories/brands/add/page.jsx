@@ -1,11 +1,7 @@
 import BrandForm from "../../../_components/BrandForm";
 
 function page() {
-  return (
-    <div>
-      <BrandForm />
-    </div>
-  );
+  return <BrandForm />;
 }
 
 export default page;

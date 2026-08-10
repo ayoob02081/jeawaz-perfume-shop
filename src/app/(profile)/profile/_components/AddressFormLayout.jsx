@@ -76,8 +76,8 @@ function AddressFormLayout({ addressToEdit }) {
     }
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      <div className="flex flex-col  justify-center gap-6 w-full max-md:px-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 w-full px-4">
+      <div className="flex flex-col justify-center gap-6 w-full">
         <RHFTextField
           isRequired
           register={register}

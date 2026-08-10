@@ -100,35 +100,40 @@ export function StatusOrderCard({
       </div>
       <button
         onClick={() => router.push(pathName + "/" + id)}
-        className="flex items-center justify-between p-6 bg-stroke-100 dark:bg-stroke-50 rounded-2xl h-28"
+        className="flex items-center justify-between p-6 bg-stroke-100 dark:bg-stroke-50 rounded-2xl h-28 w-full"
       >
-        <div className=" flex items-center justify-start *:not-first:translate-x-8">
+        <div className=" flex items-center justify-start lg:gap-2 max-lg:*:not-first:translate-x-8 w-full max-lg:overflow-hidden lg:overflow-auto scrollbar-none lg:py-1.5">
           {orderItems?.map((item, index) => (
             <div
               key={item.id}
-              className={
+              className={`relative items-center justify-center bg-stroke-0 rounded-xl aspect-square size-20 ${
                 index <= 1
-                  ? "flex items-center justify-center bg-stroke-0 border-6 border-stroke-100 dark:border-stroke-50 size-20 rounded-xl z-10 aspect-square"
-                  : "hidden size-0"
-              }
+                  ? "flex max-lg:border-6 border-stroke-100 dark:border-stroke-50 z-10 "
+                  : "hidden max-lg:size-0 lg:flex"
+              }`}
             >
               <AppImage
-                src={item.imageUrl}
+                src={item.image}
                 alt={`${item.enTitle}-icon`}
                 className="size-10 "
               />
+              <div className="max-lg:hidden badge bg-stroke-200 text-xs text-stroke-800 border border-stroke-800 px-1 h-6 aspect-square absolute left-0 bottom-0 lg:-bottom-1.5 lg:-left-1.5">
+                <p className="translate-y-px">
+                  {toPersianNumbers(item.quantity)}
+                </p>
+              </div>
             </div>
           ))}
           {orderItems?.length >= 3 && (
-            <div className="flex items-center justify-center text-xl translate-x-16! bg-stroke-0 border-6 border-stroke-100 dark:border-stroke-50 size-20 rounded-xl  z-10 text-stroke-800 font-bold aspect-square">
+            <div className="lg:hidden flex items-center justify-center text-xl translate-x-16! bg-stroke-0 border-6 border-stroke-100 dark:border-stroke-50 size-20 rounded-xl  z-10 text-stroke-800 font-bold aspect-square">
               <p className="">
                 {"+" + toPersianNumbers(orderItems?.length - 2)}
               </p>
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2 text-primary">
-          <p className="text-sm font-bold">جزئیات سفارش</p>
+        <div className="flex items-center gap-2 text-primary pr-2">
+          <p className="text-sm font-bold text-nowrap">جزئیات سفارش</p>
           <ArrowLeftIcon className="size-4" />
         </div>
       </button>

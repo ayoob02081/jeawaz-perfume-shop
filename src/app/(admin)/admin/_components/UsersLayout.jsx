@@ -11,7 +11,7 @@ function UsersLayout() {
   if (error) return <Error />;
 
   return (
-    <div className="space-y-2 w-full">
+    <div className="space-y-2 w-full px-4 pb-10">
       <h1 className="font-bold text-secndary-900 text-xl pb-6 text-stroke-800">
         اطلاعات کاربران
       </h1>

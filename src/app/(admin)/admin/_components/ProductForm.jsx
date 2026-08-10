@@ -364,7 +364,7 @@ function ProductForm({ productToEdit }) {
   if (brandsError || categoriesError) return <Error />;
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl px-4">
       <Toaster />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
         {/* Basic Info */}
@@ -831,7 +831,7 @@ function Notes({
               register(`${name}.${i}`).onChange(e);
               handleNoteChange(i, name, e.target.value);
             }}
-            className="textField__input textField__input--secondary rounded-5xl size-full"
+            className="textField__input rounded-5xl size-full"
           />
           {noteFields.length >= 1 && (
             <DeleteButton onClick={() => removeField(i)} />

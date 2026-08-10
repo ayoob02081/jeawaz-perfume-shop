@@ -1,11 +1,7 @@
 import CategoryForm from "../../../_components/CategoryForm";
 
 function page() {
-  return (
-    <div>
-      <CategoryForm accord="accord" />
-    </div>
-  );
+  return <CategoryForm accord="accord" />;
 }
 
 export default page;

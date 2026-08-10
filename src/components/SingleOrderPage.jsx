@@ -15,18 +15,10 @@ import {
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import React, { useState } from "react";
 
 function SingleOrderPage({ order, isOrderLoading, admin }) {
-  const pathName = usePathname();
-  const [openOrder, setOpenOrder] = useState(false);
-
   if (isOrderLoading) return <Loading />;
-
-  if (pathName.endsWith(order?.id) && openOrder === false) {
-    setOpenOrder(true);
-  }
+  console.log(order);
 
   const currentStatus = admin
     ? adminStatusConfig?.find((s) => s.value === order?.status)
@@ -38,174 +30,182 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
   const { title, textColor, icon: Icon, des } = currentStatus || {};
 
   return (
-    <div className=" flex flex-col items-start justify-start">
-      <div className="max-lg:hidden">
-        <GoBack
-          label="جزئیات سفارش"
-          side="right"
-          className="size-6 text-stroke-800"
-          fontStyle="text-xl font-bold"
-          justify="between"
-        />
-      </div>
-
-      {/* Order Details */}
-      <div className="flex flex-col justify-center items-start w-full max-lg:rounded-2.5xl">
-        <div className="flex flex-wrap w-full max-md:gap-4 md:gap-6 max-lg:pb-4 lg:py-4">
-          <OrderDetail
-            label="تاریخ ثبت سفارش :"
-            title={toLocalDateString(orderDate)}
-          />
-          <OrderDetail
-            label="کد پیگیری سفارش :"
-            title={toPersianNumbers(orderNumber)}
+    <div className="size-full px-4">
+      <div className=" flex flex-col items-start justify-start p-4 bg-stroke-0 border border-stroke-200 rounded-xl">
+        <div className="max-lg:hidden">
+          <GoBack
+            label="جزئیات سفارش"
+            side="right"
+            className="size-6 text-stroke-800"
+            fontStyle="text-xl font-bold"
+            justify="between"
           />
         </div>
-        <div className="flex w-full flex-wrap pt-4 border-t border-stroke-250 gap-4">
-          <div className="flex max-md:flex-col items-start justify-center max-lg:gap-4 md:gap-6">
-            <OrderDetail label="تحویل گیرنده :" title={shipping?.receiver} />
+
+        {/* Order Details */}
+        <div className="flex flex-col justify-center items-start w-full max-lg:rounded-2.5xl">
+          <div className="flex flex-wrap w-full max-md:gap-4 md:gap-6 max-lg:pb-4 lg:py-4">
             <OrderDetail
-              label="شماره تماس :"
-              title={toPersianNumbers(shipping?.phone)}
+              label="تاریخ ثبت سفارش :"
+              title={toLocalDateString(orderDate)}
+            />
+            <OrderDetail
+              label="کد پیگیری سفارش :"
+              title={toPersianNumbers(orderNumber)}
             />
           </div>
-          <OrderDetail label="آدرس ارسال مرسوله :" title={shipping?.address} />
-          <OrderDetail
-            label="کد پستی :"
-            title={toPersianNumbers(shipping?.postalCode)}
-          />
-        </div>
-        <div className="flex w-full flex-wrap py-4 border-(ttoPersianNumbers border-s)troke-250 max-md:gap-4 md:gap-6">
-          <OrderDetail
-            label="مبلغ کل :"
-            title={
-              toPersianNumbersWithComma(pricing?.subtotal + pricing?.shipping) +
-              " تومان"
-            }
-          />
-          <OrderDetail label="وضعیت پرداخت :">
-            <div className="flex items-center justify-center gap-1 text-success ">
-              <AppImage
-                src="/images/success-stroke-icon.svg"
-                alt="success icon"
-                width="size-5"
-                sizes="10vw"
+          <div className="flex w-full flex-wrap py-4 border-t border-stroke-250 gap-4">
+            <div className="flex max-md:flex-col items-start justify-center max-lg:gap-4 md:gap-6">
+              <OrderDetail label="تحویل گیرنده :" title={shipping?.receiver} />
+              <OrderDetail
+                label="شماره تماس :"
+                title={toPersianNumbers(shipping?.phone)}
               />
-              <p className="font-bold text-stroke-800">موفق</p>
             </div>
-          </OrderDetail>
-          <OrderDetail
-            label="هزینه بسته بندی و ارسال :"
-            title={toPersianNumbersWithComma(pricing?.shipping) + " تومان"}
-          />
-        </div>
-
-        {/* Factor */}
-        <div className="bg-stroke-0 dark:bg-stroke-50 rounded-2xl p-4 md:p-5 w-full max-lg:bg-stroke-100">
-          <div className="w-full">
-            <div className="flex items-start justify-between w-full mb-5">
-              <div className="flex flex-wrap items-center justify-start gap-4">
-                <div className="flex items-center justify-center gap-2">
-                  <AppImage
-                    src="/images/fast-deliver-icon.svg"
-                    alt="deliver icon"
-                    width="size-5"
-                    sizes="10vw"
-                    className="dark:invert"
-                  />
-                  <p className="text-sm md:text-base font-bold text-stroke-800">
-                    مشخصات مرسوله
-                  </p>
-                </div>
-                <p className="text-stroke-600 text-xs">مرسوله ۱ از ۱</p>
-              </div>
-              <button className="flex items-center justify-end gap-2 text-nowrap">
+            <OrderDetail
+              label="آدرس ارسال مرسوله :"
+              title={shipping?.address}
+            />
+            <OrderDetail
+              label="کد پستی :"
+              title={toPersianNumbers(shipping?.postalCode)}
+            />
+          </div>
+          <div className="flex w-full flex-wrap py-4 border-t border-stroke-250 max-md:gap-4 md:gap-6">
+            <OrderDetail
+              label="مبلغ کل :"
+              title={toPersianNumbersWithComma(pricing?.grandTotal) + " تومان"}
+            />
+            <OrderDetail label="وضعیت پرداخت :">
+              <div className="flex items-center justify-center gap-1 text-success ">
                 <AppImage
-                  src="/images/factor-icon.svg"
-                  alt="recipt icon"
+                  src="/images/success-stroke-icon.svg"
+                  alt="success icon"
                   width="size-5"
                   sizes="10vw"
                 />
-                <p className="text-sm md:text-base font-bold text-primary">
-                  مشاهده فاکتور
-                </p>
-              </button>
-            </div>
-            <div className="w-full mb-4">
-              <div className="flex flex-wrap max-md:items-start justify-start gap-4 w-full mb-4">
-                <OrderDetail label="زمان ارسال مرسوله :" title="۱ روز کاری" />
-                <OrderDetail
-                  label="کد پیگیری سفارش :"
-                  title={toPersianNumbers(orderNumber)}
-                />
+                <p className="font-bold text-stroke-800">موفق</p>
+              </div>
+            </OrderDetail>
+            <OrderDetail
+              label="هزینه بسته بندی و ارسال :"
+              title={toPersianNumbersWithComma(pricing?.shipping) + " تومان"}
+            />
+          </div>
 
-                <OrderDetail label="وضعیت مرسوله :">
-                  <div
-                    className={`flex items-center justify-center gap-1 ${textColor} `}
-                  >
-                    <Icon className="size-6" />
-                    <p className="font-bold ">{title}</p>
+          {/* Factor */}
+          <div className="bg-stroke-100 dark:bg-stroke-50 rounded-2xl p-4 md:p-5 w-full ">
+            <div className="w-full">
+              <div className="flex items-start justify-between w-full mb-5">
+                <div className="flex flex-wrap items-center justify-start gap-4">
+                  <div className="flex items-center justify-center gap-2">
+                    <AppImage
+                      src="/images/fast-deliver-icon.svg"
+                      alt="deliver icon"
+                      width="size-5"
+                      sizes="10vw"
+                      className="dark:invert"
+                    />
+                    <p className="text-sm md:text-base font-bold text-stroke-800">
+                      مشخصات مرسوله
+                    </p>
                   </div>
-                </OrderDetail>
+                  <p className="text-stroke-600 text-xs">مرسوله ۱ از ۱</p>
+                </div>
+                <button className="flex items-center justify-end gap-2 text-nowrap">
+                  <AppImage
+                    src="/images/factor-icon.svg"
+                    alt="recipt icon"
+                    width="size-5"
+                    sizes="10vw"
+                  />
+                  <p className="text-sm md:text-base font-bold text-primary">
+                    مشاهده فاکتور
+                  </p>
+                </button>
+              </div>
+              <div className="w-full mb-4">
+                <div className="flex flex-wrap max-md:items-start justify-start gap-4 w-full mb-4">
+                  <OrderDetail label="زمان ارسال مرسوله :" title="۱ روز کاری" />
+                  <OrderDetail
+                    label="کد پیگیری سفارش :"
+                    title={toPersianNumbers(orderNumber)}
+                  />
+
+                  <OrderDetail label="وضعیت مرسوله :">
+                    <div
+                      className={`flex items-center justify-center gap-1 ${textColor} `}
+                    >
+                      <Icon className="size-6" />
+                      <p className="font-bold ">{title}</p>
+                    </div>
+                  </OrderDetail>
+                  <OrderDetail
+                    label="کد رهگیری مرسوله :"
+                    title={
+                      "پس از ارسال مرسوله، کد رهگیری به شماره " +
+                      toPersianNumbers(shipping?.phone) +
+                      " پیامک میشود."
+                    }
+                  />
+                </div>
                 <OrderDetail
-                  label="کد رهگیری مرسوله :"
+                  label="مبلغ مرسوله :"
                   title={
-                    "پس از ارسال مرسوله، کد رهگیری به شماره " +
-                    toPersianNumbers(shipping?.phone) +
-                    " پیامک میشود."
+                    toPersianNumbersWithComma(pricing?.subtotal) + " تومان"
                   }
                 />
               </div>
-              {/* </div> */}
-              <OrderDetail
-                label="مبلغ مرسوله :"
-                title={toPersianNumbersWithComma(pricing?.subtotal) + " تومان"}
-              />
-            </div>
-            <div className="w-full flex flex-col justify-center max-lg:gap-4">
-              {items?.map((item) => (
-                <Link
-                  href={`/products/${item.productId}`}
-                  className="flex items-center justify-between gap-1 lg:border-t border-stroke-200 max-lg:bg-stroke-0 p-4 max-lg:rounded-xl"
-                  key={item.id}
-                >
-                  <div className="flex items-center justify-start gap-2 md:gap-4">
-                    <div className="flex items-center justify-center max-lg:h-16 lg:size-16 lg:rounded-xl lg:bg-stroke-100 ">
-                      <AppImage
-                        src={item.imageUrl}
-                        alt={`${item.title}-image`}
-                        width="max-lg:size-11 lg:size-9"
-                        sizes="30vw"
+              <div className="w-full flex flex-col justify-center max-lg:gap-4">
+                {items?.map((item) => (
+                  <Link
+                    href={`/products/${item.productId}`}
+                    className="flex items-center justify-between flex-wrap gap-1 max-lg:bg-stroke-0 lg:border-t border-stroke-200 p-4 max-lg:rounded-xl"
+                    key={item.id}
+                  >
+                    <div className="flex items-center justify-start gap-2 md:gap-4">
+                      <div className="relative flex items-center justify-center size-16 rounded-xl bg-stroke-0 ">
+                        <AppImage
+                          src={item.image}
+                          alt={`${item.title}-image`}
+                          width="max-lg:size-11 lg:size-9"
+                          sizes="30vw"
+                        />
+                        <div className="badge bg-stroke-200 text-xs text-stroke-800 border border-stroke-800 px-1 h-6 aspect-square absolute left-0 bottom-0 lg:-bottom-1.5 lg:-left-1.5">
+                          <p className="translate-y-px">
+                            {toPersianNumbers(item.quantity)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-start justify-center gap-2">
+                        <p className="max-md:text-base text-lg font-bold text-stroke-800">
+                          {item.enTitle}
+                        </p>
+                        <p className="max-md:text-sm text-lg font-bold text-stroke-800">
+                          {item.perTitle}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-end grow gap-2">
+                      <PriceSection
+                        basePrice={item.lineTotal}
+                        priceClassName="text-2xl"
+                        textClassName="text-[10px]"
                       />
                     </div>
-                    <div className="flex flex-col items-start justify-center gap-2">
-                      <p className="max-md:text-base text-lg font-bold text-stroke-800">
-                        {item.enTitle}
-                      </p>
-                      <p className="max-md:text-sm text-lg font-bold text-stroke-800">
-                        {item.perTitle}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center justify-start gap-2">
-                    <PriceSection
-                      basePrice={item.price}
-                      priceClassName="text-2xl"
-                      textClassName="text-[10px]"
-                    />
-                  </div>
+                  </Link>
+                ))}
+              </div>
+              <div className="flex items-center flex-wrap justify-start p-6 mt-6 bg-warning/20 dark:bg-stroke-900 rounded-xl text-start text-stroke-800">
+                در صورت عدم دریافت پیامک کد رهگیری مرسوله، لطفا به شماره{" "}
+                <Link
+                  className="px-1 text-primary font-bold"
+                  href="tel:+989302125151"
+                >
+                  ۰۹۳۰۲۱۲۵۱۵۱
                 </Link>
-              ))}
-            </div>
-            <div className="flex items-center flex-wrap justify-start p-6 mt-6 bg-warning/20 dark:bg-stroke-900 rounded-xl text-start text-stroke-800">
-              در صورت عدم دریافت پیامک کد رهگیری مرسوله، لطفا به شماره{" "}
-              <Link
-                className="px-1 text-primary font-bold"
-                href="tel:+989302125151"
-              >
-                ۰۹۳۰۲۱۲۵۱۵۱
-              </Link>
-              در واتساپ یا روبیکا پیام دهید.
+                در واتساپ یا روبیکا پیام دهید.
+              </div>
             </div>
           </div>
         </div>
@@ -218,7 +218,7 @@ export default SingleOrderPage;
 
 function OrderDetail({ label, title, children }) {
   return (
-    <span className="flex items-start justify-start gap-1">
+    <span className="flex items-start justify-start flex-wrap gap-1">
       <p className="text-stroke-600 text-nowrap">{label}</p>
       {title && <p className="font-bold text-stroke-800">{title}</p>}
       {children}

@@ -52,22 +52,12 @@ const notificationChannels = [
 ];
 
 const notificationTargets = [
-  { id: 1, label: "کاربران دلخواه", value: "USER" },
+  { id: 1, label: "کاربران منتخب", value: "USER" },
   { id: 2, label: "همه کاربران", value: "ALL" },
 ];
 
-function NotifForm({ notifToEdit }) {
+function NotifForm() {
   const router = useRouter();
-
-  //   const { id, title, value, description } = notifToEdit || {};
-
-  //   const { isDeleting,removeNotification } = useDeleteNotification();
-
-  //   const removeNotifHandler = async (notif) => {
-  //     const { id } = notif;
-  //     await removeNotification(id);
-  //     router.back();
-  //   };
 
   const { isSending, sendNotification } = useSendNotification();
 
@@ -106,12 +96,6 @@ function NotifForm({ notifToEdit }) {
     }
 
     await sendNotification(payload);
-
-    // if (!notifToEdit) {
-    //   await sendNotification(payload);
-    // } else {
-    //   await editBrand(payload);
-    // }
 
     router.back();
   };

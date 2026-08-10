@@ -104,7 +104,7 @@ function AddressForm({
               isRequired
               label="استان"
               name="ostan"
-              className={`textField__input ${isPrimary ? "textField__input--primary" : "textField__input--secondary"}`}
+              className="textField__input"
               register={register}
               errors={errors}
               options={ostanOptions}
@@ -114,7 +114,7 @@ function AddressForm({
               isRequired
               label="شهر"
               name="shahr"
-              className={`textField__input ${isPrimary ? "textField__input--primary" : "textField__input--secondary"}`}
+              className="textField__input"
               register={register}
               errors={errors}
               disabled={!selectedOstanId}

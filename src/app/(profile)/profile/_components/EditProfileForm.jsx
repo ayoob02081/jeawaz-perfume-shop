@@ -127,9 +127,8 @@ const basicInfoData = [
 
 function EditProfileForm() {
   const router = useRouter();
-  const { user: userToEdit, loading:isLoading } = useAuth();
-  console.log(userToEdit);
-  
+  const { user: userToEdit, loading: isLoading } = useAuth();
+
   const { isUpdating, updateUser } = useUpdateUser(userToEdit?.id);
   const {
     firstName,
@@ -189,7 +188,7 @@ function EditProfileForm() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto w-full">
+    <div className="max-w-6xl w-full px-4">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
         {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

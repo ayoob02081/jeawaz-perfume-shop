@@ -50,8 +50,7 @@ export default function PersianDateRHForm({
               const jsDate = date.toDate();
               field.onChange(jsDate.toISOString());
             }}
-            inputClass={`textField__input ${isPrimary ? "textField__input--primary" : "textField__input--secondary"}
-              py-3.5 ${hasError && "border-error bg-red-50 dark:bg-stroke-900"}
+            inputClass={`textField__input py-3.5 ${hasError && "border-error bg-red-50 dark:bg-stroke-900"}
                ${className}`}
             calendarPosition="bottom-right"
           />

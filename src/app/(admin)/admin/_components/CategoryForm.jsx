@@ -85,10 +85,10 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl w-full px-4">
       <Toaster />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 w-full">
         {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {basicInfoData.map((item) => (

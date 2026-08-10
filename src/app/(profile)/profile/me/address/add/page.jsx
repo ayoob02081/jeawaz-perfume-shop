@@ -1,11 +1,7 @@
 import AddressForm from "../../../_components/AddressFormLayout";
 
 function page() {
-  return (
-    <div>
-      <AddressForm />
-    </div>
-  );
+  return <AddressForm />;
 }
 
 export default page;

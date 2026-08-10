@@ -1,6 +1,5 @@
 "use client";
 
-import Error from "@/components/Error";
 import Loading from "@/components/Loading";
 import { useAuth } from "@/contexts/filters/auth/AuthContext";
 import { toJalali } from "@/utils/date";
@@ -8,7 +7,7 @@ import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
 import Link from "next/link";
 
 function ProfileInfo() {
-  const { user, loading:isLoading } = useAuth();
+  const { user, loading: isLoading } = useAuth();
 
   const {
     email,
@@ -23,10 +22,6 @@ function ProfileInfo() {
   if (isLoading) {
     return <Loading />;
   }
-
-  // if (error) {
-  //   return <Error />;
-  // }
 
   return (
     <div className="w-full border md:border-[1.5px] border-stroke-200 rounded-2xl p-4 bg-stroke-0">

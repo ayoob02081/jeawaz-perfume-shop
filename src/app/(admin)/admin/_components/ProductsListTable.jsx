@@ -108,12 +108,14 @@ function ProductsListTable({ products }) {
                     </div>
                   </td>
                   <td className="table__td px-2">
-                    <p className=" badge badge--secondary--2 font-bold">
+                    <p
+                      className={`badge badge--primary border ${product.stock >= 100 ? "border-success bg-success/10 text-success" : "border-red-600 bg-red-600/10 text-red-600"} font-bold`}
+                    >
                       {toPersianNumbers(product.stock)} میل
                     </p>
                   </td>
                   <td className="table__td px-6 overflow-auto ">
-                    <p className="badge bg-blue/10 text-blue font-bold">
+                    <p className="badge bg-blue/10 text-blue border border-blue font-bold">
                       {toPersianNumbersWithComma(
                         product.modes.decant.pricePerMl,
                       )}
@@ -123,7 +125,7 @@ function ProductsListTable({ products }) {
                     {product.modes.sealed.variants.map((p, i) => (
                       <div
                         key={i}
-                        className="flex items-center justify-center gap-2 py-1 text-xs rounded-full badge bg-blue/10 text-blue font-bold"
+                        className="flex items-center justify-center gap-2 py-1 text-xs rounded-full badge bg-blue/10 text-blue border border-blue font-bold"
                       >
                         <p className=" text-stroke-800">
                           {toPersianNumbers(p.volume)} میل

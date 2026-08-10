@@ -63,35 +63,35 @@ function CouponsListTable({ coupons }) {
                     <p className="font-bold">{code}</p>
                   </td>
                   <td className="table__td px-2">
-                    <p className=" badge badge--secondary--2 font-bold">
+                    <p className=" badge badge--secondary--2 border border-stroke-800 font-bold">
                       {toPersianNumbersWithComma(discountValue)}{" "}
                       {type === "FIXED" ? "تومان" : "درصد"}
                     </p>
                   </td>
                   <td className="table__td px-6 overflow-auto ">
-                    <p className="badge bg-blue/10 text-blue font-bold">
+                    <p className="badge border border-blue bg-blue/10 text-blue font-bold">
                       {toPersianNumbersWithComma(usageLimit)}
                     </p>
                   </td>
 
                   <td className="table__td px-2">
-                    <p className="badge badge--primary font-bold">
+                    <p className="badge badge--primary font-bold border border-primary">
                       {target === "ALL" ? "همه کاربران" : "کاربران خاص"}
                     </p>
                   </td>
                   <td className="table__td px-2">
-                    <p className=" badge badge--secondary--2 font-bold">
+                    <p className=" badge badge--secondary--2 font-bold border border-stroke-800">
                       {type === "FIXED" ? "قیمتی" : "درصدی"}
                     </p>
                   </td>
                   <td className="table__td px-6 overflow-auto ">
-                    <p className="badge bg-blue/10 text-blue font-bold">
+                    <p className="badge border border-blue bg-blue/10 text-blue font-bold">
                       {toLocalDateString(expiresAt)}
                     </p>
                   </td>
                   <td className="table__td px-2">
                     <p
-                      className={`badge ${isActive ? " bg-success/10 text-success" : "bg-orange/10 text-orange"}`}
+                      className={`badge border ${isActive ? " bg-success/10 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
                     >
                       {isActive ? "فعال" : "غیر فعال"}
                     </p>

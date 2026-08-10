@@ -8,8 +8,9 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <div className="flex items-start max-md:justify-center md:justify-start w-full container mx-auto max-w-7xl gap-6 max-md:my-12 md:my-5 px-4">
-      <AdminSidebar />
+    <div className="flex items-start max-lg:justify-center lg:justify-start w-full container mx-auto max-w-7xl gap-6 lg:pb-5 x-4 max-lg:pt-4 max-lg:pb-10 overflow-hidden">
+      <AdminSidebar className="max-lg:hidden" />
+      <div className="max-lg:hidden w-22" />
       {children}
     </div>
   );

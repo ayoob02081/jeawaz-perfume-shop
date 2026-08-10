@@ -43,7 +43,7 @@ function NotifTypes({ data }) {
   const router = useRouter();
 
   return (
-    <div className="flex items-center justify-start max-lg:p-4 py-4 gap-4 snap-x overflow-x-scroll scrollbar-none">
+    <div className="flex items-center justify-start max-lg:py-4 py-4 gap-4 snap-x overflow-x-scroll scrollbar-none">
       {notifTypesData?.map((item) => (
         <button
           key={item.id}
@@ -52,23 +52,23 @@ function NotifTypes({ data }) {
               `/${pathName.startsWith("/admin") ? "admin" : "profile"}/notifs/${item.value}`,
             )
           }
-          className={`relative flex items-center justify-center px-4 max-md:rounded-lg md:rounded-3xl w-fit h-9 snap-center
+          className={`relative flex items-center justify-center px-4 max-lg:rounded-lg lg:rounded-3xl w-fit h-9 snap-center
         ${
           pathName.includes(item.value)
-            ? "md:border md:border-primary max-md:bg-primary md:bg-stroke-0 max-md:text-stroke-0 md:font-bold md:text-primary"
-            : "md:border md:border-stroke-250 max-md:bg-primary/10 md:bg-stroke-100 dark:md:bg-stroke-50 text-stroke-800"
+            ? "lg:border lg:border-primary max-lg:bg-primary lg:bg-stroke-0 max-lg:text-white lg:font-bold lg:text-primary"
+            : "lg:border lg:border-stroke-250 max-lg:bg-primary/10 lg:bg-stroke-100 dark:lg:bg-stroke-50 text-stroke-800"
         } snap-center`}
         >
           <p className="text-sm text-nowrap font-bold">{item.title}</p>
           {data?.byType[item.value] > 0 && (
-            <div className="absolute -top-1 -left-1 z-10 flex items-center justify-center aspect-square text-nowrap p-1 rounded-full max-md:bg-stroke-900 md:bg-primary text-stroke-0 h-4 text-xs">
+            <div className="absolute -top-1 -left-1 z-10 flex items-center justify-center aspect-square text-nowrap p-1 rounded-full max-lg:bg-stroke-900 lg:bg-primary text-white h-4 text-xs">
               <p className="translate-y-px">
                 {toPersianNumbers(data?.byType[item.value])}
               </p>
             </div>
           )}
           {item?.value === "ALL" && data?.total > 0 && (
-            <div className="absolute -top-1 -left-1 z-10 flex items-center justify-center aspect-square text-nowrap p-1 rounded-full max-md:bg-stroke-900 md:bg-primary text-stroke-0 h-4 text-xs">
+            <div className="absolute -top-1 -left-1 z-10 flex items-center justify-center aspect-square text-nowrap p-1 rounded-full max-lg:bg-stroke-900 lg:bg-primary text-white h-4 text-xs">
               <p className="translate-y-px">{toPersianNumbers(data?.total)}</p>
             </div>
           )}

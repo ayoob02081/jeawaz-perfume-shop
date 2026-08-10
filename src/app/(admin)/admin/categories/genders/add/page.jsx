@@ -1,11 +1,7 @@
 import CategoryForm from "../../../_components/CategoryForm";
 
 function page() {
-  return (
-    <div>
-      <CategoryForm gender="gender" />
-    </div>
-  );
+  return <CategoryForm gender="gender" />;
 }
 
 export default page;

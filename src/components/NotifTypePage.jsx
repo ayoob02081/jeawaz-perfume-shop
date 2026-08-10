@@ -46,7 +46,7 @@ function NotifTypePage({ type }) {
   return (
     <div
       ref={containerRef}
-      className="flex flex-col items-start justify-start gap-1 w-full max-md:max-h-screen lg:max-h-[50vh] lg:overflow-auto max-lg:rounded-2xl scrollbar--primary"
+      className="flex flex-col items-start justify-start gap-1 w-full max-md:max-h-screen lg:max-h-[50vh] overflow-auto max-lg:rounded-2xl scrollbar-none"
     >
       {notifications.length > 0 ? (
         notifications?.map(

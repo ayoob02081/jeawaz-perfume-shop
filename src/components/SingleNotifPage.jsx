@@ -19,6 +19,8 @@ function SingleNotifPage({
   }
 
   return (
+    <div className="h-full lg:w-[calc(100%-88px)] px-4">
+ 
     <div className="flex flex-col items-center justify-strat gap-6 h-full bg-stroke-0 rounded-2xl p-4 border border-stroke-200">
       <span
         className={`flex flex-col items-center justify-start gap-2 size-full rounded-xl px-4 `}
@@ -32,6 +34,7 @@ function SingleNotifPage({
         </p>
       </span>
       {children}
+    </div>
     </div>
   );
 }

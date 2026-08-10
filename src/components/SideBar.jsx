@@ -14,6 +14,8 @@ import Link from "next/link";
 import AppImage from "./AppImage";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import AdminSidebar from "@/app/(admin)/admin/_components/AdminSidebar";
+import UserSidebar from "@/app/(profile)/profile/_components/UserSidebar";
 
 const filterLinks = [
   {
@@ -69,11 +71,12 @@ function SideBar({
 }) {
   const ref = useOutsideClick(toggleSideBar);
   const router = useRouter();
+  const pathname = usePathname();
   return (
     <ul
       className={`${
         sidebarOpen ? "right-0" : "translate-x-[200vw]"
-      } fixed top-0 bg-black/30 w-screen h-full z-60 backdrop-blur-md flex flex-col duration-200`}
+      } fixed top-0 bg-black/30 w-screen h-full z-60 backdrop-blur-md flex flex-col duration-200 overflow-y-auto`}
     >
       {sidebarOpen && (
         <div
@@ -137,56 +140,69 @@ function SideBar({
               </button>
             </div>
           </li>
-          <div className=" border-b-4 border-stroke-200 dark:border-stroke-150 ">
-            <li className="px-6">
-              <button
-                className="flex-col gap-0 border-t border-stroke-250 justify-between text-base size-full "
-                onClick={toggleCategory}
-              >
-                <div className="flex items-center w-full">
-                  <div className="profile__title border-0">
-                    <AppImage
-                      src="/images/category.svg"
-                      alt="category-icon"
-                      className="pl-2"
-                      width="size-6"
-                      sizes="10vw"
-                    />
-                    <div className="w-[1.5px] h-6 bg-primary/10 dark:bg-stroke-50 rounded-full"></div>
-                    <div className="flex items-end justify-center gap-1 pl-2">
-                      <span className="text-base font-bold">دسته بندی</span>
-                      <span className="text-sm">محصولات</span>
-                    </div>
+          {sidebarOpen && pathname.startsWith("/admin") && (
+            <AdminSidebar toggleSideBar={toggleSideBar} />
+          )}
+          {sidebarOpen && pathname.startsWith("/profile") && (
+            <UserSidebar toggleSideBar={toggleSideBar} />
+          )}
+          {!pathname.startsWith("/admin") &&
+            !pathname.startsWith("/profile") && (
+              <>
+                <div className=" border-b-4 border-stroke-200 dark:border-stroke-150 ">
+                  <li className="px-6">
+                    <button
+                      className="flex-col gap-0 border-t border-stroke-250 justify-between text-base size-full "
+                      onClick={toggleCategory}
+                    >
+                      <div className="flex items-center w-full">
+                        <div className="profile__title border-0">
+                          <AppImage
+                            src="/images/category.svg"
+                            alt="category-icon"
+                            className="pl-2"
+                            width="size-6"
+                            sizes="10vw"
+                          />
+                          <div className="w-[1.5px] h-6 bg-primary/10 dark:bg-stroke-50 rounded-full"></div>
+                          <div className="flex items-end justify-center gap-1 pl-2">
+                            <span className="text-base font-bold">
+                              دسته بندی
+                            </span>
+                            <span className="text-sm">محصولات</span>
+                          </div>
+                        </div>
+                        <ChevronLeftIcon className="size-5 text-stroke-800" />
+                      </div>
+                    </button>
+                  </li>
+                  <div>
+                    {filterLinks.map((item) => (
+                      <SideBarLink
+                        key={item.id}
+                        sort={item.sort}
+                        toggleSideBar={toggleSideBar}
+                        href={item.href}
+                        title={item.title}
+                        src={item.src}
+                        alt={item.alt}
+                      />
+                    ))}
                   </div>
-                  <ChevronLeftIcon className="size-5 text-stroke-800" />
                 </div>
-              </button>
-            </li>
-            <div>
-              {filterLinks.map((item) => (
-                <SideBarLink
-                  key={item.id}
-                  sort={item.sort}
-                  toggleSideBar={toggleSideBar}
-                  href={item.href}
-                  title={item.title}
-                  src={item.src}
-                  alt={item.alt}
-                />
-              ))}
-            </div>
-          </div>
-          <div>
-            {pageLinks.map((item) => (
-              <SideBarLink
-                key={item.id}
-                id={item.id}
-                toggleSideBar={toggleSideBar}
-                href={item.href}
-                title={item.title}
-              />
-            ))}
-          </div>
+                <div>
+                  {pageLinks.map((item) => (
+                    <SideBarLink
+                      key={item.id}
+                      id={item.id}
+                      toggleSideBar={toggleSideBar}
+                      href={item.href}
+                      title={item.title}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
         </div>
       )}
     </ul>

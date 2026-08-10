@@ -1,11 +1,7 @@
 import ProductForm from "../../_components/ProductForm";
 
 function page() {
-  return (
-    <div>
-      <ProductForm />
-    </div>
-  );
+  return <ProductForm />;
 }
 
 export default page;

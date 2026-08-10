@@ -47,7 +47,7 @@ function CategoriesLayout() {
   } = useGetAllBrandCategories();
 
   return (
-    <div className="flex flex-col items-start justify-start gap-8">
+    <div className="flex flex-col items-start justify-start gap-8 max-lg:py-4 px-4 w-full pb-10">
       <div className="flex items-center justify-between gap-6 w-full">
         {categoriesMode.map((item) => {
           const isChecked = item.value === mode;

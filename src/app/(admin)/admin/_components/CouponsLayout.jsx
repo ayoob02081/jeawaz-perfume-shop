@@ -12,7 +12,7 @@ function CouponsLayout() {
   const meta = data?.meta;
 
   return (
-    <div className="space-y-2 w-full max-lg:px-6">
+    <div className="space-y-2 w-full max-lg:py-4 px-4 pb-10">
       <div className="flex items-center gap-4 justify-between pb-6 w-full">
         <h1 className="font-bold text-stroke-800 text-xl">کد تخفیف‌ها</h1>
         <Link

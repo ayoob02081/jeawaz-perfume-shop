@@ -8,9 +8,10 @@ import {
   bulkUpdateStatusApi,
   confirmPaymentApi,
   getOrderTimelineApi,
-  getAdminDashboardApi,
   getOrderByNumberApi,
   exportOrdersApi,
+  getAdminOrderByIdApi,
+  getFullAdminDashboardApi,
 } from "@/services/orderServices";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -36,8 +37,16 @@ export const useGetOrders = ({ page = 1, limit = 10, status } = {}) =>
 
 export const useGetOrderById = (id) =>
   useQuery({
-    queryKey: ["orders", id],
+    queryKey: ["order", id],
     queryFn: () => getOrderByIdApi(id),
+    enabled: !!id,
+    retry: false,
+  });
+
+export const useGetAdminOrderById = (id) =>
+  useQuery({
+    queryKey: ["admin-order", id],
+    queryFn: () => getAdminOrderByIdApi(id),
     enabled: !!id,
     retry: false,
   });
@@ -66,7 +75,8 @@ export const useGetOrderTimeline = (id) =>
 export const useGetAdminDashboard = () =>
   useQuery({
     queryKey: ["admin-dashboard"],
-    queryFn: getAdminDashboardApi,
+    queryFn: getFullAdminDashboardApi,
+    staleTime: 60_000,
   });
 
 export function useExportOrders() {
@@ -139,7 +149,13 @@ export function useUpdateOrderStatus() {
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
-      queryClient.invalidateQueries({ queryKey: ["orders", variables.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["admin-order", variables.id],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["order", variables.id],
+      });
       queryClient.invalidateQueries({
         queryKey: ["order-timeline", variables.id],
       });
@@ -182,11 +198,9 @@ export function useConfirmPayment() {
 
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
-      queryClient.invalidateQueries({ queryKey: ["orders", id] });
-      queryClient.invalidateQueries({
-        queryKey: ["order-timeline", id],
-      });
-
+      queryClient.invalidateQueries({ queryKey: ["order", id] });
+      queryClient.invalidateQueries({ queryKey: ["admin-order", id] });
+      queryClient.invalidateQueries({ queryKey: ["order-timeline", id] });
       toast.success("پرداخت تایید شد");
     },
 

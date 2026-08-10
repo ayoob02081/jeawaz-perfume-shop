@@ -1,6 +1,6 @@
 import Error from "@/components/Error";
 import Loading from "@/components/Loading";
-import { useGetUserbyId } from "@/hooks/useUsers";
+import { useGetUserById } from "@/hooks/useUsers";
 import { toLocalDateString } from "@/utils/toLocalDate";
 import {
   normalizeIranPhone,
@@ -8,10 +8,9 @@ import {
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import Link from "next/link";
-import React from "react";
 
 function SingleUserPage({ userId }) {
-  const { data: user, isLoading, error } = useGetUserbyId(userId);
+  const { data: user, isLoading, error } = useGetUserById(userId);
 
   const {
     fullName,
@@ -93,20 +92,32 @@ function SingleUserPage({ userId }) {
   if (error) return <Error />;
 
   return (
-    <div className="w-full p-4">
-      <div className="flex flex-wrap gap-4 justify-center w-full  max-lg:border-t border-stroke-200 pt-4 max-md:gap-6">
+    <div className="w-full p-4 pt-0">
+      <div className="flex flex-wrap gap-4 justify-center w-full border-stroke-200 max-md:gap-6 pt-4 lg: border lg: p-4 lg: rounded-2xl">
         {infoData?.map((item) => (
-          <InfoLine key={item.id} title={item.title} des={item.des} />
+          <span
+            key={item.id}
+            className={`flex items-center justify-between border-b border-stroke-300 pb-4 w-full`}
+          >
+            <p className="text-base text-stroke-800 md:text-stroke-600">
+              {item.title}
+            </p>
+            <p className={`font-bold text-stroke-800  ${item.className}`}>
+              {item.des}
+            </p>
+          </span>
         ))}
         {infoButtonsData?.map((item) => (
-          <InfoButtons
+          <Link
             key={item.id}
-            userId={userId}
-            title={item.title}
-            des={item.des}
-            page={item.page}
-            className={item.className}
-          />
+            href={`/admin/users/${userId}${item.page}`}
+            className="fex flex-col items-ceter justify-betwen btn bg-stroke-100 border border-stroke-100 hover:border-primary hadow-stroke-800/40 rounded-2xl p-6 gap-2 shrink grow transition-all duration-200"
+          >
+            <p className="text-base text-stroke-800 md:text-stroke-600">
+              {item.title}
+            </p>
+            <p className={`font-bold  ${item.className}`}>{item.des}</p>
+          </Link>
         ))}
       </div>
     </div>
@@ -114,32 +125,3 @@ function SingleUserPage({ userId }) {
 }
 
 export default SingleUserPage;
-
-function InfoLine({ title, des, className }) {
-  return (
-    <span
-      className={`flex items-center justify-between border-b border-stroke-300 pb-4 w-full`}
-    >
-      <p className="text-base text-stroke-800 md:text-stroke-600">{title}</p>
-      <p className={`font-bold text-stroke-800  ${className}`}>{des}</p>
-    </span>
-  );
-}
-
-function InfoButtons({
-  userId,
-  title,
-  des,
-  page,
-  className = "text-stroke-800",
-}) {
-  return (
-    <Link
-      href={`/admin/users/${userId}${page}`}
-      className="fex flex-col items-ceter justify-betwen btn bg-stroke-100 border border-stroke-100 hover:border-primary hadow-stroke-800/40 rounded-2xl p-6 gap-2 shrink grow transition-all duration-200"
-    >
-      <p className="text-base text-stroke-800 md:text-stroke-600">{title}</p>
-      <p className={`font-bold  ${className}`}>{des}</p>
-    </Link>
-  );
-}

@@ -158,7 +158,7 @@ export function CardIconResponsive({
 
   switch (type) {
     case "floral":
-      bgColor = "bg-primary/10 text-primary dark:bg-primary/5";
+      bgColor = "bg-rose-500/10 text-rose-500 dark:bg-rose-500/5";
       break;
 
     case "woody":
@@ -175,7 +175,7 @@ export function CardIconResponsive({
 
     case "leather":
       bgColor =
-        "bg-stroke-950/10 text-stroke-950 dark:bg-stroke-800/5 dark:text-dark-orange";
+        "bg-stroke-900/10 text-stroke-900 dark:bg-stroke-800/5 dark:text-dark-orange";
       break;
 
     case "chypre":
@@ -192,7 +192,7 @@ export function CardIconResponsive({
       break;
 
     case "women":
-      bgColor = "bg-primary/10 text-primary dark:bg-primary/5";
+      bgColor = "bg-rose-500/10 text-rose-500 dark:bg-rose-500/5";
       break;
 
     case "unisex":
@@ -205,6 +205,7 @@ export function CardIconResponsive({
       break;
 
     default:
+      bgColor = "bg-primary/10 text-primary dark:bg-primary/5";
       break;
   }
 

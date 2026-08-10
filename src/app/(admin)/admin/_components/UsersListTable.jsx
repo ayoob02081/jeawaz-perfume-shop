@@ -29,8 +29,10 @@ function UsersListTable({ users }) {
                   </td>
                   <td className="table__td px-2">
                     <Link
-                      href={`tel:+${user?.phoneNumber}`}
-                      className="flex items-center gap-2 justify-between hover:text-primary duration-200"
+                      href={
+                        user?.phoneNumber ? `tel:+${user?.phoneNumber}` : ""
+                      }
+                      className="flex items-center gap-2 justify-end hover:text-primary duration-200"
                     >
                       {normalizeIranPhone(user?.phoneNumber) ||
                         "شماره‌ای ثبت نشده"}
@@ -41,14 +43,14 @@ function UsersListTable({ users }) {
                   </td>
                   <td className="table__td px-2">
                     <p
-                      className={`badge ${user?.role === "admin" ? " bg-success/10 text-success" : "bg-orange/10 text-orange"}`}
+                      className={`badge border font-bold ${user?.role === "admin" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
                     >
                       {user?.role}
                     </p>
                   </td>
                   <td className="table__td px-2">
                     <p
-                      className={`badge ${user?.accountStatus === "active" ? " bg-success/10 text-success" : "bg-orange/10 text-orange"}`}
+                      className={`badge border font-bold ${user?.accountStatus === "active" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
                     >
                       {user?.accountStatus === "active" ? "فعال" : "غیر فعال"}
                     </p>

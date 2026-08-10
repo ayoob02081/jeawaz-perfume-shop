@@ -143,7 +143,7 @@ function OrdersListTable({ orders, isLoading, status }) {
   }, [status]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 rounded-2xl p-4 pt-0">
       <div className="flex items-center justify-between w-full gap-4">
         {nextPossibleBulkStatuses?.length > 0 && (
           <button
@@ -228,8 +228,12 @@ function OrdersListTable({ orders, isLoading, status }) {
                     </td>
                     <td className="table__td px-2">
                       <Link
-                        href={`tel:+${order?.shipping?.phone}`}
-                        className="flex items-center gap-2 justify-between hover:text-primary duration-200"
+                        href={
+                          order?.shipping?.phone
+                            ? `tel:+${order?.shipping?.phone}`
+                            : ""
+                        }
+                        className="flex items-center gap-2 justify-end hover:text-primary duration-200"
                       >
                         {normalizeIranPhone(order?.shipping?.phone) ||
                           "شماره‌ای ثبت نشده"}
@@ -242,21 +246,21 @@ function OrdersListTable({ orders, isLoading, status }) {
                     </td>
                     <td className="table__td px-2">
                       <p
-                        className={`badge ${currentStatus?.textColor} ${currentStatus?.color}`}
+                        className={`badge border font-bold ${currentStatus?.textColor} ${currentStatus?.color}`}
                       >
                         {currentStatus?.title}
                       </p>
                     </td>
                     <td className="table__td px-2">
-                      <div className="flex flex-col items-center justify-center gap-y-2 badge badge--primary ">
+                      <div className="flex flex-col items-center justify-center gap-y-2 badge badge--primary">
                         {toPersianNumbers(order?.items.length)}
                       </div>
                     </td>
                     <td className="table__td px-2">
-                      <p className={`badge bg-success/10 text-success `}>
-                        {toPersianNumbersWithComma(
-                          order?.pricing?.subtotal + order?.pricing?.shipping,
-                        )}
+                      <p
+                        className={`badge bg-success/10 text-success border border-success font-bold `}
+                      >
+                        {toPersianNumbersWithComma(order?.pricing?.grandTotal)}
                       </p>
                     </td>
 

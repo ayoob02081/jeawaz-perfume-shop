@@ -1,8 +1,11 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { UserIcon } from "@heroicons/react/24/outline";
-import { UserIcon as UserIconFill } from "@heroicons/react/24/solid";
+import { UserCircleIcon, UserIcon } from "@heroicons/react/24/outline";
+import {
+  UserIcon as UserSolidIcon,
+  UserCircleIcon as UserCircleSolidIcon,
+} from "@heroicons/react/24/solid";
 import AppImage from "@/components/AppImage";
 import { useAuth } from "@/contexts/filters/auth/AuthContext";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
@@ -11,18 +14,20 @@ import { useUnreadNotificationsCount } from "@/hooks/useNotification";
 function MobilePannel() {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const showElement = useHideOnScroll();
   const { data } = useUnreadNotificationsCount();
 
   return (
     <nav
-      className={`fixed flex items-center justify-center bottom-0 right-0 w-full md:hidden z-70
+      className={`fixed flex items-center justify-center bottom-0 right-0 w-full lg:hidden z-70
      transition-all duration-200 ease-in-out overflow-hidden ${
        showElement ? "h-24 opacity-100 " : "max-h-0 opacity-0"
      }`}
     >
-      <ul className="grid grid-cols-4 justify-items-center gap-x-5 h-20.75 w-[95%] shadow-2xl shadow-stroke-800/40 dark:shadow-stroke-800/40 rounded-2xl bg-stroke-0 px-5">
+      <ul
+        className={`grid ${user?.role === "admin" ? "grid-cols-5" : "grid-cols-4"} justify-items-center gap-x-5 h-20.75 w-[95%] shadow-2xl shadow-stroke-800/40 dark:shadow-stroke-800/40 rounded-2xl bg-stroke-0 px-5`}
+      >
         <li className="flex items-center justify-center ">
           <button
             className="flex flex-col justify-center items-center gap-2"
@@ -114,12 +119,12 @@ function MobilePannel() {
             onClick={
               isAuthenticated !== true
                 ? () => router.push("/auth/login")
-                : () => router.push("/profile")
+                : () => router.push("/profile/me")
             }
           >
             <div className="flex items-center justify-center size-7">
               {pathname.startsWith("/profile") ? (
-                <UserIconFill className="size-6 text-primary" />
+                <UserSolidIcon className="size-6 text-primary" />
               ) : (
                 <UserIcon className="size-6 text-stroke-600 dark:text-stroke-400" />
               )}
@@ -140,6 +145,31 @@ function MobilePannel() {
             )}
           </button>
         </li>
+        {user?.role === "admin" && (
+          <li className="flex items-center justify-center ">
+            <button
+              className="relative flex flex-col justify-center items-center gap-2"
+              onClick={() => router.push("/admin/dashboard")}
+            >
+              <div className="flex items-center justify-center size-7">
+                {pathname.startsWith("/admin") ? (
+                  <UserCircleSolidIcon className="size-6 text-primary" />
+                ) : (
+                  <UserCircleIcon className="size-6 text-stroke-600 dark:text-stroke-400" />
+                )}
+              </div>
+              <p
+                className={`text-xs text-nowrap font-bold ${
+                  pathname.startsWith("/admin")
+                    ? "text-stroke-800"
+                    : "text-stroke-600"
+                }`}
+              >
+                ادمین
+              </p>
+            </button>
+          </li>
+        )}
       </ul>
     </nav>
   );

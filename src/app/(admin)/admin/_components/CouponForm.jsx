@@ -106,7 +106,7 @@ function CouponForm({ couponToEdit }) {
   };
 
   return (
-    <div className="max-w-5xl mx-auto w-full order border-stroke-300">
+    <div className="max-w-5xl w-full order border-stroke-300 max-xl:px-4">
       <Toaster />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full">

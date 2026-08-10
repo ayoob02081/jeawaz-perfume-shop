@@ -12,11 +12,7 @@ function EditAddressPage() {
 
   if (isLoading) return <Loading />;
 
-  return (
-    <div>
-      <AddressFormLayout addressToEdit={address} />
-    </div>
-  );
+  return <AddressFormLayout addressToEdit={address} />;
 }
 
 export default EditAddressPage;
