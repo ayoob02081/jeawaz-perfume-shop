@@ -12,7 +12,7 @@ function UserSidebar({ className, toggleSideBar }) {
       id: 1,
       href: "/profile/me",
       baseHref: "/profile/me",
-      label: "اطلاعات حساب کاربری",
+      label: "اطلاعات کاربری",
       countUnread: false,
     },
     {

@@ -114,11 +114,11 @@ function AddressBtn({ id }) {
     <div className="md:col-start-3 md:row-start-1 flex items-center justify-between md:justify-end gap-4 w-full text-nowrap">
       <Link
         href={`/profile/me/address/edit/${id}`}
-        className="flex items-center justify-center gap-1 max-md:h-12 max-md:border max-md:border-stroke-200 text-stroke-800 hover:text-success active:text-success max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200"
+        className="group flex items-center justify-center gap-1 max-md:h-12 max-md:border max-md:border-stroke-200 text-stroke-800 hover:text-success active:text-success max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold transition-all duration-200"
       >
         <div className="flex flex-col items-center justify-center gap-0.5 size-5">
           <PencilIcon className="rotate-[-8de]" />
-          <span className="border w-4/5 rounded-full"></span>
+          <span className="border w-4/5 rounded-full group-hover:border-success group-active:border-success transition-all duration-200"></span>
         </div>
         <p>ویرایش</p>
       </Link>

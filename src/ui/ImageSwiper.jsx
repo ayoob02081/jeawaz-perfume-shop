@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/filters/auth/AuthContext";
 
 export default function ImageSwiper({ product, images = [] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const { user } = useAuth();
 
   const [mainRef, mainApi] = useEmblaCarousel({
@@ -59,16 +60,48 @@ export default function ImageSwiper({ product, images = [] }) {
     if (mainApi) mainApi.scrollNext();
   };
 
+  const closeLightbox = () => {
+    setIsLightboxOpen(false);
+  };
+
+  const handleLightboxKeyDown = useCallback(
+    (e) => {
+      if (!isLightboxOpen) return;
+
+      if (e.key === "Escape") {
+        closeLightbox();
+      }
+
+      if (e.key === "ArrowLeft") {
+        mainApi?.scrollPrev();
+      }
+
+      if (e.key === "ArrowRight") {
+        mainApi?.scrollNext();
+      }
+    },
+    [isLightboxOpen, mainApi],
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleLightboxKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleLightboxKeyDown);
+    };
+  }, [handleLightboxKeyDown]);
+
   return (
     <div
       dir="ltr"
-      className="flex flex-col lg:flex-row lg:aspect-6/5 lg:pr-4 gap-4 max-sm:rounded-2xl max-md:rounded-3xl max-md:bg-stroke-150 max-md:dark:bg-stroke-50"
+      className="relative flex flex-col lg:flex-row lg:aspect-6/5 lg:pr-4 gap-4 max-sm:rounded-2xl max-md:rounded-3xl max-md:bg-stroke-150 max-md:dark:bg-stroke-50"
     >
       {/* MAIN */}
       <div className="lg:flex-1">
         <div ref={mainRef} className="relative overflow-hidden md:rounded-2xl">
           {/* Images */}
-          <div className="flex">
+          <div className="flex md:cursor-zoom-in"
+          onClick={() => setIsLightboxOpen(true)}>
             {images?.map((src, i) => (
               <div
                 key={i}
@@ -191,6 +224,70 @@ export default function ImageSwiper({ product, images = [] }) {
           </button>
         </div>
       </div>
+      {isLightboxOpen && (
+        <div
+          className="fixed inset-0 z-99 flex items-center justify-center bg-black/90 p-4 max-md:hidden"
+          onClick={closeLightbox}
+        >
+          {/* Close */}
+          <button
+            type="button"
+            onClick={closeLightbox}
+            className="absolute right-4 top-4 z-10 flex size-11 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20"
+            aria-label="بستن"
+          >
+            <span className="text-2xl leading-none">×</span>
+          </button>
+
+          {/* Previous */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              scrollPrev();
+            }}
+            disabled={selectedIndex === 0}
+            className="absolute left-4 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30"
+            aria-label="تصویر قبلی"
+          >
+            <ChevronLeftIcon className="size-6" />
+          </button>
+
+          {/* Image */}
+          <div
+            className="relative flex h-full w-full items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <AppImage
+              src={images[selectedIndex]}
+              alt={`${product?.enTitle || "product"}-fullscreen-${selectedIndex}`}
+              objectFit="object-contain"
+              className="max-h-[90vh] max-w-[90vw]"
+              sizes="100vw"
+              priority
+            />
+          </div>
+
+          {/* Next */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              scrollNext();
+            }}
+            disabled={selectedIndex === images.length - 1}
+            className="absolute right-4 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30"
+            aria-label="تصویر بعدی"
+          >
+            <ChevronRightIcon className="size-6" />
+          </button>
+
+          {/* Counter */}
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-sm">
+            {selectedIndex + 1} / {images.length}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

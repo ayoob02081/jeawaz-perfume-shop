@@ -122,7 +122,7 @@ function ProductDes({ product }) {
                   value="decant"
                   onChange={(e) => volumeHandler(e, "decant")}
                   checked={volumeMode === "decant"}
-                  className="badge btn--type duration-200 "
+                  className="badge badge--secondary btn--type duration-200 "
                 >
                   <p className="text-nowrap">دکانت</p>
                 </RadioButton>
@@ -132,7 +132,7 @@ function ProductDes({ product }) {
                   value="sealed"
                   onChange={(e) => volumeHandler(e, "sealed")}
                   checked={volumeMode === "sealed"}
-                  className="badge btn--type duration-200 "
+                  className="badge badge--secondary btn--type duration-200 "
                 >
                   <p className="text-nowrap">شیشه پلمپ</p>
                 </RadioButton>
@@ -163,9 +163,9 @@ function ProductDes({ product }) {
                     disabled={isDisabled}
                     onChange={volumeHandler}
                     checked={selectedVolume === volume}
-                    className={`badge ${
+                    className={`badge badge--secondary ${
                       isDisabled
-                        ? "opacity-60 dark:opacity-40 cursor-not-allowed!"
+                        ? "opacity-60 dark:opacity-40 cursor-not-allowed! strikeThrough border-red "
                         : "btn--type"
                     } duration-200`}
                   >
@@ -284,11 +284,7 @@ function ProductOptions({ product }) {
             data={productAccords}
             accords
           />
-          <ProductOption
-            title="فصل استفاده"
-            data={details.seasons}
-            accords
-          />
+          <ProductOption title="فصل استفاده" data={details.seasons} accords />
         </div>
       </section>
     </article>

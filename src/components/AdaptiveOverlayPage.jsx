@@ -74,7 +74,7 @@ function AdaptiveOverlayPage({
   if (product) {
     return (
       <div
-        className={`${isOpen ? "translate-x-0 right-0" : "translate-x-full"} top-0 max-md:fixed max-md:w-full max-md:h-screen md:rounded-3xl bg-stroke-0 max-md:z-90 transition-all duration-200 ${overflow} max-md:bottom-20 md:bottom-0`}
+        className={`${isOpen ? "translate-x-0 right-0" : "translate-x-full"} top-0 max-md:fixed max-md:w-full max-md:h-screen md:rounded-3xl bg-stroke-0 max-md:z-90 transition-all duration-200 ${overflow} max-md:bottom-20 md:bottom-0 scrollbar-none`}
       >
         <div className="flex flex-col h-full max-md:pb-6 w-full">
           <div
@@ -91,7 +91,7 @@ function AdaptiveOverlayPage({
               justify={justify}
             />
           </div>
-          <div className="p-6">{children}</div>
+          <div className="max-md:p-6">{children}</div>
         </div>
       </div>
     );

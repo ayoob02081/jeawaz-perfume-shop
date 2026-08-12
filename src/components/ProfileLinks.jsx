@@ -168,9 +168,11 @@ export function ProfileLink({
           className="flex items-center justify-start gap-4 hover:bg-stroke-250 **:transition-all **:last:duration-200 text-stroke-800
               py-3 px-1 size-full lg:size-fit group-hover:lg:size-full rounded-[44px] duration-200"
         >
-          <div className="flex items-center justify-start gap-2 w-full">
-            <ArrowRightStartOnRectangleIcon className="size-10 p-2" />
-            <p className="lg:w-0 group-hover:lg:w-fit lg:opacity-0 group-hover:lg:opacity-100 text-nowrap">
+          <div className="flex items-center justify-start gap-2 h-11 w-full overflow-hidden">
+            <div className="flex items-center justify-center size-11 z-10">
+              <ArrowRightStartOnRectangleIcon className="size-7" />
+            </div>
+            <p className="flex items-center justify-start lg:w-0 group-hover:lg:w-fit lg:translate-x-30 group-hover:lg:translate-x-0 lg:opacity-0 group-hover:lg:opacity-100 text-nowrap transition-all duration-200">
               {label}
             </p>
           </div>
@@ -187,9 +189,9 @@ export function ProfileLink({
             <Link
               onClick={toggleSideBar}
               href={"/profile/me"}
-              className="flex items-center justify-between max-lg:gap-4 lg:gap-4"
+              className="flex items-center justify-between max-lg:gap-4 lg:gap-4 overflow-hidden"
             >
-              <UserIcon className="p-3 text-stroke-800 size-14 bg-stroke-150 lg:bg-stroke-0 rounded-xl" />
+              <UserIcon className="p-3 text-stroke-800 size-14 bg-stroke-150 lg:bg-stroke-0 rounded-xl z-10" />
               {isPending ? (
                 <Loading
                   height={2}
@@ -235,8 +237,8 @@ export function ProfileLink({
             }    
             max-lg:py-2 lg:py-2 size-full lg:w-fit group-hover:lg:size-full px-2 rounded-full transition-all duration-200`}
       >
-        <div className="relative flex items-center justify-start w-full gap-2 lg:gap-0 group-hover:gap-2">
-          <div className="flex items-center justify-center size-11">
+        <div className="relative flex items-center justify-start w-full gap-2 lg:gap-0 group-hover:gap-2 overflow-hidden">
+          <div className="flex items-center justify-center size-11 z-10">
             <>{renderSteps()}</>
           </div>
           <div className="flex items-center justify-between w-full lg:opacity-0 lg:w-0 group-hover:lg:opacity-100 group-hover:lg:w-fit lg:translate-x-20 group-hover:lg:translate-x-0 text-nowrap transition-all duration-200">
