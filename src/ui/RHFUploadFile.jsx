@@ -13,6 +13,7 @@ export default function RHFUploadFile({
   uploadUrl = "/upload/image",
   deleteUrl = "/upload/delete",
   type,
+  ratio = "aspect-square",
 }) {
   const [isUploading, setIsUploading] = useState(false);
 
@@ -20,8 +21,8 @@ export default function RHFUploadFile({
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      return toast.error("حجم فایل نباید بیشتر از ۲ مگابایت باشد");
+    if (file.size > 10 * 1024 * 1024) {
+      return toast.error("حجم فایل نباید بیشتر از ۱۰ مگابایت باشد");
     }
 
     const formData = new FormData();
@@ -65,7 +66,9 @@ export default function RHFUploadFile({
 
   return (
     <div className="relative group">
-      <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-stroke-300 rounded-2xl cursor-pointer bg-stroke-0 transition-all overflow-hidden select-none">
+      <label
+        className={`flex flex-col items-center justify-center h-32 border-2 border-dashed border-stroke-300 rounded-2xl cursor-pointer bg-stroke-0 transition-all overflow-hidden select-none ${ratio}`}
+      >
         {value ? (
           <AppImage
             src={value}

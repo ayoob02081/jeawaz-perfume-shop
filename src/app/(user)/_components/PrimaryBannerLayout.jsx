@@ -1,115 +1,91 @@
-import AppImage from "@/components/AppImage";
-import Link from "next/link";
-import {
-  ArrowLeftIcon,
-  ChatBubbleLeftRightIcon,
-} from "@heroicons/react/24/outline";
+"use client";
 
-const bannerData = [
-  {
-    id: 1,
-    srcLg: "/images/Banner1 xl.jpg",
-    srcSm: "/images/Banner1.png",
-    url: "/products",
-    urlLabel: "مشاهده محصولات",
-  },
-  {
-    id: 2,
-    srcLg: "/images/Banner1 xl.jpg",
-    srcSm: "/images/Banner1.png",
-    url: "/products",
-    urlLabel: "مشاهده محصولات",
-  },
-  {
-    id: 3,
-    srcLg: "/images/Banner1 xl.jpg",
-    srcSm: "/images/Banner1.png",
-    url: "/products",
-    urlLabel: "مشاهده محصولات",
-  },
-  {
-    id: 4,
-    srcLg: "/images/Banner1 xl.jpg",
-    srcSm: "/images/Banner1.png",
-    url: "/products",
-    urlLabel: "مشاهده محصولات",
-  },
-  {
-    id: 5,
-    srcLg: "/images/Banner1 xl.jpg",
-    srcSm: "/images/Banner1.png",
-    url: "/products",
-    urlLabel: "مشاهده محصولات",
-  },
-];
+import { Autoplay, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
+import { useGetActiveBanners } from "@/hooks/useBanners";
+import "swiper/css";
+import "swiper/css/pagination";
+import Loading from "@/components/Loading";
+import { useRef } from "react";
+import PrimaryBannerCard from "@/components/PrimaryBannerCard";
 
 function PrimaryBannerLayout() {
+  const swiperRef = useRef(null);
+
+  const {
+    data: banners,
+    isPending,
+    isError,
+  } = useGetActiveBanners({
+    type: "primary",
+  });
+
+  if (isPending) {
+    return <Loading />;
+  }
+
+  if (isError || !banners?.length) {
+    return null;
+  }
+
   return (
-    <section className="flex items-center justify-center gap-4 mt-2 container mx-auto">
-      <div className="flex gap-6 sm:gap-10 px-20 justify-evenly items-center w-full scroll--x rounded-2xl xl:first:pr-[10%] 2xl:first:pr-[20%] xl:last:pl-[10%] 2xl:last:pl-[20%]">
-        {bannerData.map((item) => (
-          <div key={item.id} className="snap-center">
-            <BannerCard
-              label={item.label}
-              srcLg={item.srcLg}
-              srcSm={item.srcSm}
-              url={item.url}
-              urlLabel={item.urlLabel}
-            />
-          </div>
+    <section className="relative container mx-auto xl:max-w-7xl mt-2 w-full px-2 sm:px-4">
+      <Swiper
+        modules={[Autoplay, Pagination]}
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper;
+        }}
+        slidesPerView={1}
+        spaceBetween={16}
+        centeredSlides
+        loop={banners.length > 1}
+        speed={700}
+        autoplay={{
+          delay: 5000,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true,
+        }}
+        pagination={{
+          clickable: true,
+        }}
+        className="primary-banner-swiper w-full"
+      >
+        {banners.map((banner, index) => (
+          <SwiperSlide key={banner.id}>
+            <PrimaryBannerCard banner={banner} priority={index === 0} />
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
+      
+      {/* Desktop navigation */}
+      {banners.length > 1 && (
+        <>
+          <button
+            type="button"
+            aria-label="بنر قبلی"
+            onClick={() => swiperRef.current?.slidePrev()}
+            className="absolute right-1 top-1/2 z-20 hidden max-lg:size-9 size-11 -translate-y-1/2 items-center justify-center rounded-full
+            border border-stroke-200 bg-stroke-0/20 text-white shadow-md backdrop-blur-md duration-200 hover:bg-primary
+            hover:text-white active:scale-95 md:flex xl:size-12"
+          >
+            <ChevronRightIcon className="max-lg:size-4 size-5 xl:size-6" />
+          </button>
+
+          <button
+            type="button"
+            aria-label="بنر بعدی"
+            onClick={() => swiperRef.current?.slideNext()}
+            className="absolute left-1 top-1/2 z-20 hidden max-lg:size-9 size-11 -translate-y-1/2 items-center justify-center rounded-full
+            border border-stroke-200 bg-stroke-0/20 text-white shadow-md backdrop-blur-md duration-200 hover:bg-primary
+            hover:text-white active:scale-95 md:flex xl:size-12 "
+          >
+            <ChevronLeftIcon className="max-lg:size-4 size-5 xl:size-6" />
+          </button>
+        </>
+      )}
     </section>
   );
 }
 
 export default PrimaryBannerLayout;
-
-function BannerCard({ srcLg, srcSm, url, urlLabel }) {
-  return (
-    <div className="relative flex items-center justify-center border-2 border-primary/10 rounded-xl md:rounded-3xl overflow-hidden banner--primary--size">
-      <AppImage
-        src={srcLg}
-        alt="Banner-image"
-        className="max-sm:hidden"
-        objectFit="cover"
-        width="size-full"
-        loading="eager"
-        sizes="80vw"
-      />
-      <AppImage
-        src={srcSm}
-        alt="Banner-image"
-        className="sm:hidden"
-        objectFit="cover"
-        width="size-full"
-        loading="eager"
-        sizes="80vw"
-      />
-      <div className="absolute bottom-7 md:bottom-9 lg:bottom-12 right-5 md:right-6 lg:right-7 flex items-center justify-start gap-4">
-        <Link
-          href={url}
-          className="h-8 sm:h-8 xl:h-10 2xl:h-12 flex items-center justify-between gap-2 px-3.5 sm:px-3 py-2 sm:py-2 text-white bg-primary hover:text-primary hover:bg-white hover:ring-primary active:text-primary active:bg-white active:ring-primary ring-4 sm:ring-2 ring-primary/10 rounded-4xl duration-300"
-        >
-          <p className="text-xs sm:text-[10px] lg:text-xs xl:text-base font-bold">
-            {urlLabel}
-          </p>
-          <div>
-            <ArrowLeftIcon className="size-4" />
-          </div>
-        </Link>
-        <Link
-          href={"tel:+989180522273"}
-          className="flex items-center justify-between gap-2 max-sm:hidden group hover:bg-white/60 active:bg-white/60 rounded-full h-8 sm:h-8 xl:h-10 2xl:h-12 pl-2 duration-200"
-        >
-          <button className="btn rounded-full h-full ring-4 sm:ring-2 ring-primary/10 border-0 text-white bg-stroke-900 group-hover:text-stroke-900  group-hover:bg-white group-hover:ring-stroke-900 group-active:text-stroke-900  group-active:bg-white group-active:ring-stroke-900 aspect-square duration-300">
-            <ChatBubbleLeftRightIcon className="max-xl:size-4 xl:size-6" />
-          </button>
-          <p className="text-xs sm:text-[10px] lg:text-xs xl:text-base text-whie font-bold text-stroke-950 group-hover:text-stroke-900 group-active:text-stroke-900">
-            دریافت مشاوره
-          </p>
-        </Link>
-      </div>
-    </div>
-  );
-}

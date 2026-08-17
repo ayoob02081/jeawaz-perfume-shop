@@ -11,6 +11,7 @@ import {
   ClipboardDocumentListIcon,
   PencilSquareIcon,
   ReceiptPercentIcon,
+  RectangleGroupIcon,
   Squares2X2Icon,
   TagIcon,
   UserGroupIcon,
@@ -26,6 +27,7 @@ import {
   UserGroupIcon as UserGroupSolidIcon,
   UserIcon as UserSolidIcon,
   ReceiptPercentIcon as ReceiptPercentSolidIcon,
+  RectangleGroupIcon as RectangleGroupSolidIcon,
 } from "@heroicons/react/24/solid";
 import { useAuth } from "@/contexts/filters/auth/AuthContext";
 import { useUnreadNotificationsCount } from "@/hooks/useNotification";
@@ -33,7 +35,7 @@ import { useUnreadNotificationsCount } from "@/hooks/useNotification";
 export default function ProfileSidebarLayout({ children, className }) {
   return (
     <div
-      className={`${className} group lg:absolute right-2 z-70 max-lg:h-full max-lg:w-[75vw] group-hover:lg:w-full lg:size-fit lg:shadow-xl lg:border lg:rounded-3xl
+      className={`${className} group lg:fixed right-2 z-70 max-lg:h-full max-lg:w-[75vw] group-hover:lg:w-full lg:size-fit lg:shadow-xl lg:border lg:rounded-3xl
        bg-stroke-0 lg:bg-stroke-100 dark:lg:bg-stroke-50 border-stroke-200 transition-all duration-200 **:transition-all **:duration-200 `}
     >
       <div className={`flex flex-col h-full max-lg:pb-6 w-full`}>
@@ -132,6 +134,13 @@ export function ProfileLink({
           <ChatBubbleLeftRightSolidIcon className="size-7" />
         ) : (
           <ChatBubbleLeftRightIcon className="size-7" />
+        );
+
+      case "/admin/banners":
+        return isPathName ? (
+          <RectangleGroupSolidIcon className="size-7" />
+        ) : (
+          <RectangleGroupIcon className="size-7" />
         );
 
       case "/profile/orders":

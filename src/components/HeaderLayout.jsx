@@ -302,7 +302,7 @@ function DesktopHeader({
           <div className="flex items-center justify-between gap-4">
             <li className="relative w-36 lg:w-44 h-12 cursor-not-allowed">
               <button
-                className="w-full h-full btn btn--primary flex items-center justify-center size-full gap-2"
+                className="w-full h-full btn btn--primary ring-4 ring-primary/5 hover:ring-0 flex items-center justify-center size-full gap-2"
                 onClick={toggleCategory}
                 disabled={categoryOpen ? true : false}
               >
@@ -405,12 +405,12 @@ function MobileHeader({
   const showElement = useHideOnScroll();
 
   return (
-    <nav className="lg:hidden max-lg:fixed max-lg:top-0 inset-x-0 max-sm:px-4 h-fit w-full z-50">
-      <ul className="grid grid-cols-3 gap-x-10 relative container mx-auto p-4 rounded-b-4xl bg-stroke-0 shadow-md dark:shadow-stroke-800/10 duration-200">
+    <nav className="lg:hidden max-lg:fixed max-lg:top-0 inset-x-0 h-fit w-full z-50">
+      <ul className="grid grid-cols-3 max-sm:gap-x-4 gap-x-20 relative container mx-auto p-4 rounded-b-4xl bg-stroke-0/0 backdrop-blur-l shadow-m dark:shadow-stroke-80 duration-200">
         <li className="justify-items-start">
           <button
             type="button"
-            className="text-2xl aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 active:bg-stroke-50 dark:bg-stroke-50 active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-primary active:text-primary/80 dark:text-stroke-800 dark:active:text-stroke-800/70 duration-200"
+            className="text-2xl aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 bg-stroke-0/0 backdrop-blur-xl active:bg-stroke-50 dark:bg-stroke-50 active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-primary active:text-primary/80 dark:text-stroke-800 dark:active:text-stroke-800/70 duration-200"
             onClick={toggleSideBar}
           >
             <AppImage
@@ -421,7 +421,7 @@ function MobileHeader({
             />
           </button>
         </li>
-        <li className=" justify-items-center">
+        <li className=" justify-items-center bg-stroke-0/0 backdrop-blur-xl rounded-full">
           <Link className="block p-2" href="/">
             <AppImage
               src="/images/Jeaawaz-Logo-red-v5.0.webp"
@@ -434,7 +434,7 @@ function MobileHeader({
         <li className=" justify-items-end">
           <button
             onClick={() => router.push("/cart")}
-            className="relative aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 active:bg-stroke-50 active:border-stroke-900/20 dark:bg-stroke-50 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-stroke-800 active:text-stroke-800/70 duration-200"
+            className="relative aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 bg-stroke-0/0 backdrop-blur-xl active:bg-stroke-50 active:border-stroke-900/20 dark:bg-stroke-50 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-stroke-800 active:text-stroke-800/70 duration-200"
           >
             <AppImage
               src="/images/bag-stroke-sec-icon.svg"

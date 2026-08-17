@@ -33,51 +33,54 @@ function ProductCard({ product, isPending, error }) {
 
   return (
     <article
-      className={`flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${inStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
+      className={`flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${inStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
     >
       {/* Mobile Mode Base Image */}
-      <div className="flex items-start justify-between gap-4 w-full h-full">
-        <div className="flex flex-none md:hidden items-center justify-center h-20! w-18!">
+      <div className="flex items-start justify-between size-full">
+        <div className="flex flex-none md:hidden items-center justify-center p-2 h-25 aspect-4/5">
           <AppImage
             src={images[0]}
             alt={"-عکس" + perTitle}
             priority={true}
-            ratio="aspect-[4/5]"
+            ratio="aspect-4/5"
           />
         </div>
-        <div className="flex grow flex-col w-full h-full">
-          {/* Categories Icon */}
-          <div className="flex flex-none items-center justify-between max-md:mb-4 mb-1">
-            {productAccords?.map((accord) => (
+        <div className="flex grow flex-col justify-between size-full">
+          <div className="flex flex-col items-centr justify-center size-full">
+            {/* Categories Icon */}
+            <div className="flex flex-none items-center justify-between max-md:mb-4 mb-1">
+              {productAccords?.map((accord) => (
+                <CardIconResponsive
+                  key={accord?.id}
+                  accord={accord}
+                  src={accord?.iconUrl}
+                  alt={accord?.vlaue + "-icon"}
+                  title={accord?.title}
+                  type={accord?.value}
+                  className="max-md:h-8 md:h-10"
+                  size="max-md:size-4 md:size-6"
+                />
+              ))}
               <CardIconResponsive
-                key={accord?.id}
-                accord={accord}
-                src={accord?.iconUrl}
-                alt={accord?.vlaue + "-icon"}
-                title={accord?.title}
-                type={accord?.value}
+                src={productGender?.iconUrl}
+                alt={productGender?.value + "-icon"}
+                title={productGender?.title}
+                type={productGender?.value}
                 className="max-md:h-8 md:h-10"
                 size="max-md:size-4 md:size-6"
               />
-            ))}
-            <CardIconResponsive
-              src={productGender?.iconUrl}
-              alt={productGender?.value + "-icon"}
-              title={productGender?.title}
-              type={productGender?.value}
-              className="max-md:h-8 md:h-10"
-              size="max-md:size-4 md:size-6"
-            />
-          </div>
+            </div>
 
-          {/* Desktop Mode Base Picture */}
-          <div className="grow max-md:hidden md:flex items-center justify-center h-46.75! w-42.5 mx-auto">
-            <AppImage
-              src={images[0]}
-              alt={"-عکس" + perTitle}
-              priority={true}
-              ratio="aspect-[4/5]"
-            />
+            {/* Desktop Mode Base Picture */}
+            <div className="grow max-md:hidden md:flex items-center justify-center h-fu">
+              <AppImage
+                src={images[0]}
+                alt={"-عکس" + perTitle}
+                priority={true}
+                ratio="aspect-4/5"
+                className="w-auto! h-full"
+              />
+            </div>
           </div>
 
           {/* Product Des */}
@@ -91,7 +94,7 @@ function ProductCard({ product, isPending, error }) {
                 <AppImage
                   src="/images/bg-original.svg"
                   alt="original-icon"
-                  ratio="aspect-[6/1]"
+                  ratio="aspect-6/1"
                   className="justify-center"
                   width="max-md:w-16 h-full md:w-[4.815rem]"
                   sizes="10vw"
@@ -101,7 +104,7 @@ function ProductCard({ product, isPending, error }) {
 
             {/* Products Name */}
             <div className="flex-none flex items-center flex-col gap-1 max-md:pb-3 md:pb-6 font-bold border-b border-stroke-250">
-              <span className="flex items-start flex-col max-[366px]:w-52 w-64 md:w-72 text-lg font-bold text-stroke-800 text-start">
+              <span className="flex items-start flex-col w-full text-lg font-bold text-stroke-800 text-start">
                 <p className="w-full max-md:text-base truncate">{enTitle}</p>
                 <p className="w-full max-md:text-sm truncate">{perTitle}</p>
               </span>
@@ -126,8 +129,8 @@ function ProductCard({ product, isPending, error }) {
               {/* Products Order Button */}
               <div>
                 {inStock ? (
-                  <p className="btn border border-primary text-primary bg-stroke-50 active:bg-primary active:text-stroke-0 md:hover:bg-primary md:hover:text-stroke-0 rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
-                    سفارش
+                  <p className="btn border border-primary text-primary bg-stroke-50 backdrop-blur-md active:bg-primary active:text-white md:hover:bg-primary md:hover:text-white rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
+                    مشاهده
                   </p>
                 ) : (
                   <p className="text-wrap w-full text-primary text-xl font-bold">

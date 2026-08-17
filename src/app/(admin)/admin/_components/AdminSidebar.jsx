@@ -27,7 +27,7 @@ function AdminSidebar({ className, toggleSideBar }) {
       id: 5,
       href: "/admin/notifs/ALL",
       baseHref: "/admin/notifs",
-      label: "مدریت پیام",
+      label: "مدیریت پیام",
       countUnread: true,
     },
     {
@@ -49,6 +49,13 @@ function AdminSidebar({ className, toggleSideBar }) {
       href: "/admin/coupons",
       baseHref: "/admin/coupons",
       label: "کد تخفیف‌ها",
+      countUnread: false,
+    },
+    {
+      id: 9,
+      href: "/admin/banners",
+      baseHref: "/admin/banners",
+      label: "بنرها",
       countUnread: false,
     },
   ];

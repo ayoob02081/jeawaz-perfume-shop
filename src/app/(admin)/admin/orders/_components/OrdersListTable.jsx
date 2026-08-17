@@ -177,7 +177,7 @@ function OrdersListTable({ orders, isLoading, status }) {
             </button>
           )}
       </div>
-      <div className="w-full overflow-x-auto pb-0.5 rounded-xl max-lg:shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-track-stroke-0/0">
+      <div className="w-full overflow-x-auto pb-0.5 rounded-xl shadow-xl scrollbar-none">
         {isLoading ? (
           <Loading />
         ) : (

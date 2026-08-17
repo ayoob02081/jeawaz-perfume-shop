@@ -11,17 +11,17 @@ const RHFSelect = ({
   placeholder = "انتخاب کنید",
   className = "",
   disabled = false,
-  
+  defaultOption=true,
   ...rest
 }) => {
   const hasError = errors?.[name];
 
   return (
-    <div className={`flex flex-col gap-2 w-full `}>
+    <div className={`flex flex-col gap-2 w-full`}>
       {label && (
         <label
           htmlFor={name}
-          className="text-sm md:text-base text-stroke-800 mr-2"
+          className="text-sm md:text-base text-stroke-800 mr-2 font-bold"
         >
           {label} {isRequired && <span className="text-error">*</span>}
         </label>
@@ -45,7 +45,7 @@ const RHFSelect = ({
         }}
         {...rest}
       >
-        <option value="">{placeholder}</option>
+       {defaultOption&& <option value="">{placeholder}</option>}
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

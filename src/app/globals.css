@@ -159,11 +159,11 @@
   .scrollbar--secondary {
     @apply scrollbar scrollbar-thin scrollbar-thumb-stroke-300 dark:scrollbar-thumb-stroke-150 scrollbar-track-transparent;
   }
-  .banner--primary--size {
-    @apply h-56 sm:h-[13.04rem] md:h-[15.65rem] lg:h-[20.86rem] xl:h-[26.8rem] aspect-15/10 sm:aspect-26/10;
+  .banner--primary {
+    @apply h-56 sm:h-60 md:h-66 lg:h-86 xl:h-115 aspect-15/10 sm:aspect-26/10;
   }
-  .banner--secondary--size {
-    @apply h-[8.8rem] sm:h-[11.66rem] xl:h-[14.58rem] aspect-27/11;
+  .banner--secondary {
+    @apply h-35 sm:h-50 xl:h-64 aspect-27/11;
   }
   .banner--btn--secondary {
     @apply font-bold text-[8px] sm:text-[10px] xl:text-xs 2xl:text-sm rounded-4xl h-5 sm:h-6 xl:h-8 2xl:h-8 bg-stroke-0/10 backdrop-blur-md text-stroke-800 hover:*:first:text-primary duration-200;
@@ -191,7 +191,7 @@
     @apply flex items-center justify-center rounded-full;
   }
   .btn--primary {
-    @apply border-4 border-stroke-100 dark:border-stroke-0 bg-primary text-white dark:text-stroke-800 hover:bg-stroke-100 hover:**:text-primary hover:text-primary hover:border hover:border-primary active:bg-stroke-100 active:**:text-primary active:text-primary active:border active:border-primary disabled:bg-primary/30 disabled:text-white duration-200;
+    @apply border border-stroke-100 dark:border-stroke-0 bg-primary text-white dark:text-stroke-800 hover:bg-stroke-100 hover:**:text-primary hover:text-primary hover:border hover:border-primary active:bg-stroke-100 active:**:text-primary active:text-primary active:border active:border-primary disabled:bg-primary/30 disabled:text-white duration-200;
   }
   .btn--primary--2 {
     @apply text-primary bg-stroke-0 border-primary hover:bg-primary hover:text-stroke-100 hover:border-stroke-100 active:text-primary/70 active:border-primary/70 disabled:border-stroke-600 duration-200;
@@ -438,4 +438,32 @@ input:-webkit-autofill:active {
   html {
     @apply font-sans;
   }
+}
+
+.primary-banner-swiper {
+  --swiper-pagination-bottom: 14px;
+  --swiper-pagination-bullet-size: 7px;
+  --swiper-pagination-bullet-horizontal-gap: 4px;
+}
+
+.primary-banner-swiper .swiper-pagination {
+  direction: rtl;
+}
+
+.primary-banner-swiper .swiper-pagination-bullet {
+  width: 7px;
+  height: 7px;
+  margin: 0 4px !important;
+  opacity: 0.45;
+  background: white;
+  transition:
+    width 0.3s ease,
+    opacity 0.3s ease,
+    border-radius 0.3s ease;
+}
+
+.primary-banner-swiper .swiper-pagination-bullet-active {
+  width: 22px;
+  opacity: 1;
+  border-radius: 999px;
 }

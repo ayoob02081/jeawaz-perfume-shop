@@ -24,8 +24,8 @@ function SearchSection({ placeholder, value, onChange, onSubmit }) {
     <>
       <form
         onSubmit={onSubmit}
-        className={`flex items-center justify-center group border-primary size-full h-12 rounded-[48px] 
-          ${open && shouldShow ? "bg-stroke-0 border-[1.5px]" : "bg-stroke-100 focus-within:border-[1.5px] focus-within:bg-stroke-0"}
+        className={`flex items-center justify-center group border-primary backdrop-blur-md size-full h-12 rounded-[48px] 
+          ${open && shouldShow ? "bg-stroke-0/40 border-[1.5px]" : "bg-stroke-800/5 backdrop-blur-xl focus-within:border-[1.5px] focus-within:bg-stroke-0"}
            duration-200`}
       >
         <input
@@ -40,7 +40,7 @@ function SearchSection({ placeholder, value, onChange, onSubmit }) {
         />
         <button
           type="submit"
-          className={`absolute flex items-center justify-center gap-1 top-1/2 -translate-1/2 bg-stroke-0 rounded-full p-2 ${open && shouldShow ? "left-12 bg-stroke-100" : "lg:group-hover:left-12 lg:group-focus-within:left-12 group-focus-within:bg-stroke-100 left-6"}  duration-200`}
+          className={`absolute flex items-center justify-center gap-1 top-1/2 -translate-1/2 bg-stroke-0/80 backdrop-blur-md rounded-full p-2 ${open && shouldShow ? "left-12 bg-stroke-100" : "lg:group-hover:left-12 lg:group-focus-within:left-12 group-focus-within:bg-stroke-100 left-6"}  duration-200`}
         >
           <MagnifyingGlassIcon className="size-6 text-stroke-800 duration-200" />
           <p

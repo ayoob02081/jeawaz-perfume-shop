@@ -171,6 +171,7 @@ export const productTHeads = [
     label: "عملیات",
   },
 ];
+
 export const categoryTHeads = [
   {
     id: 1,
@@ -338,4 +339,43 @@ export const orderTHeads = [
   //   id: 10,
   //   label: "محصولات لایک شده",
   // },
+];
+
+export const bannerTHeads = [
+  {
+    id: 1,
+    label: "#",
+  },
+  {
+    id: 2,
+    label: "نام",
+  },
+  {
+    id: 3,
+    label: "لینک",
+  },
+  {
+    id: 4,
+    label: "وضعیت",
+  },
+    {
+    id: 5,
+    label: "نوع بنر",
+  },
+  {
+    id: 6,
+    label: "تاریخ شروع",
+  },
+  {
+    id: 7,
+    label: "تاریخ انقضا",
+  },
+  {
+    id: 8,
+    label: "اولویت نمایش",
+  },
+  {
+    id: 9,
+    label: "عملیات",
+  },
 ];

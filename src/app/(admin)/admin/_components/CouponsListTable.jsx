@@ -29,7 +29,7 @@ function CouponsListTable({ coupons }) {
   };
 
   return (
-    <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-w-1 scrollbar-track-stroke-100/0">
+    <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar-none">
       <Table className="overflow-auto">
         <Table.Header className="">
           {couponTHeads.map((item) => (

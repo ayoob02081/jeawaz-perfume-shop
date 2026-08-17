@@ -19,159 +19,159 @@ function MobilePannel() {
   const { data } = useUnreadNotificationsCount();
 
   return (
-    <nav
-      className={`fixed flex items-center justify-center bottom-0 right-0 w-full lg:hidden z-70
-     transition-all duration-200 ease-in-out overflow-hidden ${
-       showElement ? "h-24 opacity-100 " : "max-h-0 opacity-0"
-     }`}
-    >
-      <ul
-        className={`grid ${user?.role === "admin" ? "grid-cols-5" : "grid-cols-4"} justify-items-center gap-x-5 h-20.75 w-[95%] shadow-2xl shadow-stroke-800/40 dark:shadow-stroke-800/40 rounded-2xl bg-stroke-0 px-5`}
+    showElement && (
+      <nav
+        className="fixed flex items-center justify-center bottom-0 right-0 w-full lg:hidden z-70
+     transition-all duration-200 ease-in-out overflow-hidden h-24"
       >
-        <li className="flex items-center justify-center ">
-          <button
-            className="flex flex-col justify-center items-center gap-2"
-            onClick={() => router.push("/")}
-          >
-            <div className="size-7">
-              <AppImage
-                width="size-7"
-                src={
-                  pathname === "/"
-                    ? "/images/home-fill-primary-icon.svg"
-                    : "/images/home-stroke-sec-icon.svg"
-                }
-                alt="home-icon"
-                className={pathname !== "/" && "dark:invert"}
-                sizes="20vw"
-              />
-            </div>
-            <p
-              className={`text-xs text-nowrap font-bold ${
-                pathname === "/" ? "text-stroke-800" : "text-stroke-600"
-              }`}
-            >
-              خانه
-            </p>
-          </button>
-        </li>
-        <li className="flex items-center justify-center ">
-          <button
-            className="flex flex-col justify-center items-center gap-2"
-            onClick={() => router.push("/products")}
-          >
-            <div className="size-7">
-              <AppImage
-                width="size-7"
-                src={
-                  pathname.startsWith("/products")
-                    ? "/images/products-fill-primary-icon.svg"
-                    : "/images/products-stroke-sec-icon.svg"
-                }
-                alt="products-icon"
-                className={!pathname.startsWith("/products") && "dark:invert"}
-                sizes="20vw"
-              />
-            </div>
-            <p
-              className={`text-xs text-nowrap font-bold ${
-                pathname.startsWith("/products")
-                  ? "text-stroke-800"
-                  : "text-stroke-600"
-              }`}
-            >
-              فروشگاه
-            </p>
-          </button>
-        </li>
-        <li className="flex items-center justify-center ">
-          <button
-            className="flex flex-col justify-center items-center gap-2"
-            onClick={() => router.push("/cart")}
-          >
-            <div className="size-7">
-              <AppImage
-                width="size-7"
-                src={
-                  pathname.startsWith("/cart")
-                    ? "/images/bag-fill-primary-icon.svg"
-                    : "/images/bag-stroke-sec-icon.svg"
-                }
-                alt="cart-icon"
-                className={!pathname.startsWith("/cart") && "dark:invert"}
-                sizes="20vw"
-              />
-            </div>
-            <p
-              className={`text-xs text-nowrap font-bold ${
-                pathname.startsWith("/cart")
-                  ? "text-stroke-800"
-                  : "text-stroke-600"
-              }`}
-            >
-              سبد خرید
-            </p>
-          </button>
-        </li>
-        <li className="flex items-center justify-center ">
-          <button
-            className="relative flex flex-col justify-center items-center gap-2"
-            onClick={
-              isAuthenticated !== true
-                ? () => router.push("/auth/login")
-                : () => router.push("/profile/me")
-            }
-          >
-            <div className="flex items-center justify-center size-7">
-              {pathname.startsWith("/profile") ? (
-                <UserSolidIcon className="size-6 text-primary" />
-              ) : (
-                <UserIcon className="size-6 text-stroke-600 dark:text-stroke-400" />
-              )}
-            </div>
-            <p
-              className={`text-xs text-nowrap font-bold ${
-                pathname.startsWith("/profile")
-                  ? "text-stroke-800"
-                  : "text-stroke-600"
-              }`}
-            >
-              {isAuthenticated !== true ? "ورود" : "پروفایل"}
-            </p>
-            {data?.total > 0 && (
-              <div className="absolute -top-1 right-1 z-10 flex items-center justify-center aspect-square text-nowrap p-1 rounded-full max-md:bg-stroke-90 bg-primary text-stroke-0 h-2 text-xs">
-                <p className="translate-y-px"></p>
-              </div>
-            )}
-          </button>
-        </li>
-        {user?.role === "admin" && (
+        <ul
+          className={`grid ${user?.role === "admin" ? "grid-cols-5" : "grid-cols-4"} justify-items-center gap-x-5 h-20.75 w-[95%] shadow-lg shadow-stroke-800/40 dark:shadow-stroke-800/10 rounded-2xl bg-stroke-0/0 backdrop-blur-xl px-5`}
+        >
           <li className="flex items-center justify-center ">
             <button
-              className="relative flex flex-col justify-center items-center gap-2"
-              onClick={() => router.push("/admin/dashboard")}
+              className="flex flex-col justify-center items-center gap-2"
+              onClick={() => router.push("/")}
             >
-              <div className="flex items-center justify-center size-7">
-                {pathname.startsWith("/admin") ? (
-                  <UserCircleSolidIcon className="size-6 text-primary" />
-                ) : (
-                  <UserCircleIcon className="size-6 text-stroke-600 dark:text-stroke-400" />
-                )}
+              <div className="size-7">
+                <AppImage
+                  width="size-7"
+                  src={
+                    pathname === "/"
+                      ? "/images/home-fill-primary-icon.svg"
+                      : "/images/home-stroke-sec-icon.svg"
+                  }
+                  alt="home-icon"
+                  className={pathname !== "/" && "dark:invert"}
+                  sizes="20vw"
+                />
               </div>
               <p
                 className={`text-xs text-nowrap font-bold ${
-                  pathname.startsWith("/admin")
+                  pathname === "/" ? "text-stroke-800" : "text-stroke-600"
+                }`}
+              >
+                خانه
+              </p>
+            </button>
+          </li>
+          <li className="flex items-center justify-center ">
+            <button
+              className="flex flex-col justify-center items-center gap-2"
+              onClick={() => router.push("/products")}
+            >
+              <div className="size-7">
+                <AppImage
+                  width="size-7"
+                  src={
+                    pathname.startsWith("/products")
+                      ? "/images/products-fill-primary-icon.svg"
+                      : "/images/products-stroke-sec-icon.svg"
+                  }
+                  alt="products-icon"
+                  className={!pathname.startsWith("/products") && "dark:invert"}
+                  sizes="20vw"
+                />
+              </div>
+              <p
+                className={`text-xs text-nowrap font-bold ${
+                  pathname.startsWith("/products")
                     ? "text-stroke-800"
                     : "text-stroke-600"
                 }`}
               >
-                ادمین
+                فروشگاه
               </p>
             </button>
           </li>
-        )}
-      </ul>
-    </nav>
+          <li className="flex items-center justify-center ">
+            <button
+              className="flex flex-col justify-center items-center gap-2"
+              onClick={() => router.push("/cart")}
+            >
+              <div className="size-7">
+                <AppImage
+                  width="size-7"
+                  src={
+                    pathname.startsWith("/cart")
+                      ? "/images/bag-fill-primary-icon.svg"
+                      : "/images/bag-stroke-sec-icon.svg"
+                  }
+                  alt="cart-icon"
+                  className={!pathname.startsWith("/cart") && "dark:invert"}
+                  sizes="20vw"
+                />
+              </div>
+              <p
+                className={`text-xs text-nowrap font-bold ${
+                  pathname.startsWith("/cart")
+                    ? "text-stroke-800"
+                    : "text-stroke-600"
+                }`}
+              >
+                سبد خرید
+              </p>
+            </button>
+          </li>
+          <li className="flex items-center justify-center ">
+            <button
+              className="relative flex flex-col justify-center items-center gap-2"
+              onClick={
+                isAuthenticated !== true
+                  ? () => router.push("/auth/login")
+                  : () => router.push("/profile/me")
+              }
+            >
+              <div className="flex items-center justify-center size-7">
+                {pathname.startsWith("/profile") ? (
+                  <UserSolidIcon className="size-6 text-primary" />
+                ) : (
+                  <UserIcon className="size-6 text-stroke-600 dark:text-stroke-400" />
+                )}
+              </div>
+              <p
+                className={`text-xs text-nowrap font-bold ${
+                  pathname.startsWith("/profile")
+                    ? "text-stroke-800"
+                    : "text-stroke-600"
+                }`}
+              >
+                {isAuthenticated !== true ? "ورود" : "پروفایل"}
+              </p>
+              {data?.total > 0 && (
+                <div className="absolute -top-1 right-1 z-10 flex items-center justify-center aspect-square text-nowrap p-1 rounded-full max-md:bg-stroke-90 bg-primary text-stroke-0 h-2 text-xs">
+                  <p className="translate-y-px"></p>
+                </div>
+              )}
+            </button>
+          </li>
+          {user?.role === "admin" && (
+            <li className="flex items-center justify-center ">
+              <button
+                className="relative flex flex-col justify-center items-center gap-2"
+                onClick={() => router.push("/admin/dashboard")}
+              >
+                <div className="flex items-center justify-center size-7">
+                  {pathname.startsWith("/admin") ? (
+                    <UserCircleSolidIcon className="size-6 text-primary" />
+                  ) : (
+                    <UserCircleIcon className="size-6 text-stroke-600 dark:text-stroke-400" />
+                  )}
+                </div>
+                <p
+                  className={`text-xs text-nowrap font-bold ${
+                    pathname.startsWith("/admin")
+                      ? "text-stroke-800"
+                      : "text-stroke-600"
+                  }`}
+                >
+                  ادمین
+                </p>
+              </button>
+            </li>
+          )}
+        </ul>
+      </nav>
+    )
   );
 }
 

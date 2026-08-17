@@ -25,7 +25,7 @@ export default function PersianDateRHForm({
   const hasError = getNestedError(errors, name);
 
   return (
-    <div className="flex flex-col space-y-2">
+    <div className="flex flex-col space-y-2 w-full">
       {label && (
         <label
           className={`text-stroke-800 max-md:text-base text-lg mr-2 ${textClassName}`}
