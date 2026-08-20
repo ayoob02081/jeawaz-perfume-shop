@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+
 import middlewareAuth from "@/utils/middlewareAuth";
 
 export default async function proxy(req) {
@@ -11,47 +13,70 @@ export default async function proxy(req) {
     pathname.startsWith("/admin/");
 
   if (!needsUser) {
-    return;
+    return NextResponse.next();
   }
 
-  const user = await middlewareAuth(req);
+  const authResult = await middlewareAuth(req);
 
-  // -------------------------
-  // Profile protection
-  // -------------------------
+  const { user, statusCode, setCookies = [] } = authResult;
 
-  if (pathname === "/profile" || pathname.startsWith("/profile/")) {
-    if (user?.statusCode === 401) {
-      return Response.redirect(new URL("/auth/login", url));
+  // ---------------------------------
+  // Helper
+  // ---------------------------------
+
+  const nextResponse = () => {
+    const response = NextResponse.next();
+
+    for (const cookie of setCookies) {
+      response.headers.append("Set-Cookie", cookie);
     }
 
-    return;
+    return response;
+  };
+
+  const redirectResponse = (path) => {
+    const response = NextResponse.redirect(new URL(path, url));
+
+    for (const cookie of setCookies) {
+      response.headers.append("Set-Cookie", cookie);
+    }
+
+    return response;
+  };
+
+  // ---------------------------------
+  // Profile
+  // ---------------------------------
+
+  if (pathname === "/profile" || pathname.startsWith("/profile/")) {
+    if (statusCode === 401 || !user) {
+      return redirectResponse("/auth/login");
+    }
+
+    return nextResponse();
   }
 
-  // -------------------------
-  // Admin protection
-  // -------------------------
+  // ---------------------------------
+  // Admin
+  // ---------------------------------
 
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
     // Not authenticated
-    if (user?.statusCode === 401) {
-      return Response.redirect(new URL("/auth/login", url));
+    if (statusCode === 401 || !user) {
+      return redirectResponse("/auth/login");
     }
 
     // Authenticated but not admin
-    if (user?.role !== "admin") {
-      return Response.redirect(new URL("/", url));
+    if (user.role !== "admin") {
+      return redirectResponse("/");
     }
 
-    return;
+    return nextResponse();
   }
+
+  return nextResponse();
 }
 
 export const config = {
-  matcher: [
-    "/profile",
-    "/profile/:path*",
-    "/admin",
-    "/admin/:path*",
-  ],
+  matcher: ["/profile", "/profile/:path*", "/admin", "/admin/:path*"],
 };
