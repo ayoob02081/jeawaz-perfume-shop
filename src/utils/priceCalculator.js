@@ -1,5 +1,23 @@
+// src/utils/priceCalculator.js
+
 export function normalizePrice(price) {
   return Math.floor(Math.round(price) / 1000) * 1000;
+}
+
+export function calculateDiscountedPrice(basePrice, discountPercent) {
+  if (basePrice <= 0) {
+    return 0;
+  }
+
+  const safeDiscount = Math.min(Math.max(Number(discountPercent) || 0, 0), 100);
+
+  if (safeDiscount === 0) {
+    return normalizePrice(basePrice);
+  }
+
+  const discounted = basePrice - (basePrice * safeDiscount) / 100;
+
+  return normalizePrice(discounted);
 }
 
 export function calculateProductPrice(product, mode, volume) {
@@ -11,52 +29,73 @@ export function calculateProductPrice(product, mode, volume) {
     };
   }
 
+  // --------------------------------------------------
+  // BASE PRICE
+  // --------------------------------------------------
+
   let basePrice = 0;
 
-  // ✅ 1. اگر variant مستقیم داشته باشیم
+  // 1. Variant مستقیم
   const variant = product?.variants?.find(
-    (v) => v.type === mode && v.volume === volume,
+    (v) => v.type === mode && Number(v.volume) === Number(volume),
   );
 
-  if (variant?.price) {
-    basePrice = variant.price;
+  if (variant?.price > 0) {
+    basePrice = Number(variant.price);
   }
 
-  // ✅ 2. اگر دکانت باشد
-  else if (mode === "decant" && product?.modes?.decant?.pricePerMl) {
-    basePrice = product.modes.decant.pricePerMl * volume;
+  // 2. Decant
+  else if (mode === "decant" && product?.modes?.decant?.pricePerMl > 0) {
+    basePrice = Number(product.modes.decant.pricePerMl) * Number(volume);
   }
 
-  // ✅ 3. اگر sealed باشد
+  // 3. Sealed
   else if (mode === "sealed") {
     const sealedVariant = product?.modes?.sealed?.variants?.find(
-      (v) => v.volume === volume,
+      (v) => Number(v.volume) === Number(volume),
     );
 
-    if (sealedVariant?.price) {
-      basePrice = sealedVariant.price;
+    if (sealedVariant?.price > 0) {
+      basePrice = Number(sealedVariant.price);
     }
   }
 
-  // ✅ اگر هیچ قیمتی پیدا نشد
-  if (!basePrice) {
+  if (basePrice <= 0) {
     return {
       basePrice: 0,
       finalPrice: 0,
-      offValue: product?.offValue || 0,
+      offValue: 0,
     };
   }
 
-  const offValue = product?.offValue || 0;
+  // --------------------------------------------------
+  // DISCOUNT
+  // --------------------------------------------------
+
+  const campaignDiscount =
+    mode === "decant"
+      ? Number(product?.campaign?.decant?.discountPercent ?? 0)
+      : Number(product?.campaign?.sealed?.discountPercent ?? 0);
+
+  const productDiscount = Number(product?.offValue ?? 0);
+
+  // Campaign has priority over normal product discount
+  const offValue = campaignDiscount > 0 ? campaignDiscount : productDiscount;
+
+  // --------------------------------------------------
+  // FINAL PRICE
+  // --------------------------------------------------
+
+  const normalizedBasePrice = normalizePrice(basePrice);
 
   const finalPrice =
     offValue > 0
-      ? basePrice - (basePrice * offValue) / 100
-      : basePrice;
+      ? calculateDiscountedPrice(normalizedBasePrice, offValue)
+      : normalizedBasePrice;
 
   return {
-    basePrice: normalizePrice(basePrice),
-    finalPrice: normalizePrice(finalPrice),
+    basePrice: normalizedBasePrice,
+    finalPrice,
     offValue,
   };
 }

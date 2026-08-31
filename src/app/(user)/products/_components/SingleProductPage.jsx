@@ -56,15 +56,17 @@ export default SingleProductPage;
 
 function ProductDes({ product }) {
   const router = useRouter();
+
   const productBrand = product?.brand;
+
   const [volumeMode, setVolumeMode] = useState("decant");
 
   const volumes =
     volumeMode === "sealed"
-      ? product?.modes?.sealed?.variants?.map((v) => v.volume)
-      : product?.modes?.decant?.availableVolumes;
+      ? (product?.modes?.sealed?.variants?.map((v) => v.volume) ?? [])
+      : (product?.modes?.decant?.availableVolumes ?? []);
 
-  const defaultVolume = volumes?.[0];
+  const defaultVolume = volumes[0] ?? 0;
 
   const {
     AddToCartHandler,
@@ -78,10 +80,17 @@ function ProductDes({ product }) {
 
   const volumeHandler = (e, type) => {
     const value = Number(e.target.value);
+
     if (type) {
       setVolumeMode(type);
+      setSelectedVolume(
+        type === "sealed"
+          ? (product?.modes?.sealed?.variants?.[0]?.volume ?? 0)
+          : (product?.modes?.decant?.availableVolumes?.[0] ?? 0),
+      );
       return;
     }
+
     setSelectedVolume(value);
   };
 
@@ -93,6 +102,7 @@ function ProductDes({ product }) {
           <p className="font-bold text-wrap text-[28px] w-full text-stroke-800">
             {product.perTitle}
           </p>
+
           <div className="md:hidden p-2">
             <AppImage
               src={productBrand?.iconUrl}
@@ -104,17 +114,19 @@ function ProductDes({ product }) {
             />
           </div>
         </span>
+
         <p className="text-base text-wrap text-stroke-600 w-full">
           {product.enTitle}
         </p>
       </section>
 
       {/* Product Type */}
-      <section className="flex items-center justify-between w-full max-md:border-t border-stroke-250 pt-4 ">
+      <section className="flex items-center justify-between w-full max-md:border-t border-stroke-250 pt-4">
         <div className="flex flex-col justify-between gap-2 w-full md:row-start-3 h-full overflow-hidden">
           <div className="flex justify-between">
             <div className="flex flex-col items-start justify-start gap-3">
               <p className="text-stroke-800">نوع محصول:</p>
+
               <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
                 <RadioButton
                   id="productVolumeModeDecant"
@@ -122,22 +134,24 @@ function ProductDes({ product }) {
                   value="decant"
                   onChange={(e) => volumeHandler(e, "decant")}
                   checked={volumeMode === "decant"}
-                  className="badge badge--secondary btn--type duration-200 "
+                  className="badge badge--secondary btn--type duration-200"
                 >
                   <p className="text-nowrap">دکانت</p>
                 </RadioButton>
+
                 <RadioButton
                   id="productVolumeModeSealed"
                   name="productVolumeMode"
                   value="sealed"
                   onChange={(e) => volumeHandler(e, "sealed")}
                   checked={volumeMode === "sealed"}
-                  className="badge badge--secondary btn--type duration-200 "
+                  className="badge badge--secondary btn--type duration-200"
                 >
                   <p className="text-nowrap">شیشه پلمپ</p>
                 </RadioButton>
               </div>
             </div>
+
             {product.original === true && (
               <AppImage
                 src="/images/bg-original.svg"
@@ -149,23 +163,26 @@ function ProductDes({ product }) {
               />
             )}
           </div>
+
           <div className="flex flex-col items-start justify-start gap-3">
             <p className="text-stroke-800">انتخاب حجم:</p>
+
             <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
-              {volumes?.map((volume, index) => {
-                const isDisabled = product.stock >= volume ? false : true;
+              {volumes.map((volume, index) => {
+                const isDisabled = product.stock < volume;
+
                 return (
                   <RadioButton
                     key={volumeMode + index}
                     id={volumeMode + index}
-                    name={`single-product-volume` + product.id}
+                    name={`single-product-volume${product.id}`}
                     value={volume}
                     disabled={isDisabled}
                     onChange={volumeHandler}
                     checked={selectedVolume === volume}
                     className={`badge badge--secondary ${
                       isDisabled
-                        ? "opacity-60 dark:opacity-40 cursor-not-allowed! strikeThrough border-red "
+                        ? "opacity-60 dark:opacity-40 cursor-not-allowed! strikeThrough border-red"
                         : "btn--type"
                     } duration-200`}
                   >
@@ -185,9 +202,9 @@ function ProductDes({ product }) {
         {product.stock >= selectedVolume ? (
           <PriceSection
             volume={selectedVolume}
-            basePrice={price?.basePrice}
-            unitPrice={price?.finalPrice}
-            offValue={product.offValue}
+            basePrice={price.basePrice}
+            unitPrice={price.finalPrice}
+            offValue={price.offValue}
             OldPricevisibility="block"
             pricesRow="flex-col-reverse max-md:gap-0"
             className=""
@@ -195,16 +212,15 @@ function ProductDes({ product }) {
             justify="max-md:justify-end md:justify-start"
           />
         ) : (
-          <p className="text-primary font-bold max-md: md: text-3xl">
-            ناموجود!
-          </p>
+          <p className="text-primary font-bold max-md: md:text-3xl">ناموجود!</p>
         )}
+
         <div className="max-md:hidden p-2">
           <AppImage
             src={productBrand?.iconUrl}
             alt={productBrand?.value + "-icon"}
             className="justify-center h-full dark:invert"
-            width="max-md:w-16 md:w-20 xl:w-28 "
+            width="max-md:w-16 md:w-20 xl:w-28"
             ratio="aspect-[4/1]"
             sizes="20vw"
           />
@@ -218,12 +234,15 @@ function ProductDes({ product }) {
             onClick={
               quantity === 0 ? AddToCartHandler : () => router.push("/cart")
             }
-            className={`btn ${quantity === 0 ? "btn--success" : "btn--primary font-bold border"} w-full h-12 px-2 transition-all ease-in-out duration-200`}
+            className={`btn ${
+              quantity === 0 ? "btn--success" : "btn--primary font-bold border"
+            } w-full h-12 px-2 transition-all ease-in-out duration-200`}
           >
             {quantity === 0 ? "افزودن به سبد خرید" : "مشاهده سبد خرید"}
           </button>
         )}
-        <div className=" flex-none">
+
+        <div className="flex-none">
           {quantity > 0 && (
             <CardEvents
               RemoveFromCartHandler={RemoveFromCartHandler}
@@ -239,10 +258,10 @@ function ProductDes({ product }) {
       {/* Description */}
       <Accordion
         titleStyle="font-bold text-stroke-800"
-        className="max-md:hidden md:flex  "
+        className="max-md:hidden md:flex"
         label="توضیحات تکمیلی"
       >
-        <p className="text-stroke-600 text-sm pt-4 border-t border-stroke-200 leading-8 ">
+        <p className="text-stroke-600 text-sm pt-4 border-t border-stroke-200 leading-8">
           {product?.description}
         </p>
       </Accordion>

@@ -10,6 +10,7 @@ import {
   ChatBubbleLeftRightIcon,
   ClipboardDocumentListIcon,
   PencilSquareIcon,
+  PresentationChartLineIcon,
   ReceiptPercentIcon,
   RectangleGroupIcon,
   Squares2X2Icon,
@@ -21,6 +22,7 @@ import {
   UserCircleIcon as UserCircleSolidIcon,
   ChartPieIcon as ChartPieSolidIcon,
   ChatBubbleLeftRightIcon as ChatBubbleLeftRightSolidIcon,
+  PresentationChartLineIcon as PresentationChartLineSolidIcon,
   ClipboardDocumentListIcon as ClipboardDocumentListSolidIcon,
   Squares2X2Icon as Squares2X2SolidIcon,
   TagIcon as TagSolidIcon,
@@ -36,11 +38,11 @@ export default function ProfileSidebarLayout({ children, className }) {
   return (
     <div
       className={`${className} group lg:fixed right-2 z-70 max-lg:h-full max-lg:w-[75vw] group-hover:lg:w-full lg:size-fit lg:shadow-xl lg:border lg:rounded-3xl
-       bg-stroke-0 lg:bg-stroke-100 dark:lg:bg-stroke-50 border-stroke-200 transition-all duration-200 **:transition-all **:duration-200 `}
+       bg-stroke-0 lg:bg-stroke-600/10 dark:lg:bg-stroke-300/10 border-stroke-200 transition-all backdrop-blur-md duration-200 **:transition-all **:duration-200 `}
     >
       <div className={`flex flex-col h-full max-lg:pb-6 w-full`}>
-        <div className=" flex items-center gap-2 w-full max-lg:*:*:*:first:border-none">
-          <div className="flex flex-col items-start justify-center size-full lg:max-w-xs max-lg:pb-34 lg:pb-2">
+        <div className=" flex items-center gap-2 w-full max-lg:*:*:*:first:border-none overflow-hidden">
+          <div className="flex flex-col items-start justify-start size-full lg:max-w-xs max-lg:pb-34 lg:pb-2 overflow-auto max-h-[70vh] scrollbar-none">
             {children}
           </div>
         </div>
@@ -99,6 +101,13 @@ export function ProfileLink({
           <ClipboardDocumentListSolidIcon className="size-7" />
         ) : (
           <ClipboardDocumentListIcon className="size-7" />
+        );
+
+      case "/admin/campaigns":
+        return isPathName ? (
+          <PresentationChartLineSolidIcon className="size-7" />
+        ) : (
+          <PresentationChartLineIcon className="size-7" />
         );
 
       case "/admin/users":
@@ -174,7 +183,7 @@ export function ProfileLink({
       <div className="flex flex-col items-center justify-center size-full p-2 lg:py-1 max-lg:border-t border-stroke-300">
         <button
           onClick={LogoutHandler}
-          className="flex items-center justify-start gap-4 hover:bg-stroke-250 **:transition-all **:last:duration-200 text-stroke-800
+          className="flex items-center justify-start gap-4 hover:bg-stroke-250/20 hover:backdrop-blur-md **:transition-all **:last:duration-200 text-stroke-800
               py-3 px-1 size-full lg:size-fit group-hover:lg:size-full rounded-[44px] duration-200"
         >
           <div className="flex items-center justify-start gap-2 h-11 w-full overflow-hidden">
@@ -242,7 +251,7 @@ export function ProfileLink({
             ${
               isPathName
                 ? "bg-stroke-900 dark:bg-stroke-200 text-stroke-0 dark:text-stroke-800"
-                : "hover:bg-stroke-250 **:transition-all **:duration-200 text-stroke-800"
+                : "hover:bg-stroke-250/20 hover:backdrop-blur-md **:transition-all **:duration-200 text-stroke-800"
             }    
             max-lg:py-2 lg:py-2 size-full lg:w-fit group-hover:lg:size-full px-2 rounded-full transition-all duration-200`}
       >

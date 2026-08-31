@@ -1,6 +1,7 @@
 import AppImage from "@/components/AppImage";
 import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
+import { calculateProductPrice } from "@/utils/priceCalculator";
 import { useRouter } from "next/navigation";
 
 function ProductCard({ product, isPending, error }) {
@@ -17,11 +18,21 @@ function ProductCard({ product, isPending, error }) {
     brand: productBrand,
   } = product || {};
 
-  const minDecant = modes?.decant.availableVolumes[0];
-  const pricePerMl = modes?.decant.pricePerMl;
-  const inStock = stock >= minDecant;
-  const productAccords = categories?.filter((item) => item.type === "accord");
-  const productGender = categories?.find((item) => item.type === "gender");
+  const minDecant = modes?.decant?.availableVolumes?.[0];
+
+  const decantPrice = minDecant
+    ? calculateProductPrice(product, "decant", minDecant)
+    : {
+        basePrice: 0,
+        finalPrice: 0,
+        offValue: 0,
+        source: "none",
+        campaignId: null,
+      };
+
+  const inStock = minDecant > 0 && stock >= minDecant;
+  const productAccords = categories?.accords;
+  const productGender = categories?.gender;
 
   if (isPending) {
     return <Loading />;
@@ -116,9 +127,9 @@ function ProductCard({ product, isPending, error }) {
             >
               {product.stock >= 3 && (
                 <PriceSection
-                  volume={minDecant}
-                  pricePerMl={pricePerMl}
-                  offValue={product.offValue}
+                  basePrice={decantPrice.basePrice}
+                  unitPrice={decantPrice.finalPrice}
+                  offValue={decantPrice.offValue}
                   OldPricevisibility="block"
                   pricesRow="flex-col-reverse max-md:gap-0"
                   priceClassName="max-md:text-lg md:text-xl lg:text-[32px] text-stroke-800"

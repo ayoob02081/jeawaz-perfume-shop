@@ -281,6 +281,45 @@ export const couponTHeads = [
   },
 ];
 
+export const campaignTHeads = [
+  {
+    id: 1,
+    label: "#",
+  },
+  {
+    id: 2,
+    label: "عنوان",
+  },
+  {
+    id: 3,
+    label: "وضعیت",
+  },
+  {
+    id: 4,
+    label: "مقدار تخفیف",
+  },
+  {
+    id: 5,
+    label: "تخفیف برای",
+  },
+  {
+    id: 6,
+    label: "تعداد محصولات",
+  },
+  {
+    id: 7,
+    label: "تاریخ شروع",
+  },
+  {
+    id: 8,
+    label: "تاریخ اتمام",
+  },
+  {
+    id: 9,
+    label: "عملیات",
+  },
+];
+
 export const orderTHeads = [
   {
     id: 1,
@@ -358,7 +397,7 @@ export const bannerTHeads = [
     id: 4,
     label: "وضعیت",
   },
-    {
+  {
     id: 5,
     label: "نوع بنر",
   },

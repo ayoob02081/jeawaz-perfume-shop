@@ -7,6 +7,7 @@ import Table from "@/ui/Table";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { useQuantityHandler } from "@/hooks/useQuantityHandler";
 import Link from "next/link";
+import { getDiscountPercent } from "@/utils/getDiscountPercent";
 
 function CartItemsLayout() {}
 
@@ -112,7 +113,7 @@ function MobileCartLayout({ cartItem }) {
           <div className="max-sm:relative flex flex-co max-sm:justify-end items-center justify-between size-full">
             <div className="max-sm:absolute -right-11">
               <PriceSection
-                offValue={product.offValue}
+                offValue={getDiscountPercent(basePrice * quantity, lineTotal)}
                 basePrice={basePrice * quantity}
                 unitPrice={lineTotal}
               />
@@ -194,7 +195,7 @@ function DesktopCartLayout({ cartItem }) {
       </td>
       <td className="text-center">
         <PriceSection
-          offValue={product.offValue}
+          offValue={getDiscountPercent(basePrice * quantity, lineTotal)}
           basePrice={basePrice * quantity}
           unitPrice={lineTotal}
           className="w-full"
@@ -243,7 +244,7 @@ function SuccessedOrderCard({ cartItem }) {
               {toPersianNumbers(volume)} میل
             </div>
             <PriceSection
-              offValue={product.offValue}
+              offValue={getDiscountPercent(basePrice * quantity, lineTotal)}
               basePrice={basePrice * quantity}
               unitPrice={lineTotal}
             />
@@ -302,7 +303,7 @@ function DeskSuccessedCartItem({ cartItem }) {
       <div className="flex flex-col items-end justify-center gap-4 size-full">
         <p className="text-sm text-stroke-600">مبلغ پرداختی</p>
         <PriceSection
-          offValue={product.offValue}
+          offValue={getDiscountPercent(basePrice * quantity, lineTotal)}
           basePrice={basePrice * quantity}
           unitPrice={lineTotal}
         />
@@ -355,7 +356,7 @@ function SummeryCard({ cartItem }) {
 
           <div className="flex items-center justify-between size-full">
             <PriceSection
-              offValue={product.offValue}
+              offValue={getDiscountPercent(basePrice * quantity, lineTotal)}
               basePrice={basePrice * quantity}
               unitPrice={lineTotal}
               priceClassName="text-xl"

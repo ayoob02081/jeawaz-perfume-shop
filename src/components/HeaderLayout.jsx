@@ -162,6 +162,7 @@ function DesktopHeader({
                   onChange={(e) => setSearchValue(e.target.value)}
                   onSubmit={handleSearchSubmit}
                 />
+                
               </li>
             </div>
             <li>
