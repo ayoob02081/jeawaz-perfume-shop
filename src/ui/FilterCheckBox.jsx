@@ -14,6 +14,7 @@ function FilterCheckBox({
   imageClassName,
   textClassName,
   children,
+  ratio,
 }) {
   return (
     <CheckBox
@@ -33,6 +34,7 @@ function FilterCheckBox({
             src={imageSrc}
             alt={checkId + "-icon"}
             width="size-full"
+            ratio={ratio}
             sizes="20vw"
           />
         </div>

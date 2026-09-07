@@ -2,7 +2,6 @@ import Link from "next/link";
 import AppImage from "../components/AppImage";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import OptionsFooter from "@/components/OptionsFooter";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Footer() {
   return (

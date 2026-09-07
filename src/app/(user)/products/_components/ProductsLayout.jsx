@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getAllProductsApi } from "@/services/productServices";
+import ProductCardSkeleton from "../../_components/skeleton/ProductCardSkeletons";
 
 function ProductsLayout() {
   const queryClient = useQueryClient();
@@ -97,9 +98,7 @@ function ProductsLayout() {
     });
   }, [page, totalPages, filters, queryClient]);
 
-  if (isProductsLoading && !data) {
-    return <Loading className="h-screen" />;
-  }
+  const skeletonCount = filters.limit;
 
   if (isProductsError) {
     return <Error className="h-screen" />;
@@ -113,9 +112,13 @@ function ProductsLayout() {
           isProductsFetching ? "opacity-60 pointer-events-none" : "opacity-100"
         }`}
       >
-        {products?.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+        {isProductsLoading && !data
+          ? Array.from({ length: skeletonCount }).map((_, index) => (
+              <ProductCardSkeleton key={index} />
+            ))
+          : products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
       </section>
       <div className="flex items-center justify-center h-20">
         <PagesNumber

@@ -14,12 +14,13 @@ import BreadCrumb from "@/ui/BreadCrumb";
 import { useRouter } from "next/navigation";
 import { useQuantityHandler } from "@/hooks/useQuantityHandler";
 import { calculateProductPrice } from "@/utils/priceCalculator";
+import SingleProductSkeleton from "../../_components/skeleton/SingleProductSkeleton";
 
 function SingleProductPage({ product }) {
   if (!product) {
     return (
       <main className=" container mx-auto xl:max-w-7xl">
-        <Loading />
+        <SingleProductSkeleton />
       </main>
     );
   }
@@ -27,20 +28,16 @@ function SingleProductPage({ product }) {
   return (
     <main className=" md:container md:mx-auto xl:max-w-7xl h-full">
       <article className="max-md:hidden">
-        {!product ? (
-          <Loading />
-        ) : (
-          <BreadCrumbBase>
-            <BreadCrumb href={"/"} label={"فروشگاه"} />
-            <BreadCrumb href={"/products"} label={"محصولات"} chevron />
-            <BreadCrumb
-              href={`/products/${product?.id}`}
-              label={product?.perTitle}
-              className="text-primary! font-bold"
-              chevron
-            />
-          </BreadCrumbBase>
-        )}
+        <BreadCrumbBase>
+          <BreadCrumb href={"/"} label={"فروشگاه"} />
+          <BreadCrumb href={"/products"} label={"محصولات"} chevron />
+          <BreadCrumb
+            href={`/products/${product?.id}`}
+            label={product?.perTitle}
+            className="text-primary! font-bold"
+            chevron
+          />
+        </BreadCrumbBase>
       </article>
       <article className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 w-ful md:p-6">
         <ImageSwiper images={product?.images} product={product} />

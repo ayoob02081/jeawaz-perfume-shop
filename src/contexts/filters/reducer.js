@@ -55,6 +55,31 @@ export function filtersReducer(state, action) {
 
     /* ========= DIRECT APPLY (no button) ========= */
 
+    case "TOGGLE_ITEM_APPLY": {
+      const currentItems = state.draft[action.key] || [];
+      const value = action.value;
+
+      const exists = currentItems.some((v) => Number(v) === Number(value));
+
+      const newItems = exists
+        ? currentItems.filter((v) => Number(v) !== Number(value))
+        : [...currentItems, value];
+
+      return {
+        ...state,
+
+        draft: {
+          ...state.draft,
+          [action.key]: newItems,
+        },
+
+        applied: {
+          ...state.applied,
+          [action.key]: newItems,
+        },
+      };
+    }
+
     case "SET_ITEM_APPLY":
       return {
         draft: {

@@ -18,7 +18,6 @@ import Link from "next/link";
 
 function SingleOrderPage({ order, isOrderLoading, admin }) {
   if (isOrderLoading) return <Loading />;
-  console.log(order);
 
   const currentStatus = admin
     ? adminStatusConfig?.find((s) => s.value === order?.status)

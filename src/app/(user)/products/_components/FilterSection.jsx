@@ -9,7 +9,6 @@ import {
   useGetAllCategories,
 } from "@/hooks/useCategories";
 import { useEffect, useRef, useState } from "react";
-import Loading from "@/components/Loading";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import Modal from "@/components/Modal";
 import { useFilters } from "@/hooks/useFilters";
@@ -23,6 +22,7 @@ import {
   getFiltersFromSearchParams,
 } from "@/utils/queryFilters";
 import { useForm } from "react-hook-form";
+import Skeleton from "@/ui/Skeleton";
 
 function FilterSection() {
   const router = useRouter();
@@ -140,6 +140,33 @@ function FilterSection() {
     });
   }, [search, dispatch, reset]);
 
+  function toggleBrandAndSync(brandId) {
+    const currentBrandIds = state.draft.brandIds || [];
+
+    const exists = currentBrandIds.some((id) => Number(id) === Number(brandId));
+
+    const newBrandIds = exists
+      ? currentBrandIds.filter((id) => Number(id) !== Number(brandId))
+      : [...currentBrandIds, Number(brandId)];
+
+    dispatch({
+      type: "TOGGLE_ITEM_APPLY",
+      key: "brandIds",
+      value: Number(brandId),
+    });
+
+    const newDraft = {
+      ...state.draft,
+      brandIds: newBrandIds,
+    };
+
+    const query = buildQueryFromFilters(newDraft, searchParams);
+
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
+  }
+
   return (
     <article>
       <div className="border-b border-stroke-200">
@@ -214,19 +241,15 @@ function FilterSection() {
               )}
             </section>
           </div>
+
           {/* Brands Filter section */}
-          {brandsLoading ? (
-            <Loading />
-          ) : (
-            <BrandsFilter
-              brands={brands}
-              ref={brandsRef}
-              state={state.draft?.brandIds}
-              addFilter={addFilter}
-              resetOneAndSync={resetOneAndSync}
-              applyFilter={applyFilter}
-            />
-          )}
+          <BrandsFilter
+            brands={brands}
+            ref={brandsRef}
+            state={state.draft?.brandIds}
+            toggleBrandAndSync={toggleBrandAndSync}
+            brandsLoading={brandsLoading}
+          />
 
           {/* Bread Crumbs */}
           <section className="max-md:hidden pb-4">
@@ -287,54 +310,55 @@ function BrandsFilter({
   brands,
   ref,
   state,
-  addFilter,
-  applyFilter,
-  resetOneAndSync,
+  toggleBrandAndSync,
+  brandsLoading,
 }) {
   const selectedBrandIds = Array.isArray(state)
     ? state.map(Number).filter(Boolean)
     : [];
   return (
-    <form className="relative max-md:hidden flex items-center gap-2 w-full h-14 lg:h-18 overflow-hidden">
-      <div className=" flex items-center justify-center border border-primary/10 dark:border-stroke-200 bg-stroke-50 rounded-full text-primary dark:text-stroke-800 lg:text-lg font-bold h-full aspect-square">
-        برندها
-      </div>
-      <div className="flex items-center justify-center border border-primary/10 dark:border-stroke-200 bg-stroke-50 rounded-full size-full overflow-hidden px-2">
+    <form className="relative max-md:hidden flex items-center gap-2 w-full h-12 lg:h-14 border border-primary/10 dark:border-stroke-200 bg-stroke-50 rounded-full size-full overflow-hidden px-2">
+      <div className="flex items-center justify-start size-full">
+        <div className="absolute right-0 z-10 flex items-center justify-center bg-stroke-0/10 backdrop-blur-md text-primary px-2 lg:text-lg font-bold h-full aspect-square">
+          برندها
+        </div>
         <div
           ref={ref}
-          className="flex items-center justify-between gap-2 p-2 size-full rounded-full overflow-x-auto scrollbar-none snap-x scroll-smooth"
+          className="flex items-center justify-start gap-2 p-2 pr-12 pl-6 h-full rounded-full overflow-x-auto scrollbar-none snap-x scroll-smooth"
         >
-          {brands?.map((brand) => {
-            const isChecked = selectedBrandIds.includes(Number(brand.id));
+          {brandsLoading ? (
+            <div className="flex items-center gap-2 h-full w-full pr-12 pl-8 p-2 overflow-hidden">
+              <Skeleton className="flex-none h-1/2 w-24 rounded-full" />
+              <Skeleton className="flex-none h-1/2 w-32 rounded-full" />
+              <Skeleton className="flex-none h-1/2 w-20 rounded-full" />
+              <Skeleton className="flex-none h-1/2 w-28 rounded-full" />
+              <Skeleton className="flex-none h-1/2 w-24 rounded-full" />
+              <Skeleton className="flex-none h-1/2 w-32 rounded-full" />
+            </div>
+          ) : (
+            brands?.map((brand) => {
+              const isChecked = selectedBrandIds.includes(Number(brand.id));
 
-            return (
-              <FilterCheckBox
-                key={brand.id}
-                checkId={brand.id}
-                imageSrc={brand.iconUrl}
-                name={"brandFilter"}
-                onChange={() =>
-                  selectedBrandIds?.length === 1 &&
-                  selectedBrandIds?.includes(brand.id)
-                    ? resetOneAndSync("brandIds")
-                    : addFilter("SET_ITEMS", "brandIds", Number(brand.id))
-                }
-                checked={isChecked}
-                className={`justify-center text-nowrap has-checked:*:border-2 dark:has-checked:*:border-[1.5px] has-checked:*:bg-white  dark:has-checked:*:bg-stroke-0  *:border-primary dark:*:border-stroke-200 has-checked:*:border-primary dark:has-checked:*:border-stroke-200 size-full snap-center`}
-                imageClassName="p-2 lg h-10 lg:h-12 w-32 rounded-full duration-200 dark:*:invert "
-              />
-            );
-          })}
+              return (
+                <FilterCheckBox
+                  key={brand.id}
+                  checkId={brand.id}
+                  imageSrc={brand.iconUrl}
+                  name={"brandFilter"}
+                  onChange={() => toggleBrandAndSync(brand.id)}
+                  checked={isChecked}
+                  className={`justify-center text-nowrap has-checked:*:border-2 dark:has-checked:*:border-[1.5px] has-checked:*:bg-white  dark:has-checked:*:bg-stroke-0  *:border-primary dark:*:border-stroke-200 has-checked:*:border-primary dark:has-checked:*:border-stroke-200 size-full snap-center`}
+                  imageClassName="px-2 lg h-full lg:h- w- rounded-full duration-200 dark:*:invert "
+                  ratio="aspect-3/2"
+                />
+              );
+            })
+          )}
         </div>
       </div>
-      <button
-        type="button"
-        onClick={applyFilter}
-        disabled={selectedBrandIds?.length === 0}
-        className="flex items-center justify-center border-2 rounded-full h-full aspect-square border-primary dark:border-stroke-200 bg-stroke-0 disabled:border-stroke-150 dark:disabled:border-stroke-50 disabled:*:text-stroke-600/20 duration-200"
-      >
-        <ChevronLeftIcon className="md:size-6 lg:size-8 text-primary dark:text-stroke-200 duration-200" />
-      </button>
+      <div className="absolute left-0 z-10 flex items-center justify-center bg-stroke-0/10 backdrop-blur-md text-stroke-800 lg:text-lg font-bold h-full px-2">
+        <ChevronLeftIcon className="size-4 lg:size-5" />
+      </div>
     </form>
   );
 }
