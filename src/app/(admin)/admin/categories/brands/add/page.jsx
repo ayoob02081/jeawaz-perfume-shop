@@ -1,4 +1,4 @@
-import BrandForm from "../../../_components/BrandForm";
+import BrandForm from "../../_components/BrandForm";
 
 function page() {
   return <BrandForm />;

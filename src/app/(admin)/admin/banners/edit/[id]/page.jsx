@@ -2,7 +2,7 @@
 
 import { useGetBannerById } from "@/hooks/useBanners";
 import { useParams } from "next/navigation";
-import BannerForm from "../../_components/BannerForm,";
+import BannerForm from "../../_components/BannerForm";
 import Loading from "@/components/Loading";
 
 function page() {

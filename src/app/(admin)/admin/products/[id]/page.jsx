@@ -26,7 +26,7 @@
 // export default SingleProductPage;
 
 import React from "react";
-import ProductForm from "../../_components/ProductForm";
+import ProductForm from "../_components/ProductForm";
 
 function page() {
   return <ProductForm />;

@@ -30,7 +30,7 @@ function RadioButton({
         {label && <p>{label}</p>}
       </div>
       {chevron && (
-        <span className={`max-md:hidden! ${chevron}`}>
+        <span className={`max-lg:hidden! ${chevron}`}>
           <ChevronLeftIcon className="size-full" />
         </span>
       )}

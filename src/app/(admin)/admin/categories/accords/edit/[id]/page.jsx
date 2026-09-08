@@ -2,7 +2,7 @@
 
 import Loading from "@/components/Loading";
 import { useParams } from "next/navigation";
-import CategoryForm from "@/app/(admin)/admin/_components/CategoryForm";
+import CategoryForm from "@/app/(admin)/admin/categories/_components/CategoryForm";
 import { useGetCategorybyID } from "@/hooks/useCategories";
 
 function EditCategoryPage() {

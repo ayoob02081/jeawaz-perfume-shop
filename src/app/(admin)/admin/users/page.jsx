@@ -1,4 +1,4 @@
-import UsersLayout from "../_components/UsersLayout";
+import UsersLayout from "./_components/UsersLayout";
 
 function UsersPage() {
   return <UsersLayout />;

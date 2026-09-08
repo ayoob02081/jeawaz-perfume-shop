@@ -11,8 +11,8 @@ import RadioButton from "@/ui/RadioButton";
 function BannerLayout() {
   const [type, setType] = useState("primary");
   const { data, isPending } = useGetAllBanners({ type });
-  const banners = data?.data || [];
-  const meta = data?.meta;
+  // const banners = data?.data || [];
+  // const meta = data?.meta;
 
   return (
     <div className="flex flex-col justify-center gap-4 space-y-2 w-full px-4 pb-10 overflow-hidden">

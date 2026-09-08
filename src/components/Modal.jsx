@@ -28,7 +28,7 @@ function Modal({
   return (
     <Backdrop isOpen={isOpen} category={category} className={backdropClassName}>
       <div
-        className={`flex ${category ? "justify-start md:container md:mx-auto max-md:min-h-screen md:p-2" : "max-h-[90vh] justify-center max-md:items-end md:items-center size-full container mx-auto"} xl:max-w-7xl`}
+        className={`flex ${category ? "justify-start lg:container lg:mx-auto max-lg:min-h-screen lg:p-2" : "max-h-[90vh] justify-center max-md:items-end md:items-center size-full container mx-auto"} xl:max-w-7xl`}
       >
         <section
           ref={(el) => {
@@ -36,7 +36,7 @@ function Modal({
             modalRef.current = el;
           }}
           {...dragHandlers}
-          className={`modal ${category ? "modal--secondary md:w-fit" : "modal--primary"} ${
+          className={`modal ${category ? "modal--secondary lg:w-fit" : "modal--primary"} ${
             isOpen &&
             (category ? "animate__fadeInRightBig" : "animate__fadeInUpBig")
           }} animate__animated overflow-hidden ${className}`}

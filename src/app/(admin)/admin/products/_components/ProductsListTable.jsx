@@ -36,6 +36,8 @@ function ProductsListTable({ products }) {
       setProduct(data);
     }
   };
+  console.log(products);
+
   return (
     <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar-none">
       <Table className="overflow-auto">
@@ -49,13 +51,6 @@ function ProductsListTable({ products }) {
         <Table.body>
           {products &&
             products?.map((product, index) => {
-              const productAccords = product.categories?.filter(
-                (i) => i.type === "accord",
-              );
-              const productGender = product.categories?.find(
-                (i) => i.type === "gender",
-              );
-              const productBrand = product?.brand;
               return (
                 <Table.Row key={product.id} className="even:bg-primary/5">
                   <td className="table__td px-3 font-bold rounded-r-full">
@@ -67,23 +62,28 @@ function ProductsListTable({ products }) {
                   <td className="table__td px-2 max-w-70 truncate">
                     <div className="flex items-center justify-center flex-col gap-2 text-xs">
                       <AppImage
-                        src={productBrand?.iconUrl || "/brand-icon"}
-                        alt={`${productBrand?.value}-icon` || "brand-icon"}
+                        src={product?.brand?.iconUrl || "/brand-icon"}
+                        alt={`${product?.brand?.value}-icon` || "brand-icon"}
                         ratio="aspect-[4/1]"
                         className="dark:invert"
                         width="w-16"
                         sizes="10vw"
                       />
-                      <p className="text-stroke-600">{productBrand?.title}</p>
+                      <p className="text-stroke-600">{product?.brand?.title}</p>
                     </div>
                   </td>
                   <td className="table__td px-2 max-w-70 truncate">
                     <div className="flex items-center justify-start gap-2 h-full w-fit">
                       <CardIconResponsive
-                        src={productGender?.iconUrl || "/gender-icon"}
-                        alt={`${productGender?.value}-icon` || "gender-icon"}
-                        title={productGender?.title}
-                        type={productGender?.value}
+                        src={
+                          product?.categories.gender?.iconUrl || "/gender-icon"
+                        }
+                        alt={
+                          `${product?.categories.gender?.value}-icon` ||
+                          "gender-icon"
+                        }
+                        title={product?.categories.gender?.title}
+                        type={product?.categories.gender?.value}
                         className="max-md:h-8 md:h-10"
                         size="max-md:size-4 md:size-6"
                         accord
@@ -92,19 +92,18 @@ function ProductsListTable({ products }) {
                   </td>
                   <td className="table__td px-3 py-3 max-w-70 truncate">
                     <div className="flex items-center justify-start gap-2 h-full w-fit">
-                      {productAccords &&
-                        productAccords?.map((accord) => (
-                          <CardIconResponsive
-                            key={accord.id}
-                            accord={accord}
-                            src={accord.iconUrl || "/accord-icon"}
-                            alt={`${accord?.value}-icon` || "accord-icon"}
-                            title={accord.title}
-                            type={accord.value}
-                            className="max-md:h-8 md:h-10"
-                            size="max-md:size-4 md:size-6"
-                          />
-                        ))}
+                      {product?.categories.accords?.map((accord) => (
+                        <CardIconResponsive
+                          key={accord.id}
+                          accord={accord}
+                          src={accord.iconUrl || "/accord-icon"}
+                          alt={`${accord?.value}-icon` || "accord-icon"}
+                          title={accord.title}
+                          type={accord.value}
+                          className="max-md:h-8 md:h-10"
+                          size="max-md:size-4 md:size-6"
+                        />
+                      ))}
                     </div>
                   </td>
                   <td className="table__td px-2">

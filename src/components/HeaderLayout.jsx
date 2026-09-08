@@ -88,6 +88,7 @@ function HeaderLayout() {
       <DesktopHeader
         totalProducts={cartItems?.totalProducts}
         toggleCategory={toggleCategory}
+        categoryOpen={categoryOpen}
         loading={loading}
         fullName={fullName}
         isAuthenticated={isAuthenticated}
@@ -162,7 +163,6 @@ function DesktopHeader({
                   onChange={(e) => setSearchValue(e.target.value)}
                   onSubmit={handleSearchSubmit}
                 />
-                
               </li>
             </div>
             <li>

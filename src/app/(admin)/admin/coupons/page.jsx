@@ -1,4 +1,4 @@
-import CouponsLayout from "../_components/CouponsLayout";
+import CouponsLayout from "./_components/CouponsLayout";
 
 function CouponsPage() {
   return <CouponsLayout />;

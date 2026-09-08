@@ -1,4 +1,4 @@
-import AdminDashboardLayout from "../_components/AdminDashboardLayout";
+import AdminDashboardLayout from "./_components/AdminDashboardLayout";
 
 function page() {
   return <AdminDashboardLayout />;

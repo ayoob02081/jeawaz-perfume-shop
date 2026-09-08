@@ -1,4 +1,4 @@
-import BannerForm from "../_components/BannerForm,";
+import BannerForm from "../_components/BannerForm";
 
 function page() {
   return <BannerForm />;

@@ -1,5 +1,5 @@
 import React from "react";
-import NotifForm from "../../_components/NotifForm";
+import NotifForm from "../_components/NotifForm";
 
 function page() {
   return <NotifForm />;

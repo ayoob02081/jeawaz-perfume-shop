@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import ProductsLayout from "./_components/ProductsLayout";
 
 export const metadata = {
@@ -6,7 +7,11 @@ export const metadata = {
 };
 
 function ProductPage() {
-  return <ProductsLayout />;
+  return (
+    <Suspense fallback={null}>
+      <ProductsLayout />
+    </Suspense>
+  );
 }
 
 export default ProductPage;

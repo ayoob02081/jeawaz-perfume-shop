@@ -1,6 +1,4 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import "./globals.css";
 
 export const metadata = {
@@ -9,20 +7,17 @@ export const metadata = {
 };
 
 export default function GlobalNotFound() {
-  const route = useRouter();
   return (
-    <html lang="fa" dir="rtl" className="">
+    <html lang="fa" dir="rtl">
       <body>
         <div className="flex flex-col items-center justify-start gap-4 h-screen translate-y-1/3">
           <h1 className="font-bold text-2xl">
             متاسفانه صفحه مورد نظر پیدا نشد!
           </h1>
-          <button
-            onClick={() => route.back()}
-            className="btn btn--primary py-1 px-3 rounded-xl"
-          >
+
+          <Link href="/" className="btn btn--primary py-1 px-3 rounded-xl">
             برگشت
-          </button>
+          </Link>
         </div>
       </body>
     </html>

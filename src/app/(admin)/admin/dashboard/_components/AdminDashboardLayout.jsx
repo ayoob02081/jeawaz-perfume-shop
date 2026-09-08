@@ -24,7 +24,7 @@ import {
   OrderStatusPercentages,
   PurchaseModeStats,
   RevenueChart,
-} from "../dashboard/_components/DashboardCharts";
+} from "./DashboardCharts";
 
 function AdminDashboardLayout() {
   const { data, isPending, error } = useGetAdminDashboard();
