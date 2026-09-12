@@ -5,7 +5,7 @@ import MobilePannel from "./MobilePannel";
 import { Toaster } from "react-hot-toast";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
-import SideBars from "./SideBars";
+import Sidebars from "./Sidebars";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -31,7 +31,7 @@ export default function RootLayout({ children, modal }) {
         <Providers>
           <Toaster />
           <Header />
-          <SideBars />
+          <Sidebars />
           <main className="max-sm:min-h-[calc(100vh-9.5rem)] sm:min-h-[calc(100vh-5rem)] lg:min-h-[calc(100vh-11rem)]">
             {modal}
             {children}
