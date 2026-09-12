@@ -26,7 +26,7 @@ import Accordion from "@/ui/Accordion";
 import { useGetAllCartItems, useUpdateShippingMethod } from "@/hooks/useCart";
 import CartItemsLayout from "./CartItemsLayout";
 import Link from "next/link";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import RHFTextField from "@/ui/RHFTextField";
 import { useForm } from "react-hook-form";
 import { AllAddresses } from "./AddressModals";
@@ -43,20 +43,20 @@ const shippingOptions = [
   {
     id: 1,
     value: "post",
-    title: "پست پیشتاز(۲ تا ۴ روز کاری)",
-    price: 50000,
+    title: "پست پیشتاز(۳ تا ۵ روز کاری)",
+    price: 150000,
   },
   {
     id: 2,
     value: "tipax",
     title: "تیپاکس با بیمه(۱ تا ۳ روز کاری)",
-    price: 80000,
+    price: 0,
   },
   {
     id: 3,
     value: "chapar",
-    title: "چاپار با بیمه(۱ تا ۳ روز کاری)",
-    price: 60000,
+    title: "چاپار با بیمه(۳ تا ۵ روز کاری)",
+    price: 0,
   },
   { id: 4, value: "barbari", title: "باربری و ترمینال(۲۴ ساعته)", price: 0 },
 ];
@@ -102,7 +102,6 @@ function CartLayout() {
         return (
           <Checkout
             cart={cart}
-            step={step}
             setStep={setStep}
             shippingMethod={shippingMethod}
             setShippingMethod={setShippingMethod}
@@ -112,8 +111,6 @@ function CartLayout() {
             setAddressId={setAddressId}
           />
         );
-      // case 3:
-      //   return <PaymentResault cart={cart} />;
       default:
         return null;
     }
@@ -160,7 +157,7 @@ function CartLayout() {
           <CheckoutStepper step={step} setStep={setStep} />
         </div>
 
-        <div className="flex items-center justify-center w-full px-6">
+        <div className="flex items-center justify-center w-full max-sm:px-4 px-6">
           <div
             className={`container ${step !== 3 ? "md:flex-row" : ""} ${
               step === 2
@@ -182,7 +179,7 @@ function CartLayout() {
         onClick={toggleCart}
         label="سبد خرید"
         side="right"
-        className="size-4"
+        className="size-5.5"
         overflow="overflow-y-auto"
         bgColor=""
         cart
@@ -337,7 +334,7 @@ function CartOverview({ cart, step, setStep }) {
                 titleOne="سبد خرید"
                 titleTwo="شما"
                 productValue={totalProducts}
-                className="lg:flex-co xl: flex-row items-center justify-start"
+                className="flex-row items-center justify-start"
               />
             </th>
             <th className="px-2 text-stroke-800 text-nowrap">حجم و نوع</th>
@@ -360,7 +357,7 @@ function CartOverview({ cart, step, setStep }) {
         {/* MobileCartItems */}
         <div
           dir="ltr"
-          className="max-lg:flex items-center justify-start pr-2 flex-col gap-4 size-full scrollbar--secondary overflow-auto max-h-screen lg:hidden"
+          className="max-lg:flex items-center justify-start flex-col gap-4 size-full scrollbar-none overflow-auto max-h-screen lg:hidden"
         >
           {cart?.items.map((item) => (
             <CartItemsLayout.Mobile key={item.id} cartItem={item} />
@@ -448,7 +445,7 @@ function Checkout({
     try {
       let finalAddressId = addressId;
 
-      if (isLabel) {
+      if (isSave) {
         const addressData = await createAddress(data);
         finalAddressId = addressData.id;
       }
@@ -483,7 +480,7 @@ function Checkout({
       onSubmit={handleSubmit(onSubmit, onError)}
       className="flex flex-col lg:flex-row justify-center gap-6 w-full"
     >
-      <div className="flex flex-col gap-8 size-full">
+      <div className="flex flex-col max-sm:gap-4 gap-6 size-full">
         {/* CartItems */}
         <Accordion
           titleStyle="text-stroke-800"
@@ -498,44 +495,13 @@ function Checkout({
         </Accordion>
 
         {/* UserInfo */}
-        <div className="flex flex-col items-center justify-between gap-4 size-full max-lg:border-[1.5px] border-stroke-200 rounded-2.5xl max-lg:p-6">
+        <div className="flex flex-col items-center justify-between gap-4 size-full max-lg:border-[1.5px] border-stroke-200 rounded-2.5xl max-sm:p-4 sm:p-6">
           <div className="flex items-center justify-start gap-1 text-stroke-800 border-b border-stroke-200 w-full pb-4">
             <h2 className="max-md:text-lg md:text-[1.375rem]">
               اطلاعات کاربری
             </h2>
             <p className="max-md:text-sm md:text-xl">شما</p>
           </div>
-          {isSave && !isLabel && (
-            <Modal
-              className="h-fit"
-              isOpen={isSave && !isLabel}
-              onClose={() => setIsSave(false)}
-            >
-              <div className="flex flex-col p-6 items-center justify-center gap-4 size-full">
-                <RHFTextField
-                  isRequired
-                  register={register}
-                  errors={errors}
-                  label="نام آدرس"
-                  name="label"
-                  className="w-full"
-                  isPrimary={true}
-                  placeholder="مثال : آدرس خانه"
-                  validationSchema={{
-                    required: "نام آدرس الزامی است",
-                  }}
-                />
-                <button
-                  type="button"
-                  disabled={watch("label")?.length < 4}
-                  onClick={() => setIsLabel(true)}
-                  className="btn btn--primary w-full px-3 py-3"
-                >
-                  تایید
-                </button>
-              </div>
-            </Modal>
-          )}
           <AddressForm
             control={control}
             errors={errors}
@@ -551,6 +517,21 @@ function Checkout({
             setIsListOpen={setIsListOpen}
             checkout
           />
+          {isSave && (
+            <RHFTextField
+              isRequired
+              register={register}
+              errors={errors}
+              label="عنوان آدرس"
+              name="label"
+              className="w-full"
+              textClassName="font-bold"
+              placeholder="مثال : آدرس خانه"
+              validationSchema={{
+                required: "نام آدرس الزامی است",
+              }}
+            />
+          )}
           <div className="w-full mt-6">
             <div className="size-full border-b border-stroke-200 pb-4 mb-4">
               <Title
@@ -562,7 +543,7 @@ function Checkout({
               />
             </div>
           </div>
-          <div className="flex items-center flex-wrap gap-4 w-full mb-6">
+          <div className="flex items-center flex-wrap gap-4 w-full max-sm:mb-2 mb-6">
             {shippingOptions.map((item) => (
               <ShippingOption key={item.id} item={item} cart={cart} />
             ))}
@@ -634,7 +615,7 @@ function ShippingOption({ cart, item }) {
         </p>
       </div>
       <span className="flex items-center justify-between gap-1">
-        {value === "terminal" ? (
+        {price <= 0 ? (
           <p className="text-sm text-nowrap">پس کرایه</p>
         ) : (
           <>

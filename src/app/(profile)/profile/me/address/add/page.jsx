@@ -1,7 +1,7 @@
-import AddressForm from "../../../_components/AddressFormLayout";
+import AddressFormLayout from "../../../_components/AddressFormLayout";
 
 function page() {
-  return <AddressForm />;
+  return <AddressFormLayout />;
 }
 
 export default page;

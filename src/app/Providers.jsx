@@ -1,9 +1,11 @@
 "use client";
 
-import { AuthProvider } from "@/contexts/filters/auth/AuthContext";
+import ThemeProvider from "@/components/providers/ThemeProvider";
+import { AuthProvider } from "@/contexts/auth/AuthContext";
 import { FiltersContext } from "@/contexts/filters/context";
 import { initialFilters } from "@/contexts/filters/initialStateFilters";
 import { filtersReducer } from "@/contexts/filters/reducer";
+import { SidebarProvider } from "@/contexts/Sidebars/SidebarContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useReducer, useState } from "react";
 
@@ -14,9 +16,11 @@ function Providers({ children }) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <FiltersContext.Provider value={{ state, dispatch }}>
-          {children}
-        </FiltersContext.Provider>
+        <ThemeProvider>
+          <FiltersContext.Provider value={{ state, dispatch }}>
+            <SidebarProvider>{children}</SidebarProvider>
+          </FiltersContext.Provider>
+        </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

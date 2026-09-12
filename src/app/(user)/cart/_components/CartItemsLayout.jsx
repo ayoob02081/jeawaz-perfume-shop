@@ -17,7 +17,7 @@ function Title({
   enTitle,
   perTitle,
   FirstClassName = "text-base",
-  SecondClassName = "text-sm",
+  SeccondClassName = "text-sm",
   brand,
   volume,
   type,
@@ -27,14 +27,14 @@ function Title({
     <div className="size-full">
       {location === "public" && (
         <div className="flex items-start justify-between size-full flex-col gap-1">
-          {brand && <p className="text-stroke-600 text-xs">Versace</p>}
+          {brand && <p className="text-stroke-600 text-xs">{enTitle}</p>}
           <p
             className={`text-stroke-800 ${FirstClassName} font-bold truncate w-44`}
           >
             {enTitle}
           </p>
           <p
-            className={`text-stroke-800 ${SecondClassName} font-semibold truncate w-44`}
+            className={`text-stroke-800 ${SeccondClassName} font-semibold truncate w-44`}
           >
             {perTitle}
           </p>
@@ -66,16 +66,8 @@ function Title({
 }
 
 function MobileCartLayout({ cartItem }) {
-  const {
-    id,
-    mode,
-    product,
-    quantity,
-    volume,
-    unitPrice,
-    basePrice,
-    lineTotal,
-  } = cartItem;
+  const { id, mode, product, quantity, volume, basePrice, lineTotal } =
+    cartItem;
   const imageSrc = product.images[0];
   const defaultVolume = volume;
   const volumeMode = mode;
@@ -88,36 +80,36 @@ function MobileCartLayout({ cartItem }) {
   return (
     <div
       dir="rtl"
-      className="flex items-center justify-center p-3 gap-4 border-[0.094rem] border-stroke-200 shadow-xs rounded-2xl w-full "
+      className="flex items-center justify-center p-3 gap-4 border-[1.5px] border-stroke-200 shadow-xs rounded-2xl w-full "
     >
-      <div className="flex items-center justify-start gap-4 size-full">
-        <div className="flex items-start justify-center h-full">
+      <div className="flex flex-col items-center justify-start gap-4 size-full">
+        <div className="flex items-start justify-center gap-2 size-full">
           <AppImage
             src={imageSrc}
             alt={product.enTitle + "-image"}
             width="size-16"
             sizes="30vw"
           />
+          <div className="flex flex-col gap-3 w-full">
+            <Title
+              enTitle={product.enTitle}
+              perTitle={product.perTitle}
+              brand
+              volume={volume}
+              type={mode}
+            />
+            <div className="badge badge--secondary w-max h-6">
+              {toPersianNumbers(volume)} میل
+            </div>
+          </div>
         </div>
         <div className="flex flex-col gap-3 size-full">
-          <Title
-            enTitle={product.enTitle}
-            perTitle={product.perTitle}
-            brand
-            volume={volume}
-            type={mode}
-          />
-          <div className="badge badge--secondary w-max h-6">
-            {toPersianNumbers(volume)} میل
-          </div>
-          <div className="max-sm:relative flex flex-co max-sm:justify-end items-center justify-between size-full">
-            <div className="max-sm:absolute -right-11">
-              <PriceSection
-                offValue={getDiscountPercent(basePrice * quantity, lineTotal)}
-                basePrice={basePrice * quantity}
-                unitPrice={lineTotal}
-              />
-            </div>
+          <div className="flex items-center justify-between size-full">
+            <PriceSection
+              offValue={getDiscountPercent(basePrice * quantity, lineTotal)}
+              basePrice={basePrice * quantity}
+              unitPrice={lineTotal}
+            />
             <div className="flex items-center justify-center">
               <CardEvents
                 RemoveFromCartHandler={RemoveFromCartHandler}

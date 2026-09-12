@@ -1,5 +1,3 @@
-import { toStringCookies } from "./toStringCookies";
-
 function getSetCookies(headers) {
   if (typeof headers.getSetCookie === "function") {
     return headers.getSetCookie();
@@ -18,7 +16,7 @@ function cookiesFromSetCookieHeaders(setCookies) {
 }
 
 export default async function middlewareAuth(req) {
-  const originalCookie = toStringCookies(req.cookies);
+  const originalCookie = req.headers.get("cookie") || "";
 
   try {
     // ---------------------------------
@@ -78,7 +76,6 @@ export default async function middlewareAuth(req) {
       const retryCookie = [originalCookie, refreshedCookies]
         .filter(Boolean)
         .join("; ");
-
       // ---------------------------------
       // Retry /users/me with new token
       // ---------------------------------

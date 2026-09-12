@@ -2,7 +2,7 @@
 
 import Loading from "@/components/Loading";
 import { adminStatusConfig } from "@/constants/orderStatus";
-import { orderTHeads } from "@/constants/tableHeads";
+import { orderDesktopTHeads, orderMobileTHeads } from "@/constants/tableHeads";
 import {
   useBulkUpdateStatus,
   useExportOrders,
@@ -144,171 +144,214 @@ function OrdersListTable({ orders, isLoading, status }) {
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl p-4 pt-0">
-      <div className="flex items-center justify-between w-full gap-4">
-        {nextPossibleBulkStatuses?.length > 0 && (
-          <button
-            type="button"
-            onClick={addAll}
-            disabled={!nextPossibleBulkStatuses || orders?.length <= 0}
-            className={`btn btn--primary--2 px-3 py-1 disabled:opacity-60 w-fit gap-2 hover:*:odd:border-stroke-0 ${
-              isAllSelected
-                ? "font-bold hover:*:text-primary hover:*:even:text-stroke-0 hover:*:odd:bg-stroke-0 "
-                : "text-stroke-600  hover:text-stroke-0"
-            }`}
-          >
-            <span
-              className={`flex items-center justify-center size-4 border rounded-sm ${isAllSelected ? "border-primary bg-primary text-white" : "border-stroke-600 text-transparent "} transition-all duration-200`}
-            >
-              <CheckIcon className=" size-2.5 stroke-4 " />
-            </span>
-            <p>انتخاب همه</p>
-          </button>
-        )}
-        {!isLoading &&
-          filteredOrders?.length >= 1 &&
-          status === "READY_TO_PRINT" && (
+      {status !== undefined && (
+        <div className="flex items-center justify-between w-full gap-4">
+          {nextPossibleBulkStatuses?.length > 0 && (
             <button
-              type="submit"
-              onClick={() => handleExportPrintFile(true)}
-              className={` btn btn--primary border  rounded-lg h-full w-fit py-1 px-3 gap-1 disabled:opacity-40 opacity-100 duration-200`}
+              type="button"
+              onClick={addAll}
+              disabled={!nextPossibleBulkStatuses || orders?.length <= 0}
+              className={`btn btn--primary--2 px-3 py-1 disabled:opacity-60 w-fit gap-2 hover:*:odd:border-stroke-0 ${
+                isAllSelected
+                  ? "font-bold hover:*:text-primary hover:*:even:text-stroke-0 hover:*:odd:bg-stroke-0 "
+                  : "text-stroke-600  hover:text-stroke-0"
+              }`}
             >
-              <PrinterIcon className=" size-5 duration-200" />
-              چاپ همه
+              <span
+                className={`flex items-center justify-center size-4 border rounded-sm ${isAllSelected ? "border-primary bg-primary text-white" : "border-stroke-600 text-transparent "} transition-all duration-200`}
+              >
+                <CheckIcon className=" size-2.5 stroke-4 " />
+              </span>
+              <p>انتخاب همه</p>
             </button>
           )}
-      </div>
-      <div className="w-full overflow-x-auto pb-0.5 rounded-xl shadow-xl scrollbar-none">
+          {!isLoading &&
+            filteredOrders?.length >= 1 &&
+            status === "READY_TO_PRINT" && (
+              <button
+                type="submit"
+                onClick={() => handleExportPrintFile(true)}
+                className={` btn btn--primary border  rounded-lg h-full w-fit py-1 px-3 gap-1 disabled:opacity-40 opacity-100 duration-200`}
+              >
+                <PrinterIcon className=" size-5 duration-200" />
+                چاپ همه
+              </button>
+            )}
+        </div>
+      )}
+      <div className="w-full overflow-x-auto rounded-xl shadow-xl scrollbar-none">
         {isLoading ? (
           <Loading />
         ) : (
-          <Table className="overflow-auto">
-            <Table.Header>
-              {orderTHeads.map((item) => (
-                <th className="whitespace-nowrap table__th" key={item.id}>
-                  {item.label}
-                </th>
-              ))}
-            </Table.Header>
-            <Table.body>
-              {filteredOrders?.map((order, index) => {
-                const currentStatus = adminStatusConfig?.find(
-                  (s) => s.value === order?.status,
-                );
-                const nextPossibleStatuses = ORDER_STATUS_FLOW[status] || [];
-                const isChecked = orderIds.includes(order.id);
+          <>
+            <Table className="md:hidden overflow-auto">
+              <Table.Header>
+                {orderMobileTHeads.map((item) => (
+                  <th className="whitespace-nowrap table__th" key={item.id}>
+                    {item.label}
+                  </th>
+                ))}
+              </Table.Header>
+              <Table.body>
+                {filteredOrders?.map((order, index) => {
+                  const currentStatus = adminStatusConfig?.find(
+                    (s) => s.value === order?.status,
+                  );
+                  const nextPossibleStatuses = ORDER_STATUS_FLOW[status] || [];
 
-                return (
-                  <Table.Row key={order.id} className="even:bg-primary/5">
-                    <td className="pl-2 pr-3 w-fit h-ful text-center">
-                      <div className="flex items-center justify-between gap-2 text-stroke-800">
-                        {(status === "PENDING" ||
-                          status === "PAID" ||
-                          status === "READY_TO_PRINT" ||
-                          status === "PRINTED") && (
-                          <CheckBox
-                            id={order.id}
-                            value={order.id}
-                            name="orderIds"
-                            checked={isChecked}
-                            className="flex flex-row! items-center justify-between font-bold"
-                            onChange={handleOrderIds}
-                          >
-                            <div
-                              className={`flex items-center justify-center size-4 border rounded-sm  ${isChecked ? "border-primary bg-primary text-white" : "border-stroke-600 text-transparent "} transition-all duration-200`}
-                            >
-                              <CheckIcon className=" size-2.5 stroke-4 " />
-                            </div>
-                          </CheckBox>
-                        )}
-                        {toPersianNumbers(index + 1)}
-                      </div>
-                    </td>
-                    <td className="table__td px-2 max-w-70 truncate">
-                      <p>{order?.shipping?.receiver || "اسمی ثبت نشده"}</p>
-                    </td>
-                    <td className="table__td px-2">
-                      <Link
-                        href={
-                          order?.shipping?.phone
-                            ? `tel:+${order?.shipping?.phone}`
-                            : ""
-                        }
-                        className="flex items-center gap-2 justify-end hover:text-primary duration-200"
-                      >
-                        {normalizeIranPhone(order?.shipping?.phone) ||
-                          "شماره‌ای ثبت نشده"}
-                      </Link>
-                    </td>
-                    <td className="table__td px-2 max-w-70 truncate">
-                      <p className="flex items-center justify-center w-full text-blue">
-                        {toPersianNumbers(order?.orderNumber)}
-                      </p>
-                    </td>
-                    <td className="table__td px-2">
-                      <p
-                        className={`badge border font-bold ${currentStatus?.textColor} ${currentStatus?.color}`}
-                      >
-                        {currentStatus?.title}
-                      </p>
-                    </td>
-                    <td className="table__td px-2">
-                      <div className="flex flex-col items-center justify-center gap-y-2 badge badge--primary">
-                        {toPersianNumbers(order?.items.length)}
-                      </div>
-                    </td>
-                    <td className="table__td px-2">
-                      <p
-                        className={`badge bg-success/10 text-success border border-success font-bold `}
-                      >
-                        {toPersianNumbersWithComma(order?.pricing?.grandTotal)}
-                      </p>
-                    </td>
-
-                    <td className="table__td px-2">
-                      {toLocalDateString(order?.orderDate)}
-                    </td>
-
-                    <td className="table__td flex items-center justify-center gap-2 px-3">
-                      <Link
-                        href={`/admin/orders/${order?.id}`}
-                        className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
-                      >
-                        <EyeIcon className="size-5" />
-                      </Link>
-                      {nextPossibleStatuses?.map((status) => {
-                        const nextStatusData = adminStatusConfig?.find(
-                          (s) => s.value === status,
-                        );
-
-                        const Icon = nextStatusData?.solidIcon;
-                        return (
-                          <button
-                            key={status}
-                            onClick={() =>
-                              handleStatusModal({
-                                id: order?.id,
-                                status: nextStatusData,
-                              })
+                  return (
+                    <Table.Row key={order.id} className="even:bg-primary/5">
+                      <td className="pl-2 pr-3 w-fit text-center rounded-r-xl">
+                        <div className="flex flex-col items-center justify-between gap-2 text-stroke-800">
+                          {toPersianNumbers(index + 1)}
+                          <OrderCheckbox
+                            order={order}
+                            status={status}
+                            handleOrderIds={handleOrderIds}
+                            orderIds={orderIds}
+                          />
+                        </div>
+                      </td>
+                      <td className="table__td px-2 max-w-70 truncate">
+                        <div className="flex flex-col items-center justify-center gap-1">
+                          <p>{order?.shipping?.receiver || "اسمی ثبت نشده"}</p>
+                          <Link
+                            href={
+                              order?.shipping?.phone
+                                ? `tel:+${order?.shipping?.phone}`
+                                : ""
                             }
+                            className="flex items-center gap-2 justify-end hover:text-primary duration-200"
                           >
-                            <Icon
-                              className={`size-5 opacity-70 hover:opacity-100 ${nextStatusData?.textColor}  duration-200`}
-                            />
-                          </button>
-                        );
-                      })}
-                      {status !== undefined &&
-                        nextPossibleStatuses?.length === 0 && (
-                          <span className="text-stroke-800 text-xs">
-                            نهایی شده
-                          </span>
-                        )}
-                    </td>
-                  </Table.Row>
-                );
-              })}
-            </Table.body>
-          </Table>
+                            {normalizeIranPhone(order?.shipping?.phone) ||
+                              "شماره‌ای ثبت نشده"}
+                          </Link>
+                        </div>
+                      </td>
+                      <td className="table__td px-2 max-w-70 truncate">
+                        <div className="flex flex-col items-center justify-center gap-1">
+                          <p className="flex items-center justify-center w-full text-blue">
+                            {toPersianNumbers(order?.orderNumber)}
+                          </p>
+                          <p
+                            className={`badge border font-bold ${currentStatus?.textColor} ${currentStatus?.color}`}
+                          >
+                            {currentStatus?.title}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="table__td px-2">
+                        <div className="flex flex-col items-center justify-center gap-1">
+                          {toLocalDateString(order?.orderDate)}
+                          <p
+                            className={`badge bg-success/10 text-success border border-success font-bold `}
+                          >
+                            {toPersianNumbersWithComma(
+                              order?.pricing?.grandTotal,
+                            )}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="table__td px-3 rounded-l-xl">
+                        <StatusButtons
+                          order={order}
+                          nextPossibleStatuses={nextPossibleStatuses}
+                          status={status}
+                          handleStatusModal={handleStatusModal}
+                        />
+                      </td>
+                    </Table.Row>
+                  );
+                })}
+              </Table.body>
+            </Table>
+            <Table className="max-md:hidden overflow-auto">
+              <Table.Header>
+                {orderDesktopTHeads.map((item) => (
+                  <th className="whitespace-nowrap table__th" key={item.id}>
+                    {item.label}
+                  </th>
+                ))}
+              </Table.Header>
+              <Table.body className="max-md:hidden">
+                {filteredOrders?.map((order, index) => {
+                  const currentStatus = adminStatusConfig?.find(
+                    (s) => s.value === order?.status,
+                  );
+                  const nextPossibleStatuses = ORDER_STATUS_FLOW[status] || [];
+
+                  return (
+                    <Table.Row key={order.id} className="even:bg-primary/5">
+                      <td className="pl-2 pr-3 w-fit text-center rounded-r-xl">
+                        <div className="flex items-center justify-between gap-2 text-stroke-800">
+                          <OrderCheckbox
+                            order={order}
+                            status={status}
+                            handleOrderIds={handleOrderIds}
+                            orderIds={orderIds}
+                          />
+                          {toPersianNumbers(index + 1)}
+                        </div>
+                      </td>
+                      <td className="table__td px-2 max-w-70 truncate">
+                        <p>{order?.shipping?.receiver || "اسمی ثبت نشده"}</p>
+                      </td>
+                      <td className="table__td px-2">
+                        <Link
+                          href={
+                            order?.shipping?.phone
+                              ? `tel:+${order?.shipping?.phone}`
+                              : ""
+                          }
+                          className="flex items-center gap-2 justify-end hover:text-primary duration-200"
+                        >
+                          {normalizeIranPhone(order?.shipping?.phone) ||
+                            "شماره‌ای ثبت نشده"}
+                        </Link>
+                      </td>
+                      <td className="table__td px-2 max-w-70 truncate">
+                        <p className="flex items-center justify-center w-full text-blue">
+                          {toPersianNumbers(order?.orderNumber)}
+                        </p>
+                      </td>
+                      <td className="table__td px-2">
+                        <p
+                          className={`badge border font-bold ${currentStatus?.textColor} ${currentStatus?.color}`}
+                        >
+                          {currentStatus?.title}
+                        </p>
+                      </td>
+                      <td className="table__td px-2">
+                        <div className="flex flex-col items-center justify-center gap-y-2 badge badge--primary">
+                          {toPersianNumbers(order?.items.length)}
+                        </div>
+                      </td>
+                      <td className="table__td px-2">
+                        <p
+                          className={`badge bg-success/10 text-success border border-success font-bold `}
+                        >
+                          {toPersianNumbersWithComma(
+                            order?.pricing?.grandTotal,
+                          )}
+                        </p>
+                      </td>
+                      <td className="table__td px-2">
+                        {toLocalDateString(order?.orderDate)}
+                      </td>
+                      <td className="table__td px-3 rounded-l-xl">
+                        <StatusButtons
+                          order={order}
+                          nextPossibleStatuses={nextPossibleStatuses}
+                          status={status}
+                          handleStatusModal={handleStatusModal}
+                        />
+                      </td>
+                    </Table.Row>
+                  );
+                })}
+              </Table.body>
+            </Table>
+          </>
         )}
       </div>
       {statusModalOpen && (
@@ -357,3 +400,72 @@ function OrdersListTable({ orders, isLoading, status }) {
 }
 
 export default OrdersListTable;
+
+function StatusButtons({
+  order,
+  nextPossibleStatuses,
+  status,
+  handleStatusModal,
+}) {
+  return (
+    <div className="flex items-center justify-center gap-2">
+      <Link
+        href={`/admin/orders/${order?.id}`}
+        className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
+      >
+        <EyeIcon className="size-5" />
+      </Link>
+      {nextPossibleStatuses?.map((status) => {
+        const nextStatusData = adminStatusConfig?.find(
+          (s) => s.value === status,
+        );
+        const Icon = nextStatusData?.solidIcon;
+        return (
+          <button
+            key={status}
+            onClick={() =>
+              handleStatusModal({
+                id: order?.id,
+                status: nextStatusData,
+              })
+            }
+            className="flex items-center justify-center"
+          >
+            <Icon
+              className={`size-5 opacity-70 hover:opacity-100 ${nextStatusData?.textColor}  duration-200`}
+            />
+          </button>
+        );
+      })}
+      {status !== undefined && nextPossibleStatuses?.length === 0 && (
+        <span className="text-stroke-800 text-xs">نهایی شده</span>
+      )}
+    </div>
+  );
+}
+
+function OrderCheckbox({ order, status, handleOrderIds, orderIds }) {
+  const isChecked = orderIds.includes(order.id);
+
+  return (
+    (status === "PENDING" ||
+      status === "PAID" ||
+      status === "READY_TO_PRINT" ||
+      status === "PRINTED") && (
+      <CheckBox
+        id={order.id}
+        value={order.id}
+        name="orderIds"
+        checked={isChecked}
+        className="flex flex-row! items-center justify-between font-bold"
+        onChange={handleOrderIds}
+      >
+        <div
+          className={`flex items-center justify-center size-4 border rounded-sm  ${isChecked ? "border-primary bg-primary text-white" : "border-stroke-600 text-transparent "} transition-all duration-200`}
+        >
+          <CheckIcon className=" size-2.5 stroke-4 " />
+        </div>
+      </CheckBox>
+    )
+  );
+}

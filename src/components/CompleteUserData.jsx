@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import RHFTextField from "@/ui/RHFTextField";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import Loading from "@/components/Loading";
 import Modal from "@/components/Modal";
 import AuthLayout from "@/app/(user)/auth/_components/AuthLayout";
@@ -50,7 +50,7 @@ const formData = [
 
 function CompleteUserData() {
   const router = useRouter();
-  const {updateUser, loading: isPending } = useAuth();
+  const { updateUser, loading: isPending } = useAuth();
 
   const {
     register,

@@ -5,7 +5,7 @@ import OrdersLayout from "./_components/OrdersLayout";
 export default function OrdersPage() {
   return (
     <Suspense fallback={<Loading />}>
-      <OrdersLayout />;
+      <OrdersLayout />
     </Suspense>
   );
 }

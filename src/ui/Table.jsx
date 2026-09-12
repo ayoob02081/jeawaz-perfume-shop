@@ -14,8 +14,8 @@ function TableHeader({ children, className }) {
   );
 }
 
-function TableBody({ children }) {
-  return <tbody className="size-full">{children}</tbody>;
+function TableBody({ children, className }) {
+  return <tbody className={`size-full ${className}`}>{children}</tbody>;
 }
 
 function TableRow({ children, className, border }) {

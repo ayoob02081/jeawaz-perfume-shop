@@ -21,7 +21,7 @@ export default function page() {
       isOpen={openOrderPage}
       side="right"
       label="جزئیات سفارش"
-      className="size-4"
+      className="size-5.5"
       fontStyle="text-lg sm:text-2xl font-bold"
       justify="between"
       overflow="overflow-y-auto"

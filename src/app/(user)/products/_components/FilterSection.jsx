@@ -23,6 +23,7 @@ import {
 } from "@/utils/queryFilters";
 import { useForm } from "react-hook-form";
 import Skeleton from "@/ui/Skeleton";
+import { scrollTo } from "@/utils/scrollTo";
 
 function FilterSection() {
   const router = useRouter();
@@ -324,41 +325,41 @@ function BrandsFilter({
         </div>
         <div
           ref={ref}
-          className="flex items-center justify-start gap-2 p-2 pr-12 pl-6 h-full rounded-full overflow-x-auto scrollbar-none snap-x scroll-smooth"
+          className="flex items-center justify-start gap-2 p-2 pr-14 pl-6 h-full rounded-full overflow-x-auto scrollbar-none snap-x scroll-smooth"
         >
-          {brandsLoading ? (
-            <div className="flex items-center gap-2 h-full w-full pr-12 pl-8 p-2 overflow-hidden">
-              <Skeleton className="flex-none h-1/2 w-24 rounded-full" />
-              <Skeleton className="flex-none h-1/2 w-32 rounded-full" />
-              <Skeleton className="flex-none h-1/2 w-20 rounded-full" />
-              <Skeleton className="flex-none h-1/2 w-28 rounded-full" />
-              <Skeleton className="flex-none h-1/2 w-24 rounded-full" />
-              <Skeleton className="flex-none h-1/2 w-32 rounded-full" />
-            </div>
-          ) : (
-            brands?.map((brand) => {
-              const isChecked = selectedBrandIds.includes(Number(brand.id));
-
-              return (
-                <FilterCheckBox
-                  key={brand.id}
-                  checkId={brand.id}
-                  imageSrc={brand.iconUrl}
-                  name={"brandFilter"}
-                  onChange={() => toggleBrandAndSync(brand.id)}
-                  checked={isChecked}
-                  className={`justify-center text-nowrap has-checked:*:border-2 dark:has-checked:*:border-[1.5px] has-checked:*:bg-white  dark:has-checked:*:bg-stroke-0  *:border-primary dark:*:border-stroke-200 has-checked:*:border-primary dark:has-checked:*:border-stroke-200 size-full snap-center`}
-                  imageClassName="px-2 lg h-full lg:h- w- rounded-full duration-200 dark:*:invert "
-                  ratio="aspect-3/2"
+          {brandsLoading
+            ? Array.from({ length: 14 }).map((_, index) => (
+                <Skeleton
+                  key={index}
+                  className="flex-none h-1/2 w-24 rounded-full bg-stroke-300"
                 />
-              );
-            })
-          )}
+              ))
+            : brands?.map((brand) => {
+                const isChecked = selectedBrandIds.includes(Number(brand.id));
+
+                return (
+                  <FilterCheckBox
+                    key={brand.id}
+                    checkId={brand.id}
+                    imageSrc={brand.iconUrl}
+                    name={"brandFilter"}
+                    onChange={() => toggleBrandAndSync(brand.id)}
+                    checked={isChecked}
+                    className={`justify-center text-nowrap has-checked:*:border-2 dark:has-checked:*:border-[1.5px] has-checked:*:bg-white  dark:has-checked:*:bg-stroke-0  *:border-primary dark:*:border-stroke-200 has-checked:*:border-primary dark:has-checked:*:border-stroke-200 size-full snap-center`}
+                    imageClassName="px-2 lg h-full lg:h- w- rounded-full duration-200 dark:*:invert "
+                    ratio="aspect-3/2"
+                  />
+                );
+              })}
         </div>
       </div>
-      <div className="absolute left-0 z-10 flex items-center justify-center bg-stroke-0/10 backdrop-blur-md text-stroke-800 lg:text-lg font-bold h-full px-2">
+      <button
+        type="button"
+        onClick={() => scrollTo(ref, "x", -400)}
+        className="absolute left-0 z-10 flex items-center justify-center bg-stroke-0/10 backdrop-blur-md text-stroke-800 lg:text-lg font-bold h-full px-2"
+      >
         <ChevronLeftIcon className="size-4 lg:size-5" />
-      </div>
+      </button>
     </form>
   );
 }

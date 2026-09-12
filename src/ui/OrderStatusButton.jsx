@@ -3,7 +3,7 @@
 import { useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
-import { toPersianNumbers } from "@/utils/toPersianNumbers";
+import { toPersianNumbersWithComma } from "@/utils/toPersianNumbers";
 
 function OrderStatusButton({
   orders,
@@ -48,13 +48,11 @@ function OrderStatusButton({
       type="button"
       onClick={handleClick}
       disabled={isLoading}
-      className={`flex items-center justify-start gap-4 
-        max-md:p-6 md:p-4 rounded-2xl 
-        max-md:max-w-56 md:max-w-52 w-full h-full 
-        max-lg:max-h-20 lg:max-h-28
-        transition-all duration-200 bg-stroke-0
+      className={`flex max-sm:flex-col items-center justify-start max-sm:gap-2 gap-4 
+        max-md:p-2 md:p-4 rounded-2xl max-sm:min-w-28 max-md:max-w-56 md:max-w-52 w-full h-full 
+        max-lg:max-h- lg:max-h-28 transition-all duration-200 bg-stroke-0 shadow-sm
         ${isActive ? "border-[1.5px] border-primary" : "border border-stroke-250"}
-        ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:shadow-sm"}
+        ${isLoading ? "opacity-70 cursor-not-allowed" : "hover:shadow-md"}
         snap-center`}
     >
       {/* Icon Box */}
@@ -65,21 +63,23 @@ function OrderStatusButton({
       </div>
 
       {/* Content */}
-      <span className="flex flex-col items-start max-md:gap-1 md:gap-2">
+      <span className="flex flex-col max-sm:items-center items-start max-md:gap-1 md:gap-2">
         <p className="text-sm text-stroke-600 text-nowrap font-bold">
           {statusBtnData?.title}
         </p>
 
-        <span className="flex items-center gap-2 text-stroke-800">
-          {isLoading ? (
-            <Loading size={4} />
-          ) : (
-            <p className="text-2xl  text-stroke-800">
-              {toPersianNumbers(statusLength)}
+        {isLoading ? (
+          <Loading size={7} className="h-fit" />
+        ) : (
+          <span className="flex items-center gap-2 text-stroke-800">
+            <p className="text-2xl max-sm:text-xl text-stroke-800">
+              {statusLength >= 9999
+                ? toPersianNumbersWithComma(9999) + "+"
+                : toPersianNumbersWithComma(statusLength)}
             </p>
-          )}
-          <p>سفارش</p>
-        </span>
+            <p className="max-sm:text-sm">سفارش</p>
+          </span>
+        )}
       </span>
     </button>
   );

@@ -29,7 +29,34 @@ export const userPaymentTHeads = [
   },
 ];
 
-export const userTHeads = [
+export const userMobileTHeads = [
+  {
+    id: 1,
+    label: "#",
+  },
+  {
+    id: 2,
+    label: "نام کامل",
+  },
+  {
+    id: 3,
+    label: "موبایل و ایمیل",
+  },
+  {
+    id: 5,
+    label: "وضعیت",
+  },
+  {
+    id: 7,
+    label: "سفارشات و ثبت نام",
+  },
+  {
+    id: 9,
+    label: "عملیات",
+  },
+];
+
+export const userDesktopTHeads = [
   {
     id: 1,
     label: "#",
@@ -89,7 +116,30 @@ export const userTHeads = [
   // },
 ];
 
-export const NotifTHeads = [
+export const NotifMobileTHeads = [
+  {
+    id: 1,
+    label: "#",
+  },
+  {
+    id: 2,
+    label: "نام و شماره",
+  },
+  {
+    id: 3,
+    label: "تاریخ خواندن",
+  },
+  {
+    id: 4,
+    label: "وضعیت پیامک",
+  },
+  {
+    id: 5,
+    label: "عملیات",
+  },
+];
+
+export const NotifDesktopTHeads = [
   {
     id: 1,
     label: "#",
@@ -129,7 +179,38 @@ export const NotifTHeads = [
   },
 ];
 
-export const productTHeads = [
+export const productMobileTHeads = [
+  {
+    id: 1,
+    label: "#",
+  },
+  {
+    id: 2,
+    label: "عنوان",
+  },
+  {
+    id: 3,
+    label: "برند و جنسیت",
+  },
+  {
+    id: 4,
+    label: "رایحه‌ها",
+  },
+  {
+    id: 5,
+    label: "موجودی و تخفیف",
+  },
+  {
+    id: 6,
+    label: "قیمت دکانت و پلمپ",
+  },
+  {
+    id: 7,
+    label: "عملیات",
+  },
+];
+
+export const productDesktopTHeads = [
   {
     id: 1,
     label: "#",
@@ -172,7 +253,26 @@ export const productTHeads = [
   },
 ];
 
-export const categoryTHeads = [
+export const categoryMobileTHeads = [
+  {
+    id: 1,
+    label: "#",
+  },
+  {
+    id: 2,
+    label: "نام",
+  },
+  {
+    id: 3,
+    label: "آیکون",
+  },
+  {
+    id: 4,
+    label: "عملیات",
+  },
+];
+
+export const categoryDesktopTHeads = [
   {
     id: 1,
     label: "#",
@@ -238,7 +338,50 @@ export const paymentsTHeads = [
   },
 ];
 
-export const couponTHeads = [
+export const couponMobileTHeads = [
+  {
+    id: 1,
+    label: "#",
+  },
+  {
+    id: 2,
+    label: "عنوان و کد",
+  },
+  // {
+  //   id: 3,
+  //   label: "کد",
+  // },
+  {
+    id: 4,
+    label: "مقدار و ظرفیت",
+  },
+  // {
+  //   id: 5,
+  //   label: "ظرفیت",
+  // },
+  {
+    id: 6,
+    label: "کاربران",
+  },
+  // {
+  //   id: 7,
+  //   label: "نوع",
+  // },
+  {
+    id: 8,
+    label: "وضعیت و تاریخ اتمام",
+  },
+  // {
+  //   id: 9,
+  //   label: "وضعیت",
+  // },
+  {
+    id: 10,
+    label: "عملیات",
+  },
+];
+
+export const couponDesktopTHeads = [
   {
     id: 1,
     label: "#",
@@ -261,7 +404,7 @@ export const couponTHeads = [
   },
   {
     id: 6,
-    label: "کاریران",
+    label: "کاربران",
   },
   {
     id: 7,
@@ -281,7 +424,34 @@ export const couponTHeads = [
   },
 ];
 
-export const campaignTHeads = [
+export const campaignMobileTHeads = [
+  {
+    id: 1,
+    label: "#",
+  },
+  {
+    id: 2,
+    label: "عنوان",
+  },
+  {
+    id: 3,
+    label: "وضعیت و مقدار",
+  },
+  {
+    id: 5,
+    label: "تخفیف برای",
+  },
+  {
+    id: 7,
+    label: " شروع و اتمام",
+  },
+  {
+    id: 9,
+    label: "عملیات",
+  },
+];
+
+export const campaignDesktopTHeads = [
   {
     id: 1,
     label: "#",
@@ -320,7 +490,30 @@ export const campaignTHeads = [
   },
 ];
 
-export const orderTHeads = [
+export const orderMobileTHeads = [
+  {
+    id: 1,
+    label: "#",
+  },
+  {
+    id: 2,
+    label: "دریافت کننده",
+  },
+  {
+    id: 4,
+    label: "شماره سفارش",
+  },
+  {
+    id: 5,
+    label: "مبلغ پرداخت شده",
+  },
+  {
+    id: 9,
+    label: "عملیات",
+  },
+];
+
+export const orderDesktopTHeads = [
   {
     id: 1,
     label: "#",
@@ -380,7 +573,7 @@ export const orderTHeads = [
   // },
 ];
 
-export const bannerTHeads = [
+export const bannerMobileTHeads = [
   {
     id: 1,
     label: "#",
@@ -391,15 +584,30 @@ export const bannerTHeads = [
   },
   {
     id: 3,
-    label: "لینک",
+    label: "وضعیت",
+  },
+  {
+    id: 4,
+    label: "شروع و انقضا",
+  },
+  {
+    id: 5,
+    label: "عملیات",
+  },
+];
+
+export const bannerDesktopTHeads = [
+  {
+    id: 1,
+    label: "#",
+  },
+  {
+    id: 2,
+    label: "نام",
   },
   {
     id: 4,
     label: "وضعیت",
-  },
-  {
-    id: 5,
-    label: "نوع بنر",
   },
   {
     id: 6,

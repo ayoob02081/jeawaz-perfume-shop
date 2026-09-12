@@ -2,7 +2,10 @@
 
 import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
 import AppImage from "@/components/AppImage";
-import { productTHeads } from "@/constants/tableHeads";
+import {
+  productDesktopTHeads,
+  productMobileTHeads,
+} from "@/constants/tableHeads";
 import { useRemoveProduct } from "@/hooks/useProducts";
 import ConfirmModal from "@/ui/ConfirmModal";
 import Table from "@/ui/Table";
@@ -36,136 +39,252 @@ function ProductsListTable({ products }) {
       setProduct(data);
     }
   };
-  console.log(products);
 
   return (
     <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar-none">
-      <Table className="overflow-auto">
-        <Table.Header className="">
-          {productTHeads.map((item) => (
-            <th className="whitespace-nowrap table__th" key={item.id}>
-              {item.label}
-            </th>
-          ))}
-        </Table.Header>
-        <Table.body>
-          {products &&
-            products?.map((product, index) => {
-              return (
-                <Table.Row key={product.id} className="even:bg-primary/5">
-                  <td className="table__td px-3 font-bold rounded-r-full">
-                    <p>{toPersianNumbers(index + 1)}</p>
-                  </td>
-                  <td className="table__td px-6 max-w-70 truncate">
-                    <p className="font-bold">{product.perTitle}</p>
-                  </td>
-                  <td className="table__td px-2 max-w-70 truncate">
-                    <div className="flex items-center justify-center flex-col gap-2 text-xs">
-                      <AppImage
-                        src={product?.brand?.iconUrl || "/brand-icon"}
-                        alt={`${product?.brand?.value}-icon` || "brand-icon"}
-                        ratio="aspect-[4/1]"
-                        className="dark:invert"
-                        width="w-16"
-                        sizes="10vw"
-                      />
-                      <p className="text-stroke-600">{product?.brand?.title}</p>
-                    </div>
-                  </td>
-                  <td className="table__td px-2 max-w-70 truncate">
-                    <div className="flex items-center justify-start gap-2 h-full w-fit">
-                      <CardIconResponsive
-                        src={
-                          product?.categories.gender?.iconUrl || "/gender-icon"
-                        }
-                        alt={
-                          `${product?.categories.gender?.value}-icon` ||
-                          "gender-icon"
-                        }
-                        title={product?.categories.gender?.title}
-                        type={product?.categories.gender?.value}
-                        className="max-md:h-8 md:h-10"
-                        size="max-md:size-4 md:size-6"
-                        accord
-                      />
-                    </div>
-                  </td>
-                  <td className="table__td px-3 py-3 max-w-70 truncate">
-                    <div className="flex items-center justify-start gap-2 h-full w-fit">
-                      {product?.categories.accords?.map((accord) => (
+      <>
+        <Table className="overflow-auto md:hidden">
+          <Table.Header className="">
+            {productMobileTHeads.map((item) => (
+              <th className="whitespace-nowrap table__th" key={item.id}>
+                {item.label}
+              </th>
+            ))}
+          </Table.Header>
+          <Table.body>
+            {products &&
+              products?.map((product, index) => {
+                return (
+                  <Table.Row key={product.id} className="even:bg-primary/5">
+                    <td className="table__td px-3 font-bold rounded-r-xl">
+                      <p>{toPersianNumbers(index + 1)}</p>
+                    </td>
+                    <td className="table__td px-6 max-w-70 min-w-40 text-wrap">
+                      <p className="font-bold">{product.perTitle}</p>
+                    </td>
+                    <td className="table__td px-2 max-w-70 truncate">
+                      <div className="flex items-center justify-center flex-col gap-2 text-xs">
+                        <AppImage
+                          src={product?.brand?.iconUrl || "/brand-icon"}
+                          alt={`${product?.brand?.value}-icon` || "brand-icon"}
+                          ratio="aspect-[4/1]"
+                          className="dark:invert"
+                          width="w-16"
+                          sizes="10vw"
+                        />
+                        <p className="text-stroke-800">
+                          {product?.categories.gender?.title}
+                        </p>
+                      </div>
+                    </td>
+                    <td className="table__td px-3 py-3 max-w-70 truncate">
+                      <div className="flex items-center justify-start gap-2 h-full w-fit">
+                        {product?.categories.accords?.map((accord) => (
+                          <CardIconResponsive
+                            key={accord.id}
+                            accord={accord}
+                            src={accord.iconUrl || "/accord-icon"}
+                            alt={`${accord?.value}-icon` || "accord-icon"}
+                            title={accord.title}
+                            type={accord.value}
+                            className="max-md:h-8 md:h-10"
+                            size="max-md:size-4 md:size-6"
+                          />
+                        ))}
+                      </div>
+                    </td>
+                    <td className="table__td px-2">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <p className="badge badge--primary font-bold">
+                          %{toPersianNumbers(product.offValue)} تخفیف
+                        </p>
+                        <p
+                          className={`badge badge--primary border ${product.stock >= 100 ? "border-success bg-success/10 text-success" : "border-red-600 bg-red-600/10 text-red-600"} font-bold`}
+                        >
+                          {toPersianNumbers(product.stock)} میل
+                        </p>
+                      </div>
+                    </td>
+                    <td className="table__td py-3! gap-2 px-6 flex flex-col justify-center scrollbar--primary scrollbar-w-1">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-2 py-1 text-xs rounded-full badge bg-blue/10 text-blue border border-blue font-bold">
+                          <p className=" text-stroke-800">هر میل دکانت</p>
+                          <p>
+                            {toPersianNumbersWithComma(
+                              product.modes.decant.pricePerMl,
+                            )}
+                          </p>
+                        </div>
+                        {product.modes.sealed.variants.map((p, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center justify-center gap-2 py-1 text-xs rounded-full badge bg-blue/10 text-blue border border-blue font-bold"
+                          >
+                            <p className=" text-stroke-800">
+                              {toPersianNumbers(p.volume)} میل پلمپ
+                            </p>
+                            <p>{toPersianNumbersWithComma(p.price)}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="table__td px-3 rounded-l-xl">
+                      <div className="flex gap-2 items-center">
+                        <Link
+                          href={`/products/${product.id}`}
+                          className="text-stroke-450 hover:text-blue duration-200"
+                        >
+                          <EyeIcon className=" size-5" />
+                        </Link>
+                        <Link
+                          href={`/admin/products/edit/${product.id}`}
+                          className="text-stroke-450 hover:text-success duration-200"
+                        >
+                          <PencilIcon className=" size-5" />
+                        </Link>
+                        <button
+                          onClick={() => handleModal(product)}
+                          className="text-stroke-450 hover:text-primary duration-200"
+                        >
+                          <TrashIcon className="size-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </Table.Row>
+                );
+              })}
+          </Table.body>
+        </Table>
+        <Table className="overflow-auto max-md:hidden">
+          <Table.Header className="">
+            {productDesktopTHeads.map((item) => (
+              <th className="whitespace-nowrap table__th" key={item.id}>
+                {item.label}
+              </th>
+            ))}
+          </Table.Header>
+          <Table.body>
+            {products &&
+              products?.map((product, index) => {
+                return (
+                  <Table.Row key={product.id} className="even:bg-primary/5">
+                    <td className="table__td px-3 font-bold rounded-r-xl">
+                      <p>{toPersianNumbers(index + 1)}</p>
+                    </td>
+                    <td className="table__td px-6 max-w-70 truncate">
+                      <p className="font-bold">{product.perTitle}</p>
+                    </td>
+                    <td className="table__td px-2 max-w-70 truncate">
+                      <div className="flex items-center justify-center flex-col gap-2 text-xs">
+                        <AppImage
+                          src={product?.brand?.iconUrl || "/brand-icon"}
+                          alt={`${product?.brand?.value}-icon` || "brand-icon"}
+                          ratio="aspect-[4/1]"
+                          className="dark:invert"
+                          width="w-16"
+                          sizes="10vw"
+                        />
+                        <p className="text-stroke-600">
+                          {product?.brand?.title}
+                        </p>
+                      </div>
+                    </td>
+                    <td className="table__td px-2 max-w-70 truncate">
+                      <div className="flex items-center justify-start gap-2 h-full w-fit">
                         <CardIconResponsive
-                          key={accord.id}
-                          accord={accord}
-                          src={accord.iconUrl || "/accord-icon"}
-                          alt={`${accord?.value}-icon` || "accord-icon"}
-                          title={accord.title}
-                          type={accord.value}
+                          src={
+                            product?.categories.gender?.iconUrl ||
+                            "/gender-icon"
+                          }
+                          alt={
+                            `${product?.categories.gender?.value}-icon` ||
+                            "gender-icon"
+                          }
+                          title={product?.categories.gender?.title}
+                          type={product?.categories.gender?.value}
                           className="max-md:h-8 md:h-10"
                           size="max-md:size-4 md:size-6"
+                          accord
                         />
-                      ))}
-                    </div>
-                  </td>
-                  <td className="table__td px-2">
-                    <p
-                      className={`badge badge--primary border ${product.stock >= 100 ? "border-success bg-success/10 text-success" : "border-red-600 bg-red-600/10 text-red-600"} font-bold`}
-                    >
-                      {toPersianNumbers(product.stock)} میل
-                    </p>
-                  </td>
-                  <td className="table__td px-6 overflow-auto ">
-                    <p className="badge bg-blue/10 text-blue border border-blue font-bold">
-                      {toPersianNumbersWithComma(
-                        product.modes.decant.pricePerMl,
-                      )}
-                    </p>
-                  </td>
-                  <td className="table__td py-3! gap-2 px-6 flex flex-col justify-center scrollbar--primary scrollbar-w-1">
-                    {product.modes.sealed.variants.map((p, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center justify-center gap-2 py-1 text-xs rounded-full badge bg-blue/10 text-blue border border-blue font-bold"
-                      >
-                        <p className=" text-stroke-800">
-                          {toPersianNumbers(p.volume)} میل
-                        </p>
-                        <p>{toPersianNumbersWithComma(p.price)}</p>
                       </div>
-                    ))}
-                  </td>
-                  <td className="table__td px-2">
-                    <p className="badge badge--primary font-bold">
-                      %{toPersianNumbers(product.offValue)}
-                    </p>
-                  </td>
-                  <td className="table__td px-3 rounded-l-full">
-                    <div className="flex gap-2 items-center">
-                      <Link
-                        href={`/products/${product.id}`}
-                        className="text-stroke-450 hover:text-blue duration-200"
+                    </td>
+                    <td className="table__td px-3 py-3 max-w-70 truncate">
+                      <div className="flex items-center justify-start gap-2 h-full w-fit">
+                        {product?.categories.accords?.map((accord) => (
+                          <CardIconResponsive
+                            key={accord.id}
+                            accord={accord}
+                            src={accord.iconUrl || "/accord-icon"}
+                            alt={`${accord?.value}-icon` || "accord-icon"}
+                            title={accord.title}
+                            type={accord.value}
+                            className="max-md:h-8 md:h-10"
+                            size="max-md:size-4 md:size-6"
+                          />
+                        ))}
+                      </div>
+                    </td>
+                    <td className="table__td px-2">
+                      <p
+                        className={`badge badge--primary border ${product.stock >= 100 ? "border-success bg-success/10 text-success" : "border-red-600 bg-red-600/10 text-red-600"} font-bold`}
                       >
-                        <EyeIcon className=" size-5" />
-                      </Link>
-                      <Link
-                        href={`/admin/products/edit/${product.id}`}
-                        className="text-stroke-450 hover:text-success duration-200"
-                      >
-                        <PencilIcon className=" size-5" />
-                      </Link>
-                      <button
-                        onClick={() => handleModal(product)}
-                        // onClick={() => removeProductHandler(product)}
-                        className="text-stroke-450 hover:text-primary duration-200"
-                      >
-                        <TrashIcon className="size-5" />
-                      </button>
-                    </div>
-                  </td>
-                </Table.Row>
-              );
-            })}
-        </Table.body>
-      </Table>
+                        {toPersianNumbers(product.stock)} میل
+                      </p>
+                    </td>
+                    <td className="table__td px-6 overflow-auto ">
+                      <p className="badge bg-blue/10 text-blue border border-blue font-bold">
+                        {toPersianNumbersWithComma(
+                          product.modes.decant.pricePerMl,
+                        )}
+                      </p>
+                    </td>
+                    <td className="table__td py-3! gap-2 px-6 flex flex-col justify-center scrollbar--primary scrollbar-w-1">
+                      {product.modes.sealed.variants.map((p, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center justify-center gap-2 py-1 text-xs rounded-full badge bg-blue/10 text-blue border border-blue font-bold"
+                        >
+                          <p className=" text-stroke-800">
+                            {toPersianNumbers(p.volume)} میل
+                          </p>
+                          <p>{toPersianNumbersWithComma(p.price)}</p>
+                        </div>
+                      ))}
+                    </td>
+                    <td className="table__td px-2">
+                      <p className="badge badge--primary font-bold">
+                        %{toPersianNumbers(product.offValue)}
+                      </p>
+                    </td>
+                    <td className="table__td px-3 rounded-l-xl">
+                      <div className="flex gap-2 items-center">
+                        <Link
+                          href={`/products/${product.id}`}
+                          className="text-stroke-450 hover:text-blue duration-200"
+                        >
+                          <EyeIcon className=" size-5" />
+                        </Link>
+                        <Link
+                          href={`/admin/products/edit/${product.id}`}
+                          className="text-stroke-450 hover:text-success duration-200"
+                        >
+                          <PencilIcon className=" size-5" />
+                        </Link>
+                        <button
+                          onClick={() => handleModal(product)}
+                          className="text-stroke-450 hover:text-primary duration-200"
+                        >
+                          <TrashIcon className="size-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </Table.Row>
+                );
+              })}
+          </Table.body>
+        </Table>
+      </>
+
       {confirmModalOpen && (
         <ConfirmModal
           cancellBtn={handleModal}

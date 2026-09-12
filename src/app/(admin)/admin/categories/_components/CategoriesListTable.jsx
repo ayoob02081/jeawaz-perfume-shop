@@ -1,7 +1,11 @@
 "use client";
 
 import AppImage from "@/components/AppImage";
-import { categoryTHeads } from "@/constants/tableHeads";
+import {
+  categoryDesktopTHeads,
+  categoryMobileTHeads,
+  categoryTHeads,
+} from "@/constants/tableHeads";
 import { useRemoveBrand, useRemoveCategory } from "@/hooks/useCategories";
 import ConfirmModal from "@/ui/ConfirmModal";
 import Table from "@/ui/Table";
@@ -41,79 +45,142 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
 
   return (
     <div className="w-full overflow-x-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar-none">
-      <Table className="overflow-auto">
-        <Table.Header>
-          {categoryTHeads.map((item) => (
-            <th className="whitespace-nowrap table__th" key={item.id}>
-              {item.label}
-            </th>
-          ))}
-        </Table.Header>
+      <>
+        <Table className="overflow-auto md:hidden">
+          <Table.Header>
+            {categoryMobileTHeads.map((item) => (
+              <th className="whitespace-nowrap table__th" key={item.id}>
+                {item.label}
+              </th>
+            ))}
+          </Table.Header>
+          <Table.body>
+            {categories?.map((category, index) => {
+              const type = brands ? "brands" : accords ? "accords" : "genders";
+              return (
+                <Table.Row key={category.id} className="even:bg-primary/5">
+                  <td className="table__td px-3 font-bold rounded-r-xl">
+                    {toPersianNumbers(index + 1)}
+                  </td>
+                  <td className="table__td px-6 max-w-70 min-w-40 text-wrap font-bold">
+                    <div className="flex flex-col items-center justify-center gap-1">
+                      <p>{category.title}</p>
+                      <p>{category.value}</p>
+                    </div>
+                  </td>
+                  <td className="table__td px-2">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <div className="flex items-center justify-center">
+                        <AppImage
+                          src={category?.iconUrl}
+                          alt={category?.value || "category-icon"}
+                          ratio={brands ? "aspect-[4/1]" : "aspect-square"}
+                          width={brands ? "w-16" : "w-7"}
+                          className={brands ? "dark:invert" : ""}
+                          sizes="10vw"
+                        />
+                      </div>
+                      <span className="badge badge--primary font-bold">
+                        {toPersianNumbers(category?.productsCount || 0)} محصول
+                      </span>
+                    </div>
+                  </td>
+                  <td className="table__td px-3 rounded-l-xl">
+                    <div className="flex gap-2 items-center">
+                      <Link
+                        href={`/admin/categories/${type}/edit/${category.id}`}
+                        className="text-stroke-450 hover:text-success duration-200"
+                      >
+                        <PencilIcon className="size-5" />
+                      </Link>
+                      <button
+                        disabled={isDeletingCategory || isDeletingBrand}
+                        onClick={() => handleModal(category)}
+                        className="text-stroke-450 hover:text-primary duration-200 disabled:opacity-40"
+                      >
+                        <TrashIcon className="size-5" />
+                      </button>
+                    </div>
+                  </td>
+                </Table.Row>
+              );
+            })}
+          </Table.body>
+        </Table>
+        <Table className="overflow-auto max-md:hidden">
+          <Table.Header>
+            {categoryDesktopTHeads.map((item) => (
+              <th className="whitespace-nowrap table__th" key={item.id}>
+                {item.label}
+              </th>
+            ))}
+          </Table.Header>
 
-        <Table.body>
-          {categories?.map((category, index) => {
-            const type = brands ? "brands" : accords ? "accords" : "genders";
+          <Table.body>
+            {categories?.map((category, index) => {
+              const type = brands ? "brands" : accords ? "accords" : "genders";
 
-            return (
-              <Table.Row key={category.id} className="even:bg-primary/5">
-                <td className="table__td px-3 font-bold rounded-r-full">
-                  {toPersianNumbers(index + 1)}
-                </td>
+              return (
+                <Table.Row key={category.id} className="even:bg-primary/5">
+                  <td className="table__td px-3 font-bold rounded-r-xl">
+                    {toPersianNumbers(index + 1)}
+                  </td>
 
-                <td className="table__td px-6 max-w-70 truncate font-bold">
-                  {category.title}
-                </td>
+                  <td className="table__td px-6 max-w-70 truncate font-bold">
+                    {category.title}
+                  </td>
 
-                <td className="table__td px-6 max-w-70 truncate font-bold">
-                  {category.value}
-                </td>
+                  <td className="table__td px-6 max-w-70 truncate font-bold">
+                    {category.value}
+                  </td>
 
-                <td className="table__td px-6 max-w-70 truncate font-bold">
-                  {category.description}
-                </td>
+                  <td className="table__td px-6 max-w-70 truncate font-bold">
+                    {category.description}
+                  </td>
 
-                <td className="table__td px-2">
-                  <div className="flex items-center justify-center">
-                    <AppImage
-                      src={category?.iconUrl}
-                      alt={category?.value || "category-icon"}
-                      ratio={brands ? "aspect-[4/1]" : "aspect-square"}
-                      width={brands ? "w-16" : "w-7"}
-                      className={brands ? "dark:invert" : ""}
-                      sizes="10vw"
-                    />
-                  </div>
-                </td>
+                  <td className="table__td px-2">
+                    <div className="flex items-center justify-center">
+                      <AppImage
+                        src={category?.iconUrl}
+                        alt={category?.value || "category-icon"}
+                        ratio={brands ? "aspect-[4/1]" : "aspect-square"}
+                        width={brands ? "w-16" : "w-7"}
+                        className={brands ? "dark:invert" : ""}
+                        sizes="10vw"
+                      />
+                    </div>
+                  </td>
 
-                <td className="table__td px-6">
-                  <span className="badge badge--primary font-bold">
-                    {toPersianNumbers(category?.productsCount || 0)}
-                  </span>
-                </td>
+                  <td className="table__td px-6">
+                    <span className="badge badge--primary font-bold">
+                      {toPersianNumbers(category?.productsCount || 0)}
+                    </span>
+                  </td>
 
-                <td className="table__td px-3 rounded-l-full">
-                  <div className="flex gap-2 items-center">
-                    <Link
-                      href={`/admin/categories/${type}/edit/${category.id}`}
-                      className="text-stroke-450 hover:text-success duration-200"
-                    >
-                      <PencilIcon className="size-5" />
-                    </Link>
+                  <td className="table__td px-3 rounded-l-xl">
+                    <div className="flex gap-2 items-center">
+                      <Link
+                        href={`/admin/categories/${type}/edit/${category.id}`}
+                        className="text-stroke-450 hover:text-success duration-200"
+                      >
+                        <PencilIcon className="size-5" />
+                      </Link>
 
-                    <button
-                      disabled={isDeletingCategory || isDeletingBrand}
-                      onClick={() => handleModal(category)}
-                      className="text-stroke-450 hover:text-primary duration-200 disabled:opacity-40"
-                    >
-                      <TrashIcon className="size-5" />
-                    </button>
-                  </div>
-                </td>
-              </Table.Row>
-            );
-          })}
-        </Table.body>
-      </Table>
+                      <button
+                        disabled={isDeletingCategory || isDeletingBrand}
+                        onClick={() => handleModal(category)}
+                        className="text-stroke-450 hover:text-primary duration-200 disabled:opacity-40"
+                      >
+                        <TrashIcon className="size-5" />
+                      </button>
+                    </div>
+                  </td>
+                </Table.Row>
+              );
+            })}
+          </Table.body>
+        </Table>
+      </>
       {confirmModalOpen && (
         <ConfirmModal
           cancellBtn={handleModal}

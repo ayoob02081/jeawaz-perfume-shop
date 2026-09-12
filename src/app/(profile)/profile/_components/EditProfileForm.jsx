@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useUpdateUser } from "@/hooks/useUsers";
 import PersianDateRHForm from "../../../../ui/PersianDateRHForm";
 import { useEffect } from "react";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import { isValidNationalCode, normalizePhone } from "@/utils/toPersianNumbers";
 
 const basicInfoData = [

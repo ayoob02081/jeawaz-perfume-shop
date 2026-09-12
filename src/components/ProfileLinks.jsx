@@ -31,7 +31,7 @@ import {
   ReceiptPercentIcon as ReceiptPercentSolidIcon,
   RectangleGroupIcon as RectangleGroupSolidIcon,
 } from "@heroicons/react/24/solid";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import { useUnreadNotificationsCount } from "@/hooks/useNotification";
 
 export default function ProfileSidebarLayout({ children, className }) {
@@ -41,8 +41,8 @@ export default function ProfileSidebarLayout({ children, className }) {
        bg-stroke-0 lg:bg-stroke-600/10 dark:lg:bg-stroke-300/10 border-stroke-200 transition-all backdrop-blur-md duration-200 **:transition-all **:duration-200 `}
     >
       <div className={`flex flex-col h-full max-lg:pb-6 w-full`}>
-        <div className=" flex items-center gap-2 w-full max-lg:*:*:*:first:border-none overflow-hidden">
-          <div className="flex flex-col items-start justify-start size-full lg:max-w-xs max-lg:pb-34 lg:pb-2 overflow-auto max-h-[70vh] scrollbar-none">
+        <div className=" flex items-center gap-2 w-full max-lg:*:*:*:first:border-none lg:overflow-hidden">
+          <div className="flex flex-col items-start justify-start size-full lg:max-w-xs max-lg:pb-10 lg:pb-2 lg:overflow-auto lg:max-h-[70vh] scrollbar-none">
             {children}
           </div>
         </div>
@@ -59,7 +59,7 @@ export function ProfileLink({
   logoutMode,
   profileMode,
   countUnread,
-  toggleSideBar,
+  toggleSidebar,
 }) {
   const { user, isAuthenticated, logout } = useAuth();
   const { phoneNumber, firstName, lastName, role } = user || {};
@@ -76,7 +76,7 @@ export function ProfileLink({
       await logout();
       router.replace("/");
       localStorage.removeItem("user");
-      toggleSideBar();
+      toggleSidebar;
     } catch (error) {
       console.error("Error during logout:", error);
     }
@@ -201,11 +201,11 @@ export function ProfileLink({
 
   if (profileMode) {
     return (
-      <div className=" flex flex-col items-center justify-center size-full px-6 lg:px-2">
+      <div className=" flex flex-col items-center justify-center size-full px-4 lg:px-2">
         <div className="flex items-center justify-start py-4 lg:pt-6 size-full rounded-3xl">
           <div className="flex items-center max-lg:justify-between justify-start lg:-translate-x-1 group-hover:lg:translate-x-0 w-full h-full group-hover:lg:gap-12">
             <Link
-              onClick={toggleSideBar}
+              onClick={toggleSidebar}
               href={"/profile/me"}
               className="flex items-center justify-between max-lg:gap-4 lg:gap-4 overflow-hidden"
             >
@@ -229,7 +229,7 @@ export function ProfileLink({
               )}
             </Link>
             <Link
-              onClick={toggleSideBar}
+              onClick={toggleSidebar}
               href={"/profile/me"}
               className="flex items-center justify-center lg:opacity-0 lg:w-0 group-hover:lg:opacity-100 group-hover:lg:w-fit transition-all duration-200"
             >
@@ -245,7 +245,7 @@ export function ProfileLink({
   return (
     <div className=" flex flex-col items-center justify-center size-full p-2 lg:py-1 max-lg:border-t border-stroke-300 transition-all duration-200">
       <Link
-        onClick={toggleSideBar}
+        onClick={toggleSidebar}
         href={href}
         className={`flex items-center justify-start gap-4
             ${

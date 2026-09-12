@@ -5,30 +5,23 @@ import {
   ChevronDownIcon,
   Squares2X2Icon,
   UserIcon,
-  MoonIcon,
-  SunIcon,
 } from "@heroicons/react/24/outline";
-import {
-  MoonIcon as MoonSolidIcon,
-  SunIcon as SunSolidIcon,
-} from "@heroicons/react/24/solid";
 import Link from "next/link";
 import AppImage from "./AppImage";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SearchSection from "./SearchSection";
-import CategorySideBar from "@/app/(user)/_components/CategorySideBar";
-import SideBar from "./SideBar";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useGetAllCartItems } from "@/hooks/useCart";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import CompleteUserData from "@/components/CompleteUserData";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
+import { useSidebar } from "@/contexts/Sidebars/SidebarContext";
+import ThemeToggle from "@/ui/ThemeToggle";
 
 function HeaderLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [categoryOpen, setCategoryOpen] = useState(false);
+  const { isCategoryOpen, toggleSidebar, toggleCategory } = useSidebar();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchValue, setSearchValue] = useState(
@@ -36,7 +29,6 @@ function HeaderLayout() {
   );
   const { user, isAuthenticated, loading } = useAuth();
   const { data: cartItems, isLoading } = useGetAllCartItems();
-  const [dark, setDark] = useState(false);
   const isProfileCompleted = user?.profileCompleted || false;
 
   const fullName =
@@ -45,18 +37,6 @@ function HeaderLayout() {
       : isProfileCompleted && user?.firstName.length > 1
         ? user?.firstName + " " + user?.lastName
         : toPersianNumbers(user?.phoneNumber);
-
-  const toggleTheme = () => {
-    setDark((prev) => !prev);
-  };
-
-  const toggleCategory = () => {
-    setCategoryOpen((prevState) => !prevState);
-  };
-
-  const toggleSideBar = () => {
-    setSidebarOpen((prevState) => !prevState);
-  };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -78,22 +58,16 @@ function HeaderLayout() {
     router.replace(`/products${query ? `?${query}` : ""}`);
   };
 
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
-
   return (
     <>
       {isAuthenticated && !isProfileCompleted && <CompleteUserData />}
       <DesktopHeader
         totalProducts={cartItems?.totalProducts}
         toggleCategory={toggleCategory}
-        categoryOpen={categoryOpen}
+        isCategoryOpen={isCategoryOpen}
         loading={loading}
         fullName={fullName}
         isAuthenticated={isAuthenticated}
-        toggleTheme={toggleTheme}
-        dark={dark}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         handleSearchSubmit={handleSearchSubmit}
@@ -101,21 +75,10 @@ function HeaderLayout() {
 
       <MobileHeader
         totalProducts={cartItems?.totalProducts}
-        toggleSideBar={toggleSideBar}
-        toggleCategory={toggleCategory}
-        sidebarOpen={sidebarOpen}
-        toggleTheme={toggleTheme}
-        dark={dark}
+        toggleSidebar={toggleSidebar}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         handleSearchSubmit={handleSearchSubmit}
-      />
-
-      <CategorySideBar
-        toggleCategory={toggleCategory}
-        categoryOpen={categoryOpen}
-        setCategoryOpen={setCategoryOpen}
-        onClose={() => setCategoryOpen(false)}
       />
     </>
   );
@@ -127,10 +90,8 @@ function DesktopHeader({
   toggleCategory,
   fullName,
   isAuthenticated,
-  categoryOpen,
-  toggleTheme,
+  isCategoryOpen,
   totalProducts,
-  dark,
   loading,
   searchValue,
   setSearchValue,
@@ -140,7 +101,7 @@ function DesktopHeader({
   const pathName = usePathname();
 
   return (
-    <nav className="max-lg:hidden relative lg:fixed h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl bg-stroke-0 shadow-md dark:shadow-stroke-800/10 z-90 duration-200">
+    <nav className="max-lg:hidden relative lg:fixed top-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl bg-stroke-0 shadow-md dark:shadow-stroke-800/10 z-90 duration-200">
       <ul className="flex flex-col justify-between gap-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex grow items-center justify-betwee gap-4">
@@ -166,33 +127,7 @@ function DesktopHeader({
               </li>
             </div>
             <li>
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="relative flex items-center justify-center gap-2 bg-stroke-200 dark:bg-stroke-50 rounded-full px-1 py-0.5 w-12 h-6"
-              >
-                <div
-                  className={`absolute flex items-center justify-center h-full aspect-square from-yellow-400 to-yellow-700 dark:from-blue-700 dark:to-blue-950 bg-gradient-to-r rounded-full ${
-                    !dark ? "right-0" : "right-0 -translate-x-full"
-                  } shadow duration-200`}
-                />
-                <div className="flex items-center justify-between w-full">
-                  <div className="text-stroke-800 z-10">
-                    {!!dark ? (
-                      <SunIcon className="size-4 text-warning" />
-                    ) : (
-                      <SunSolidIcon className="size-4 text-white" />
-                    )}
-                  </div>
-                  <div className="text-stroke-800 z-10">
-                    {!dark ? (
-                      <MoonIcon className="size-4 text-blue-900" />
-                    ) : (
-                      <MoonSolidIcon className="size-4 text-white" />
-                    )}
-                  </div>
-                </div>
-              </button>
+              <ThemeToggle />
             </li>
             <div className="flex flex-none items-center justify-between gap-4">
               <li className="relative flex items-center justify-center max-lg:hidden">
@@ -305,7 +240,7 @@ function DesktopHeader({
               <button
                 className="w-full h-full btn btn--primary ring-4 ring-primary/5 hover:ring-0 flex items-center justify-center size-full gap-2"
                 onClick={toggleCategory}
-                disabled={categoryOpen ? true : false}
+                disabled={isCategoryOpen}
               >
                 <Squares2X2Icon className="size-6" />
                 <p className="text-xs lg:text-sm">دسته بندی ها</p>
@@ -392,12 +327,8 @@ function DesktopHeader({
   );
 }
 function MobileHeader({
-  toggleSideBar,
-  toggleCategory,
-  sidebarOpen,
+  toggleSidebar,
   totalProducts,
-  toggleTheme,
-  dark,
   searchValue,
   setSearchValue,
   handleSearchSubmit,
@@ -407,12 +338,12 @@ function MobileHeader({
 
   return (
     <nav className="lg:hidden max-lg:fixed max-lg:top-0 inset-x-0 h-fit w-full z-50">
-      <ul className="grid grid-cols-3 max-sm:gap-x-4 gap-x-20 relative container mx-auto p-4 rounded-b-4xl bg-stroke-0/0 backdrop-blur-l shadow-m dark:shadow-stroke-80 duration-200">
-        <li className="justify-items-start">
+      <ul className="flex items-center justify-between sm:gap-4 max-sm:flex-wrap w-full relative container mx-auto p-4 rounded-b-4xl bg-stroke-0/0 duration-200">
+        <li className="flex-none">
           <button
             type="button"
-            className="text-2xl aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 bg-stroke-0/0 backdrop-blur-xl active:bg-stroke-50 dark:bg-stroke-50 active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-primary active:text-primary/80 dark:text-stroke-800 dark:active:text-stroke-800/70 duration-200"
-            onClick={toggleSideBar}
+            className="text-2xl aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 bg-stroke-800/5 backdrop-blur-md active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-primary active:text-primary/80 dark:text-stroke-800 dark:active:text-stroke-800/70 duration-200"
+            onClick={toggleSidebar}
           >
             <AppImage
               src="/images/category.svg"
@@ -422,7 +353,7 @@ function MobileHeader({
             />
           </button>
         </li>
-        <li className=" justify-items-center bg-stroke-0/0 backdrop-blur-xl rounded-full">
+        <li className="px-2 flex-none bg-stroke-800/ backdrop-blur-md rounded-full">
           <Link className="block p-2" href="/">
             <AppImage
               src="/images/Jeaawaz-Logo-red-v5.0.webp"
@@ -432,10 +363,20 @@ function MobileHeader({
             />
           </Link>
         </li>
-        <li className=" justify-items-end">
+        <li className="max-sm:hidden w-full">
+          <div className=" w-full h-12">
+            <SearchSection
+              placeholder="نام ادکلن ، دسته بندی ، برند و ..."
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onSubmit={handleSearchSubmit}
+            />
+          </div>
+        </li>
+        <li className="flex-none">
           <button
             onClick={() => router.push("/cart")}
-            className="relative aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 bg-stroke-0/0 backdrop-blur-xl active:bg-stroke-50 active:border-stroke-900/20 dark:bg-stroke-50 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-stroke-800 active:text-stroke-800/70 duration-200"
+            className="relative aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 bg-stroke-800/5 backdrop-blur-md active:bg-stroke-50 active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-stroke-800 active:text-stroke-800/70 duration-200"
           >
             <AppImage
               src="/images/bag-stroke-sec-icon.svg"
@@ -454,7 +395,7 @@ function MobileHeader({
           </button>
         </li>
         <li
-          className={`flex relative grow col-span-3 transition-all duration-200 ease-in-out overflow-hidden w-full ${
+          className={`max-sm:flex sm:hidden items-center justify-center relative grow transition-all duration-200 ease-in-out overflow-hidden w-full ${
             showElement ? "max-h-16 opacity-100 mt-5" : "max-h-0 opacity-0"
           }`}
         >
@@ -468,13 +409,6 @@ function MobileHeader({
           </div>
         </li>
       </ul>
-      <SideBar
-        toggleSideBar={toggleSideBar}
-        toggleCategory={toggleCategory}
-        sidebarOpen={sidebarOpen}
-        toggleTheme={toggleTheme}
-        dark={dark}
-      />
     </nav>
   );
 }

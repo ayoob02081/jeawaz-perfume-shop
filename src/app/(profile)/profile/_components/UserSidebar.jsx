@@ -1,9 +1,9 @@
 "use client";
 
 import ProfileSidebarLayout, { ProfileLink } from "@/components/ProfileLinks";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 
-function UserSidebar({ className, toggleSideBar }) {
+function UserSidebar({ className, toggleSidebar }) {
   const { user } = useAuth();
   const { role } = user || {};
 
@@ -40,7 +40,7 @@ function UserSidebar({ className, toggleSideBar }) {
           baseHref={link.baseHref}
           label={link.label}
           countUnread={link.countUnread}
-          toggleSideBar={toggleSideBar}
+          toggleSidebar={toggleSidebar}
         />
       ))}
       {role === "admin" && (
@@ -51,7 +51,7 @@ function UserSidebar({ className, toggleSideBar }) {
           srcPrimary="/images/user-stroke-black-icon.svg"
           srcSecondary="/images/user-stroke-black-icon.svg"
           alt="admin-icon"
-          toggleSideBar={toggleSideBar}
+          toggleSidebar={toggleSidebar}
         />
       )}
       <ProfileLink label="خروج از حساب کاربری" logoutMode />

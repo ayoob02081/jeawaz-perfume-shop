@@ -44,7 +44,7 @@ function ProductCard({ product, isPending, error }) {
 
   return (
     <article
-      className={`flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${inStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
+      className={`relative hover:*:*:last:*:first:*:last:scale-105 *:*:last:*:first:*:last:duration-300 flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${inStock ? "" : "opacity-60 dark:opacity-30"} snap-center duration-200`}
     >
       {/* Mobile Mode Base Image */}
       <div className="flex items-start justify-between size-full">
@@ -59,27 +59,31 @@ function ProductCard({ product, isPending, error }) {
         <div className="flex grow flex-col justify-between size-full">
           <div className="flex flex-col items-centr justify-center size-full">
             {/* Categories Icon */}
-            <div className="flex flex-none items-center justify-between max-md:mb-4 mb-1">
-              {productAccords?.map((accord) => (
+            <div className="md:absolute top-4 left-4 right-4 md:z-10 flex flex-none items-center justify-between max-md:mb-4 mb-1">
+              <div className="flex items-center justify-start gap-2 h-full w-fit">
+                {productAccords?.map((accord) => (
+                  <CardIconResponsive
+                    key={accord?.id}
+                    accord={accord}
+                    src={accord?.iconUrl}
+                    alt={accord?.vlaue + "-icon"}
+                    title={accord?.title}
+                    type={accord?.value}
+                    className="max-md:h-8 md:h-10"
+                    size="max-md:size-4 md:size-6"
+                  />
+                ))}
+              </div>
+              <div className="flex items-center justify-end gap-2 h-full w-fit">
                 <CardIconResponsive
-                  key={accord?.id}
-                  accord={accord}
-                  src={accord?.iconUrl}
-                  alt={accord?.vlaue + "-icon"}
-                  title={accord?.title}
-                  type={accord?.value}
+                  src={productGender?.iconUrl}
+                  alt={productGender?.value + "-icon"}
+                  title={productGender?.title}
+                  type={productGender?.value}
                   className="max-md:h-8 md:h-10"
                   size="max-md:size-4 md:size-6"
                 />
-              ))}
-              <CardIconResponsive
-                src={productGender?.iconUrl}
-                alt={productGender?.value + "-icon"}
-                title={productGender?.title}
-                type={productGender?.value}
-                className="max-md:h-8 md:h-10"
-                size="max-md:size-4 md:size-6"
-              />
+              </div>
             </div>
 
             {/* Desktop Mode Base Picture */}

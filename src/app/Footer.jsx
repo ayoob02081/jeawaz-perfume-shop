@@ -53,7 +53,7 @@ function Footer() {
                     <Link href={"/page/terms"}>قوانین و مقررات</Link>
                   </li>
                   <li>
-                    <Link href={"/"}>ادرس ها</Link>
+                    <Link href={"/profile/me"}>پروفایل من</Link>
                   </li>
                 </div>
               </ul>
@@ -86,7 +86,7 @@ function Footer() {
               </ul>
             </nav>
           </section>
-          <article className="flex  items-center justify-between w-full px-16 text-white">
+          <article className="flex items-center justify-between w-full px-16 text-white">
             <section className="flex flex-col justify-between gap-4">
               <div className="flex items-center justify-between">
                 <Link href={"tel:+989302125151"} className="flex items-center">
@@ -100,12 +100,12 @@ function Footer() {
                     {toPersianNumbers("0930")}
                   </p>
                 </Link>
-                <Link href={"tel:+989180522273"} className="flex items-center">
+                <Link href={"tel:+989185987446"} className="flex items-center">
                   <p className="text-3xl text-white ">
-                    {toPersianNumbers("2273")}
+                    {toPersianNumbers("7446")}
                   </p>
                   <p className="text-3xl text-primary ">
-                    {toPersianNumbers("052")}
+                    {toPersianNumbers("598")}
                   </p>
                   <p className="text-xl text-stroke-450 ">
                     {toPersianNumbers("0918")}
@@ -121,21 +121,28 @@ function Footer() {
             </section>
             <section className="flex flex-col justify-between gap-4">
               <p>به ما اعتماد کنید</p>
-              <div className="flex items-center justify-between gap-2">
-                <Link href={"/"}>
+              <div className="flex items-center justify-center gap-2">
+                {/* <Link href={"/"}>
                   <AppImage
                     width="size-12"
                     src="/images/trust-1-icon.svg"
                     alt="trust-icon"
                     sizes="10vw"
                   />
-                </Link>
-                <Link href={"/"}>
-                  <AppImage
-                    width="size-12"
-                    src="/images/trust-2-icon.svg"
-                    alt="trust-icon"
-                    sizes="10vw"
+                </Link> */}
+                <Link
+                  referrerPolicy="origin"
+                  target="_blank"
+                  href="https://trustseal.enamad.ir/?id=7688622&Code=xOwa5wAZcc7Sg2vZPyAOvqlYvMusK0sm"
+                  className="size-full"
+                >
+                  <img
+                    referrerPolicy="origin"
+                    src="https://trustseal.enamad.ir/logo.aspx?id=7688622&Code=xOwa5wAZcc7Sg2vZPyAOvqlYvMusK0sm"
+                    alt="اینماد"
+                    style={{ cursor: "pointer" }}
+                    code="xOwa5wAZcc7Sg2vZPyAOvqlYvMusK0sm"
+                    className="size-full"
                   />
                 </Link>
               </div>

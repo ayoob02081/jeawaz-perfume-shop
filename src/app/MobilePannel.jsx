@@ -7,7 +7,7 @@ import {
   UserCircleIcon as UserCircleSolidIcon,
 } from "@heroicons/react/24/solid";
 import AppImage from "@/components/AppImage";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { useUnreadNotificationsCount } from "@/hooks/useNotification";
 
@@ -21,7 +21,7 @@ function MobilePannel() {
   return (
     showElement && (
       <nav
-        className="fixed flex items-center justify-center bottom-0 right-0 w-full lg:hidden z-70
+        className="fixed flex items-center justify-center bottom-0 right-0 w-full lg:hidden z-60
      transition-all duration-200 ease-in-out overflow-hidden h-24"
       >
         <ul

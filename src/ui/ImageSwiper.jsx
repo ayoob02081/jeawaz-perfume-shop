@@ -12,7 +12,7 @@ import {
 } from "@heroicons/react/24/outline";
 import AppImage from "@/components/AppImage";
 import Link from "next/link";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 
 export default function ImageSwiper({ product, images = [] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -100,8 +100,10 @@ export default function ImageSwiper({ product, images = [] }) {
       <div className="lg:flex-1">
         <div ref={mainRef} className="relative overflow-hidden md:rounded-2xl">
           {/* Images */}
-          <div className="flex md:cursor-zoom-in"
-          onClick={() => setIsLightboxOpen(true)}>
+          <div
+            className="flex md:cursor-zoom-in"
+            onClick={() => setIsLightboxOpen(true)}
+          >
             {images?.map((src, i) => (
               <div
                 key={i}

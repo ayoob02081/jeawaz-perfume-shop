@@ -19,7 +19,7 @@ function OrdersLayout() {
   }, [searchParams]);
 
   const status = useMemo(() => {
-    return searchParams.get("status") ||"PENDING"|| undefined;
+    return searchParams.get("status") || "PENDING" || undefined;
   }, [searchParams]);
 
   const updateParams = useCallback(
@@ -62,6 +62,7 @@ function OrdersLayout() {
     limit: 10,
     status,
   });
+  console.log(orders);
 
   const totalPages = isLoading ? 0 : (orders?.meta?.totalPages ?? 1);
 

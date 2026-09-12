@@ -32,8 +32,8 @@ export function AllAddresses({
 
   return (
     <Modal isOpen={isListOpen} onClose={onClose}>
-      <div className="flex flex-col items-center justify-between gap-2 text-stroke-800 bg-stroke-0 h-full w-full p-6 pb-2 pl-2">
-        <div className="flex items-center justify-between pb-4 border-b border-stroke-250  w-full h-fit pl-4">
+      <div className="flex flex-col items-center justify-between gap-2 text-stroke-800 bg-stroke-0 h-full w-full max-sm:p-4 p-6">
+        <div className="flex items-center justify-between pb-4 border-b border-stroke-250 w-full h-fit">
           <h2 className="flex items-center justify-start gap-1 text-stroke-800 font-bold md:text-xl">
             <p className="md:font-normal">انتخاب</p>
             <p>آدرس</p>
@@ -46,7 +46,7 @@ export function AllAddresses({
             <XMarkIcon className="size-3 text-stroke-800 stroke-2" />
           </button>
         </div>
-        <div className="flex flex-col justify-start gap-4 size-full overflow-auto scrollbar--primary scrollbar-w-2 pl-4 pb-12">
+        <div className="flex flex-col justify-start gap-4 size-full overflow-auto scrollbar-none pb-12">
           {(!addresses || addresses?.length === 0) && (
             <p>هنوز آدرسی ثبت نشده است</p>
           )}
@@ -75,34 +75,32 @@ export function AllAddresses({
                     <h3 className="font-bold md:text-lg">{item.label}</h3>
                   </div>
                   <p className="font-bold">{item.addressLine}</p>
-                  <div>
-                    <div className="flex flex-row flex-wrap items-start justify-start w-full gap-4 ">
-                      <AddressDeatails
-                        title="نام تحویل گیرنده :"
-                        des={item.fullName}
-                      />
-                      <AddressDeatails
-                        title="شماره تماس :"
-                        des={toPersianNumbers(item.phoneNumber)}
-                      />
-                      <AddressDeatails title="استان :" des={item.ostan} />
-                      <AddressDeatails title="شهر :" des={item.shahr} />
-                      <AddressDeatails
-                        title="کد پستی :"
-                        des={toPersianNumbers(item.postalCode)}
-                      />
-                    </div>
+                  <div className="flex flex-row flex-wrap items-start justify-start w-full gap-4 ">
+                    <AddressDeatails
+                      title="نام تحویل گیرنده :"
+                      des={item.fullName}
+                    />
+                    <AddressDeatails
+                      title="شماره تماس :"
+                      des={toPersianNumbers(item.phoneNumber)}
+                    />
+                    <AddressDeatails title="استان :" des={item.ostan} />
+                    <AddressDeatails title="شهر :" des={item.shahr} />
+                    <AddressDeatails
+                      title="کد پستی :"
+                      des={toPersianNumbers(item.postalCode)}
+                    />
                   </div>
                 </RadioButton>
               );
             })}
         </div>
-        <div className="relative flex items-center justify-end w-full h-fit pl-4 pt-2">
+        <div className="relative flex items-center justify-end w-full h-fit">
           <button
             type="button"
             disabled={!select}
             onClick={HandleSelectAddress}
-            className="absolute bottom-3 btn btn--primary border! py-2 px-3 md:px-10 max-sm:w-full sm:w-1/3 md:w-fit z-10"
+            className="absolute bottom-2 btn btn--primary border! backdrop-blur-md py-2 px-3 md:px-10 max-sm:w-full sm:w-1/3 md:w-fit z-10"
           >
             انتخاب آدرس
           </button>
@@ -114,7 +112,7 @@ export function AllAddresses({
 
 function AddressDeatails({ title, des }) {
   return (
-    <span className="flex items-center justify-center rounded-2.5xl bg-stroke-150 h-8 gap-2 text-sm md:text-xs text-stroke-800 px-4">
+    <span className="flex items-center justify-center rounded-2.5xl bg-stroke-150 dark:bg-stroke-100 h-8 gap-2 text-sm md:text-xs text-stroke-800 px-4">
       <p>{title}</p>
       <p>{des}</p>
     </span>

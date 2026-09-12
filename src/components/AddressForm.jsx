@@ -13,7 +13,6 @@ function AddressForm({
   control,
   errors,
   watch,
-  reset,
   onChange,
   isChecked,
   checkBoxName,
@@ -45,7 +44,7 @@ function AddressForm({
     <div className="flex flex-col gap-6 w-full ">
       <div className="flex flex-col gap-6 w-full">
         <p className="max-md:text-sm md:text-base font-bold text-stroke-800">
-          اطلاعات تحویل گیرنده
+          اطلاعات گیرنده
         </p>
         <div className="flex flex-col lg:flex-row gap-4 w-full">
           <RHFTextField

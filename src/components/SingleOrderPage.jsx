@@ -29,7 +29,7 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
   const { title, textColor, icon: Icon, des } = currentStatus || {};
 
   return (
-    <div className="size-full px-4">
+    <div className="size-full sm:px-4">
       <div className=" flex flex-col items-start justify-start p-4 bg-stroke-0 border border-stroke-200 rounded-xl">
         <div className="max-lg:hidden">
           <GoBack
@@ -88,7 +88,9 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
             </OrderDetail>
             <OrderDetail
               label="هزینه بسته بندی و ارسال :"
-              title={toPersianNumbersWithComma(pricing?.shipping) + " تومان"}
+              title={
+                toPersianNumbersWithComma(pricing?.shippingCost) + " تومان"
+              }
             />
           </div>
 

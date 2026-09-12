@@ -1,21 +1,14 @@
 "use client";
 
-import {
-  ChevronLeftIcon,
-  MoonIcon,
-  SunIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
-import {
-  MoonIcon as MoonSolidIcon,
-  SunIcon as SunSolidIcon,
-} from "@heroicons/react/24/solid";
+import { ChevronLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import AppImage from "./AppImage";
 import useOutsideClick from "@/hooks/useOutsideClick";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminSidebar from "@/app/(admin)/admin/_components/AdminSidebar";
 import UserSidebar from "@/app/(profile)/profile/_components/UserSidebar";
+import { useEffect } from "react";
+import ThemeToggle from "@/ui/ThemeToggle";
 
 const filterLinks = [
   {
@@ -62,95 +55,77 @@ const pageLinks = [
   },
 ];
 
-function SideBar({
-  toggleSideBar,
-  toggleCategory,
-  sidebarOpen,
-  toggleTheme,
-  dark,
-}) {
-  const ref = useOutsideClick(toggleSideBar);
+function Sidebar({ toggleSidebar, toggleCategory, isSidebarOpen }) {
+  const ref = useOutsideClick(toggleSidebar);
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (isSidebarOpen) {
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    };
+  }, [isSidebarOpen]);
+
   return (
     <ul
       className={`${
-        sidebarOpen ? "right-0" : "translate-x-[200vw]"
-      } fixed top-0 bg-black/30 w-screen h-full z-60 backdrop-blur-md flex flex-col duration-200 overflow-y-auto`}
+        isSidebarOpen ? "right-0" : "translate-x-[200vw]"
+      } fixed top-0 bg-black/30 w-screen h-full z-80 backdrop-blur-md flex flex-col duration-200 overflow-y-auto scrollbar-none lg:hidden`}
     >
-      {sidebarOpen && (
+      {isSidebarOpen && (
         <div
           ref={ref}
-          className=" pt-6 w-[75vw] h-full scrollbar-none overflow-y-auto bg-stroke-0 pb-28"
+          className="w-[75vw] h-full scrollbar-none overflow-y-auto bg-stroke-0 pb-10"
         >
-          <li className="px-6 flex items-center justify-between">
+          <li className="p-4 pb-2 flex items-center justify-between">
             <button
               onClick={() => {
                 router.push("/");
-                toggleSideBar();
+                toggleSidebar();
               }}
             >
               <AppImage
                 src="/images/Jeaawaz-Logo-red-v5.0.webp"
                 alt="jeawaz-brand-icon"
-                width="size-24"
+                width="w-24"
                 sizes="20vw"
+                ratio="aspect-[4/2]"
                 priority={true}
               />
             </button>
             <div className="flex items-center justify-between gap-6">
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="relative flex items-center justify-center gap-2 bg-stroke-200 dark:bg-stroke-50 rounded-full px-1 py-0.5 w-12 h-6"
-              >
-                <div
-                  className={`absolute flex items-center justify-center h-full aspect-square from-yellow-400 to-yellow-700 dark:from-blue-700 dark:to-blue-950 bg-gradient-to-r rounded-full ${
-                    !dark ? "right-0" : "right-0 -translate-x-full"
-                  } shadow duration-200`}
-                >
-                  {!!dark ? (
-                    <div className="text-stroke-800" />
-                  ) : (
-                    <div className="text-stroke-800" />
-                  )}
-                </div>
-                <div className="flex items-center justify-between w-full">
-                  <div className="text-stroke-800 z-10">
-                    {!!dark ? (
-                      <SunIcon className="size-4 text-warning" />
-                    ) : (
-                      <SunSolidIcon className="size-4 text-white" />
-                    )}
-                  </div>
-                  <div className="text-stroke-800 z-10">
-                    {!dark ? (
-                      <MoonIcon className="size-4 text-blue-900" />
-                    ) : (
-                      <MoonSolidIcon className="size-4 text-white" />
-                    )}
-                  </div>
-                </div>
-              </button>
+              <ThemeToggle />
               <button
                 className="flex items-center justify-center size-6 border-[1.5px] border-primary rounded-md  "
-                onClick={toggleSideBar}
+                onClick={toggleSidebar}
               >
                 <XMarkIcon className="size-4 text-primary stroke-2" />
               </button>
             </div>
           </li>
-          {sidebarOpen && pathname.startsWith("/admin") && (
-            <AdminSidebar toggleSideBar={toggleSideBar} />
+          {isSidebarOpen && pathname.startsWith("/admin") && (
+            <AdminSidebar toggleSidebar={toggleSidebar} />
           )}
-          {sidebarOpen && pathname.startsWith("/profile") && (
-            <UserSidebar toggleSideBar={toggleSideBar} />
+          {isSidebarOpen && pathname.startsWith("/profile") && (
+            <UserSidebar toggleSidebar={toggleSidebar} />
           )}
           {!pathname.startsWith("/admin") &&
             !pathname.startsWith("/profile") && (
               <>
                 <div className=" border-b-4 border-stroke-200 dark:border-stroke-150 ">
-                  <li className="px-6">
+                  <li className="px-4">
                     <button
                       className="flex-col gap-0 border-t border-stroke-250 justify-between text-base size-full "
                       onClick={toggleCategory}
@@ -178,10 +153,10 @@ function SideBar({
                   </li>
                   <div>
                     {filterLinks.map((item) => (
-                      <SideBarLink
+                      <SidebarLink
                         key={item.id}
                         sort={item.sort}
-                        toggleSideBar={toggleSideBar}
+                        toggleSidebar={toggleSidebar}
                         href={item.href}
                         title={item.title}
                         src={item.src}
@@ -192,10 +167,10 @@ function SideBar({
                 </div>
                 <div>
                   {pageLinks.map((item) => (
-                    <SideBarLink
+                    <SidebarLink
                       key={item.id}
                       id={item.id}
-                      toggleSideBar={toggleSideBar}
+                      toggleSidebar={toggleSidebar}
                       href={item.href}
                       title={item.title}
                     />
@@ -209,16 +184,16 @@ function SideBar({
   );
 }
 
-export default SideBar;
+export default Sidebar;
 
-function SideBarLink({ href, src, alt, title, sort, toggleSideBar, id }) {
+function SidebarLink({ href, src, alt, title, sort, toggleSidebar, id }) {
   const searchParams = useSearchParams();
   const pathName = usePathname();
 
   return (
-    <li className="flex flex-col items-center px-6">
+    <li className="flex flex-col items-center px-4">
       <Link
-        onClick={toggleSideBar}
+        onClick={toggleSidebar}
         className={`${
           (searchParams.get("sort") === sort || pathName.endsWith(href)) &&
           "*:text-primary *:dark: *:font-bold"

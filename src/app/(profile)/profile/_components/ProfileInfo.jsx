@@ -1,7 +1,7 @@
 "use client";
 
 import Loading from "@/components/Loading";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import { toJalali } from "@/utils/date";
 import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
 import Link from "next/link";

@@ -246,7 +246,7 @@ function FiltersModal({
           حذف فیلتر ها
         </button>
       </div>
-      <div className="h-full max-md:mx-4 overflow-y-auto scrollbar--primary">
+      <div className="h-full overflow-y-auto scrollbar-none">
         {renderTypes()}
       </div>
       <div className="flex items-center justify-between md:justify-end flex-row-reverse gap-4 w-full h-10 sm:h-12 max-md:px-4">
@@ -455,9 +455,9 @@ export function PriceFilter({ addFilter, control, watch, hidden }) {
       <div
         className={`
           ${hidden && "max-md:hidden"}
-          flex items-center justify-between gap-2 w-full h-11`}
+          flex items-center justify-between gap-2 w-full h-fit min-h-11`}
       >
-        <div className="flex items-center justify-between gap-2 w-full">
+        <div className="flex max-[30rem]:flex-col items-center justify-between gap-2 w-full">
           <RHFTextField
             textClassName="font-bold"
             control={control}

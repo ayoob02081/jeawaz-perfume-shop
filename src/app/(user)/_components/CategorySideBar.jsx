@@ -47,12 +47,7 @@ const priceRanges = [
   },
 ];
 
-function CategorySideBar({
-  toggleCategory,
-  categoryOpen,
-  setCategoryOpen,
-  onClose,
-}) {
+function CategorySidebar({ toggleCategory, isCategoryOpen, closeCategory }) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -112,14 +107,14 @@ function CategorySideBar({
 
   return (
     <Modal
-      isOpen={categoryOpen}
-      onClose={onClose}
+      isOpen={isCategoryOpen}
+      onClose={closeCategory}
       category
       className="max-lg:h-screen"
     >
       <div
         data-scroll
-        className="size-full max-lg:h-full max-lg:overflow-auto lg:overflow-hidden bg-stroke-100"
+        className="size-full max-lg:h-full max-lg:overflow-auto lg:overflow-hidden bg-stroke-100 scrollbar-none"
       >
         {/* Mobile Category Button */}
         <div className="fixed z-10 flex items-center justify-between px-4 w-full py-6 lg:hidden lg:h-0 bg-stroke-0">
@@ -203,7 +198,7 @@ function CategorySideBar({
 
                     router.replace(`/products?gender=${activeGender?.value}`);
 
-                    onClose();
+                    closeCategory();
                   }}
                   className="flex items-center justify-between p-6 text-primary w-full"
                 >
@@ -217,7 +212,7 @@ function CategorySideBar({
             {/* Other Categories */}
             <div className="flex flex-col gap-6 md:gap-4 max-md:p-4 md:py-4 md:pl-4 max-lg:w-full max-md:border-t border-stroke-200">
               <div className="size-full rounded-2xl bg-stroke-0 py-4 overflow-hidden max-sm:mb-10">
-                <div className="flex flex-wrap items-start justify-start size-full overflow-y-auto scrollbar-none gap-6 pr-4 scroll-smooth **:scroll-smooth">
+                <div className="flex flex-wrap items-start justify-start size-full overflow-y-aut scrollbar-none gap-6 pr-4 scroll-smooth **:scroll-smooth">
                   {/* Brands */}
                   <CategriesFilter fieldsetId="brand-value" title="برند">
                     {brandCategories?.map((brand) => {
@@ -329,7 +324,7 @@ function CategorySideBar({
                     disabled={!isFilter && !isPriceFilter}
                     onClick={() => {
                       submitFilters();
-                      setCategoryOpen(false);
+                      closeCategory();
                     }}
                     className="btn btn--primary shadow-xl border-none px-6 md:px-8 size-full"
                   >
@@ -338,7 +333,7 @@ function CategorySideBar({
 
                   <button
                     type="button"
-                    onClick={() => setCategoryOpen(false)}
+                    onClick={closeCategory}
                     className="btn btn--secondary--2 shadow-xl bg-stroke-0 border-stroke-0 px-6 h-full w-1/2 disabled:bg-amber-50"
                   >
                     <p className="text-sm sm:text-xs text-stroke-800">انصراف</p>
@@ -353,7 +348,7 @@ function CategorySideBar({
   );
 }
 
-export default CategorySideBar;
+export default CategorySidebar;
 
 function CategriesFilter({ title, fieldsetId, children, className = "" }) {
   return (

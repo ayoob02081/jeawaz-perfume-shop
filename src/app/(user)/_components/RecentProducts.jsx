@@ -1,7 +1,7 @@
 "use client";
 
 import Loading from "@/components/Loading";
-import HomePageProducts from "./HomePageProducts";
+import HomePageSortProductsLayout from "./HomePageSortProductsLayout";
 import ProductCard from "./ProductCard";
 import { useGetAllProducts } from "@/hooks/useProducts";
 import Error from "@/components/Error";
@@ -35,7 +35,7 @@ function RecentProducts() {
     return <Error />;
   }
   return (
-    <HomePageProducts
+    <HomePageSortProductsLayout
       onGenderClick={(val) =>
         setGender((prev) => (prev === val ? undefined : val))
       }
@@ -43,8 +43,8 @@ function RecentProducts() {
       params={getFullHrefParams()}
       genderType="true"
       section={"recent"}
-      titleOne={"جدید ترین "}
-      titleTwo={"محصولات ما"}
+      title={"جدید ترین "}
+      des={"محصولات ما"}
       desc={"ترندهای رایحه، همین‌جاست."}
       className={"rounded-2xl"}
     >
@@ -52,7 +52,7 @@ function RecentProducts() {
       {products?.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
-    </HomePageProducts>
+    </HomePageSortProductsLayout>
   );
 }
 

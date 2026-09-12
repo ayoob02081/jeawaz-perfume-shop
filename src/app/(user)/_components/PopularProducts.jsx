@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetAllProducts } from "@/hooks/useProducts";
-import HomePageProducts from "./HomePageProducts";
+import HomePageSortProductsLayout from "./HomePageSortProductsLayout";
 import ProductCard from "./ProductCard";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
@@ -35,7 +35,7 @@ function PopularProducts() {
     return <Error />;
   }
   return (
-    <HomePageProducts
+    <HomePageSortProductsLayout
       onGenderClick={(val) =>
         setGender((prev) => (prev === val ? undefined : val))
       }
@@ -43,8 +43,8 @@ function PopularProducts() {
       params={getFullHrefParams()}
       genderType="true"
       section={"popular"}
-      titleOne={"پرفروش ترین"}
-      titleTwo={"محصولات ما"}
+      title={"پرفروش ترین"}
+      des={"محصولات ما"}
       desc={"رایحه هایی که همیشه می درخشن"}
       className={
         " flex-col md:flex-row overflow-hidden sm:overflow-x-auto rounded-2xl"
@@ -53,7 +53,7 @@ function PopularProducts() {
       {products?.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
-    </HomePageProducts>
+    </HomePageSortProductsLayout>
   );
 }
 

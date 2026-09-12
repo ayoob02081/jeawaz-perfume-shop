@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import PassInput from "@/ui/PassInput";
 import { useForm } from "react-hook-form";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import LoginForm from "./LoginForm";
 import { requestOtpApi, verifyOtpApi } from "@/services/authServices";
 import { DevicePhoneMobileIcon } from "@heroicons/react/24/outline";

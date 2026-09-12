@@ -6,11 +6,7 @@ export const metadata = {
 };
 
 function CartPage() {
-  return (
-    <div className="md:mt-5">
-      <CartLayout />
-    </div>
-  );
+  return <CartLayout />;
 }
 
 export default CartPage;

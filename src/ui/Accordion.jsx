@@ -14,14 +14,14 @@ function Accordion({ label, children, className = "flex", titleStyle, plus }) {
   };
   return (
     <div
-      className={` flex-col border-[1.5px] border-stroke-200 rounded-2.5xl w-full px-6 ${className} ${
-        accordionOpen ? "justify-between pb-6" : "items-center justify-center"
+      className={`flex-col border-[1.5px] border-stroke-200 rounded-2.5xl w-full max-sm:px-4 px-6 ${className} ${
+        accordionOpen ? "justify-between pb-4 sm:pb-6" : "items-center justify-center"
       } transition-all duration-200`}
     >
       <button
         type="button"
         onClick={toggleAccordion}
-        className="flex items-center justify-between gap-4 size-full max-md:py-6 md:py-4"
+        className="flex items-center justify-between gap-4 size-full max-sm:py-4 sm:py-6 md:py-4"
       >
         <h4 className={`text-start ${titleStyle}`}>{label}</h4>
         {plus ? (

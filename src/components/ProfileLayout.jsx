@@ -9,11 +9,11 @@ function ProfileLayout({ className, children }) {
   const { data: orders, isLoading, error } = useGetOrders();
   const [status, setStatus] = useState("");
   return (
-    <div className="size-full px-4">
+    <div className="size-full sm:px-4">
     <div
-      className="flex flex-col justify-center gap-4 md:gap-6 px-4 w-full overflow-y-auto py-6 rounded-3xl bg-stroke-100 border border-stroke-200 shadow-xl"
+      className="flex flex-col justify-center gap-4 md:gap-6 px-4 w-full overflow-y-auto max-sm:py-4 py-6 rounded-3xl bg-stroke-100 border border-stroke-200 shadow-xl"
     >
-      <div className="flex items-center justify-start gap-8 snap-x overflow-x-scroll scrollbar-none w-full rounded-2xl px-px">
+      <div className="flex items-center justify-start max-sm:gap-4 gap-8 snap-x overflow-x-scroll scrollbar-none w-full rounded-2xl px-px py-1">
         {userStatusConfig?.map((s) => (
           <OrderStatusButton
             user

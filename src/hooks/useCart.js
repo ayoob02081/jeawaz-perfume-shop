@@ -9,7 +9,7 @@ import {
   updateShippingMethodApi,
 } from "@/services/cartServices";
 import { showApiError } from "@/utils/showApiError";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 

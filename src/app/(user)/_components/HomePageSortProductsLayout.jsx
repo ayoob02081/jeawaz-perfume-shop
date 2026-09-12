@@ -5,12 +5,12 @@ import { useGetAllCategories } from "@/hooks/useCategories";
 import RHFRadioButton from "@/ui/RHFRadioButton";
 import { useForm } from "react-hook-form";
 
-function HomePageProducts({
+function HomePageSortProductsLayout({
   gender,
   params,
   onGenderClick,
-  titleOne,
-  titleTwo,
+  title,
+  des,
   desc,
   genderType,
   children,
@@ -22,15 +22,15 @@ function HomePageProducts({
       className={`flex flex-col items-center py-2 container mx-auto xl:max-w-7xl gap-6 snap-x ${bgColor}`}
     >
       {/* Info */}
-      <section className="flex justify-between items-center gap-2 w-full px-6">
+      <section className="flex justify-between items-center gap-2 w-full px-4">
         {/* Title */}
         <div className="flex flex-col items-start justify-center md:items-start gap-2 w-full text-nowrap">
           <div className="flex items-center gap-1">
             <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-primary">
-              {titleOne}
+              {title}
             </h2>
             <h2 className="text-lg sm:text-xl md:text-[28px] font-bold text-stroke-800">
-              {titleTwo}
+              {des}
             </h2>
           </div>
           <p className="text-xs sm:text-sm md:text-lg text-stroke-600">
@@ -39,7 +39,7 @@ function HomePageProducts({
         </div>
 
         {/* Gender Type */}
-        <div className="flex items-end gap-4 max-sm:overflow-x-scroll scrollbar-none max-sm:w-full">
+        <div className="flex justify-end gap-4 max-sm:overflow-x-scroll scrollbar-none max-sm:w-full">
           {genderType ? (
             <GenderType gender={gender} onClick={onGenderClick} />
           ) : (
@@ -73,7 +73,7 @@ function HomePageProducts({
   );
 }
 
-export default HomePageProducts;
+export default HomePageSortProductsLayout;
 
 function GenderType({ onClick, gender }) {
   const { data: categories, isPending, error } = useGetAllCategories();

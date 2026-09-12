@@ -1,14 +1,9 @@
 "use client";
 
 import SingleNotifPage from "@/components/SingleNotifPage";
-import { NotifTHeads } from "@/constants/tableHeads";
 import { useGetAdminNotificationById } from "@/hooks/useNotification";
-import Table from "@/ui/Table";
-import { toLocalDateString } from "@/utils/toLocalDate";
-import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
-import { TrashIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
 import { useParams } from "next/navigation";
+import NotifUsersListTable from "../../_components/NotifUsersListTable";
 
 function AdminNotifPage() {
   const { id } = useParams();
@@ -66,84 +61,9 @@ function NotifDetails({ data }) {
             (channel === "SMS" && "پیامک")}
         </p>
       </div>
-      <NotifUsersTable data={recipients} />
-    </div>
-  );
-}
-
-function NotifUsersTable({ data }) {
-  return (
-    <div className="w-full overflow-x-auto pb-0.5 mt-4 rounded-xl max-lg:shadow-xl scrollbar--primary scrollbar-h-1 scrollbar-track-stroke-100/0">
-      <Table>
-        <Table.Header>
-          {NotifTHeads.map((item) => (
-            <th className="whitespace-nowrap table__th" key={item.id}>
-              {item.label}
-            </th>
-          ))}
-        </Table.Header>
-        <Table.body>
-          {data &&
-            data?.map((item, index) => (
-              <Table.Row key={item.id} className="even:bg-primary/5">
-                <td className="table__td font-bold px-2">
-                  {toPersianNumbers(index + 1)}
-                </td>
-                <td className="table__td px-2 max-w-70 truncate">
-                  <p>
-                    {item.user?.firstName + " " + item.user?.lastName ||
-                      "اسمی ثبت نشده"}
-                  </p>
-                </td>
-                <td className="table__td px-2">
-                  <Link
-                    href={`tel:+${item.user?.phoneNumber}`}
-                    className="flex items-center gap-2 justify-between hover:text-primary duration-200"
-                  >
-                    {normalizeIranPhone(item.user?.phoneNumber) ||
-                      "شماره‌ای ثبت نشده"}
-                  </Link>
-                </td>
-                <td className="table__td px-2 max-w-70 truncate">
-                  <p>{item.isRead ? "خوانده شده" : "خوانده نشده"}</p>
-                </td>
-                <td className="table__td px-2 max-w-70 truncate">
-                  <p>{item.readAt ? toLocalDateString(item.readAt) : "-"}</p>
-                </td>
-                <td className="table__td px-2 max-w-70 truncate">
-                  <p>{item.smsSent ? "فرستاده شده" : "فرستاده نشده"}</p>
-                </td>
-                <td className="table__td px-2 max-w-70 truncate">
-                  <p>
-                    {item.smsSent
-                      ? item.smsSentAt
-                        ? toLocalDateString(item.smsSentAt)
-                        : "-"
-                      : "-"}
-                  </p>
-                </td>
-                <td className="table__td px-2 max-w-70 truncate">
-                  <p>
-                    {item.smsSent
-                      ? item.smsError
-                        ? "خطایی پیش آمده"
-                        : "-"
-                      : "-"}
-                  </p>
-                </td>
-
-                <td className="table__td flex items-center justify-center gap-2 px-3">
-                  <button
-                    type="button"
-                    className="flex items-center justify-center text-stroke-450 hover:text-primary duration-200"
-                  >
-                    <TrashIcon className="size-5" />
-                  </button>
-                </td>
-              </Table.Row>
-            ))}
-        </Table.body>
-      </Table>
+      <div className="max-lg:w-screen lg:w-full max-lg:px-4">
+        <NotifUsersListTable data={recipients} />
+      </div>
     </div>
   );
 }

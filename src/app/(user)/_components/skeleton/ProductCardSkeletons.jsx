@@ -2,7 +2,7 @@ import Skeleton from "@/ui/Skeleton";
 
 function ProductCardSkeleton() {
   return (
-    <article className="flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 animate-pulse">
+    <article className="flex items-center justify-center p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250">
       <div className="flex items-start justify-between size-full">
         {/* Mobile Image */}
         <div className="flex flex-none md:hidden items-center justify-center p-2 h-25 aspect-4/5">

@@ -82,7 +82,7 @@ function AuthLayout({
           </div>
         )}
       </div>
-      {login && step === 1 && (
+      {/* {login && step === 1 && (
         <button
           type="button"
           onClick={togglePasswordType}
@@ -90,7 +90,7 @@ function AuthLayout({
         >
           وارد شدن با {isPasswordType === true ? "کد یکبار مصرف" : "رمز عبور"}
         </button>
-      )}
+      )} */}
       {children}
       {login && (
         <div className="max-sm:hidden text-stroke-800 pt-">

@@ -1,6 +1,10 @@
 "use client";
 
-import { couponTHeads } from "@/constants/tableHeads";
+import {
+  couponDesktopTHeads,
+  couponMobileTHeads,
+  couponTHeads,
+} from "@/constants/tableHeads";
 import { useRemoveCoupon } from "@/hooks/useCoupons";
 import Table from "@/ui/Table";
 import { toLocalDateString } from "@/utils/toLocalDate";
@@ -30,93 +34,176 @@ function CouponsListTable({ coupons }) {
 
   return (
     <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar-none">
-      <Table className="overflow-auto">
-        <Table.Header className="">
-          {couponTHeads.map((item) => (
-            <th className="whitespace-nowrap table__th" key={item.id}>
-              {item.label}
-            </th>
-          ))}
-        </Table.Header>
-        <Table.body>
-          {coupons &&
-            coupons?.map((coupon, index) => {
-              const {
-                code,
-                title,
-                discountValue,
-                type,
-                usageLimit,
-                expiresAt,
-                target,
-                isActive,
-              } = coupon || {};
-              return (
-                <Table.Row key={coupon.id} className="even:bg-primary/5">
-                  <td className="table__td px-3 font-bold rounded-r-full">
-                    <p>{toPersianNumbers(index + 1)}</p>
-                  </td>
-                  <td className="table__td px-6 max-w-70 truncate">
-                    <p className="font-bold">{title}</p>
-                  </td>
-                  <td className="table__td px-6 max-w-70 truncate">
-                    <p className="font-bold">{code}</p>
-                  </td>
-                  <td className="table__td px-2">
-                    <p className=" badge badge--secondary--2 border border-stroke-800 font-bold">
-                      {toPersianNumbersWithComma(discountValue)}{" "}
-                      {type === "FIXED" ? "تومان" : "درصد"}
-                    </p>
-                  </td>
-                  <td className="table__td px-6 overflow-auto ">
-                    <p className="badge border border-blue bg-blue/10 text-blue font-bold">
-                      {toPersianNumbersWithComma(usageLimit)}
-                    </p>
-                  </td>
+      <>
+        <Table className="overflow-auto md:hidden">
+          <Table.Header className="">
+            {couponMobileTHeads.map((item) => (
+              <th className="whitespace-nowrap table__th" key={item.id}>
+                {item.label}
+              </th>
+            ))}
+          </Table.Header>
+          <Table.body>
+            {coupons &&
+              coupons?.map((coupon, index) => {
+                const {
+                  code,
+                  title,
+                  discountValue,
+                  type,
+                  usageLimit,
+                  expiresAt,
+                  target,
+                  isActive,
+                } = coupon || {};
+                return (
+                  <Table.Row key={coupon.id} className="even:bg-primary/5">
+                    <td className="table__td px-3 font-bold rounded-r-xl">
+                      <p>{toPersianNumbers(index + 1)}</p>
+                    </td>
+                    <td className="table__td px-6 max-w-70 min-w-40 text-wrap">
+                      <div className="flex flex-col items-center justify-center gap-1">
+                        <p className="font-bold">{title}</p>
+                        <p className="font-bold">{code}</p>
+                      </div>
+                    </td>
+                    <td className="table__td px-2">
+                      <div className="flex flex-col items-center justify-center gap-1">
+                        <p className=" badge badge--secondary--2 border border-stroke-800 font-bold">
+                          {toPersianNumbersWithComma(discountValue)}{" "}
+                          {type === "FIXED" ? "تومان" : "درصد"}
+                        </p>
+                        <p className="badge border border-blue bg-blue/10 text-blue font-bold">
+                          {toPersianNumbersWithComma(usageLimit)} نفر
+                        </p>
+                      </div>
+                    </td>
+                    <td className="table__td px-2">
+                      <p className="badge badge--primary font-bold border border-primary">
+                        {target === "ALL" ? "همه کاربران" : "کاربران خاص"}
+                      </p>
+                    </td>
+                    <td className="table__td px-2">
+                      <div className="flex flex-col items-center justify-center gap-1">
+                        <p
+                          className={`badge border ${isActive ? " bg-success/10 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
+                        >
+                          {isActive ? "فعال" : "غیر فعال"}
+                        </p>
+                        <p className="badge border border-blue bg-blue/10 text-blue font-bold">
+                          {toLocalDateString(expiresAt)}
+                        </p>
+                      </div>
+                    </td>
+                    <td className="table__td px-3 rounded-l-xl">
+                      <div className="flex gap-2 items-center">
+                        <Link
+                          href={`/admin/coupons/edit/${coupon.id}`}
+                          className="text-stroke-450 hover:text-success duration-200"
+                        >
+                          <PencilIcon className=" size-5" />
+                        </Link>
+                        <button
+                          onClick={() => removeCouponHandler(coupon)}
+                          className="text-stroke-450 hover:text-primary duration-200"
+                        >
+                          <TrashIcon className="size-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </Table.Row>
+                );
+              })}
+          </Table.body>
+        </Table>
+        <Table className="overflow-auto max-md:hidden">
+          <Table.Header className="">
+            {couponDesktopTHeads.map((item) => (
+              <th className="whitespace-nowrap table__th" key={item.id}>
+                {item.label}
+              </th>
+            ))}
+          </Table.Header>
+          <Table.body>
+            {coupons &&
+              coupons?.map((coupon, index) => {
+                const {
+                  code,
+                  title,
+                  discountValue,
+                  type,
+                  usageLimit,
+                  expiresAt,
+                  target,
+                  isActive,
+                } = coupon || {};
+                return (
+                  <Table.Row key={coupon.id} className="even:bg-primary/5">
+                    <td className="table__td px-3 font-bold rounded-r-xl">
+                      <p>{toPersianNumbers(index + 1)}</p>
+                    </td>
+                    <td className="table__td px-6 max-w-70 min-w-40 text-wrap">
+                      <p className="font-bold">{title}</p>
+                    </td>
+                    <td className="table__td px-6 max-w-70 truncate">
+                      <p className="font-bold">{code}</p>
+                    </td>
+                    <td className="table__td px-2">
+                      <p className=" badge badge--secondary--2 border border-stroke-800 font-bold">
+                        {toPersianNumbersWithComma(discountValue)}{" "}
+                        {type === "FIXED" ? "تومان" : "درصد"}
+                      </p>
+                    </td>
+                    <td className="table__td px-6 overflow-auto ">
+                      <p className="badge border border-blue bg-blue/10 text-blue font-bold">
+                        {toPersianNumbersWithComma(usageLimit)}
+                      </p>
+                    </td>
 
-                  <td className="table__td px-2">
-                    <p className="badge badge--primary font-bold border border-primary">
-                      {target === "ALL" ? "همه کاربران" : "کاربران خاص"}
-                    </p>
-                  </td>
-                  <td className="table__td px-2">
-                    <p className=" badge badge--secondary--2 font-bold border border-stroke-800">
-                      {type === "FIXED" ? "قیمتی" : "درصدی"}
-                    </p>
-                  </td>
-                  <td className="table__td px-6 overflow-auto ">
-                    <p className="badge border border-blue bg-blue/10 text-blue font-bold">
-                      {toLocalDateString(expiresAt)}
-                    </p>
-                  </td>
-                  <td className="table__td px-2">
-                    <p
-                      className={`badge border ${isActive ? " bg-success/10 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
-                    >
-                      {isActive ? "فعال" : "غیر فعال"}
-                    </p>
-                  </td>
-                  <td className="table__td px-3 rounded-l-full">
-                    <div className="flex gap-2 items-center">
-                      <Link
-                        href={`/admin/coupons/edit/${coupon.id}`}
-                        className="text-stroke-450 hover:text-success duration-200"
+                    <td className="table__td px-2">
+                      <p className="badge badge--primary font-bold border border-primary">
+                        {target === "ALL" ? "همه کاربران" : "کاربران خاص"}
+                      </p>
+                    </td>
+                    <td className="table__td px-2">
+                      <p className=" badge badge--secondary--2 font-bold border border-stroke-800">
+                        {type === "FIXED" ? "قیمتی" : "درصدی"}
+                      </p>
+                    </td>
+                    <td className="table__td px-6 overflow-auto ">
+                      <p className="badge border border-blue bg-blue/10 text-blue font-bold">
+                        {toLocalDateString(expiresAt)}
+                      </p>
+                    </td>
+                    <td className="table__td px-2">
+                      <p
+                        className={`badge border ${isActive ? " bg-success/10 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
                       >
-                        <PencilIcon className=" size-5" />
-                      </Link>
-                      <button
-                        onClick={() => removeCouponHandler(coupon)}
-                        className="text-stroke-450 hover:text-primary duration-200"
-                      >
-                        <TrashIcon className="size-5" />
-                      </button>
-                    </div>
-                  </td>
-                </Table.Row>
-              );
-            })}
-        </Table.body>
-      </Table>
+                        {isActive ? "فعال" : "غیر فعال"}
+                      </p>
+                    </td>
+                    <td className="table__td px-3 rounded-l-xl">
+                      <div className="flex gap-2 items-center">
+                        <Link
+                          href={`/admin/coupons/edit/${coupon.id}`}
+                          className="text-stroke-450 hover:text-success duration-200"
+                        >
+                          <PencilIcon className=" size-5" />
+                        </Link>
+                        <button
+                          onClick={() => removeCouponHandler(coupon)}
+                          className="text-stroke-450 hover:text-primary duration-200"
+                        >
+                          <TrashIcon className="size-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </Table.Row>
+                );
+              })}
+          </Table.body>
+        </Table>
+      </>
     </div>
   );
 }

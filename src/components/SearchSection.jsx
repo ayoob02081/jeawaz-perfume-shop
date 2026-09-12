@@ -148,11 +148,11 @@ function SearchSection({
     <div className="relative size-full">
       <form
         onSubmit={onSubmit}
-        className={`flex items-center justify-center group border-primary backdrop-blur-md size-full h-12 rounded-[48px]
+        className={`flex items-center justify-center group border-primary bg-stroke-800/5 backdrop-blur-md size-full h-12 rounded-[48px]
           ${
             shouldShowDropdown
-              ? "bg-stroke-0/40 border-[1.5px]"
-              : "bg-stroke-800/5 backdrop-blur-xl focus-within:border-[1.5px] focus-within:bg-stroke-0"
+              ? "border-[1.5px]"
+              : "focus-within:border-[1.5px] focus-within:bg-stroke-0"
           }
           duration-200`}
       >

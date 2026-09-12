@@ -138,7 +138,7 @@ function AboutUsPage() {
                   <AppImage
                     alt="number-2"
                     src="/images/number-2.svg"
-                    width="h-full w-2.5 md:w-5"
+                    width="h-full w-3.5 md:w-5"
                     sizes="10vw"
                   />
                 </div>

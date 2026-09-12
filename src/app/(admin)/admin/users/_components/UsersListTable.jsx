@@ -1,4 +1,4 @@
-import { userTHeads } from "@/constants/tableHeads";
+import { userDesktopTHeads, userMobileTHeads } from "@/constants/tableHeads";
 import Table from "@/ui/Table";
 import { toLocalDateString } from "@/utils/toLocalDate";
 import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
@@ -7,83 +7,162 @@ import Link from "next/link";
 
 function UsersListTable({ users }) {
   return (
-    <div className="w-full overflow-x-auto pb-0.5 rounded-xl shadow-xl scrollbar-none">
-      <Table className="overflow-auto">
-        <Table.Header>
-          {userTHeads.map((item) => (
-            <th className="whitespace-nowrap table__th" key={item.id}>
-              {item.label}
-            </th>
-          ))}
-        </Table.Header>
-        <Table.body>
-          {users &&
-            users?.map((user, index) => {
-              return (
-                <Table.Row key={user.id} className="even:bg-primary/5">
-                  <td className="table__td font-bold px-2">
-                    {toPersianNumbers(index + 1)}
-                  </td>
-                  <td className="table__td px-2 max-w-70 truncate">
-                    <p>{user?.fullName || "اسمی ثبت نشده"}</p>
-                  </td>
-                  <td className="table__td px-2">
-                    <Link
-                      href={
-                        user?.phoneNumber ? `tel:+${user?.phoneNumber}` : ""
-                      }
-                      className="flex items-center gap-2 justify-end hover:text-primary duration-200"
-                    >
-                      {normalizeIranPhone(user?.phoneNumber) ||
-                        "شماره‌ای ثبت نشده"}
-                    </Link>
-                  </td>
-                  <td className="table__td px-2 max-w-70 truncate">
-                    {user?.email || "ایمیلی ثبت نشده"}
-                  </td>
-                  <td className="table__td px-2">
-                    <p
-                      className={`badge border font-bold ${user?.role === "admin" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
-                    >
-                      {user?.role}
-                    </p>
-                  </td>
-                  <td className="table__td px-2">
-                    <p
-                      className={`badge border font-bold ${user?.accountStatus === "active" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
-                    >
-                      {user?.accountStatus === "active" ? "فعال" : "غیر فعال"}
-                    </p>
-                  </td>
-                  <td className="table__td px-2">
-                    <div className="flex flex-col items-center justify-center gap-y-2 badge badge--primary ">
-                      {toPersianNumbers(user?.ordersCount)}
-                    </div>
-                  </td>
+    <div className="w-full overflow-x-auto rounded-xl shadow-xl scrollbar-none">
+      <>
+        <Table className="overflow-auto md:hidden">
+          <Table.Header>
+            {userMobileTHeads.map((item) => (
+              <th className="whitespace-nowrap table__th" key={item.id}>
+                {item.label}
+              </th>
+            ))}
+          </Table.Header>
+          <Table.body>
+            {users &&
+              users?.map((user, index) => {
+                return (
+                  <Table.Row key={user.id} className="even:bg-primary/5">
+                    <td className="table__td font-bold rounded-r-xl px-2">
+                      {toPersianNumbers(index + 1)}
+                    </td>
+                    <td className="table__td px-2 max-w-70 min-w-40 text-wrap">
+                      <p>{user?.fullName || "اسمی ثبت نشده"}</p>
+                    </td>
+                    <td className="table__td px-2">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <Link
+                          href={
+                            user?.phoneNumber ? `tel:+${user?.phoneNumber}` : ""
+                          }
+                          className="flex items-center gap-2 justify-end hover:text-primary duration-200"
+                        >
+                          {normalizeIranPhone(user?.phoneNumber) ||
+                            "شماره‌ای ثبت نشده"}
+                        </Link>
+                        <p>{user?.email || "ایمیلی ثبت نشده"}</p>
+                      </div>
+                    </td>
+                    <td className="table__td px-2">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <p
+                          className={`badge border font-bold ${user?.role === "admin" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
+                        >
+                          {user?.role}
+                        </p>
+                        <p
+                          className={`badge border font-bold ${user?.accountStatus === "active" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
+                        >
+                          {user?.accountStatus === "active"
+                            ? "فعال"
+                            : "غیر فعال"}
+                        </p>
+                      </div>
+                    </td>
+                    <td className="table__td px-2">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-y-2 badge badge--primary gap-2">
+                          <p>{toPersianNumbers(user?.ordersCount)}</p>
+                          <p>سفارش</p>
+                        </div>
+                        <p>{toLocalDateString(user?.createdAt)}</p>
+                      </div>
+                    </td>
+                    <td className="table__td flex items-center justify-center rounded-l-xl gap-2 px-3">
+                      <Link
+                        href={`/admin/users/${user?.id}`}
+                        className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
+                      >
+                        <EyeIcon className="size-5" />
+                      </Link>
+                      <button
+                        type="button"
+                        className="flex items-center justify-center text-stroke-450 hover:text-primary duration-200"
+                      >
+                        <TrashIcon className="size-5" />
+                      </button>
+                    </td>
+                  </Table.Row>
+                );
+              })}
+          </Table.body>
+        </Table>
+        <Table className="overflow-auto max-md:hidden">
+          <Table.Header>
+            {userDesktopTHeads.map((item) => (
+              <th className="whitespace-nowrap table__th" key={item.id}>
+                {item.label}
+              </th>
+            ))}
+          </Table.Header>
+          <Table.body>
+            {users &&
+              users?.map((user, index) => {
+                return (
+                  <Table.Row key={user.id} className="even:bg-primary/5">
+                    <td className="table__td font-bold rounded-r-xl px-2">
+                      {toPersianNumbers(index + 1)}
+                    </td>
+                    <td className="table__td px-2 max-w-70 truncate">
+                      <p>{user?.fullName || "اسمی ثبت نشده"}</p>
+                    </td>
+                    <td className="table__td px-2">
+                      <Link
+                        href={
+                          user?.phoneNumber ? `tel:+${user?.phoneNumber}` : ""
+                        }
+                        className="flex items-center gap-2 justify-end hover:text-primary duration-200"
+                      >
+                        {normalizeIranPhone(user?.phoneNumber) ||
+                          "شماره‌ای ثبت نشده"}
+                      </Link>
+                    </td>
+                    <td className="table__td px-2 max-w-70 truncate">
+                      {user?.email || "ایمیلی ثبت نشده"}
+                    </td>
+                    <td className="table__td px-2">
+                      <p
+                        className={`badge border font-bold ${user?.role === "admin" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
+                      >
+                        {user?.role}
+                      </p>
+                    </td>
+                    <td className="table__td px-2">
+                      <p
+                        className={`badge border font-bold ${user?.accountStatus === "active" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
+                      >
+                        {user?.accountStatus === "active" ? "فعال" : "غیر فعال"}
+                      </p>
+                    </td>
+                    <td className="table__td px-2">
+                      <div className="flex flex-col items-center justify-center gap-y-2 badge badge--primary ">
+                        {toPersianNumbers(user?.ordersCount)}
+                      </div>
+                    </td>
 
-                  <td className="table__td px-2">
-                    {toLocalDateString(user?.createdAt)}
-                  </td>
+                    <td className="table__td px-2">
+                      {toLocalDateString(user?.createdAt)}
+                    </td>
 
-                  <td className="table__td flex items-center justify-center gap-2 px-3">
-                    <Link
-                      href={`/admin/users/${user?.id}`}
-                      className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
-                    >
-                      <EyeIcon className="size-5" />
-                    </Link>
-                    <button
-                      type="button"
-                      className="flex items-center justify-center text-stroke-450 hover:text-primary duration-200"
-                    >
-                      <TrashIcon className="size-5" />
-                    </button>
-                  </td>
-                </Table.Row>
-              );
-            })}
-        </Table.body>
-      </Table>
+                    <td className="table__td flex items-center justify-center rounded-l-xl gap-2 px-3">
+                      <Link
+                        href={`/admin/users/${user?.id}`}
+                        className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
+                      >
+                        <EyeIcon className="size-5" />
+                      </Link>
+                      <button
+                        type="button"
+                        className="flex items-center justify-center text-stroke-450 hover:text-primary duration-200"
+                      >
+                        <TrashIcon className="size-5" />
+                      </button>
+                    </td>
+                  </Table.Row>
+                );
+              })}
+          </Table.body>
+        </Table>
+      </>
     </div>
   );
 }

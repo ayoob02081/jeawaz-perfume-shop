@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetAllProducts } from "@/hooks/useProducts";
-import HomePageProducts from "./HomePageProducts";
+import HomePageSortProductsLayout from "./HomePageSortProductsLayout";
 import ProductCard from "./ProductCard";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
@@ -31,18 +31,23 @@ function OffProducts() {
     return <Error />;
   }
   return (
-    <HomePageProducts
+    <HomePageSortProductsLayout
       params={getFullHrefParams()}
-      titleOne={"پرتخفیف ترین"}
-      titleTwo={"محصولات"}
+      title={"پرتخفیف ترین"}
+      des={"محصولات"}
       desc={"پرتخفیف ترین رایحه ها ، همین‌جاست."}
       className={""}
       bgColor="bg-stroke-50 dark:bg-stroke-50/50 rounded-2xl py-6"
     >
       {products?.map((product) => (
-        <ProductCard key={product.id} product={product} isPending={isPending} error={error} />
+        <ProductCard
+          key={product.id}
+          product={product}
+          isPending={isPending}
+          error={error}
+        />
       ))}
-    </HomePageProducts>
+    </HomePageSortProductsLayout>
   );
 }
 

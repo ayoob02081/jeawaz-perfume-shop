@@ -22,7 +22,7 @@ function AdaptiveOverlayPage({
       <div
         className={`${isOpen ? "translate-x-0 right-0" : "translate-x-full"} top-0 size-fit 
        max-lg:fixed max-lg:w-screen max-lg:h-screen lg:shadow-xl lg:border lg:rounded-3xl
-       bg-stroke-0 lg:bg-stroke-100 dark:lg:bg-stroke-50 border-stroke-200 max-lg:z-90 transition-all duration-200 ${overflow} max-md:bottom-20 md:bottom-0`}
+       bg-stroke-0 lg:bg-stroke-100 dark:lg:bg-stroke-50 border-stroke-200 max-lg:z-90 transition-all duration-200 ${overflow} max-md:bottom-20 md:bottom-0 scrollbar-none`}
       >
         <div className="flex flex-col h-full max-md:pb-6 w-full">
           <div
@@ -49,7 +49,7 @@ function AdaptiveOverlayPage({
       <div
         className={`relative  ${isOpen ? "right-0 translate-x-0" : "translate-x-full"} top-0 bg-stroke-0
            max-lg:fixed max-lg:w-screen max-lg:h-screen
-         max-lg:z-90 duration-200 ${overflow} max-md:bottom-20 md:bottom-0`}
+         max-lg:z-90 duration-200 ${overflow} max-md:bottom-20 md:bottom-0 scrollbar-none`}
       >
         <div className="flex flex-col gap-4 h-fit bg-stroke-0 pb-10">
           <div
@@ -91,7 +91,7 @@ function AdaptiveOverlayPage({
               justify={justify}
             />
           </div>
-          <div className="max-md:p-6">{children}</div>
+          <div className="max-sm:p-4 sm:p-6">{children}</div>
         </div>
       </div>
     );

@@ -1,6 +1,6 @@
 import ProfileSidebarLayout, { ProfileLink } from "@/components/ProfileLinks";
 
-function AdminSidebar({ className, toggleSideBar }) {
+function AdminSidebar({ className, toggleSidebar }) {
   const AdminProfileLinks = [
     {
       id: 2,
@@ -80,7 +80,7 @@ function AdminSidebar({ className, toggleSideBar }) {
           srcSecondary={link.srcSecondary}
           alt={link.alt}
           countUnread={link.countUnread}
-          toggleSideBar={toggleSideBar}
+          toggleSidebar={toggleSidebar}
         />
       ))}
     </ProfileSidebarLayout>

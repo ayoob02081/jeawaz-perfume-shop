@@ -39,7 +39,7 @@ function SingleProductPage({ product }) {
           />
         </BreadCrumbBase>
       </article>
-      <article className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 w-ful md:p-6">
+      <article className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 md:p-6">
         <ImageSwiper images={product?.images} product={product} />
         <ProductDes product={product} />
         <ProductOptions product={product} />

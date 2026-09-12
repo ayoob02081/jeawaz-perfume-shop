@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
       isOpen={openMeProfile}
       side="right"
       label="ورود | ثبت نام"
-      className="size-4"
+      className="size-5.5"
       fontStyle="text-lg sm:text-2xl font-bold"
       justify="between"
       overflow="overflow-y-auto"

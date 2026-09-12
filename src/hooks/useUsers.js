@@ -4,7 +4,7 @@ import { getAllUsersApi, getUserByIdApi } from "@/services/usersServices";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { useAuth } from "@/contexts/filters/auth/AuthContext";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetAllUsers = () =>
