@@ -13,10 +13,15 @@ import {
 
 import { notificationKeys } from "./useNotification";
 
-export function useNotificationSocket() {
+export function useNotificationSocket(enabled) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    if (!enabled) {
+      disconnectSocket();
+      return;
+    }
+
     connectSocket();
 
     const handleNewNotification = (notification) => {
@@ -24,45 +29,20 @@ export function useNotificationSocket() {
         id: `notification-${notification.id}`,
       });
 
-      queryClient.setQueryData(notificationKeys.list(), (oldData = []) => {
-        if (!Array.isArray(oldData)) {
-          return [notification];
-        }
-
-        const exists = oldData.some((item) => item.id === notification.id);
-
-        if (exists) return oldData;
-
-        return [notification, ...oldData];
+      queryClient.invalidateQueries({
+        queryKey: notificationKeys.lists(),
       });
-
-      queryClient.setQueryData(
-        notificationKeys.unreadCount(),
-        (oldCount = 0) => {
-          if (oldCount && typeof oldCount.count === "number") {
-            return {
-              ...oldCount,
-              count: oldCount.count + 1,
-            };
-          }
-
-          //   queryClient.setQueryData(
-          //     notificationKeys.unreadCount(),
-          //     (old = { count: 0 }) => ({
-          //       ...old,
-          //       count: old.count + 1,
-          //     }),
-          //   );
-
-          return oldCount;
-        },
-      );
+      queryClient.invalidateQueries({
+        queryKey: notificationKeys.unreadCount(),
+        exact: true,
+      });
     };
 
     onSocket("notification:new", handleNewNotification);
 
     return () => {
       offSocket("notification:new", handleNewNotification);
+      disconnectSocket();
     };
-  }, [queryClient]);
+  }, [enabled, queryClient]);
 }

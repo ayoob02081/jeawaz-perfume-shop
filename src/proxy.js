@@ -49,7 +49,7 @@ export default async function proxy(req) {
   // ---------------------------------
 
   if (pathname === "/profile" || pathname.startsWith("/profile/")) {
-    if (statusCode === 401 || !user) {
+    if (statusCode === 401) {
       return redirectResponse("/auth/login");
     }
 
@@ -62,8 +62,13 @@ export default async function proxy(req) {
 
   if (pathname === "/admin" || pathname.startsWith("/admin/")) {
     // Not authenticated
-    if (statusCode === 401 || !user) {
+    if (statusCode === 401) {
       return redirectResponse("/auth/login");
+    }
+
+    // Authentication could not be determined because of a transient failure.
+    if (!user) {
+      return nextResponse();
     }
 
     // Authenticated but not admin

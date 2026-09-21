@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -17,17 +18,29 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const authGeneration = useRef(0);
 
   const checkAuth = useCallback(async () => {
+    const generation = ++authGeneration.current;
     setLoading(true);
 
     try {
       const me = await getUserApi();
+
+      if (generation !== authGeneration.current) return;
+
       setUser(me);
-    } catch {
-      setUser(null);
+    } catch (error) {
+      if (
+        generation === authGeneration.current &&
+        error?.response?.status === 401
+      ) {
+        setUser(null);
+      }
     } finally {
-      setLoading(false);
+      if (generation === authGeneration.current) {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -35,19 +48,68 @@ export function AuthProvider({ children }) {
     checkAuth();
   }, [checkAuth]);
 
-  const login = useCallback(async (data) => {
-    await loginApi(data);
-    await checkAuth();
-  }, [checkAuth]);
+  const login = useCallback(
+    async (data) => {
+      const generation = ++authGeneration.current;
+      setLoading(true);
 
-  const updateUser = useCallback(async (data) => {
-    await updateUserApi(data);
-    await checkAuth();
-  }, [checkAuth]);
+      try {
+        await loginApi(data);
+      } catch (error) {
+        if (generation === authGeneration.current) {
+          setLoading(false);
+        }
+
+        throw error;
+      }
+
+      if (generation === authGeneration.current) {
+        await checkAuth();
+      }
+    },
+    [checkAuth],
+  );
+
+  const updateUser = useCallback(
+    async (data) => {
+      const generation = ++authGeneration.current;
+      setLoading(true);
+
+      try {
+        await updateUserApi(data);
+      } catch (error) {
+        if (generation === authGeneration.current) {
+          setLoading(false);
+        }
+
+        throw error;
+      }
+
+      if (generation === authGeneration.current) {
+        await checkAuth();
+      }
+    },
+    [checkAuth],
+  );
 
   const logout = useCallback(async () => {
-    await logoutApi();
-    setUser(null);
+    const generation = ++authGeneration.current;
+    setLoading(true);
+
+    try {
+      await logoutApi();
+    } catch (error) {
+      if (generation === authGeneration.current) {
+        setLoading(false);
+      }
+
+      throw error;
+    }
+
+    if (generation === authGeneration.current) {
+      setUser(null);
+      setLoading(false);
+    }
   }, []);
 
   const value = useMemo(
