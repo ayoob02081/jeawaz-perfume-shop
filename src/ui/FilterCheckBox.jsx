@@ -63,7 +63,7 @@ function FilterCheckBox({
           <span className="flex items-center justify-start gap-1 w-full">
             <div
               className={`h-2 w-0.5 rounded-full ${
-                checked ? "bg-primary" : "bg-stroke-50 dark:bg-stroke-150"
+                checked ? "bg-primary" : "bg-stroke-50"
               } duration-200`}
             ></div>
             <p

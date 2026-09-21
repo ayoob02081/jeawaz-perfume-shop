@@ -7,44 +7,25 @@ import {
   updateCampaignApi,
 } from "@/services/campaignServices";
 import { showApiError } from "@/utils/showApiError";
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export const campaignKeys = {
   all: ["campaigns"],
   lists: () => [...campaignKeys.all, "list"],
-  list: (filters = {}) => [...campaignKeys.lists(), filters],
+  list: () => [...campaignKeys.lists()],
   details: () => [...campaignKeys.all, "detail"],
   detail: (id) => [...campaignKeys.details(), id],
 };
 
-const normalizeCampaignsQuery = (query = {}) => ({
-  page: query.page || 1,
-  limit: query.limit || 12,
-  search: query.search || undefined,
-  isActive:
-    typeof query.isActive === "boolean"
-      ? query.isActive
-      : query.isActive || undefined,
-});
-
-export const useGetAllCampaigns = (query = {}) => {
-  const normalizedQuery = normalizeCampaignsQuery(query);
-
-  return useQuery({
-    queryKey: campaignKeys.list(normalizedQuery),
-    queryFn: () => getAllCampaignsApi(normalizedQuery),
+export const useGetAllCampaigns = () =>
+  useQuery({
+    queryKey: campaignKeys.list(),
+    queryFn: getAllCampaignsApi,
     retry: false,
     refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData,
   });
-};
 
 export const useGetCampaignById = (id) =>
   useQuery({

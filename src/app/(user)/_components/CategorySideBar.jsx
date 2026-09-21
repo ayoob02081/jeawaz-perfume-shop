@@ -178,7 +178,7 @@ function CategorySidebar({ toggleCategory, isCategoryOpen, closeCategory }) {
                 </div>
 
                 <AppImage
-                  src="/images/Jeaawaz-Logo-red-v5.0.webp"
+                  src="/images/jeawaz-logo-v6.0-r.webp"
                   alt="jeawaz-brand-icon"
                   className="max-md:hidden"
                   width="w-[5.75rem] h-12"

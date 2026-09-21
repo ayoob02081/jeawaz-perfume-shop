@@ -131,6 +131,7 @@ function ProductCard({ product, isPending, error }) {
             >
               {product.stock >= 3 && (
                 <PriceSection
+                  productCard={true}
                   basePrice={decantPrice.basePrice}
                   unitPrice={decantPrice.finalPrice}
                   offValue={decantPrice.offValue}

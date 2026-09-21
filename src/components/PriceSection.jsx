@@ -10,7 +10,7 @@ function PriceSection({
 
   priceClassName = "max-md:text-xl text-2xl text-stroke-800",
   textClassName = "text-xs text-stroke-800",
-
+  productCard = false,
   className,
   justify = "justify-start",
 
@@ -44,6 +44,9 @@ function PriceSection({
         <div
           className={`flex grow items-center ${justify} gap-1 size-full text-stroke-800`}
         >
+          {productCard && (
+            <p className=" max-md:text-sm md:text-xl font-bold">از</p>
+          )}
           <p className={`${priceClassName} font-bold`}>
             {hasDiscount
               ? toPersianNumbersWithComma(unitPrice)

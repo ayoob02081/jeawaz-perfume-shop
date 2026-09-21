@@ -39,6 +39,7 @@ function ContactUsPage() {
                     alt="map-marker-nearby"
                     width="size-6"
                     sizes="10vw"
+                    className="dark:saturate-150 dark:brightness-200"
                   />
                 </div>
                 <span className="flex flex-col items-start justify-start gap-2 text-wrap">
@@ -58,6 +59,7 @@ function ContactUsPage() {
                     alt="call-ringing"
                     width="size-6"
                     sizes="10vw"
+                    className="dark:saturate-150 dark:brightness-200"
                   />
                 </div>
                 <span className="flex flex-col items-start justify-start gap-4 overflow-x-hidden w-full">
@@ -93,6 +95,7 @@ function ContactUsPage() {
               <div className="flex flex-col items-start justify-start gap-4">
                 <div className="flex items-center justify-center bg-stroke-100 rounded-xl size-12">
                   <AppImage
+                    className="dark:saturate-150 dark:brightness-200"
                     src="/images/social-earth-icon.svg"
                     alt="social-earth"
                     width="size-6"
@@ -109,6 +112,7 @@ function ContactUsPage() {
                       className="flex items-center justify-center gap-2 px-4 h-12 w-full rounded-full border border-stroke-250 max-w-36 md:max-w-40 text-stroke-900 dark:text-stroke-800 hover:opacity-70 active:opacity-70 duration-200"
                     >
                       <AppImage
+                        className="dark:saturate-150 dark:brightness-200"
                         src="/images/telegram-icon.svg"
                         alt="telegram-icon"
                         width="size-6"
@@ -121,6 +125,7 @@ function ContactUsPage() {
                       className="flex items-center justify-center gap-2 px-4 h-12 w-full rounded-full border border-stroke-250 max-w-36 md:max-w-40 text-stroke-900 dark:text-stroke-800 hover:opacity-70 active:opacity-70 duration-200"
                     >
                       <AppImage
+                        className="dark:saturate-150 dark:brightness-200"
                         src="/images/instagram-icon.svg"
                         alt="instagram-icon"
                         width="size-6"
@@ -152,7 +157,7 @@ function ContactUsPage() {
           </div>
           <div className="absolute top-0 right-1/2 translate-x-1/2">
             <AppImage
-              src="/images/Jeaawaz-Logo-red-v5.0.webp"
+              src="/images/jeawaz-logo-v6.0-r.webp"
               alt="jeawaz-brand-logo"
               className=""
               ratio="aspect-[5/2]"
@@ -175,7 +180,7 @@ function ContactUsPage() {
           </div>
           <div className="absolute top-0 right-1/2 translate-x-1/2">
             <AppImage
-              src="/images/Jeaawaz-Logo-red-v5.0.webp"
+              src="/images/jeawaz-logo-v6.0-r.webp"
               alt="jeawaz-brand-logo"
               className=""
               ratio="aspect-[5/2]"

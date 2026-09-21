@@ -14,7 +14,7 @@ function Footer() {
             className="flex flex-col items-center justify-center gap-4 text-white"
           >
             <AppImage
-              src="/images/Jeaawaz-Logo-red-v5.0.webp"
+              src="/images/jeawaz-logo-v6.0-w.webp"
               alt="jeawaz-brand-icon"
               width="w-28 h-[4.25rem]"
               sizes="20vw"

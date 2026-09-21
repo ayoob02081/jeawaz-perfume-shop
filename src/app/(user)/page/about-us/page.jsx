@@ -138,8 +138,9 @@ function AboutUsPage() {
                   <AppImage
                     alt="number-2"
                     src="/images/number-2.svg"
-                    width="h-full w-3.5 md:w-5"
+                    width="h-full w-3.5 md:w-7"
                     sizes="10vw"
+                    className="md:translate-y-1"
                   />
                 </div>
                 <p className="text-lg md:text-[27px] font-bold text-stroke-800">

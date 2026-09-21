@@ -109,7 +109,7 @@ function DesktopHeader({
               <li className=" justify-items-center">
                 <Link className="block p-2" href="/">
                   <AppImage
-                    src="/images/Jeaawaz-Logo-red-v5.0.webp"
+                    src="/images/jeawaz-logo-v6.0-r.webp"
                     alt="jeawaz-brand-icon"
                     width="w-18 h-10"
                     sizes="20vw"
@@ -356,7 +356,7 @@ function MobileHeader({
         <li className="px-2 flex-none bg-stroke-800/ backdrop-blur-md rounded-full">
           <Link className="block p-2" href="/">
             <AppImage
-              src="/images/Jeaawaz-Logo-red-v5.0.webp"
+              src="/images/jeawaz-logo-v6.0-r.webp"
               alt="jeawaz-brand-icon"
               width="h-10.5 w-20.75"
               sizes="20vw"

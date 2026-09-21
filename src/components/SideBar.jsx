@@ -89,7 +89,7 @@ function Sidebar({ toggleSidebar, toggleCategory, isSidebarOpen }) {
           ref={ref}
           className="w-[75vw] h-full scrollbar-none overflow-y-auto bg-stroke-0 pb-10"
         >
-          <li className="p-4 pb-2 flex items-center justify-between">
+          <li className="p-4 pb-3 flex items-center justify-between">
             <button
               onClick={() => {
                 router.push("/");
@@ -97,7 +97,7 @@ function Sidebar({ toggleSidebar, toggleCategory, isSidebarOpen }) {
               }}
             >
               <AppImage
-                src="/images/Jeaawaz-Logo-red-v5.0.webp"
+                src="/images/jeawaz-logo-v6.0-r.webp"
                 alt="jeawaz-brand-icon"
                 width="w-24"
                 sizes="20vw"

@@ -22,7 +22,7 @@ export function connectSocket() {
   });
 
   socket.on("connect_error", (err) => {
-    console.error("Socket Error:", err.message);
+    console.log("Socket Error:", err.message);
   });
 
   return socket;
