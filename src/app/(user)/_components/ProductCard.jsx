@@ -1,7 +1,8 @@
 import AppImage from "@/components/AppImage";
+import Error from "@/components/Error";
 import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
-import { calculateProductPrice } from "@/utils/priceCalculator";
+import { getProductCardPresentation } from "@/utils/priceCalculator";
 import { useRouter } from "next/navigation";
 
 function ProductCard({ product, isPending, error }) {
@@ -14,24 +15,15 @@ function ProductCard({ product, isPending, error }) {
     stock,
     images,
     categories,
-    modes,
     brand: productBrand,
   } = product || {};
 
-  const minDecant = modes?.decant?.availableVolumes?.[0];
-
-  const decantPrice = minDecant
-    ? calculateProductPrice(product, "decant", minDecant)
-    : {
-        basePrice: 0,
-        finalPrice: 0,
-        offValue: 0,
-        source: "none",
-        campaignId: null,
-      };
-
-  const inStock = minDecant > 0 && stock >= minDecant;
-  const productAccords = categories?.accords;
+  const { representativeVariant, cardPrice, cardLabel } =
+    getProductCardPresentation(product);
+  const inStock =
+    !!representativeVariant &&
+    Number(stock) >= Number(representativeVariant.volume);
+  const productFragranceFamilies = categories?.fragranceFamilies;
   const productGender = categories?.gender;
 
   if (isPending) {
@@ -41,6 +33,7 @@ function ProductCard({ product, isPending, error }) {
   if (error) {
     return <Error />;
   }
+  if (!product) return null;
 
   return (
     <article
@@ -50,7 +43,7 @@ function ProductCard({ product, isPending, error }) {
       <div className="flex items-start justify-between size-full">
         <div className="flex flex-none md:hidden items-center justify-center p-2 h-25 aspect-4/5">
           <AppImage
-            src={images[0]}
+            src={images?.[0]}
             alt={"-عکس" + perTitle}
             priority={true}
             ratio="aspect-4/5"
@@ -61,14 +54,14 @@ function ProductCard({ product, isPending, error }) {
             {/* Categories Icon */}
             <div className="md:absolute top-4 left-4 right-4 md:z-10 flex flex-none items-center justify-between max-md:mb-4 mb-1">
               <div className="flex items-center justify-start gap-2 h-full w-fit">
-                {productAccords?.map((accord) => (
+                {productFragranceFamilies?.map((fragranceFamily) => (
                   <CardIconResponsive
-                    key={accord?.id}
-                    accord={accord}
-                    src={accord?.iconUrl}
-                    alt={accord?.vlaue + "-icon"}
-                    title={accord?.title}
-                    type={accord?.value}
+                    key={fragranceFamily?.id}
+                    category={fragranceFamily}
+                    src={fragranceFamily?.iconUrl}
+                    alt={fragranceFamily?.value + "-icon"}
+                    title={fragranceFamily?.title}
+                    type={fragranceFamily?.value}
                     className="max-md:h-8 md:h-10"
                     size="max-md:size-4 md:size-6"
                   />
@@ -89,7 +82,7 @@ function ProductCard({ product, isPending, error }) {
             {/* Desktop Mode Base Picture */}
             <div className="grow max-md:hidden md:flex items-center justify-center h-fu">
               <AppImage
-                src={images[0]}
+                src={images?.[0]}
                 alt={"-عکس" + perTitle}
                 priority={true}
                 ratio="aspect-4/5"
@@ -127,19 +120,23 @@ function ProductCard({ product, isPending, error }) {
 
             {/* Products Price */}
             <div
-              className={`flex flex-none items-center md:items-end gap-4 w-full pt-2 ${inStock ? "justify-between" : "justify-end"}`}
+              className={`relative flex flex-none items-center md:items-end gap-4 w-full pt-2 ${inStock ? "justify-between" : "justify-end"}`}
             >
-              {product.stock >= 3 && (
-                <PriceSection
-                  productCard={true}
-                  basePrice={decantPrice.basePrice}
-                  unitPrice={decantPrice.finalPrice}
-                  offValue={decantPrice.offValue}
-                  OldPricevisibility="block"
-                  pricesRow="flex-col-reverse max-md:gap-0"
-                  priceClassName="max-md:text-lg md:text-xl lg:text-[32px] text-stroke-800"
-                  justify="justify-start"
-                />
+              {representativeVariant && inStock && (
+                <div className="flex flex-col items-start gap-0.5">
+                  <PriceSection
+                    basePrice={cardPrice.basePrice}
+                    unitPrice={cardPrice.finalPrice}
+                    offValue={cardPrice.offValue}
+                    OldPricevisibility="block"
+                    pricesRow="flex-col-reverse max-md:gap-0"
+                    priceClassName="max-md:text-lg md:text-xl lg:text-[32px]"
+                    justify="justify-start"
+                  />
+                  <span className="max-md:absolute -right-18 bottom-0 text-xs md:text-sm text-stroke-600">
+                    {cardLabel}
+                  </span>
+                </div>
               )}
 
               {/* Products Order Button */}
@@ -149,7 +146,7 @@ function ProductCard({ product, isPending, error }) {
                     مشاهده
                   </p>
                 ) : (
-                  <p className="text-wrap w-full text-primary text-xl font-bold">
+                  <p className="text-wrap w-full text-primary text-xl font-bold  py-1 px-2 md:p-2 md:h-20">
                     ناموجود!
                   </p>
                 )}
@@ -167,7 +164,7 @@ export default ProductCard;
 export function CardIconResponsive({
   size,
   className,
-  accord,
+  category,
   src,
   alt,
   title,
@@ -228,7 +225,7 @@ export function CardIconResponsive({
       break;
   }
 
-  return accord ? (
+  return category ? (
     <div
       dir="rtl"
       className={`overflow-hidden flex items-center group rounded-5xl px-2 ${bgColor} ${className} duration-300`}

@@ -1,4 +1,5 @@
 // src/utils/priceCalculator.js
+import { toPersianNumbers } from "./toPersianNumbers.js";
 
 export function normalizePrice(price) {
   return Math.floor(Math.round(price) / 1000) * 1000;
@@ -78,5 +79,26 @@ export function calculateVariantPrice(product, variant) {
     basePrice: normalizedBasePrice,
     finalPrice,
     offValue,
+  };
+}
+
+const VARIANT_TYPE_LABELS = { decant: "دکانت", sealed: "پلمپ" };
+
+// Compact "<type> <volume> میل" line for one Variant, e.g. "دکانت ۱۰ میل".
+export function getVariantLabel(variant) {
+  const type = VARIANT_TYPE_LABELS[variant?.type];
+  if (!type) return null;
+  return `${type} ${toPersianNumbers(variant.volume)} میل`;
+}
+
+export function getProductCardPresentation(product) {
+  // Every ProductCard consumer uses GET /products. An explicit null from that
+  // response is authoritative; never reconstruct a representative locally.
+  // Price and label both come from this one backend-selected Variant.
+  const representativeVariant = product?.representativeVariant ?? null;
+  return {
+    representativeVariant,
+    cardPrice: calculateVariantPrice(product, representativeVariant),
+    cardLabel: getVariantLabel(representativeVariant),
   };
 }
