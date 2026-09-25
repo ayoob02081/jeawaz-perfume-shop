@@ -37,7 +37,7 @@ import { useUnreadNotificationsCount } from "@/hooks/useNotification";
 export default function ProfileSidebarLayout({ children, className }) {
   return (
     <div
-      className={`${className} group lg:fixed right-2 z-70 max-lg:h-full max-lg:w-[75vw] group-hover:lg:w-full lg:size-fit lg:shadow-xl lg:border lg:rounded-3xl
+      className={`${className} group lg:fixed 2xl:static right-2 z-70 max-lg:h-full max-lg:w-[75vw] group-hover:lg:w-full lg:size-fit lg:shadow-xl lg:border lg:rounded-3xl
        bg-stroke-0 lg:bg-stroke-600/10 dark:lg:bg-stroke-300/10 border-stroke-200 transition-all backdrop-blur-md duration-200 **:transition-all **:duration-200 `}
     >
       <div className={`flex flex-col h-full max-lg:pb-6 w-full`}>
@@ -184,13 +184,13 @@ export function ProfileLink({
         <button
           onClick={LogoutHandler}
           className="flex items-center justify-start gap-4 hover:bg-stroke-250/20 hover:backdrop-blur-md **:transition-all **:last:duration-200 text-stroke-800
-              py-3 px-1 size-full lg:size-fit group-hover:lg:size-full rounded-[44px] duration-200"
+              py-3 px-1 size-full lg:size-fit group-hover:lg:size-full 2xl:size-full rounded-[44px] duration-200"
         >
           <div className="flex items-center justify-start gap-2 h-11 w-full overflow-hidden">
             <div className="flex items-center justify-center size-11 z-10">
               <ArrowRightStartOnRectangleIcon className="size-7" />
             </div>
-            <p className="flex items-center justify-start lg:w-0 group-hover:lg:w-fit lg:translate-x-30 group-hover:lg:translate-x-0 lg:opacity-0 group-hover:lg:opacity-100 text-nowrap transition-all duration-200">
+            <p className="flex items-center justify-start lg:w-0 group-hover:lg:w-fit 2xl:w-fit lg:translate-x-30 group-hover:lg:translate-x-0 2xl:translate-x-0 lg:opacity-0 group-hover:lg:opacity-100 2xl:opacity-100 text-nowrap transition-all duration-200">
               {label}
             </p>
           </div>
@@ -203,7 +203,7 @@ export function ProfileLink({
     return (
       <div className=" flex flex-col items-center justify-center size-full px-4 lg:px-2">
         <div className="flex items-center justify-start py-4 lg:pt-6 size-full rounded-3xl">
-          <div className="flex items-center max-lg:justify-between justify-start lg:-translate-x-1 group-hover:lg:translate-x-0 w-full h-full group-hover:lg:gap-12">
+          <div className="flex items-center max-lg:justify-between justify-start lg:-translate-x-1 group-hover:lg:translate-x-0 2xl:translate-x-0 w-full h-full group-hover:lg:gap-12 2xl:gap-12">
             <Link
               onClick={toggleSidebar}
               href={"/profile/me"}
@@ -218,7 +218,7 @@ export function ProfileLink({
                   className="w-fit! h-full! lg:hidden"
                 />
               ) : (
-                <span className="flex flex-col items-start justify-between gap-2 max-[365px]:w-44 lg:gap-0 group-hover:gap-2 lg:translate-x-25 group-hover:lg:translate-x-0 lg:opacity-0 lg:w-0 group-hover:lg:opacity-100 group-hover:lg:w-fit transition-all duration-200">
+                <span className="flex flex-col items-start justify-between gap-2 max-[365px]:w-44 lg:gap-0 group-hover:gap-2 2xl:gap-2 lg:translate-x-25 group-hover:lg:translate-x-0 2xl:translate-x-0 lg:opacity-0 lg:w-0 group-hover:lg:opacity-100 2xl:opacity-100 group-hover:lg:w-fit 2xl:w-fit transition-all duration-200">
                   <p className="max-lg:font-bold text-stroke-800 text-nowrap ">
                     {fullName}
                   </p>
@@ -231,13 +231,13 @@ export function ProfileLink({
             <Link
               onClick={toggleSidebar}
               href={"/profile/me"}
-              className="flex items-center justify-center lg:opacity-0 lg:w-0 group-hover:lg:opacity-100 group-hover:lg:w-fit transition-all duration-200"
+              className="flex items-center justify-center lg:opacity-0 lg:w-0 group-hover:lg:opacity-100 2xl:opacity-100 group-hover:lg:w-fit 2xl:w-fit transition-all duration-200"
             >
               <PencilSquareIcon className="size-6 text-stroke-800 hover:text-success active:text-success duration-200" />
             </Link>
           </div>
         </div>
-        <div className="w-full lg:w-0 group-hover:lg:w-full max-lg:hidden max-lg:border-t lg:border-0 group-hover:lg:border-t border-stroke-300"></div>
+        <div className="w-full lg:w-0 group-hover:lg:w-full 2xl:w-full max-lg:hidden max-lg:border-t lg:border-0 group-hover:lg:border-t 2xl:border-t border-stroke-300"></div>
       </div>
     );
   }
@@ -253,13 +253,13 @@ export function ProfileLink({
                 ? "bg-stroke-900 dark:bg-stroke-200 text-stroke-0 dark:text-stroke-800"
                 : "hover:bg-stroke-250/20 hover:backdrop-blur-md **:transition-all **:duration-200 text-stroke-800"
             }    
-            max-lg:py-2 lg:py-2 size-full lg:w-fit group-hover:lg:size-full px-2 rounded-full transition-all duration-200`}
+            max-lg:py-2 lg:py-2 size-full lg:w-fit group-hover:lg:size-full 2xl:size-full px-2 rounded-full transition-all duration-200`}
       >
-        <div className="relative flex items-center justify-start w-full gap-2 lg:gap-0 group-hover:gap-2 overflow-hidden">
+        <div className="relative flex items-center justify-start w-full gap-2 lg:gap-0 group-hover:gap-2 2xl:gap-2 overflow-hidden">
           <div className="flex items-center justify-center size-11 z-10">
             <>{renderSteps()}</>
           </div>
-          <div className="flex items-center justify-between w-full lg:opacity-0 lg:w-0 group-hover:lg:opacity-100 group-hover:lg:w-fit lg:translate-x-20 group-hover:lg:translate-x-0 text-nowrap transition-all duration-200">
+          <div className="flex items-center justify-between w-full lg:opacity-0 lg:w-0 group-hover:lg:opacity-100 2xl:opacity-100 group-hover:lg:w-fit 2xl:w-fit lg:translate-x-20 group-hover:lg:translate-x-0 2xl:translate-x-0 text-nowrap transition-all duration-200">
             <p>{label}</p>
           </div>
           {!pathName.startsWith("/admin") &&
@@ -267,9 +267,9 @@ export function ProfileLink({
             count?.total > 0 && (
               <div className="shrink grow flex items-center justify-end">
                 <div
-                  className={`${isPathName ? "bg-stroke-0 text-primary dark:text-white " : "bg-primary dark:bg-stroke-200 text-white"} lg:absolute lg:left-0 lg:top-1 group-hover:lg:static flex items-center justify-center max-lg:text-sm max-lg:px-2.5 px-3 lg:px-1 lg:size-2 group-hover:lg:size-7 aspect-square rounded-full font-bold`}
+                  className={`${isPathName ? "bg-stroke-0 text-primary dark:text-white " : "bg-primary dark:bg-stroke-200 text-white"} lg:absolute lg:left-0 lg:top-1 group-hover:lg:static 2xl:static flex items-center justify-center max-lg:text-sm max-lg:px-2.5 px-3 lg:px-1 lg:size-2 group-hover:lg:size-7 2xl:size-7 aspect-square rounded-full font-bold`}
                 >
-                  <p className="translate-y-px lg:w-0 lg:opacity-0 group-hover:lg:w-fit group-hover:lg:opacity-100">
+                  <p className="translate-y-px lg:w-0 lg:opacity-0 group-hover:lg:w-fit 2xl:w-fit group-hover:lg:opacity-100 2xl:opacity-100">
                     {toPersianNumbers(count?.total)}
                   </p>
                 </div>

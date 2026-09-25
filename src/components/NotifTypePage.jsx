@@ -97,7 +97,7 @@ function NotifTypeCard({
 
   return (
     <div
-      className={`flex items-center justify-between gap-2 py-4 w-full rounded-xl px-4 ${className} ${!isRead && " bg-stroke-150 dark:bg-stroke-100"}`}
+      className={`flex items-center justify-between gap-2 py-4 w-full rounded-xl px-4 ${className} ${!isRead && " bg-stroke-150"}`}
     >
       <button
         type="button"

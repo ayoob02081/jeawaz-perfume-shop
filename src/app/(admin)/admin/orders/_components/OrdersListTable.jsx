@@ -143,7 +143,7 @@ function OrdersListTable({ orders, isLoading, status }) {
   }, [status]);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl p-4 pt-0">
+    <div className="flex flex-col gap-4 rounded-2xl p-4 pt-0 overflow-hidden w-full">
       {status !== undefined && (
         <div className="flex items-center justify-between w-full gap-4">
           {nextPossibleBulkStatuses?.length > 0 && (

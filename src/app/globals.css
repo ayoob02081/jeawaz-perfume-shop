@@ -132,7 +132,7 @@
   --color-stroke-300: rgb(164, 168, 186);
   --color-stroke-250: rgb(127, 127, 136);
   --color-stroke-200: rgb(95, 112, 134);
-  --color-stroke-150: rgb(96, 96, 96);
+  --color-stroke-150: rgb(40, 42, 57);
   --color-stroke-100: rgb(40, 42, 57);
   --color-stroke-50: rgb(40, 42, 57);
   --color-stroke-0: rgb(25, 26, 38);
@@ -244,7 +244,7 @@
     @apply hover:bg-success! hover:text-stroke-0 active:bg-success! text-stroke-800 active:text-white;
   }
   .textField__input {
-    @apply flex items-center justify-start px-3 rounded-5xl py-2 gap-2 size-full outline-0 border-[1.5px] text-stroke-800 bg-stroke-100 border-stroke-100
+    @apply flex items-center justify-start px-3 rounded-5xl py-2 gap-2 size-full outline-0 border text-stroke-800 bg-stroke-100 border-stroke-100
     focus-within:text-stroke-800 focus-within:bg-stroke-0 focus:bg-stroke-0 focus-within:border focus-within:border-primary transition-all duration-200;
   }
   .footer--link {
