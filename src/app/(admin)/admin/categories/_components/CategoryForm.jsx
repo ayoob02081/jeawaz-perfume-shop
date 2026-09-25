@@ -11,25 +11,32 @@ import RHFTextField from "@/ui/RHFTextField";
 import { useRouter } from "next/navigation";
 import RHFUploadFile from "@/ui/RHFUploadFile";
 
-function CategoryForm({ categoryToEdit, accord, gender }) {
+const categoryLabels = {
+  season: "فصل",
+  temperature: "دما",
+  character: "شخصیت رایحه",
+  occasion: "موقعیت استفاده",
+};
+
+function CategoryForm({ categoryToEdit, fragranceFamily, gender, categoryType }) {
   const basicInfoData = [
     {
       id: 1,
       label: "عنوان فارسی",
       name: "title",
-      placeholder: accord ? "گلی" : "مردانه",
+      placeholder: fragranceFamily ? "گلی" : "مردانه",
     },
     {
       id: 2,
       label: "عنوان انگلیسی",
       name: "value",
-      placeholder: accord ? "floral" : "men",
+      placeholder: fragranceFamily ? "floral" : "men",
     },
     {
       id: 3,
       label: "توضیحات",
       name: "description",
-      placeholder: accord ? "رایحه گلی" : "عطر مردانه",
+      placeholder: fragranceFamily ? "رایحه گلی" : "عطر مردانه",
     },
   ];
 
@@ -61,7 +68,7 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
       description: description || "",
       imageUrl: imageUrl || "",
       iconUrl: iconUrl || "",
-      type: type || accord || gender,
+      type: type || categoryType || fragranceFamily || gender,
     },
   });
 
@@ -109,7 +116,7 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
         {/* IconUrl & ImageUrl */}
         <div className="flex flex-col items-start gap-y-4 w-fit bg-stroke-100 p-6 rounded-3xl border border-slate-100">
           <h3 className="text-stroke-800 font-bold text-lg">
-            آیکون و عکس {accord ? "رایحه" : "جنسیت"}
+            آیکون و عکس {categoryLabels[categoryType] || (fragranceFamily ? "رایحه" : "جنسیت")}
           </h3>
           <div className="flex flex-wrap gap-6">
             <Controller
@@ -150,7 +157,7 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
               disabled={isSubmitting || isEditing}
               className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
             >
-              {accord &&
+              {fragranceFamily &&
                 (!categoryToEdit
                   ? isSubmitting
                     ? "در حال ساخت..."
@@ -166,6 +173,10 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
                   : isEditing
                     ? "در حال ویرایش..."
                     : "ویرایش جنسیت")}
+              {categoryType &&
+                (isSubmitting || isEditing
+                  ? "در حال ذخیره..."
+                  : `${categoryToEdit ? "ویرایش" : "ساخت"} ${categoryLabels[categoryType]}`)}
             </button>
             <button
               type="button"
@@ -177,7 +188,7 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
           </div>
           {categoryToEdit && (
             <button
-              type="submit"
+              type="button"
               disabled={isDeleting}
               onClick={() => removeCategoryHandler(categoryToEdit)}
               className="btn btn--primary border-0 py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"

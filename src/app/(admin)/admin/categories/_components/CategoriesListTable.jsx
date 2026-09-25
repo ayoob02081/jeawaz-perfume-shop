@@ -14,7 +14,7 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useState } from "react";
 
-function CategoriesListTable({ categories, brands, accords, genders }) {
+function CategoriesListTable({ categories, brands, fragranceFamilies, genders, categoryRoute }) {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [category, setCategory] = useState(false);
 
@@ -25,7 +25,7 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
   const removeCategoryHandler = async () => {
     const { id } = category;
 
-    if (accords || genders) {
+    if (fragranceFamilies || genders || categoryRoute) {
       await removeCategory(id);
     } else {
       await removeBrand(id);
@@ -56,7 +56,7 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
           </Table.Header>
           <Table.body>
             {categories?.map((category, index) => {
-              const type = brands ? "brands" : accords ? "accords" : "genders";
+              const type = categoryRoute || (brands ? "brands" : fragranceFamilies ? "accords" : "genders");
               return (
                 <Table.Row key={category.id} className="even:bg-primary/5">
                   <td className="table__td px-3 font-bold rounded-r-xl">
@@ -118,7 +118,7 @@ function CategoriesListTable({ categories, brands, accords, genders }) {
 
           <Table.body>
             {categories?.map((category, index) => {
-              const type = brands ? "brands" : accords ? "accords" : "genders";
+              const type = categoryRoute || (brands ? "brands" : fragranceFamilies ? "accords" : "genders");
 
               return (
                 <Table.Row key={category.id} className="even:bg-primary/5">

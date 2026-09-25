@@ -14,7 +14,7 @@ function EditCategoryPage() {
 
   return (
     <div>
-      <CategoryForm categoryToEdit={category} accord="accord" />
+      <CategoryForm categoryToEdit={category} fragranceFamily="fragrance_family" />
     </div>
   );
 }

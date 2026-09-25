@@ -6,6 +6,7 @@ import Loading from "@/components/Loading";
 import CategoriesListTable from "./CategoriesListTable";
 import {
   useGetAllBrandCategories,
+  useGetAllCategories,
   useGetCategoriesByType,
 } from "@/hooks/useCategories";
 import RadioButton from "@/ui/RadioButton";
@@ -20,26 +21,29 @@ const categoriesMode = [
   {
     id: 2,
     label: "رایحه‌ها",
-    value: "accords",
+    value: "fragranceFamilies",
   },
   {
     id: 3,
     label: "جنسیت‌ها",
     value: "genders",
   },
-  // {
-  //   id: 4,
-  //   label: "فصل‌ها",
-  //   value: "seasons",
-  // },
+  { id: 4, label: "فصل‌ها", value: "season" },
+  { id: 5, label: "دما", value: "temperature" },
+  { id: 6, label: "شخصیت رایحه", value: "character" },
+  { id: 7, label: "موقعیت استفاده", value: "occasion" },
 ];
+
+const additionalTypes = ["season", "temperature", "character", "occasion"];
 
 function CategoriesLayout() {
   const [mode, setMode] = useState("brands");
   const { data: genderCategories, isPending: isGendersPending } =
     useGetCategoriesByType("gender");
-  const { data: accordCategories, isPending: isAccordsPending } =
-    useGetCategoriesByType("accord");
+  const { data: fragranceFamilyCategories, isPending: isFamiliesPending } =
+    useGetCategoriesByType("fragrance_family");
+  const { data: allCategories, isPending: isAllCategoriesPending } =
+    useGetAllCategories();
   const {
     data: brandCategoriess,
     isPending: isBrandsPending,
@@ -96,7 +100,7 @@ function CategoriesLayout() {
       )}
 
       {/* Accords */}
-      {mode === "accords" && (
+      {mode === "fragranceFamilies" && (
         <div className="w-full">
           <div className="flex items-center gap-4 justify-between pb-6 w-full">
             <h1 className="font-bold text-stroke-800 text-xl">رایحه‌ها</h1>
@@ -107,12 +111,12 @@ function CategoriesLayout() {
               اضافه کردن رایحه
             </Link>
           </div>
-          {isAccordsPending ? (
+          {isFamiliesPending ? (
             <Loading />
           ) : (
-            <CategoriesListTable categories={accordCategories} accords />
+            <CategoriesListTable categories={fragranceFamilyCategories} fragranceFamilies />
           )}
-          {accordCategories && accordCategories?.length === 0 && (
+          {fragranceFamilyCategories && fragranceFamilyCategories?.length === 0 && (
             <NotExisted className="h-96">رایحه‌ای وجود نداره!</NotExisted>
           )}
         </div>
@@ -137,6 +141,30 @@ function CategoriesLayout() {
           )}
           {genderCategories && genderCategories?.length === 0 && (
             <NotExisted className="h-96">جنسیتی وجود نداره!</NotExisted>
+          )}
+        </div>
+      )}
+
+      {additionalTypes.includes(mode) && (
+        <div className="w-full">
+          <div className="flex items-center gap-4 justify-between pb-6 w-full">
+            <h1 className="font-bold text-stroke-800 text-xl">
+              {categoriesMode.find((item) => item.value === mode)?.label}
+            </h1>
+            <Link
+              href={`/admin/categories/types/${mode}/add`}
+              className="btn btn--primary border py-1.5 px-3"
+            >
+              افزودن دسته‌بندی
+            </Link>
+          </div>
+          {isAllCategoriesPending ? (
+            <Loading />
+          ) : (
+            <CategoriesListTable
+              categories={allCategories?.filter((category) => category.type === mode)}
+              categoryRoute={`types/${mode}`}
+            />
           )}
         </div>
       )}

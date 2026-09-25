@@ -1,7 +1,7 @@
 import CategoryForm from "../../_components/CategoryForm";
 
 function page() {
-  return <CategoryForm accord="accord" />;
+  return <CategoryForm fragranceFamily="fragrance_family" />;
 }
 
 export default page;
