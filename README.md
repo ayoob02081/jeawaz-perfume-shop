@@ -78,7 +78,7 @@ src/
     (profile)/       customer area: account, addresses, orders, notifications
     (admin)/         admin panel: dashboard, products (incl. bulk pricing and
                      price history), categories, orders, users, campaigns,
-                     coupons, banners, notifications
+                     coupons, banners, notifications, contact messages
     @modal/          intercepted login route rendered as a modal
     layout.jsx       root layout (RTL, fonts, providers)
     Providers.jsx    React Query, auth, theme, filters and sidebar providers
@@ -156,6 +156,12 @@ Product responses expose these as `categories.{gender, fragranceFamilies, season
 
 The flow logic lives in `src/utils/paymentFlowContract.mjs` and `src/hooks/usePayment.js`.
 
+### Contact Us and contact messages
+
+- The Contact Us form (`/page/contact-us`, shown on desktop layouts) sends exactly `fullName`, `phoneNumber`, `message` and an always-empty honeypot `website` to `POST /contact-messages` through the shared client. It validates the same limits as the backend (name 2–100 characters, an Iranian mobile number, message 10–2000 characters), never submits natively (no personal data in the URL), prevents duplicate submits, shows the backend success message and clears the fields, and keeps the entered values on any error. Rules live in `src/utils/contactFormContract.mjs`.
+- The backend normalizes the phone number, may silently ignore honeypot or repeated identical submissions (the response is the same), and rate-limits submissions per client.
+- Admins manage messages under `/admin/contact-messages` (status filters with backend counts, URL-driven `page`/`status`) and `/admin/contact-messages/[id]`. Opening a message never changes its status; explicit buttons set `NEW`, `READ` or `ARCHIVED` in any direction, and the current status is never re-sent. The backend keeps the first time a message was read. There is no delete or reply. Contract: `src/utils/adminContactMessagesContract.mjs`.
+
 ### Pricing administration
 
 Under `/admin/products`:
@@ -180,7 +186,7 @@ Contract and regression tests use Node's built-in test runner and need no extra 
 node --test "src/**/*.test.mjs"
 ```
 
-They cover the frontend's integration assumptions with the backend and key UI behavior, including product filters and URL/API mapping, pagination, ProductCard presentation, the ProductForm payload, product deletion, bulk pricing, price history and recovery, the payment flow and result states, the gallery lightbox, and sharing. Most tests exercise pure `*.mjs` contract modules; some inspect component sources for required wiring.
+They cover the frontend's integration assumptions with the backend and key UI behavior, including product filters and URL/API mapping, pagination, ProductCard presentation, the ProductForm payload, product deletion, bulk pricing, price history and recovery, the payment flow and result states, the gallery lightbox, sharing, the Contact Us form, and the admin contact messages pages. Most tests exercise pure `*.mjs` contract modules; some inspect component sources for required wiring.
 
 Known gaps:
 

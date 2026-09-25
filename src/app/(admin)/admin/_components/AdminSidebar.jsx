@@ -65,6 +65,13 @@ function AdminSidebar({ className, toggleSidebar }) {
       label: "بنرها",
       countUnread: false,
     },
+    {
+      id: 11,
+      href: "/admin/contact-messages",
+      baseHref: "/admin/contact-messages",
+      label: "پیام‌های تماس با ما",
+      countUnread: false,
+    },
   ];
 
   return (

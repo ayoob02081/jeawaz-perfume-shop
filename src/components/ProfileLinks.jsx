@@ -9,6 +9,7 @@ import {
   ChartPieIcon,
   ChatBubbleLeftRightIcon,
   ClipboardDocumentListIcon,
+  EnvelopeIcon,
   PencilSquareIcon,
   PresentationChartLineIcon,
   ReceiptPercentIcon,
@@ -24,6 +25,7 @@ import {
   ChatBubbleLeftRightIcon as ChatBubbleLeftRightSolidIcon,
   PresentationChartLineIcon as PresentationChartLineSolidIcon,
   ClipboardDocumentListIcon as ClipboardDocumentListSolidIcon,
+  EnvelopeIcon as EnvelopeSolidIcon,
   Squares2X2Icon as Squares2X2SolidIcon,
   TagIcon as TagSolidIcon,
   UserGroupIcon as UserGroupSolidIcon,
@@ -150,6 +152,13 @@ export function ProfileLink({
           <RectangleGroupSolidIcon className="size-7" />
         ) : (
           <RectangleGroupIcon className="size-7" />
+        );
+
+      case "/admin/contact-messages":
+        return isPathName ? (
+          <EnvelopeSolidIcon className="size-7" />
+        ) : (
+          <EnvelopeIcon className="size-7" />
         );
 
       case "/profile/orders":
