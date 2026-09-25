@@ -202,7 +202,7 @@ export const productMobileTHeads = [
   },
   {
     id: 6,
-    label: "قیمت دکانت و پلمپ",
+    label: "قیمت گونه‌ها",
   },
   {
     id: 7,
@@ -237,11 +237,11 @@ export const productDesktopTHeads = [
   },
   {
     id: 7,
-    label: "قیمت دکانت",
+    label: "قیمت دکانت‌ها",
   },
   {
     id: 8,
-    label: "قیمت پلمپ",
+    label: "قیمت پلمپ‌ها",
   },
   {
     id: 9,

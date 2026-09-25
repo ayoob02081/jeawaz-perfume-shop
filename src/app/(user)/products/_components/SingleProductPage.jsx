@@ -1,19 +1,22 @@
 "use client";
 
-import Loading from "@/components/Loading";
 import AppImage from "@/components/AppImage";
 import CardEvents from "@/components/CardEvents";
 import RadioButton from "@/ui/RadioButton";
 import PriceSection from "@/components/PriceSection";
 import Accordion from "@/ui/Accordion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import ImageSwiper from "@/ui/ImageSwiper";
 import BreadCrumbBase from "@/ui/BreadCrumbBase";
 import BreadCrumb from "@/ui/BreadCrumb";
 import { useRouter } from "next/navigation";
 import { useQuantityHandler } from "@/hooks/useQuantityHandler";
-import { calculateProductPrice } from "@/utils/priceCalculator";
+import {
+  calculateProductPrice,
+  getMatchingVariant,
+  getVariantsByType,
+} from "@/utils/priceCalculator";
 import SingleProductSkeleton from "../../_components/skeleton/SingleProductSkeleton";
 
 function SingleProductPage({ product }) {
@@ -41,7 +44,7 @@ function SingleProductPage({ product }) {
       </article>
       <article className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 md:p-6">
         <ImageSwiper images={product?.images} product={product} />
-        <ProductDes product={product} />
+        <ProductDes key={product.id} product={product} />
         <ProductOptions product={product} />
         <ProductDetails product={product} />
       </article>
@@ -56,14 +59,23 @@ function ProductDes({ product }) {
 
   const productBrand = product?.brand;
 
-  const [volumeMode, setVolumeMode] = useState("decant");
-
-  const volumes =
-    volumeMode === "sealed"
-      ? (product?.modes?.sealed?.variants?.map((v) => v.volume) ?? [])
-      : (product?.modes?.decant?.availableVolumes ?? []);
-
-  const defaultVolume = volumes[0] ?? 0;
+  const decantVariants = getVariantsByType(product, "decant");
+  const sealedVariants = getVariantsByType(product, "sealed");
+  const preferredMode = decantVariants.length
+    ? "decant"
+    : sealedVariants.length
+      ? "sealed"
+      : null;
+  const [volumeMode, setVolumeMode] = useState(preferredMode);
+  const activeMode =
+    volumeMode === "decant" && decantVariants.length
+      ? "decant"
+      : volumeMode === "sealed" && sealedVariants.length
+        ? "sealed"
+        : preferredMode;
+  const variantsForMode =
+    activeMode === "decant" ? decantVariants : activeMode === "sealed" ? sealedVariants : [];
+  const defaultVolume = Number(variantsForMode[0]?.volume ?? 0);
 
   const {
     AddToCartHandler,
@@ -71,24 +83,26 @@ function ProductDes({ product }) {
     selectedVolume,
     setSelectedVolume,
     quantity,
-  } = useQuantityHandler(product, defaultVolume, volumeMode);
+  } = useQuantityHandler(product, defaultVolume, activeMode);
 
-  const price = calculateProductPrice(product, volumeMode, selectedVolume);
-
-  const volumeHandler = (e, type) => {
-    const value = Number(e.target.value);
-
-    if (type) {
-      setVolumeMode(type);
-      setSelectedVolume(
-        type === "sealed"
-          ? (product?.modes?.sealed?.variants?.[0]?.volume ?? 0)
-          : (product?.modes?.decant?.availableVolumes?.[0] ?? 0),
-      );
-      return;
+  useEffect(() => {
+    if (!getMatchingVariant(product, activeMode, selectedVolume)) {
+      setSelectedVolume(defaultVolume);
     }
+  }, [product, activeMode, selectedVolume, defaultVolume, setSelectedVolume]);
 
-    setSelectedVolume(value);
+  const selectedVariant = getMatchingVariant(product, activeMode, selectedVolume);
+  const price = calculateProductPrice(
+    product,
+    selectedVariant?.type,
+    selectedVariant?.volume,
+  );
+  const canPurchase =
+    !!selectedVariant && Number(product.stock) >= Number(selectedVariant.volume);
+
+  const selectMode = (type) => {
+    setVolumeMode(type);
+    setSelectedVolume(Number(getVariantsByType(product, type)[0]?.volume ?? 0));
   };
 
   return (
@@ -125,27 +139,31 @@ function ProductDes({ product }) {
               <p className="text-stroke-800">نوع محصول:</p>
 
               <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
-                <RadioButton
-                  id="productVolumeModeDecant"
-                  name="productVolumeMode"
-                  value="decant"
-                  onChange={(e) => volumeHandler(e, "decant")}
-                  checked={volumeMode === "decant"}
-                  className="badge badge--secondary btn--type duration-200"
-                >
-                  <p className="text-nowrap">دکانت</p>
-                </RadioButton>
+                {decantVariants.length > 0 && (
+                  <RadioButton
+                    id="productVolumeModeDecant"
+                    name="productVolumeMode"
+                    value="decant"
+                    onChange={() => selectMode("decant")}
+                    checked={activeMode === "decant"}
+                    className="badge badge--secondary btn--type duration-200"
+                  >
+                    <p className="text-nowrap">دکانت</p>
+                  </RadioButton>
+                )}
 
-                <RadioButton
-                  id="productVolumeModeSealed"
-                  name="productVolumeMode"
-                  value="sealed"
-                  onChange={(e) => volumeHandler(e, "sealed")}
-                  checked={volumeMode === "sealed"}
-                  className="badge badge--secondary btn--type duration-200"
-                >
-                  <p className="text-nowrap">شیشه پلمپ</p>
-                </RadioButton>
+                {sealedVariants.length > 0 && (
+                  <RadioButton
+                    id="productVolumeModeSealed"
+                    name="productVolumeMode"
+                    value="sealed"
+                    onChange={() => selectMode("sealed")}
+                    checked={activeMode === "sealed"}
+                    className="badge badge--secondary btn--type duration-200"
+                  >
+                    <p className="text-nowrap">شیشه پلمپ</p>
+                  </RadioButton>
+                )}
               </div>
             </div>
 
@@ -165,18 +183,19 @@ function ProductDes({ product }) {
             <p className="text-stroke-800">انتخاب حجم:</p>
 
             <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
-              {volumes.map((volume, index) => {
+              {variantsForMode.map((variant) => {
+                const volume = Number(variant.volume);
                 const isDisabled = product.stock < volume;
 
                 return (
                   <RadioButton
-                    key={volumeMode + index}
-                    id={volumeMode + index}
+                    key={variant.id ?? `${activeMode}-${volume}`}
+                    id={`${activeMode}-${variant.id ?? volume}`}
                     name={`single-product-volume${product.id}`}
                     value={volume}
                     disabled={isDisabled}
-                    onChange={volumeHandler}
-                    checked={selectedVolume === volume}
+                    onChange={() => setSelectedVolume(volume)}
+                    checked={Number(selectedVolume) === volume}
                     className={`badge badge--secondary ${
                       isDisabled
                         ? "opacity-60 dark:opacity-40 cursor-not-allowed! strikeThrough border-red"
@@ -196,7 +215,7 @@ function ProductDes({ product }) {
 
       {/* Price Section */}
       <div className="flex items-center md:justify-between max-md:justify-end w-full md:row-start-2 duration-200">
-        {product.stock >= selectedVolume ? (
+        {canPurchase ? (
           <PriceSection
             volume={selectedVolume}
             basePrice={price.basePrice}
@@ -209,7 +228,9 @@ function ProductDes({ product }) {
             justify="max-md:justify-end md:justify-start"
           />
         ) : (
-          <p className="text-primary font-bold max-md: md:text-3xl">ناموجود!</p>
+          <p className="text-primary font-bold max-md: md:text-3xl">
+            {selectedVariant ? "ناموجود!" : "گزینه‌ای برای خرید موجود نیست"}
+          </p>
         )}
 
         <div className="max-md:hidden p-2">
@@ -226,7 +247,7 @@ function ProductDes({ product }) {
 
       {/* Buttons */}
       <div className="flex items-center justify-between w-full gap-4 duration-200">
-        {product?.stock >= selectedVolume && (
+        {canPurchase && (
           <button
             onClick={
               quantity === 0 ? AddToCartHandler : () => router.push("/cart")
@@ -240,7 +261,7 @@ function ProductDes({ product }) {
         )}
 
         <div className="flex-none">
-          {quantity > 0 && (
+          {selectedVariant && quantity > 0 && (
             <CardEvents
               RemoveFromCartHandler={RemoveFromCartHandler}
               AddToCartHandler={AddToCartHandler}
@@ -267,11 +288,20 @@ function ProductDes({ product }) {
 }
 
 function ProductOptions({ product }) {
-  const productAccords = product.categories.accords.map(
-    (accord) => accord.title,
-  );
-
-  const { details, modes } = product;
+  const categories = product?.categories ?? {};
+  const performance = product?.performance;
+  const longevity = performance?.longevity;
+  const hasHourRange =
+    longevity?.minHours != null && longevity?.maxHours != null;
+  const longevityValue = longevity?.level
+    ? `${longevityLabels[longevity.level] ?? longevity.level}${
+        hasHourRange
+          ? ` (${toPersianNumbers(longevity.minHours)} تا ${toPersianNumbers(longevity.maxHours)} ساعت)`
+          : ""
+      }`
+    : null;
+  const categoryTitles = (items) =>
+    (items ?? []).map((category) => category?.title).filter(Boolean);
 
   return (
     <article className="grow w-full max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:pt-6 md:p-4 border-stroke-250 ">
@@ -286,34 +316,95 @@ function ProductOptions({ product }) {
           <p className="font-bold text-stroke-800">ویژگی های محصول</p>
         </span>
         <div className="grid max-sm:grid-cols-3 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-3 gap-x-4 w-full px-2">
-          <ProductOption title="کشور تولید کننده" value={details.madeIn} />
-          <ProductOption title="عطر ساز" value={details.designedIn} />
-          <ProductOption title="پخش بو" value={details.smelling} />
-          <ProductOption title="ماندگاری" value={details.longevity} />
+          <ProductOption title="کشور تولید کننده" value={product.country} />
+          <ProductOption title="عطرساز" value={product.perfumer} />
+          <ProductOption
+            title="سال عرضه"
+            value={
+              product.releaseYear == null
+                ? null
+                : toPersianNumbers(product.releaseYear)
+            }
+          />
+          <ProductOption
+            title="غلظت"
+            value={
+              product.concentration
+                ? (concentrationLabels[product.concentration] ?? product.concentration)
+                : null
+            }
+          />
+          <ProductOption title="ماندگاری" value={longevityValue} />
+          <ProductOption
+            title="پخش بو"
+            value={performance?.projection
+              ? (projectionLabels[performance.projection] ?? performance.projection)
+              : null}
+          />
+          <ProductOption
+            title="رد بو"
+            value={performance?.sillage
+              ? (sillageLabels[performance.sillage] ?? performance.sillage)
+              : null}
+          />
           <ProductOption
             title="نسخه‌های پلمپ"
             volumes
-            data={modes?.sealed.variants}
+            data={getVariantsByType(product, "sealed")}
           />
+          <ProductOption title="جنسیت" value={categories.gender?.title} />
           <ProductOption
             title="گروه‌‌بندی رایحه"
-            data={productAccords}
-            accords
+            data={categoryTitles(categories.fragranceFamilies)}
           />
-          <ProductOption title="فصل استفاده" data={details.seasons} accords />
+          <ProductOption title="فصل استفاده" data={categoryTitles(categories.seasons)} />
+          <ProductOption title="طبع" value={categories.temperature?.title} />
+          <ProductOption title="شخصیت رایحه" data={categoryTitles(categories.characters)} />
+          <ProductOption title="موقعیت استفاده" data={categoryTitles(categories.occasions)} />
         </div>
       </section>
     </article>
   );
 }
 
-function ProductOption({ title, value, data, accords, volumes }) {
+const longevityLabels = {
+  LOW: "کم",
+  MODERATE: "متوسط",
+  HIGH: "زیاد",
+  VERY_HIGH: "خیلی زیاد",
+};
+const projectionLabels = {
+  WEAK: "ضعیف",
+  MODERATE: "متوسط",
+  STRONG: "قوی",
+  VERY_STRONG: "خیلی قوی",
+};
+const sillageLabels = {
+  LOW: "کم",
+  MODERATE: "متوسط",
+  HIGH: "زیاد",
+  VERY_HIGH: "خیلی زیاد",
+};
+const concentrationLabels = {
+  PARFUM: "پارفوم",
+  EXTRAIT_DE_PARFUM: "اکستریت د پارفوم",
+  EAU_DE_PARFUM: "ادو پرفیوم",
+  EAU_DE_TOILETTE: "ادو تویلت",
+  EAU_DE_COLOGNE: "ادو کلن",
+  PERFUME_OIL: "روغن عطر",
+  BODY_MIST: "بادی میست",
+  OTHER: "سایر",
+};
+
+function ProductOption({ title, value, data, volumes = false }) {
+  if ((value == null || value === "") && !data?.length) return null;
+
   return (
     <>
       <p className="text-nowrap col-span-1 text-sm text-stroke-600 py-3">
         {title}
       </p>
-      {!data ? (
+      {!data?.length ? (
         <p className="text-nowrap max-sm:col-span-2 sm:col-span-3 md:col-span-1 lg:col-span-2 text-sm text-stroke-800 font-bold w-full border-b border-stroke-200 py-3">
           {value}
         </p>
@@ -323,9 +414,7 @@ function ProductOption({ title, value, data, accords, volumes }) {
             <span className="flex items-center justify-start gap-1" key={index}>
               {index > 0 && " - "}
               <p>
-                {volumes
-                  ? toPersianNumbers(item.volume) + " میل"
-                  : accords && item}
+                {volumes ? toPersianNumbers(item.volume) + " میل" : item}
               </p>
             </span>
           ))}
@@ -353,9 +442,9 @@ function ProductDetails({ product }) {
         <p className="text-xs text-stroke-800">{product?.notesDescription}</p>
       </div>
       <div className="flex flex-col items-center justify-end gap-2 size-full max-md:min-h-[28vh]">
-        <Notes type={notes.base} base />
-        <Notes type={notes.middle} middle />
-        <Notes type={notes.top} top />
+        <Notes type={notes?.base} base />
+        <Notes type={notes?.middle} middle />
+        <Notes type={notes?.top} top />
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 "use client";
 
-import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
 import AppImage from "@/components/AppImage";
 import {
   productDesktopTHeads,
@@ -13,6 +12,7 @@ import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
+import { getVariantsByType } from "@/utils/priceCalculator";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useState } from "react";
@@ -73,24 +73,24 @@ function ProductsListTable({ products }) {
                           sizes="10vw"
                         />
                         <p className="text-stroke-800">
-                          {product?.categories.gender?.title}
+                          {product?.categories?.gender?.title}
                         </p>
                       </div>
                     </td>
-                    <td className="table__td px-3 py-3 max-w-70 truncate">
-                      <div className="flex items-center justify-start gap-2 h-full w-fit">
-                        {product?.categories.accords?.map((accord) => (
-                          <CardIconResponsive
-                            key={accord.id}
-                            accord={accord}
-                            src={accord.iconUrl || "/accord-icon"}
-                            alt={`${accord?.value}-icon` || "accord-icon"}
-                            title={accord.title}
-                            type={accord.value}
-                            className="max-md:h-8 md:h-10"
-                            size="max-md:size-4 md:size-6"
-                          />
-                        ))}
+                    <td className="table__td px-3 py-2! truncate">
+                      <div className="h-18 min-w-24 max-w-44 overflow-hidden">
+                        <div className="flex flex-wrap items-center justify-start gap-2 h-full w-fit overflow-auto ">
+                          {product?.categories?.fragranceFamilies?.map(
+                            (fragranceFamily, index) => (
+                              <p
+                                className="text-sm font-bold"
+                                key={fragranceFamily.id}
+                              >
+                                {index >= 1 && " - "} {fragranceFamily.title}
+                              </p>
+                            ),
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="table__td px-2">
@@ -105,27 +105,20 @@ function ProductsListTable({ products }) {
                         </p>
                       </div>
                     </td>
-                    <td className="table__td py-3! gap-2 px-6 flex flex-col justify-center scrollbar--primary scrollbar-w-1">
-                      <div className="flex flex-col items-center justify-center gap-2">
-                        <div className="flex items-center justify-center gap-2 py-1 text-xs rounded-full badge bg-blue/10 text-blue border border-blue font-bold">
-                          <p className=" text-stroke-800">هر میل دکانت</p>
-                          <p>
-                            {toPersianNumbersWithComma(
-                              product.modes.decant.pricePerMl,
-                            )}
-                          </p>
+                    <td className="table__td gap-2 py-2! px-6 flex flex-col justify-center max-h-full">
+                      <div className="flex items-center justify-center overflow-hidden h-full">
+                        <div className="flex flex-col items-center justify-start gap-2 overflow-auto scrollbar-none h-full">
+                          <VariantPriceList
+                            product={product}
+                            type="decant"
+                            showType
+                          />
+                          <VariantPriceList
+                            product={product}
+                            type="sealed"
+                            showType
+                          />
                         </div>
-                        {product.modes.sealed.variants.map((p, i) => (
-                          <div
-                            key={i}
-                            className="flex items-center justify-center gap-2 py-1 text-xs rounded-full badge bg-blue/10 text-blue border border-blue font-bold"
-                          >
-                            <p className=" text-stroke-800">
-                              {toPersianNumbers(p.volume)} میل پلمپ
-                            </p>
-                            <p>{toPersianNumbersWithComma(p.price)}</p>
-                          </div>
-                        ))}
                       </div>
                     </td>
                     <td className="table__td px-3 rounded-l-xl">
@@ -189,39 +182,23 @@ function ProductsListTable({ products }) {
                         </p>
                       </div>
                     </td>
-                    <td className="table__td px-2 max-w-70 truncate">
-                      <div className="flex items-center justify-start gap-2 h-full w-fit">
-                        <CardIconResponsive
-                          src={
-                            product?.categories.gender?.iconUrl ||
-                            "/gender-icon"
-                          }
-                          alt={
-                            `${product?.categories.gender?.value}-icon` ||
-                            "gender-icon"
-                          }
-                          title={product?.categories.gender?.title}
-                          type={product?.categories.gender?.value}
-                          className="max-md:h-8 md:h-10"
-                          size="max-md:size-4 md:size-6"
-                          accord
-                        />
-                      </div>
+                    <td className="table__td px-2 truncate font-bold">
+                      {product?.categories?.gender?.title}
                     </td>
-                    <td className="table__td px-3 py-3 max-w-70 truncate">
-                      <div className="flex items-center justify-start gap-2 h-full w-fit">
-                        {product?.categories.accords?.map((accord) => (
-                          <CardIconResponsive
-                            key={accord.id}
-                            accord={accord}
-                            src={accord.iconUrl || "/accord-icon"}
-                            alt={`${accord?.value}-icon` || "accord-icon"}
-                            title={accord.title}
-                            type={accord.value}
-                            className="max-md:h-8 md:h-10"
-                            size="max-md:size-4 md:size-6"
-                          />
-                        ))}
+                    <td className="table__td px-3 py-2! truncate">
+                      <div className="h-18 min-w-24 max-w-44 overflow-hidden">
+                        <div className="flex flex-wrap items-center justify-start gap-2 h-full w-fit overflow-auto ">
+                          {product?.categories?.fragranceFamilies?.map(
+                            (fragranceFamily, index) => (
+                              <p
+                                className="text-sm font-bold"
+                                key={fragranceFamily.id}
+                              >
+                                {index >= 1 && " - "} {fragranceFamily.title}
+                              </p>
+                            ),
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="table__td px-2">
@@ -231,25 +208,19 @@ function ProductsListTable({ products }) {
                         {toPersianNumbers(product.stock)} میل
                       </p>
                     </td>
-                    <td className="table__td px-6 overflow-auto ">
-                      <p className="badge bg-blue/10 text-blue border border-blue font-bold">
-                        {toPersianNumbersWithComma(
-                          product.modes.decant.pricePerMl,
-                        )}
-                      </p>
-                    </td>
-                    <td className="table__td py-3! gap-2 px-6 flex flex-col justify-center scrollbar--primary scrollbar-w-1">
-                      {product.modes.sealed.variants.map((p, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-center gap-2 py-1 text-xs rounded-full badge bg-blue/10 text-blue border border-blue font-bold"
-                        >
-                          <p className=" text-stroke-800">
-                            {toPersianNumbers(p.volume)} میل
-                          </p>
-                          <p>{toPersianNumbersWithComma(p.price)}</p>
+                    <td className="table__td gap-2 py-2! px-2">
+                      <div className="flex items-center justify-center overflow-hidden h-18">
+                        <div className="flex flex-col items-center justify-start gap-2 overflow-auto scrollbar-none h-full">
+                          <VariantPriceList product={product} type="decant" />
                         </div>
-                      ))}
+                      </div>
+                    </td>
+                    <td className="table__td gap-2 py-2! px-2">
+                      <div className="flex items-center justify-center overflow-hidden h-18">
+                        <div className="flex flex-col items-center justify-start gap-2 overflow-auto scrollbar-none h-full">
+                          <VariantPriceList product={product} type="sealed" />
+                        </div>
+                      </div>
                     </td>
                     <td className="table__td px-2">
                       <p className="badge badge--primary font-bold">
@@ -303,3 +274,21 @@ function ProductsListTable({ products }) {
 }
 
 export default ProductsListTable;
+
+function VariantPriceList({ product, type, showType = false }) {
+  const variants = getVariantsByType(product, type);
+  if (!variants.length) return <span className="text-stroke-500">—</span>;
+
+  return variants.map((variant) => (
+    <div
+      key={variant.id ?? `${type}-${variant.volume}`}
+      className="flex items-center justify-center gap-2 py-1 text-xs rounded-full badge bg-blue/10 text-blue border border-blue font-bold"
+    >
+      <p className="text-stroke-800">
+        {showType ? (type === "decant" ? "دکانت " : "پلمپ ") : ""}
+        {toPersianNumbers(variant.volume)} میل
+      </p>
+      <p>{toPersianNumbersWithComma(variant.price)} تومان</p>
+    </div>
+  ));
+}
