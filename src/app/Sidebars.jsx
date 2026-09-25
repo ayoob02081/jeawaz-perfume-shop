@@ -5,7 +5,7 @@ import { useSidebar } from "@/contexts/Sidebars/SidebarContext";
 import CategorySidebar from "./(user)/_components/CategorySidebar";
 import Sidebar from "@/components/SideBar";
 
-function SideBars() {
+function Sidebars() {
   const {
     isSidebarOpen,
     isCategoryOpen,
@@ -32,4 +32,4 @@ function SideBars() {
   );
 }
 
-export default SideBars;
+export default Sidebars;
