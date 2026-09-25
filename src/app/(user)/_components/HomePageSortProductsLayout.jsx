@@ -84,9 +84,9 @@ function GenderType({ onClick, gender }) {
       {genderCategories?.map((g) => (
         <button
           key={g.id}
-          onClick={() => onClick(g?.value)}
+          onClick={() => onClick(g?.slug)}
           className={`btn border-[1.5px] max-sm:w-15 sm:w-20 text-sm py-1 px-3 rounded-4xl
-            duration-200 md:hover:border-primary md:hover:text-primary ${g.value === gender ? "border-primary text-primary font-bold" : "text-stroke-800 border-stroke-200"}`}
+            duration-200 md:hover:border-primary md:hover:text-primary ${g.slug === gender ? "border-primary text-primary font-bold" : "text-stroke-800 border-stroke-200"}`}
         >
           <p className="duration-200">{g.title}</p>
         </button>

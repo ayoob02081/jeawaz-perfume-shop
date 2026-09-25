@@ -54,6 +54,9 @@ export const getProductSuggestionsApi = (params) =>
     })
     .then(({ data }) => data);
 
+export const getProductVolumeOptionsApi = () =>
+  app.get("/products/filter-options/volumes").then(({ data }) => data);
+
 // در آینده اضافه میشود
 
 // export function likeProductApi(id) {

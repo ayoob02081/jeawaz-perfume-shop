@@ -6,6 +6,7 @@ import {
   getProductByIdApi,
   getProductPriceApi,
   getProductSuggestionsApi,
+  getProductVolumeOptionsApi,
   removeProductApi,
   updateProductApi,
 } from "@/services/productServices";
@@ -18,11 +19,13 @@ import {
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { normalizeProductsQuery, productListKey } from "@/utils/productFilterContract.mjs";
 
 export const productKeys = {
   all: ["products"],
   lists: () => [...productKeys.all, "list"],
-  list: (filters = {}) => [...productKeys.lists(), filters],
+  list: productListKey,
+  volumeOptions: () => [...productKeys.all, "filter-options", "volumes"],
   details: () => [...productKeys.all, "detail"],
   detail: (id) => [...productKeys.details(), id],
   suggestions: (search, limit = 5) => [
@@ -33,29 +36,6 @@ export const productKeys = {
   ],
 };
 
-const normalizeProductsQuery = (query = {}) => ({
-  search: query.search || undefined,
-  brandIds: query.brandIds?.length ? query.brandIds : undefined,
-  original:
-    typeof query.original === "boolean"
-      ? query.original
-      : query.original || undefined,
-  inStock:
-    typeof query.inStock === "boolean"
-      ? query.inStock
-      : query.inStock || undefined,
-  volumes: query.volumes?.length ? query.volumes : undefined,
-  gender: query.gender || undefined,
-  accords: query.accords?.length ? query.accords : undefined,
-  minPrice: query.minPrice || undefined,
-  maxPrice: query.maxPrice || undefined,
-  minVolume: query.minVolume || undefined,
-  maxVolume: query.maxVolume || undefined,
-  type: query.type || undefined,
-  sort: query.sort || "newest",
-  page: query.page || 1,
-  limit: query.limit || 12,
-});
 
 export const useGetAllProducts = (query = {}) => {
   const normalizedQuery = normalizeProductsQuery(query);
@@ -68,6 +48,14 @@ export const useGetAllProducts = (query = {}) => {
     placeholderData: keepPreviousData,
   });
 };
+
+export const useGetProductVolumeOptions = (enabled = true) => useQuery({
+  queryKey: productKeys.volumeOptions(),
+  queryFn: getProductVolumeOptionsApi,
+  enabled,
+  retry: false,
+  staleTime: 5 * 60 * 1000,
+});
 
 export const useGetProductSuggestions = ({ search, limit = 5 } = {}) => {
   const normalizedSearch = search?.trim() || "";

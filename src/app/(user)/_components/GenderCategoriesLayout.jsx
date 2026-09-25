@@ -41,7 +41,7 @@ function GenderCategoriesLayout() {
               <CategoreyCard
                 src={item.imageUrl}
                 alt={item.value + "-image"}
-                value={item.value}
+                slug={item.slug}
                 label={item.title}
                 productsCount={item.productsCount}
               />
@@ -55,13 +55,13 @@ function GenderCategoriesLayout() {
 
 export default GenderCategoriesLayout;
 
-function CategoreyCard({ src, alt, value, label, productsCount }) {
+function CategoreyCard({ src, alt, slug, label, productsCount }) {
   const router = useRouter();
 
   return (
     <button
       onClick={() =>
-        router.push(`/products?gender=${encodeURIComponent(value)}`)
+        router.push(`/products?gender=${encodeURIComponent(slug)}`)
       }
       className="flex h-24 md:h-35 max-[365px]:aspect-6/2 aspect-7/2 md:aspect-9/3 justify-center items-center justify-items-center bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 "
     >

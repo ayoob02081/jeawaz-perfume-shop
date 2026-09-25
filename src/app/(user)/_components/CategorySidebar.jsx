@@ -9,7 +9,8 @@ import {
   useGetAllBrandCategories,
   useGetCategoriesByType,
 } from "@/hooks/useCategories";
-import { volumes } from "@/constants/filterItems";
+import { useGetProductVolumeOptions } from "@/hooks/useProducts";
+import { mergeVolumeOptions } from "@/utils/productFilterContract.mjs";
 import FilterCheckBox from "@/ui/FilterCheckBox";
 import Loading from "@/components/Loading";
 import { buildQueryFromFilters } from "@/utils/queryFilters";
@@ -47,35 +48,43 @@ const priceRanges = [
   },
 ];
 
-function CategorySidebar({ toggleCategory, isCategoryOpen, closeCategory }) {
+function CategorySidebar({ isCategoryOpen, closeCategory }) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const { data: genderCategories, isPending: isGenderPending } =
     useGetCategoriesByType("gender");
 
-  const { data: accordCategories, isPending: isAccordPending } =
-    useGetCategoriesByType("accord");
+  const { data: fragranceFamilyCategories, isPending: isFamilyPending } =
+    useGetCategoriesByType("fragrance_family");
 
   const { data: brandCategories, isPending: isBrandPending } =
     useGetAllBrandCategories();
 
   const { state, dispatch } = useFilters();
+  const {
+    data: volumeResponse,
+    isPending: volumesLoading,
+    isError: volumesError,
+  } = useGetProductVolumeOptions(isCategoryOpen);
+  const volumes = mergeVolumeOptions(volumeResponse?.data, state.draft.volumes);
 
   const isLoadingCategories =
-    isGenderPending || isAccordPending || isBrandPending;
+    isGenderPending || isFamilyPending || isBrandPending;
 
   const activeGender = genderCategories?.find(
-    (gender) => gender.value === state.draft.gender,
+    (gender) => gender.slug === state.draft.gender,
   );
 
-  const isFilter =
-    (state.draft.gender?.length ||
-      state.draft.brandIds?.length ||
-      state.draft.accords?.length ||
-      state.draft.inStock?.length ||
-      state.draft.original?.length ||
-      state.draft.volumes?.length) > 0;
+  const isFilter = Boolean(
+    state.draft.gender ||
+    state.draft.brandIds?.length ||
+    state.draft.fragranceFamilies?.length ||
+    state.draft.inStock ||
+    state.draft.original ||
+    state.draft.type ||
+    state.draft.volumes?.length,
+  );
 
   const isPriceFilter =
     state.draft.priceRange?.[0] !== null ||
@@ -101,6 +110,11 @@ function CategorySidebar({ toggleCategory, isCategoryOpen, closeCategory }) {
     });
   }
 
+  function cancelCategory() {
+    dispatch({ type: "RESET_DRAFT" });
+    closeCategory();
+  }
+
   const selectedBrandIds = Array.isArray(state.draft.brandIds)
     ? state.draft.brandIds.map(Number).filter(Boolean)
     : [];
@@ -108,7 +122,7 @@ function CategorySidebar({ toggleCategory, isCategoryOpen, closeCategory }) {
   return (
     <Modal
       isOpen={isCategoryOpen}
-      onClose={closeCategory}
+      onClose={cancelCategory}
       category
       className="max-lg:h-screen"
     >
@@ -118,7 +132,7 @@ function CategorySidebar({ toggleCategory, isCategoryOpen, closeCategory }) {
       >
         {/* Mobile Category Button */}
         <div className="fixed z-10 flex items-center justify-between px-4 w-full py-6 lg:hidden lg:h-0 bg-stroke-0">
-          <button type="button" className="size-6" onClick={toggleCategory}>
+          <button type="button" className="size-6" onClick={cancelCategory}>
             <ArrowRightIcon className="size-5 text-stroke-800" />
           </button>
           <span className="text-stroke-800 font-bold">دسته بندی محصولات</span>
@@ -132,13 +146,13 @@ function CategorySidebar({ toggleCategory, isCategoryOpen, closeCategory }) {
             {/* Gender Categories */}
             <GenderCategoriesFilter fieldsetId="category-section">
               <div
-                className={`flex flex-col justify-between h-full md:p-4 ${
-                  state.draft.gender ? "md:pl-0 items-start" : "items-center"
+                className={`flex flex-col justify-between h-full md:p-4 md:pl-0 ${
+                  state.draft.gender ? "items-start" : "items-center"
                 } duration-200`}
               >
                 <div className="flex md:flex-col items-center max-md:justify-evenly max-sm:gap-4 sm:gap-6 md:gap-2 max-sm:px-4 max-md:px-6 size-full">
                   {genderCategories?.map((gender) => {
-                    const isChecked = state.draft.gender === gender.value;
+                    const isChecked = state.draft.gender === gender.slug;
 
                     return (
                       <RadioButton
@@ -149,13 +163,13 @@ function CategorySidebar({ toggleCategory, isCategoryOpen, closeCategory }) {
                             : ""
                         }`}
                         childrenClassName="max-md:flex-col items-center justify-start"
-                        id={gender.value}
+                        id={gender.slug}
                         name="gender"
-                        value={gender.value}
+                        value={gender.slug}
                         label={`ادکلن‌های ${gender.title}`}
                         chevron="md:block size-4"
                         onChange={() =>
-                          addFilter("SET_ITEM", "gender", gender.value)
+                          addFilter("SET_ITEM", "gender", gender.slug)
                         }
                         checked={isChecked}
                       >
@@ -176,15 +190,16 @@ function CategorySidebar({ toggleCategory, isCategoryOpen, closeCategory }) {
                     );
                   })}
                 </div>
-
-                <AppImage
-                  src="/images/jeawaz-logo-v6.0-r.webp"
-                  alt="jeawaz-brand-icon"
-                  className="max-md:hidden"
-                  width="w-[5.75rem] h-12"
-                  sizes="20vw"
-                  priority
-                />
+                <div className="w-full">
+                  <AppImage
+                    src="/images/jeawaz-logo-v6.0-r.webp"
+                    alt="jeawaz-brand-icon"
+                    className="max-md:hidden"
+                    width="w-[5.75rem] h-12"
+                    sizes="20vw"
+                    priority
+                  />
+                </div>
               </div>
             </GenderCategoriesFilter>
 
@@ -196,7 +211,7 @@ function CategorySidebar({ toggleCategory, isCategoryOpen, closeCategory }) {
                   onClick={(e) => {
                     e.preventDefault();
 
-                    router.replace(`/products?gender=${activeGender?.value}`);
+                    router.replace(`/products?gender=${activeGender?.slug}`);
 
                     closeCategory();
                   }}
@@ -239,46 +254,92 @@ function CategorySidebar({ toggleCategory, isCategoryOpen, closeCategory }) {
 
                   {/* Volumes */}
                   <CategriesFilter fieldsetId="volume-value" title="حجم">
-                    {volumes.map((item) => {
-                      const isChecked = state.draft.volumes.includes(
-                        Number(item.quantity),
-                      );
+                    {volumesLoading && (
+                      <p className="text-xs text-stroke-600">
+                        در حال دریافت حجم‌ها...
+                      </p>
+                    )}
+                    {volumesError && (
+                      <p className="text-xs text-stroke-600">
+                        دریافت حجم‌ها ناموفق بود؛ انتخاب‌ها حفظ شده‌اند.
+                      </p>
+                    )}
+                    {!volumesLoading &&
+                      !volumesError &&
+                      volumes.length === 0 && (
+                        <p className="text-xs text-stroke-600">
+                          حجمی برای انتخاب موجود نیست.
+                        </p>
+                      )}
+                    {volumes.map((volume) => {
+                      const isChecked = state.draft.volumes.includes(volume);
 
                       return (
                         <FilterCheckBox
-                          key={item.id}
+                          key={volume}
                           className="flex flex-col items-start justify-start size-full text-xs has-checked:font-bold duration-200"
                           textClassName="py-2 flex flex-row-reverse"
-                          checkId={item.quantity}
+                          checkId={volume}
                           name="volume"
-                          label={`${toPersianNumbers(item.quantity)} میل`}
+                          label={`${toPersianNumbers(volume)} میل`}
                           checked={isChecked}
                           onChange={() =>
-                            addFilter("SET_ITEMS", "volumes", item.quantity)
+                            addFilter("SET_ITEMS", "volumes", volume)
                           }
                         />
                       );
                     })}
                   </CategriesFilter>
 
-                  {/* Accords */}
+                  <CategriesFilter fieldsetId="variant-type" title="نوع محصول">
+                    {[
+                      ["decant", "دکانت"],
+                      ["sealed", "پلمپ"],
+                    ].map(([type, label]) => (
+                      <button
+                        key={type}
+                        type="button"
+                        aria-pressed={state.draft.type === type}
+                        onClick={() =>
+                          addFilter(
+                            "SET_ITEM",
+                            "type",
+                            state.draft.type === type ? null : type,
+                          )
+                        }
+                        className={`py-2 text-xs ${
+                          state.draft.type === type
+                            ? "text-primary font-bold"
+                            : "text-stroke-600"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </CategriesFilter>
+
+                  {/* Fragrance families */}
                   <CategriesFilter fieldsetId="scent-type" title="رایحه">
-                    {accordCategories?.map((accord) => {
-                      const isChecked = state.draft.accords.includes(
-                        accord.value,
+                    {fragranceFamilyCategories?.map((family) => {
+                      const isChecked = state.draft.fragranceFamilies.includes(
+                        family.slug,
                       );
 
                       return (
                         <FilterCheckBox
-                          key={accord.id}
+                          key={family.id}
                           className="flex flex-col items-start justify-start size-full text-xs has-checked:font-bold duration-200"
                           textClassName="py-2"
-                          checkId={accord.value}
-                          name="accord"
-                          label={accord.title}
+                          checkId={family.slug}
+                          name="fragranceFamily"
+                          label={family.title}
                           checked={isChecked}
                           onChange={() =>
-                            addFilter("SET_ITEMS", "accords", accord.value)
+                            addFilter(
+                              "SET_ITEMS",
+                              "fragranceFamilies",
+                              family.slug,
+                            )
                           }
                         />
                       );
@@ -333,7 +394,7 @@ function CategorySidebar({ toggleCategory, isCategoryOpen, closeCategory }) {
 
                   <button
                     type="button"
-                    onClick={closeCategory}
+                    onClick={cancelCategory}
                     className="btn btn--secondary--2 shadow-xl bg-stroke-0 border-stroke-0 px-6 h-full w-1/2 disabled:bg-amber-50"
                   >
                     <p className="text-sm sm:text-xs text-stroke-800">انصراف</p>

@@ -10,13 +10,13 @@ function Modal({
   category,
   className = "h-full",
   backdropClassName,
+  scrollable = false,
 }) {
-  const outsideRef = useOutsideClick(onClose);
+  // Closed modals stay mounted; only an open modal may react to outside clicks.
+  const outsideRef = useOutsideClick(onClose, true, isOpen);
   const modalRef = useRef(null);
 
-  const dragHandlers = !category
-    ? useDragToClose({ onClose, threshold: 120 })
-    : {};
+  const dragHandlers = useDragToClose({ onClose, threshold: 120 });
 
   useEffect(() => {
     if (isOpen && modalRef.current) {
@@ -35,12 +35,16 @@ function Modal({
             outsideRef.current = el;
             modalRef.current = el;
           }}
-          {...dragHandlers}
+          {...(!category && !scrollable ? dragHandlers : {})}
           className={`modal ${category ? "modal--secondary lg:w-fit" : "modal--primary"} ${
             isOpen &&
             (category ? "animate__fadeInRightBig" : "animate__fadeInUpBig")
           }} animate__animated overflow-hidden ${className}`}
-          style={!category ? { touchAction: "pan-x" } : undefined}
+          style={
+            !category
+              ? { touchAction: scrollable ? "pan-y" : "pan-x" }
+              : undefined
+          }
         >
           {children}
         </section>

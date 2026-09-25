@@ -1,6 +1,8 @@
 "use client";
 
-import { volumes } from "@/constants/filterItems";
+import { useGetProductVolumeOptions } from "@/hooks/useProducts";
+import { mergeVolumeOptions } from "@/utils/productFilterContract.mjs";
+import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import {
   useGetAllBrandCategories,
   useGetCategoriesByType,
@@ -14,6 +16,7 @@ import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 
 function FiltersModal({
+  isOpen,
   mode,
   setMode,
   onClose,
@@ -25,26 +28,51 @@ function FiltersModal({
   watch,
 }) {
   const { data: genderCategories } = useGetCategoriesByType("gender");
-  const { data: accordCategories } = useGetCategoriesByType("accord");
+  const { data: fragranceFamilyCategories } =
+    useGetCategoriesByType("fragrance_family");
   const { data: brandCategories } = useGetAllBrandCategories();
+  const {
+    data: volumeResponse,
+    isPending: volumesLoading,
+    isError: volumesError,
+  } = useGetProductVolumeOptions(isOpen);
 
   const { state } = useFilters();
+  const volumes = mergeVolumeOptions(
+    volumeResponse?.data,
+    state.draft?.volumes,
+  ).map((quantity) => ({
+    id: quantity,
+    quantity,
+    value: String(quantity),
+    title: `${toPersianNumbers(quantity)} میل`,
+  }));
 
   const hasFilters =
     filtersFromUrl?.priceRange[0] !== null ||
     filtersFromUrl?.priceRange[1] !== null ||
-    filtersFromUrl?.accords.length > 0 ||
+    filtersFromUrl?.fragranceFamilies.length > 0 ||
     filtersFromUrl?.brandIds.length > 0 ||
     filtersFromUrl?.volumes.length > 0 ||
+    filtersFromUrl?.type ||
     filtersFromUrl?.gender ||
     filtersFromUrl?.original ||
-    filtersFromUrl?.inStock;
+    filtersFromUrl?.inStock ||
+    state.draft?.type ||
+    state.draft?.volumes.length > 0 ||
+    state.draft?.priceRange.some((price) => price !== null) ||
+    state.draft?.brandIds.length > 0 ||
+    state.draft?.fragranceFamilies.length > 0 ||
+    state.draft?.gender ||
+    state.draft?.original ||
+    state.draft?.inStock;
 
   const titles = {
     all: "فیلترها",
     brand: "برند",
-    accord: "رایحه",
+    fragranceFamilies: "رایحه",
     volume: "حجم",
+    type: "نوع محصول",
     gender: "جنسیت",
     price: "قیمت",
   };
@@ -70,12 +98,12 @@ function FiltersModal({
                 button
                 title="رایحه"
                 description=" انتخاب رایحه عطر"
-                openFilter={() => setMode("accord")}
-                data={accordCategories}
-                state={state.draft?.accords}
+                openFilter={() => setMode("fragranceFamilies")}
+                data={fragranceFamilyCategories}
+                state={state.draft?.fragranceFamilies}
                 addFilter={addFilter}
                 resetFilter={resetFilter}
-                type="accords"
+                type="fragranceFamilies"
               />
 
               <FilterOption
@@ -90,6 +118,12 @@ function FiltersModal({
                 addFilter={addFilter}
                 resetFilter={resetFilter}
               />
+              <FilterOption title="نوع محصول">
+                <VariantTypeFilter
+                  value={state.draft?.type}
+                  addFilter={addFilter}
+                />
+              </FilterOption>
               <FilterOption title="جنسیت">
                 <GendersFilter
                   data={genderCategories}
@@ -181,20 +215,33 @@ function FiltersModal({
             />
           </div>
         );
-      case "accord":
+      case "fragranceFamilies":
         return (
           <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl px-4">
-            <AccordsFilter
-              accords={accordCategories}
-              state={state.draft?.accords}
+            <FragranceFamiliesFilter
+              fragranceFamilies={fragranceFamilyCategories}
+              state={state.draft?.fragranceFamilies}
               addFilter={addFilter}
-              type="accords"
+              type="fragranceFamilies"
             />
           </div>
         );
       case "volume":
         return (
-          <div className="flex items-center justify-start gap-6 bg-stroke-0 w-full rounded-2.5xl px-4">
+          <div className="flex flex-col items-start justify-start gap-3 bg-stroke-0 w-full rounded-2.5xl px-4">
+            {volumesLoading && (
+              <p className="text-sm text-stroke-600">در حال دریافت حجم‌ها...</p>
+            )}
+            {volumesError && (
+              <p className="text-sm text-stroke-600">
+                دریافت حجم‌ها ناموفق بود؛ حجم‌های انتخاب‌شده حفظ شده‌اند.
+              </p>
+            )}
+            {!volumesLoading && !volumesError && volumes.length === 0 && (
+              <p className="text-sm text-stroke-600">
+                حجمی برای انتخاب موجود نیست.
+              </p>
+            )}
             <VolumesFilter
               volumes={volumes}
               state={state.draft?.volumes}
@@ -289,8 +336,8 @@ function FilterOption({
     switch (type) {
       case "brandIds":
         return data.find((c) => c.id === Number(item));
-      case "accords":
-        return data.find((c) => c.value === item);
+      case "fragranceFamilies":
+        return data.find((c) => c.slug === item);
       case "volumes":
         return data.find((c) => c.quantity === Number(item));
     }
@@ -330,7 +377,12 @@ function FilterOption({
                 return (
                   <Badge
                     key={`${type}-${item}`}
-                    title={itemData?.title}
+                    title={
+                      itemData?.title ||
+                      (type === "volumes"
+                        ? `${toPersianNumbers(item)} میل`
+                        : String(item))
+                    }
                     onClick={() => addFilter("SET_ITEMS", type, item)}
                     error
                   />
@@ -386,13 +438,13 @@ export function GendersFilter({
   return (
     <div className="flex items-center justify-between gap-2 w-full">
       {data?.map((item) => {
-        const defaultValue = item.value === state;
+        const defaultValue = item.slug === state;
 
         return (
           <RadioButton
             key={item.id}
             id={item.value + item.id}
-            value={item.value}
+            value={item.slug}
             name="gender"
             checked={defaultValue}
             className={`${
@@ -488,20 +540,25 @@ export function PriceFilter({ addFilter, control, watch, hidden }) {
   );
 }
 
-function AccordsFilter({ state, accords, type, addFilter }) {
+function FragranceFamiliesFilter({
+  state,
+  fragranceFamilies,
+  type,
+  addFilter,
+}) {
   return (
     <div className="flex flex-col justify-between gap-4 size-full overflow-auto scrollbar-none">
-      {accords?.map((accord, index) => {
-        const isChecked = state?.includes(accord.value);
+      {fragranceFamilies?.map((category, index) => {
+        const isChecked = state?.includes(category.slug);
 
         return (
           <FilterCheckBox
-            key={accord.id}
-            checkId={accord.value + index}
-            label={accord.title}
-            imageSrc={accord.iconUrl}
-            name={"accordsModalFilter"}
-            onChange={() => addFilter("SET_ITEMS", type, accord.value)}
+            key={category.id}
+            checkId={category.slug + index}
+            label={category.title}
+            imageSrc={category.iconUrl}
+            name={"fragranceFamiliesModalFilter"}
+            onChange={() => addFilter("SET_ITEMS", type, category.slug)}
             checked={isChecked}
             className="flex flex-row-reverse justify-between text-nowrap text-stroke-800 size-full  "
             imageClassName="flex items-center justify-end py-1 lg:py-2 rounded-full wfull size-12 duration-200"
@@ -535,6 +592,46 @@ function VolumesFilter({ state, volumes, type, addFilter }) {
           />
         );
       })}
+    </div>
+  );
+}
+
+function VariantTypeFilter({ value, addFilter }) {
+  return (
+    <div
+      className="flex flex-wrap items-center gap-2 w-full"
+      role="group"
+      aria-label="نوع محصول"
+    >
+      {[
+        ["decant", "دکانت"],
+        ["sealed", "پلمپ"],
+      ].map(([type, label]) => (
+        <button
+          key={type}
+          type="button"
+          aria-pressed={value === type}
+          onClick={() =>
+            addFilter("SET_ITEM", "type", value === type ? null : type)
+          }
+          className={`rounded-full px-4 py-2 border text-sm ${
+            value === type
+              ? "border-primary text-primary font-bold"
+              : "bg-stroke-150 border-stroke-200 text-stroke-600"
+          }`}
+        >
+          {label}
+        </button>
+      ))}
+      {value && (
+        <button
+          type="button"
+          onClick={() => addFilter("SET_ITEM", "type", null)}
+          className="text-sm text-stroke-600 underline"
+        >
+          پاک کردن نوع
+        </button>
+      )}
     </div>
   );
 }

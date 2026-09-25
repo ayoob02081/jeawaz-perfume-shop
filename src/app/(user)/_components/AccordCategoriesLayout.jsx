@@ -10,10 +10,10 @@ import { useRouter } from "next/navigation";
 
 function AccordCategoriesLayout() {
   const {
-    data: accordCategories,
+    data: fragranceFamilyCategories,
     isPending,
     error,
-  } = useGetCategoriesByType("accord");
+  } = useGetCategoriesByType("fragrance_family");
 
   if (error) {
     return <Error />;
@@ -36,12 +36,12 @@ function AccordCategoriesLayout() {
         {isPending ? (
           <Loading />
         ) : (
-          accordCategories.map((item) => (
+          fragranceFamilyCategories.map((item) => (
             <FilterCard
               key={item.id}
               src={item.imageUrl}
               alt={item.value + "-image"}
-              value={item.value}
+              slug={item.slug}
               label={item.title}
               productsCount={item.productsCount}
             />
@@ -54,14 +54,14 @@ function AccordCategoriesLayout() {
 
 export default AccordCategoriesLayout;
 
-function FilterCard({ src, alt, value, label, productsCount }) {
+function FilterCard({ src, alt, slug, label, productsCount }) {
   const router = useRouter();
 
   return (
     <div className="snap-center">
       <button
         onClick={() =>
-          router.push(`/products?accords=${encodeURIComponent(value)}`)
+          router.push(`/products?fragranceFamilies=${encodeURIComponent(slug)}`)
         }
         className="flex h-24 sm:h-30! aspect-9/3 sm:aspect-5/2 justify-between items-center px-3 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 "
       >
