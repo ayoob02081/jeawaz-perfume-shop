@@ -6,7 +6,14 @@ import {
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { checkoutAndPay } from "@/utils/paymentFlowContract.mjs";
+import {
+  createPaymentApi,
+  paymentErrorMessage,
+  redirectToGateway,
+} from "@/hooks/usePayment";
 import RadioButton from "@/ui/RadioButton";
 import {
   CheckCircleIcon,
@@ -385,7 +392,9 @@ function Checkout({
   const { data: address, isLoading: isAddressLoading } =
     useGetAddressById(addressId);
   const { createAddress, isCreating: isAddressCreating } = useCreateAddress();
-  const { createOrder, isCreating: isOrderCreating } = useCreateOrder();
+  const { createOrder } = useCreateOrder();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const router = useRouter();
   const selectedAddress = addresses?.find((a) => a.id === addressId);
 
   const { totalProducts = 0 } = cart;
@@ -442,6 +451,10 @@ function Checkout({
   }, [selectedAddress, reset]);
 
   const onSubmit = async (data) => {
+    // One checkout at a time: a double submit must never create two Orders.
+    if (isCheckingOut) return;
+    setIsCheckingOut(true);
+
     try {
       let finalAddressId = addressId;
 
@@ -450,25 +463,38 @@ function Checkout({
         finalAddressId = addressData.id;
       }
 
-      if (finalAddress) {
-        await createOrder({
-          addressId: finalAddressId,
-          shippingMethod,
-        });
-      } else {
-        await createOrder({
-          receiverName: data.fullName,
-          receiverPhone: data.phoneNumber,
-          ostan: data.ostan,
-          shahr: data.shahr,
-          fullAddress: data.addressLine,
-          postalCode: data.postalCode,
-          shippingMethod,
-        });
+      const orderPayload = finalAddress
+        ? { addressId: finalAddressId, shippingMethod }
+        : {
+            receiverName: data.fullName,
+            receiverPhone: data.phoneNumber,
+            ostan: data.ostan,
+            shahr: data.shahr,
+            fullAddress: data.addressLine,
+            postalCode: data.postalCode,
+            shippingMethod,
+          };
+
+      const result = await checkoutAndPay({
+        createOrder: () => createOrder(orderPayload),
+        createPayment: createPaymentApi,
+        redirect: redirectToGateway,
+      });
+
+      if (result.stage === "redirected") return;
+
+      if (result.stage === "payment-failed") {
+        // The Order exists; send the user to it to retry payment there.
+        toast.error(
+          `${paymentErrorMessage(result.error)}. سفارش ثبت شده است؛ از صفحه سفارش دوباره پرداخت کنید.`,
+          { id: "checkout-payment" },
+        );
+        router.push(result.orderId ? `/profile/orders/${result.orderId}` : "/profile/orders");
       }
     } catch (err) {
       console.error("Checkout error:", err);
     }
+    setIsCheckingOut(false);
   };
 
   const onError = (errors) => {
@@ -567,9 +593,10 @@ function Checkout({
         </button>
         <button
           type="submit"
-          className="btn btn--primary border hover:bg-stroke-0 active:bg-stroke-0 size-full py-2"
+          disabled={isCheckingOut}
+          className="btn btn--primary border hover:bg-stroke-0 active:bg-stroke-0 size-full py-2 disabled:opacity-50"
         >
-          پرداخت و خرید محصول
+          {isCheckingOut ? "در حال انتقال به درگاه..." : "پرداخت و خرید محصول"}
         </button>
       </div>
     </form>

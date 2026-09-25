@@ -2,6 +2,7 @@
 
 import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
 import SingleOrderPage from "@/components/SingleOrderPage";
+import PayOrderButton from "../_components/PayOrderButton";
 import { useGetOrderById } from "@/hooks/useOrders";
 import { useParams, usePathname } from "next/navigation";
 import { useState } from "react";
@@ -29,6 +30,9 @@ export default function page() {
       cart
     >
       <SingleOrderPage order={order} isOrderLoading={isOrderLoading} />
+      <div className="flex justify-center w-full py-4">
+        <PayOrderButton order={order} />
+      </div>
     </AdaptiveOverlayPage>
   );
 }
