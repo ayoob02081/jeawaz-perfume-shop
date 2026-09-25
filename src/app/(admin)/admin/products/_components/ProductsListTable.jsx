@@ -16,8 +16,16 @@ import { getVariantsByType } from "@/utils/priceCalculator";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useState } from "react";
+import CheckBox from "@/ui/CheckBox";
+import { CheckIcon } from "@heroicons/react/24/outline";
 
-function ProductsListTable({ products }) {
+function ProductsListTable({
+  products,
+  selectedIds = [],
+  onToggleSelected,
+  onSelectVisible,
+  onDeleted,
+}) {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [product, setProduct] = useState(false);
   const { isDeleting, removeProduct } = useRemoveProduct();
@@ -45,6 +53,29 @@ function ProductsListTable({ products }) {
       <>
         <Table className="overflow-auto md:hidden">
           <Table.Header className="">
+            <th className="table__th px-2">
+              <CheckBox
+                value={product.id}
+                name="productIds"
+                checked={
+                  products.length > 0 &&
+                  products.every((item) => selectedIds.includes(item.id))
+                }
+                className="flex flex-row! items-center justify-between font-bold"
+                onChange={(event) => onSelectVisible?.(event.target.checked)}
+              >
+                <div
+                  className={`flex items-center justify-center size-4 border rounded-sm  ${
+                    products.length > 0 &&
+                    products.every((item) => selectedIds.includes(item.id))
+                      ? "border-primary bg-white text-primary"
+                      : "border-stroke-0 text-transparent "
+                  } transition-all duration-200`}
+                >
+                  <CheckIcon className=" size-2.5 stroke-4 " />
+                </div>
+              </CheckBox>
+            </th>
             {productMobileTHeads.map((item) => (
               <th className="whitespace-nowrap table__th" key={item.id}>
                 {item.label}
@@ -56,6 +87,21 @@ function ProductsListTable({ products }) {
               products?.map((product, index) => {
                 return (
                   <Table.Row key={product.id} className="even:bg-primary/5">
+                    <td className="table__td px-2">
+                      <CheckBox
+                        value={product.id}
+                        name="productIds"
+                        checked={selectedIds.includes(product.id)}
+                        className="flex flex-row! items-center justify-between font-bold"
+                        onChange={() => onToggleSelected?.(product.id)}
+                      >
+                        <div
+                          className={`flex items-center justify-center size-4 border rounded-sm  ${selectedIds.includes(product.id) ? "border-primary bg-primary text-white" : "border-stroke-600 text-transparent "} transition-all duration-200`}
+                        >
+                          <CheckIcon className=" size-2.5 stroke-4 " />
+                        </div>
+                      </CheckBox>
+                    </td>
                     <td className="table__td px-3 font-bold rounded-r-xl">
                       <p>{toPersianNumbers(index + 1)}</p>
                     </td>
@@ -150,6 +196,29 @@ function ProductsListTable({ products }) {
         </Table>
         <Table className="overflow-auto max-md:hidden">
           <Table.Header className="">
+            <th className="table__th px-2">
+              <CheckBox
+                value={product.id}
+                name="productIds"
+                checked={
+                  products.length > 0 &&
+                  products.every((item) => selectedIds.includes(item.id))
+                }
+                className="flex flex-row! items-center justify-between font-bold"
+                onChange={(event) => onSelectVisible?.(event.target.checked)}
+              >
+                <div
+                  className={`flex items-center justify-center size-4 border rounded-sm  ${
+                    products.length > 0 &&
+                    products.every((item) => selectedIds.includes(item.id))
+                      ? "border-primary bg-white text-primary"
+                      : "border-stroke-0 text-transparent "
+                  } transition-all duration-200`}
+                >
+                  <CheckIcon className=" size-2.5 stroke-4 " />
+                </div>
+              </CheckBox>
+            </th>
             {productDesktopTHeads.map((item) => (
               <th className="whitespace-nowrap table__th" key={item.id}>
                 {item.label}
@@ -161,6 +230,21 @@ function ProductsListTable({ products }) {
               products?.map((product, index) => {
                 return (
                   <Table.Row key={product.id} className="even:bg-primary/5">
+                    <td className="table__td px-2">
+                      <CheckBox
+                        value={product.id}
+                        name="productIds"
+                        checked={selectedIds.includes(product.id)}
+                        className="flex flex-row! items-center justify-between font-bold"
+                        onChange={() => onToggleSelected?.(product.id)}
+                      >
+                        <div
+                          className={`flex items-center justify-center size-4 border rounded-sm  ${selectedIds.includes(product.id) ? "border-primary bg-primary text-white" : "border-stroke-600 text-transparent "} transition-all duration-200`}
+                        >
+                          <CheckIcon className=" size-2.5 stroke-4 " />
+                        </div>
+                      </CheckBox>
+                    </td>
                     <td className="table__td px-3 font-bold rounded-r-xl">
                       <p>{toPersianNumbers(index + 1)}</p>
                     </td>

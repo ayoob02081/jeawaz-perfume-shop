@@ -9,6 +9,14 @@ import {
   getProductVolumeOptionsApi,
   removeProductApi,
   updateProductApi,
+  createBulkPricePreviewApi,
+  readBulkPricePreviewApi,
+  applyBulkPriceOperationApi,
+  getPriceHistoryOperationsApi,
+  getPriceHistoryOperationApi,
+  createRecoveryPreviewApi,
+  readRecoveryPreviewApi,
+  applyRecoveryApi,
 } from "@/services/productServices";
 import { showApiError } from "@/utils/showApiError";
 import {
@@ -36,6 +44,12 @@ export const productKeys = {
   ],
 };
 
+export const priceHistoryKeys = {
+  all: ["price-history"],
+  operations: (params) => [...priceHistoryKeys.all, "operations", params],
+  detail: (operationId, page, limit) => [...priceHistoryKeys.all,
+    "operation", operationId, page, limit],
+};
 
 export const useGetAllProducts = (query = {}) => {
   const normalizedQuery = normalizeProductsQuery(query);
@@ -96,6 +110,7 @@ export function useAddProduct() {
       });
 
       queryClient.invalidateQueries({ queryKey: productKeys.all });
+      queryClient.invalidateQueries({ queryKey: priceHistoryKeys.all });
       router.push("/admin/products");
     },
 
@@ -139,6 +154,7 @@ export function useEditProduct(productId) {
       });
 
       queryClient.invalidateQueries({ queryKey: productKeys.all });
+      queryClient.invalidateQueries({ queryKey: priceHistoryKeys.all });
       queryClient.invalidateQueries({
         queryKey: productKeys.detail(productId),
       });
@@ -161,6 +177,7 @@ export function useRemoveProduct() {
     onSuccess: (_, deletedProductId) => {
       toast.success("محصول با موفقیت حذف شد", { id: "remove-product" });
       queryClient.invalidateQueries({ queryKey: productKeys.all });
+      queryClient.invalidateQueries({ queryKey: priceHistoryKeys.all });
       queryClient.removeQueries({
         queryKey: productKeys.detail(deletedProductId),
         exact: true,
@@ -174,4 +191,77 @@ export function useRemoveProduct() {
   });
 
   return { isDeleting, removeProduct };
+}
+
+export function useCreateBulkPricePreview() {
+  const { mutateAsync: createPreview, isPending: isPreviewing } = useMutation({
+    mutationFn: createBulkPricePreviewApi,
+  });
+  return { createPreview, isPreviewing };
+}
+
+export function useReadBulkPricePreview() {
+  const { mutateAsync: readPreview, isPending: isReadingPreview } = useMutation({
+    mutationFn: readBulkPricePreviewApi,
+  });
+  return { readPreview, isReadingPreview };
+}
+
+export function useApplyBulkPriceOperation() {
+  const queryClient = useQueryClient();
+  const { mutateAsync: applyOperation, isPending: isApplying } = useMutation({
+    mutationFn: applyBulkPriceOperationApi,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: productKeys.all });
+      await queryClient.invalidateQueries({ queryKey: priceHistoryKeys.all });
+    },
+  });
+  return { applyOperation, isApplying };
+}
+
+export function usePriceHistoryOperations(params) {
+  return useQuery({
+    queryKey: priceHistoryKeys.operations(params),
+    queryFn: () => getPriceHistoryOperationsApi(params),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function usePriceHistoryOperation(operationId, page = 1, limit = 50) {
+  return useQuery({
+    queryKey: priceHistoryKeys.detail(operationId, page, limit),
+    queryFn: () => getPriceHistoryOperationApi({ operationId, page, limit }),
+    enabled: Boolean(operationId),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useCreateRecoveryPreview() {
+  const { mutateAsync: createPreview, isPending: isPreviewing } = useMutation({
+    mutationFn: createRecoveryPreviewApi,
+  });
+  return { createPreview, isPreviewing };
+}
+
+export function useReadRecoveryPreview() {
+  const { mutateAsync: readPreview, isPending: isReadingPreview } = useMutation({
+    mutationFn: readRecoveryPreviewApi,
+  });
+  return { readPreview, isReadingPreview };
+}
+
+export function useApplyRecovery() {
+  const queryClient = useQueryClient();
+  const { mutateAsync: applyRecovery, isPending: isApplying } = useMutation({
+    mutationFn: applyRecoveryApi,
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: priceHistoryKeys.all }),
+        queryClient.invalidateQueries({ queryKey: productKeys.all }),
+      ]);
+    },
+  });
+  return { applyRecovery, isApplying };
 }
