@@ -32,6 +32,7 @@ import {
   sillageOptions,
   variantTypes,
 } from "./productFormContract";
+import { runProductDelete } from "./productDeleteContract.mjs";
 
 const basicInfoData = [
   { id: 1, label: "عنوان فارسی", name: "perTitle", placeholder: "بلو شنل" },
@@ -192,8 +193,7 @@ function ProductForm({ productToEdit }) {
   };
 
   const removeProductHandler = async (product) => {
-    const { id } = product;
-    await removeProduct(id);
+    await runProductDelete({ id: product.id, removeProduct });
   };
 
   if (brandsLoading || categoriesLoading) return <Loading />;

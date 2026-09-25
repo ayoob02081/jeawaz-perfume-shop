@@ -7,6 +7,7 @@ import {
 } from "@/constants/tableHeads";
 import { useRemoveProduct } from "@/hooks/useProducts";
 import ConfirmModal from "@/ui/ConfirmModal";
+import { runProductDelete } from "./productDeleteContract.mjs";
 import Table from "@/ui/Table";
 import {
   toPersianNumbers,
@@ -31,11 +32,14 @@ function ProductsListTable({
   const { isDeleting, removeProduct } = useRemoveProduct();
 
   const removeProductHandler = async () => {
-    const { id } = product;
+    if (isDeleting) return;
 
-    await removeProduct(id);
-
-    setConfirmModalOpen(false);
+    await runProductDelete({
+      id: product.id,
+      removeProduct,
+      onDeleted,
+      close: () => setConfirmModalOpen(false),
+    });
   };
 
   const handleModal = (data) => {
