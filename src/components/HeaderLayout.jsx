@@ -338,7 +338,7 @@ function MobileHeader({
 
   return (
     <nav className="lg:hidden max-lg:fixed max-lg:top-0 inset-x-0 h-fit w-full z-50">
-      <ul className="flex items-center justify-between sm:gap-4 max-sm:flex-wrap w-full relative container mx-auto p-4 rounded-b-4xl bg-stroke-0/0 duration-200">
+      <ul className="flex items-center justify-between sm:gap-4 max-sm:flex-wrap w-full relative p-4 rounded-b-4xl bg-stroke-0/0 duration-200">
         <li className="flex-none">
           <button
             type="button"

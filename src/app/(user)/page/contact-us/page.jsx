@@ -30,7 +30,7 @@ function ContactUsPage() {
               از خرید عطر برای شما فراهم کند
             </p>
           </section>
-          <div className="flex flex-col md:flex-row md:gap-8 md:items-start md:justify-between bg-stroke-0 border-b-0! max-md:border-4 md:border-8 border-black/5 rounded-b-none! max-md:rounded-2.5xl md:rounded-5xl p-6 size-full">
+          <div className="flex flex-col max-md:gap-6 lg:flex-row md:gap-8 md:items-start md:justify-between bg-stroke-0 border-b-0! max-md:border-4 md:border-8 border-black/5 rounded-b-none! max-md:rounded-2.5xl md:rounded-5xl max-md:p-4 md:p-6 size-full">
             <section className="grow flex flex-col justify-start gap-8 md:gap-12 h-full max-md:w-full md:w-1/2">
               <div className="flex flex-col items-start justify-start gap-4">
                 <div className="flex items-center justify-center bg-stroke-100 rounded-xl size-12">
@@ -137,7 +137,7 @@ function ContactUsPage() {
                 </span>
               </div>
             </section>
-            <section className="grow max-md:hidden md:flex items-start h-full w-1/2">
+            <section className="grow flex items-start h-full max-lg:w-full w-1/2">
               <ContactUsForm />
             </section>
           </div>

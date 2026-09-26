@@ -316,7 +316,7 @@ test("visible labels, placeholders and form styling are preserved", () => {
     'label: "نام و نام خانوادگی"', 'placeholder: "علی حسنی"',
     'label: "شماره همراه"', 'placeholder: "۰۹۱۲۳۴۵۶۷۸۹"', 'label="پیام شما"',
     'placeholder="پیام خود را بنویسید ..."', "ارسال پیام یا سوال",
-    'className="flex flex-col items-start justify-between gap-2 p-6 border border-stroke-250 rounded-2xl size-full"',
+    'className="flex flex-col items-start justify-between gap-6 p-6 border border-stroke-250 rounded-2xl size-full"',
     'className="flex flex-col items-center justify-between gap-6 size-full"',
     'className="rounded-xl h-32"', 'textClassName="text-sm!"',
     "placeholder={`مثال: ${item.placeholder}`}",
@@ -325,8 +325,9 @@ test("visible labels, placeholders and form styling are preserved", () => {
   }
 });
 
-test("the page keeps the desktop-only form section and the contact information unchanged", () => {
-  assert.match(page, /<section className="grow max-md:hidden md:flex items-start h-full w-1\/2">\s*<ContactUsForm \/>\s*<\/section>/);
+test("the page shows the form section on every breakpoint and keeps the contact information unchanged", () => {
+  assert.match(page, /<section className="grow flex items-start h-full max-lg:w-full w-1\/2">\s*<ContactUsForm \/>\s*<\/section>/);
+  assert.doesNotMatch(page, /max-md:hidden[^>]*>\s*<ContactUsForm/);
   assert.match(page, /import ContactUsForm from "\.\.\/_components\/ContactUsForm";/);
   assert.match(page, /tel:\+989302125151/);
   assert.match(page, /https:\/\/t\.me\/jeaawazperfume/);

@@ -53,9 +53,9 @@ export default function ContactUsForm() {
         method="post"
         noValidate
         onSubmit={handleSubmit(submitContactForm)}
-        className="flex flex-col items-start justify-between gap-2 p-6 border border-stroke-250 rounded-2xl size-full"
+        className="flex flex-col items-start justify-between gap-6 p-6 border border-stroke-250 rounded-2xl size-full"
       >
-        <h3 className="font-bold text-stroke-800 text-xl pb-6">
+        <h3 className="font-bold text-stroke-800 text-xl">
           ارسال پیام یا سوال
         </h3>
         <div className="flex flex-col items-center justify-between gap-6 size-full">
@@ -100,7 +100,7 @@ export default function ContactUsForm() {
           type="submit"
           disabled={isBusy}
           aria-busy={isBusy}
-          className="btn btn--primary px-8 py-2 font-bold rounded-xl text-base disabled:opacity-50"
+          className="btn btn--primary px-8 py-2 font-bold rounded-xl text-base disabled:opacity-50 max-lg:w-full"
         >
           {isBusy ? "در حال ارسال..." : "ارسال پیام"}
         </button>

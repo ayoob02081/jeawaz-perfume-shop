@@ -97,11 +97,13 @@ function ContactMessagesLayout() {
       ) : rows.length === 0 ? (
         <NotExisted className="h-60">پیامی وجود ندارد!</NotExisted>
       ) : (
-        <ContactMessagesListTable
-          messages={rows}
-          page={page}
-          limit={ADMIN_CONTACT_PAGE_LIMIT}
-        />
+        <div className="size-full max-lg:px-4">
+          <ContactMessagesListTable
+            messages={rows}
+            page={page}
+            limit={ADMIN_CONTACT_PAGE_LIMIT}
+          />
+        </div>
       )}
       <PagesNumber
         page={page}
