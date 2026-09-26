@@ -198,48 +198,45 @@ function DesktopCartLayout({ cartItem }) {
   );
 }
 
-function SuccessedOrderCard({ cartItem }) {
+function SuccessedOrderCard({ item }) {
   const {
     id,
-    mode,
-    product,
-    quantity,
-    volume,
-    unitPrice,
-    basePrice,
+    enTitle,
+    image,
     lineTotal,
-  } = cartItem;
-  const imageSrc = product.images[0];
+    perTitle,
+    price,
+    productId,
+    quantity,
+    variantType,
+    volume,
+  } = item;
   return (
     <div
       className={`flex items-center justify-between w-full  max-md:p-3 md:p-4 pr-0! max-md:gap-4 md:gap-5 max-md:border md:border-[1.5px] border-stroke-300 shadow-xs rounded-2xl`}
     >
-      <DeskSuccessedCartItem cartItem={cartItem} />
+      <DeskSuccessedCartItem item={item} />
       <div className="max-md:flex md:hidden items-center justify-start gap-4 size-full">
         <div className="flex items-start justify-center h-full">
           <AppImage
-            src={imageSrc}
-            alt={product.enTitle + "-image"}
+            src={image}
+            alt={enTitle + "-image"}
             width="size-16"
             sizes="20vw"
           />
         </div>
         <div className="flex flex-col gap-3 size-full">
           <Title
-            enTitle={product.enTitle}
-            perTitle={product.perTitle}
+            enTitle={enTitle}
+            perTitle={perTitle}
             volume={volume}
-            type={mode}
+            type={variantType}
           />
           <div className="flex items-center justify-between size-full">
             <div className="badge badge--secondary w-max h-6">
               {toPersianNumbers(volume)} میل
             </div>
-            <PriceSection
-              offValue={getDiscountPercent(basePrice * quantity, lineTotal)}
-              basePrice={basePrice * quantity}
-              unitPrice={lineTotal}
-            />
+            <PriceSection basePrice={lineTotal} />
           </div>
         </div>
       </div>
@@ -247,33 +244,30 @@ function SuccessedOrderCard({ cartItem }) {
   );
 }
 
-function DeskSuccessedCartItem({ cartItem }) {
+function DeskSuccessedCartItem({ item }) {
   const {
+    enTitle,
     id,
-    mode,
-    product,
-    quantity,
-    volume,
-    unitPrice,
-    basePrice,
+    image,
     lineTotal,
-  } = cartItem;
-  const imageSrc = product.images[0];
+    perTitle,
+    price,
+    productId,
+    quantity,
+    variantType,
+    volume,
+  } = item;
   return (
     <div className="md:flex max-md:hidden items-center justify-between gap-1 w-full">
       <div className="flex items-start justify-center h-full">
-        <AppImage
-          src={imageSrc}
-          alt={product.enTitle + "-image"}
-          width="size-24"
-        />
+        <AppImage src={image} alt={enTitle + "-image"} width="size-24" />
       </div>
       <div className="flex flex-col gap-3 size-full">
         <Title
-          enTitle={product.enTitle}
-          perTitle={product.perTitle}
+          enTitle={enTitle}
+          perTitle={perTitle}
           volume={volume}
-          type={mode}
+          type={variantType}
         />
         <div className="flex items-center justify-between size-full gap-4 text-stroke-800">
           <div className="flex items-center justify-between gap-1 text-sm">
@@ -294,11 +288,7 @@ function DeskSuccessedCartItem({ cartItem }) {
       </div>
       <div className="flex flex-col items-end justify-center gap-4 size-full">
         <p className="text-sm text-stroke-600">مبلغ پرداختی</p>
-        <PriceSection
-          offValue={getDiscountPercent(basePrice * quantity, lineTotal)}
-          basePrice={basePrice * quantity}
-          unitPrice={lineTotal}
-        />
+        <PriceSection basePrice={lineTotal} />
       </div>
     </div>
   );
