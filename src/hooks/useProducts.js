@@ -51,7 +51,7 @@ export const priceHistoryKeys = {
     "operation", operationId, page, limit],
 };
 
-export const useGetAllProducts = (query = {}) => {
+export const useGetAllProducts = (query = {}, options = {}) => {
   const normalizedQuery = normalizeProductsQuery(query);
 
   return useQuery({
@@ -60,6 +60,7 @@ export const useGetAllProducts = (query = {}) => {
     retry: false,
     refetchOnWindowFocus: false,
     placeholderData: keepPreviousData,
+    ...options,
   });
 };
 

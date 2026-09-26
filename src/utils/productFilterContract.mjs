@@ -225,7 +225,10 @@ export function normalizeProductsQuery(query = {}) {
   const brandIds = normalizeIds(query.brandIds);
   const fragranceFamilies = normalizeSlugs(query.fragranceFamilies);
   const volumes = normalizeVolumes(query.volumes);
+  const campaignId = decimalInteger(query.campaignId);
   return {
+    // Only present when set, so existing query keys keep their exact shape.
+    ...(campaignId ? { campaignId } : {}),
     search: query.search || undefined,
     brandIds: brandIds.length ? brandIds : undefined,
     original,

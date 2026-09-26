@@ -11,6 +11,7 @@ function PopularProducts() {
   const [gender, setGender] = useState();
   const { data, isLoading, error } = useGetAllProducts({
     sort: "best_selling",
+    inStock: true,
     page: 1,
     limit: 8,
     gender: gender || undefined,

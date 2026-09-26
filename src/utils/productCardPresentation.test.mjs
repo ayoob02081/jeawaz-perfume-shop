@@ -145,7 +145,7 @@ test("all ProductCard consumers use Product-list queries with representativeVari
   for (const path of [
     "../app/(user)/_components/PopularProducts.jsx",
     "../app/(user)/_components/RecentProducts.jsx",
-    "../app/(user)/_components/OffProducts.jsx",
+    "../app/(user)/_components/CampaignsProducts.jsx",
     "../app/(user)/products/_components/ProductsLayout.jsx",
   ]) {
     const source = readFileSync(new URL(path, import.meta.url), "utf8");

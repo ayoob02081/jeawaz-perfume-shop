@@ -11,6 +11,7 @@ function RecentProducts() {
   const [gender, setGender] = useState();
   const { data, isLoading, error } = useGetAllProducts({
     sort: "newest",
+    inStock: true,
     page: 1,
     limit: 8,
     gender: gender || undefined,

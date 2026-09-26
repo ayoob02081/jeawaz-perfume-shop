@@ -13,6 +13,7 @@ function HomePageSortProductsLayout({
   des,
   desc,
   genderType,
+  timer,
   children,
   className,
   bgColor,
@@ -43,7 +44,7 @@ function HomePageSortProductsLayout({
           {genderType ? (
             <GenderType gender={gender} onClick={onGenderClick} />
           ) : (
-            "Timer"
+            timer
           )}
           <Link
             href={`/products?${params.toString()}`}

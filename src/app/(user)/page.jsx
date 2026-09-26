@@ -1,5 +1,5 @@
 import RecentProducts from "./_components/RecentProducts";
-import OffProducts from "./_components/OffProducts";
+import CampaignsProducts from "./_components/CampaignsProducts";
 import PopularProducts from "./_components/PopularProducts";
 import GenderCategoriesLayout from "./_components/GenderCategoriesLayout";
 import AccordCategoriesLayout from "./_components/AccordCategoriesLayout";
@@ -13,7 +13,7 @@ export default function Home() {
       <GenderCategoriesLayout />
       <RecentProducts />
       <SecondaryBannerLayout />
-      <OffProducts />
+      <CampaignsProducts />
       <AccordCategoriesLayout />
       <PopularProducts />
     </div>

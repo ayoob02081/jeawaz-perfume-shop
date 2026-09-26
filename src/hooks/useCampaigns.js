@@ -2,6 +2,7 @@
 
 import {
   addCampaignApi,
+  getActiveCampaignApi,
   getAllCampaignsApi,
   getCampaignByIdApi,
   updateCampaignApi,
@@ -15,9 +16,18 @@ export const campaignKeys = {
   all: ["campaigns"],
   lists: () => [...campaignKeys.all, "list"],
   list: () => [...campaignKeys.lists()],
+  active: () => [...campaignKeys.all, "active"],
   details: () => [...campaignKeys.all, "detail"],
   detail: (id) => [...campaignKeys.details(), id],
 };
+
+export const useGetActiveCampaign = () =>
+  useQuery({
+    queryKey: campaignKeys.active(),
+    queryFn: getActiveCampaignApi,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
 
 export const useGetAllCampaigns = () =>
   useQuery({
