@@ -186,7 +186,7 @@ function BulkPriceDialog({ isOpen, selectedIds, filters, onClose, onApplied }) {
       isOpen={isOpen}
       onClose={close}
       scrollable
-      className="relative flex flex-col w-fit max-w-4xl max-h-[90vh] overflow-y-auto p-4 md:p-6 space-y-4"
+      className="relative flex flex-col w-fit max-w-4xl max-h-[90dvh] overflow-y-auto p-4 md:p-6 space-y-4"
     >
       <button
         type="button"
@@ -213,9 +213,10 @@ function BulkPriceDialog({ isOpen, selectedIds, filters, onClose, onApplied }) {
             <label
               key={kind}
               className={`flex items-center w-fit ${
-                  form.targetKind === kind ?
-                  "text-primary font-bold border border-primary px-2 py-1 rounded-xl ":"pr-2"
-                }`}
+                form.targetKind === kind
+                  ? "text-primary font-bold border border-primary px-2 py-1 rounded-xl "
+                  : "pr-2"
+              }`}
             >
               <input
                 type="radio"
@@ -230,10 +231,10 @@ function BulkPriceDialog({ isOpen, selectedIds, filters, onClose, onApplied }) {
                 onChange={() => updateForm("targetKind", kind)}
               />
               <p
-                // className={
-                //   form.targetKind === kind &&
-                //   "text-primary font-bold border border-primary px-3 py-1 rounded-xl"
-                // }
+              // className={
+              //   form.targetKind === kind &&
+              //   "text-primary font-bold border border-primary px-3 py-1 rounded-xl"
+              // }
               >
                 {targetLabels[kind]}
                 {kind === TARGET.SELECTED &&

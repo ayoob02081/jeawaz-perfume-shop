@@ -35,7 +35,7 @@ function BannersListTable({ banners }) {
     }
   };
   return (
-    <div className="w-full overflow-auto max-h-screen rounded-xl shadow-xl scrollbar-none">
+    <div className="w-full overflow-auto max-h-dvh rounded-xl shadow-xl scrollbar-none">
       <>
         <Table className="overflow-auto md:hidden">
           <Table.Header className="">

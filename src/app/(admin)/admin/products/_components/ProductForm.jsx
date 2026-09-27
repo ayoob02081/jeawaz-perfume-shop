@@ -59,7 +59,11 @@ const basicInfoData = [
 ];
 
 const multipleCategoryFields = [
-  { type: "fragrance_family", field: "fragranceFamilyIds", label: "خانوادهٔ بویایی" },
+  {
+    type: "fragrance_family",
+    field: "fragranceFamilyIds",
+    label: "خانوادهٔ بویایی",
+  },
   { type: "season", field: "seasonIds", label: "فصل" },
   { type: "character", field: "characterIds", label: "شخصیت رایحه" },
   { type: "occasion", field: "occasionIds", label: "موقعیت استفاده" },
@@ -68,8 +72,14 @@ const multipleCategoryFields = [
 function ProductForm({ productToEdit }) {
   // Keep the edit baseline from when this Product was opened, even if a query
   // refreshes while the admin is editing. The backend compares it under lock.
-  const editBaseline = useRef({ id: productToEdit?.id,
-    variants: productToEdit?.variants?.map(({ type, volume, price }) => ({ type, volume, price })) });
+  const editBaseline = useRef({
+    id: productToEdit?.id,
+    variants: productToEdit?.variants?.map(({ type, volume, price }) => ({
+      type,
+      volume,
+      price,
+    })),
+  });
   const {
     data: brands,
     isLoading: brandsLoading,
@@ -108,8 +118,14 @@ function ProductForm({ productToEdit }) {
 
   useEffect(() => {
     if (productToEdit?.id && editBaseline.current.id !== productToEdit.id) {
-      editBaseline.current = { id: productToEdit.id,
-        variants: productToEdit.variants?.map(({ type, volume, price }) => ({ type, volume, price })) };
+      editBaseline.current = {
+        id: productToEdit.id,
+        variants: productToEdit.variants?.map(({ type, volume, price }) => ({
+          type,
+          volume,
+          price,
+        })),
+      };
       reset(initialValues);
     }
   }, [productToEdit, initialValues, reset]);
@@ -178,7 +194,8 @@ function ProductForm({ productToEdit }) {
 
   const onSubmit = async (data) => {
     const { payload, errors: payloadErrors } = buildProductFormPayload(
-      data, productToEdit ? editBaseline.current.variants : undefined,
+      data,
+      productToEdit ? editBaseline.current.variants : undefined,
     );
     if (payloadErrors.length) {
       payloadErrors.forEach(({ field, message }) =>
@@ -222,7 +239,8 @@ function ProductForm({ productToEdit }) {
             <RHFTextField
               label="سال عرضه"
               name="releaseYear"
-              type="number"
+              control={control}
+              type="tel"
               min="1700"
               max={new Date().getFullYear() + 1}
               register={register}
@@ -408,7 +426,9 @@ function ProductForm({ productToEdit }) {
               {categories
                 .filter((category) => category.type === type)
                 .map((category) => {
-                  const selected = (watch(field) || []).includes(String(category.id));
+                  const selected = (watch(field) || []).includes(
+                    String(category.id),
+                  );
                   return (
                     <RHFCheckBox
                       key={category.id}
@@ -418,8 +438,11 @@ function ProductForm({ productToEdit }) {
                       register={register}
                       disabled={!category.isActive && !selected}
                     >
-                      <div className={`border-2 rounded-full px-4 py-2 ${selected ? "border-primary text-primary" : "border-stroke-150 text-stroke-600"}`}>
-                        {category.title}{!category.isActive && " (غیرفعال)"}
+                      <div
+                        className={`border-2 rounded-full px-4 py-2 ${selected ? "border-primary text-primary" : "border-stroke-150 text-stroke-600"}`}
+                      >
+                        {category.title}
+                        {!category.isActive && " (غیرفعال)"}
                       </div>
                     </RHFCheckBox>
                   );
@@ -435,7 +458,9 @@ function ProductForm({ productToEdit }) {
           options={temperatureCategories.map((category) => ({
             value: category.id,
             label: `${category.title}${category.isActive ? "" : " (غیرفعال)"}`,
-            disabled: !category.isActive && String(category.id) !== String(watch("temperatureId")),
+            disabled:
+              !category.isActive &&
+              String(category.id) !== String(watch("temperatureId")),
           }))}
           error={errors.temperatureId}
         />
@@ -473,10 +498,14 @@ function ProductForm({ productToEdit }) {
 
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-stroke-800">گونه‌ها و قیمت‌های مستقل</h3>
+            <h3 className="font-bold text-stroke-800">
+              گونه‌ها و قیمت‌های مستقل
+            </h3>
             <button
               type="button"
-              onClick={() => variantFields.append({ type: "decant", volume: "", price: "" })}
+              onClick={() =>
+                variantFields.append({ type: "decant", volume: "", price: "" })
+              }
               className="btn btn--success text-sm py-1.5 px-2.5"
             >
               افزودن گونه
@@ -484,7 +513,10 @@ function ProductForm({ productToEdit }) {
           </div>
           <FieldError error={errors.variants} />
           {variantFields.fields.map((field, index) => (
-            <div key={field.id} className="flex flex-col md:flex-row items-end gap-4 mb-4">
+            <div
+              key={field.id}
+              className="flex flex-col md:flex-row items-end gap-4 mb-4"
+            >
               <FormSelect
                 label="نوع"
                 name={`variants.${index}.type`}
@@ -537,7 +569,8 @@ function ProductForm({ productToEdit }) {
             <RHFTextField
               label="حداقل ساعت ماندگاری"
               name="performance.longevity.minHours"
-              type="number"
+              control={control}
+              type="tel"
               min="0"
               max="168"
               register={register}
@@ -546,7 +579,8 @@ function ProductForm({ productToEdit }) {
             <RHFTextField
               label="حداکثر ساعت ماندگاری"
               name="performance.longevity.maxHours"
-              type="number"
+              control={control}
+              type="tel"
               min="0"
               max="168"
               register={register}
@@ -621,7 +655,10 @@ function FormSelect({ label, name, register, options, error }) {
   return (
     <label className="flex flex-col gap-2 w-full text-stroke-800">
       <span className="font-bold">{label}</span>
-      <select {...register(name)} className="textField__input rounded-5xl w-full h-12">
+      <select
+        {...register(name)}
+        className="textField__input rounded-5xl w-full"
+      >
         <option value="">انتخاب نشده</option>
         {options.map((option) => {
           const value = typeof option === "string" ? option : option.value;

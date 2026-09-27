@@ -31,7 +31,7 @@ function AdminDashboardLayout() {
 
   return (
     <div className="size-full max-lg:pt-4 max-lg:px-2 pb-10 max-lg:rounded-2xl max-lg:border border-stroke-100 max-lg:bg-stroke-100 ">
-      <div className="w-full min-h-screen flex flex-col justify-start items-center gap- bg-stroke-100 lg:border border-stroke-200 lg:p-4 lg:rounded-3xl lg:shadow-xl">
+      <div className="w-full min-h-dvh flex flex-col justify-start items-center gap- bg-stroke-100 lg:border border-stroke-200 lg:p-4 lg:rounded-3xl lg:shadow-xl">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-items-stretch w-full ">
           <DataDashboardBox
             href={"/admin/orders"}

@@ -109,121 +109,123 @@ function ProductsLayout() {
 
       <form
         onSubmit={applyFilters}
-        className="flex max-md:flex-wrap items-center justify-stretch gap-3 rounded-xl border border-stroke-200 shadow p-3 text-sm w-full"
+        className="flex flex-col items-cente justify-stretch gap-3 rounded-xl border border-stroke-200 shadow p-3 text-sm w-full"
       >
-        <div className="flex items-center gap-4 w-full">
-          <div className="flex grow flex-col gap-2 sm:w-full">
-            <label className="flex flex-col gap-1">
-              <p className="pr-2 sm:text-lg font-bold">جستجو</p>
-              <input
-                className="textField__input rounded-xl p-2"
-                value={draft.search}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    search: event.target.value,
-                  }))
-                }
-              />
-            </label>
-            <label className="flex flex-col gap-1">
-              <p className="pr-2 sm:text-lg font-bold">برند</p>
-              <select
-                className="textField__input rounded-xl p-2"
-                value={draft.brandId}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    brandId: event.target.value,
-                  }))
-                }
-              >
-                <option value="">همه</option>
-                {brands.map((brand) => (
-                  <option key={brand.id} value={brand.id}>
-                    {brand.title || brand.value}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div className="flex max-sm:flex-none sm:grow flex-col gap-2 sm:w-full">
-            <label className="flex flex-col gap-1">
-              <p className="pr-2 sm:text-lg font-bold">اصالت</p>
-              <select
-                className="textField__input rounded-xl p-2"
-                value={draft.original}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    original: event.target.value,
-                  }))
-                }
-              >
-                <option value="">همه</option>
-                <option value="true">اصل</option>
-                <option value="false">غیراصل</option>
-              </select>
-            </label>
-            <label className="flex flex-col gap-1">
-              <p className="pr-2 sm:text-lg font-bold">جنسیت</p>
-              <select
-                className="textField__input rounded-xl p-2"
-                value={draft.gender}
-                onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    gender: event.target.value,
-                  }))
-                }
-              >
-                <option value="">همه</option>
-                {genders.map((category) => (
-                  <option key={category.id} value={category.slug}>
-                    {category.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-        </div>
-        <details className="relative btn w-full flex-col items-start rounded-md border border-stroke-200 p-2 transition-all duration-200">
-          <summary className="cursor-pointer sm:text-lg font-bold">
-            خانواده‌های بویایی (
-            {toPersianNumbersWithComma(draft.fragranceFamilies.length)})
-          </summary>
-          <div className="flex grow items-center flex-wrap justify-center gap-4 max-h-44 overflow-auto p-2 max-w-full transition-all duration-200">
-            {families.map((category) => (
-              <CheckBox
-                key={category.id}
-                checked={draft.fragranceFamilies.includes(category.slug)}
-                className=" flex-row whitespace-nowrap"
-                label={category.title}
-                onChange={() => toggleFamily(category.slug)}
-                textClassName="text-base"
-              >
-                <div
-                  className={`flex items-center justify-center size-4 border rounded-sm  ${draft.fragranceFamilies.includes(category.slug) ? "border-primary bg-primary text-white" : "border-stroke-600 text-transparent "} transition-all duration-200`}
+        <div className="flex max-md:flex-wrap gap-3 size-full">
+          <div className="flex items-center gap-4 w-full">
+            <div className="flex grow flex-col gap-2 sm:w-full">
+              <label className="flex flex-col gap-1">
+                <p className="pr-2 sm:text-lg font-bold">جستجو</p>
+                <input
+                  className="textField__input rounded-xl p-2"
+                  value={draft.search}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      search: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <p className="pr-2 sm:text-lg font-bold">برند</p>
+                <select
+                  className="textField__input rounded-xl p-2"
+                  value={draft.brandId}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      brandId: event.target.value,
+                    }))
+                  }
                 >
-                  <CheckIcon className=" size-2.5 stroke-4 " />
-                </div>
-              </CheckBox>
-            ))}
+                  <option value="">همه</option>
+                  {brands.map((brand) => (
+                    <option key={brand.id} value={brand.id}>
+                      {brand.title || brand.value}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="flex max-sm:flex-none sm:grow flex-col gap-2 sm:w-full">
+              <label className="flex flex-col gap-1">
+                <p className="pr-2 sm:text-lg font-bold">اصالت</p>
+                <select
+                  className="textField__input rounded-xl p-2"
+                  value={draft.original}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      original: event.target.value,
+                    }))
+                  }
+                >
+                  <option value="">همه</option>
+                  <option value="true">اصل</option>
+                  <option value="false">غیراصل</option>
+                </select>
+              </label>
+              <label className="flex flex-col gap-1">
+                <p className="pr-2 sm:text-lg font-bold">جنسیت</p>
+                <select
+                  className="textField__input rounded-xl p-2"
+                  value={draft.gender}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      gender: event.target.value,
+                    }))
+                  }
+                >
+                  <option value="">همه</option>
+                  {genders.map((category) => (
+                    <option key={category.id} value={category.slug}>
+                      {category.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
           </div>
-        </details>
-        <div className="flex max-md:flex-row-reverse md:flex-col items-center justify-center gap-2 max-sm:w-full w-fit h-full">
+          <details className="relative btn w-full flex-col items-start justify-start rounded-md border border-stroke-200 p-2 transition-all duration-200">
+            <summary className="cursor-pointer sm:text-lg font-bold">
+              خانواده‌های بویایی (
+              {toPersianNumbersWithComma(draft.fragranceFamilies.length)})
+            </summary>
+            <div className="flex grow items-start flex-wrap justify-center gap-4 max-h-44 overflow-auto p-2 max-w-full transition-all duration-200">
+              {families.map((category) => (
+                <CheckBox
+                  key={category.id}
+                  checked={draft.fragranceFamilies.includes(category.slug)}
+                  className=" flex-row whitespace-nowrap"
+                  label={category.title}
+                  onChange={() => toggleFamily(category.slug)}
+                  textClassName="text-base"
+                >
+                  <div
+                    className={`flex items-center justify-center size-4 border rounded-sm  ${draft.fragranceFamilies.includes(category.slug) ? "border-primary bg-primary text-white" : "border-stroke-600 text-transparent "} transition-all duration-200`}
+                  >
+                    <CheckIcon className=" size-2.5 stroke-4 " />
+                  </div>
+                </CheckBox>
+              ))}
+            </div>
+          </details>
+        </div>
+        <div className="flex items-center justify-between gap-2 max-sm:w-full w-full h-full">
+          <button
+            type="submit"
+            className="btn btn--primary px-3 py-2 text-nowrap max-sm:w-full"
+          >
+            اعمال فیلتر
+          </button>
           <button
             type="button"
             className="btn btn--secondary--2 px-3 py-2 text-nowrap max-sm:w-full"
             onClick={resetFilters}
           >
             پاک کردن فیلتر
-          </button>
-          <button
-            type="submit"
-            className="btn btn--primary px-3 py-2 text-nowrap max-sm:w-full"
-          >
-            اعمال فیلتر
           </button>
         </div>
       </form>

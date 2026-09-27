@@ -53,7 +53,7 @@ function ProductsListTable({
   };
 
   return (
-    <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar-none">
+    <div className="w-full overflow-auto max-h-dvh pb-0.5 rounded-xl shadow-xl scrollbar-none">
       <>
         <Table className="overflow-auto md:hidden">
           <Table.Header className="">
@@ -128,8 +128,8 @@ function ProductsListTable({
                       </div>
                     </td>
                     <td className="table__td px-3 py-2! truncate">
-                      <div className="h-18 min-w-24 max-w-44 overflow-hidden">
-                        <div className="flex flex-wrap items-center justify-start gap-2 h-full w-fit overflow-auto ">
+                      <div className="min-w-24 max-w-48 overflow-hidden">
+                        <div className="flex flex-wrap items-center justify-start gap-1 h-full w-fit">
                           {product?.categories?.fragranceFamilies?.map(
                             (fragranceFamily, index) => (
                               <p
@@ -274,8 +274,8 @@ function ProductsListTable({
                       {product?.categories?.gender?.title}
                     </td>
                     <td className="table__td px-3 py-2! truncate">
-                      <div className="h-18 min-w-24 max-w-44 overflow-hidden">
-                        <div className="flex flex-wrap items-center justify-start gap-2 h-full w-fit overflow-auto ">
+                      <div className="min-w-24 max-w-44 overflow-hidden">
+                        <div className="flex flex-wrap items-center justify-start gap-1 h-full w-fit">
                           {product?.categories?.fragranceFamilies?.map(
                             (fragranceFamily, index) => (
                               <p
