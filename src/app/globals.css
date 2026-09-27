@@ -172,7 +172,7 @@
     @apply bg-stroke-950/15 backdrop-blur-md duration-200;
   }
   .backdrop--primary {
-    @apply flex max-md:items-end inset-0 bottom-0 justify-center max-md:pb-6 px-6 [30rem]:px-12 max-md:pt-[20%] md:pt-[3%] mx-auto z-100;
+    @apply flex max-md:items-end inset-0 bottom-0 justify-center max-md:pb-6 max-md:px-4 px-6 [30rem]:px-12 max-md:pt-[20%] md:pt-[3%] mx-auto z-100;
   }
   .backdrop--secondary {
     @apply flex items-start justify-center lg:justify-start top-0 inset-0 right-0 left-0 max-lg:bottom-0 lg:p-6 lg:pt-44 max-lg:overflow-y-auto scrollbar-none max-lg:z-90 lg:z-80;
@@ -256,7 +256,7 @@ html,
 body {
   padding: 0;
   margin: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
   user-select: none;
   background-color: var(--secondary-rgb);
   background: var(--background);

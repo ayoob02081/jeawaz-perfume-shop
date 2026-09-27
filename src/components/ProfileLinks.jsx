@@ -44,7 +44,7 @@ export default function ProfileSidebarLayout({ children, className }) {
     >
       <div className={`flex flex-col h-full max-lg:pb-6 w-full`}>
         <div className=" flex items-center gap-2 w-full max-lg:*:*:*:first:border-none lg:overflow-hidden">
-          <div className="flex flex-col items-start justify-start size-full lg:max-w-xs max-lg:pb-10 lg:pb-2 lg:overflow-auto lg:max-h-[70vh] scrollbar-none">
+          <div className="flex flex-col items-start justify-start size-full lg:max-w-xs max-lg:pb-10 lg:pb-2 lg:overflow-auto lg:max-h-[70dvh] scrollbar-none">
             {children}
           </div>
         </div>
@@ -193,11 +193,11 @@ export function ProfileLink({
         <button
           onClick={LogoutHandler}
           className="flex items-center justify-start gap-4 hover:bg-stroke-250/20 hover:backdrop-blur-md **:transition-all **:last:duration-200 text-stroke-800
-              py-3 px-1 size-full lg:size-fit group-hover:lg:size-full 2xl:size-full rounded-[44px] duration-200"
+              py-3 px-1 size-full lg:size-fit group-hover:lg:size-full 2xl:size-full rounded-[44px] transition-all duration-200"
         >
           <div className="flex items-center justify-start gap-2 h-11 w-full overflow-hidden">
             <div className="flex items-center justify-center size-11 z-10">
-              <ArrowRightStartOnRectangleIcon className="size-7" />
+              <ArrowRightStartOnRectangleIcon className="size-7 -translate-x-1 transition-all duration-200" />
             </div>
             <p className="flex items-center justify-start lg:w-0 group-hover:lg:w-fit 2xl:w-fit lg:translate-x-30 group-hover:lg:translate-x-0 2xl:translate-x-0 lg:opacity-0 group-hover:lg:opacity-100 2xl:opacity-100 text-nowrap transition-all duration-200">
               {label}

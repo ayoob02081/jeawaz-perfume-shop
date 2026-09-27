@@ -124,7 +124,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
       isOpen={isCategoryOpen}
       onClose={cancelCategory}
       category
-      className="max-lg:h-screen"
+      className="max-lg:h-dvh"
     >
       <div
         data-scroll

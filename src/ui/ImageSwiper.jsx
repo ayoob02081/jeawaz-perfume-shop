@@ -82,7 +82,9 @@ export default function ImageSwiper({ product, images = [] }) {
   };
 
   const openLightbox = () => {
-    if (canOpenLightbox(images?.length ?? 0, (query) => window.matchMedia(query))) {
+    if (
+      canOpenLightbox(images?.length ?? 0, (query) => window.matchMedia(query))
+    ) {
       setIsLightboxOpen(true);
     }
   };
@@ -150,7 +152,7 @@ export default function ImageSwiper({ product, images = [] }) {
             {images?.map((src, i) => (
               <div
                 key={i}
-                className="flex-[0_0_100%] relative aspect-square md:bg-stroke-150 md:dark:bg-stroke-50"
+                className="flex-[0_0_100%] relative aspect-square md:bg-stroke-150 md:dark:bg-stroke-50 p-10"
               >
                 <AppImage
                   src={src}
@@ -235,7 +237,7 @@ export default function ImageSwiper({ product, images = [] }) {
                 onClick={() => onThumbClick(i)}
                 aria-current={selectedIndex === i ? "true" : undefined}
                 className={clsx(
-                  "relative aspect-square max-[30rem]:size-18 max-md:size-26 md:size-20 lg:size-full *:rounded-xl rounded-xl lg:overflow-hidden border transition duration-200",
+                  "relative aspect-square max-[30rem]:size-18 max-md:size-26 md:size-20 lg:size-full *:*:p-2 *:rounded-xl rounded-xl lg:overflow-hidden border transition duration-200",
                   selectedIndex === i
                     ? "border-primary md:*:bg-stroke-0 *:dark:bg-stroke-50 shadow-md scale-95"
                     : "border-stroke-250 opacity-60 dark:opacity-30 hover:opacity-100 bg-stroke-0 md:bg-stroke-150",
@@ -323,14 +325,14 @@ export default function ImageSwiper({ product, images = [] }) {
 
             {/* Image */}
             <div
-              className="relative flex h-full w-full items-center justify-center"
+              className="relative flex h-full w-full items-center justify-center p-13"
               onClick={onLightboxImageClick}
             >
               <AppImage
                 src={images[selectedIndex]}
                 alt={`${product?.enTitle || "product"}-fullscreen-${selectedIndex}`}
                 objectFit="contain"
-                className="max-h-[90vh] max-w-[90vw]"
+                className="max-h-[90dvh] max-w-[90vw]"
                 sizes="100vw"
                 priority
               />

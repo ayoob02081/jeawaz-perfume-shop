@@ -46,7 +46,7 @@ export function useDragToClose({ onClose, threshold = 120 }) {
       "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
 
     if (lastTranslate.current > threshold) {
-      el.style.transform = "translateY(100vh)";
+      el.style.transform = "translateY(100dvh)";
       setTimeout(onClose, 300);
     } else {
       el.style.transform = "translateY(0)";

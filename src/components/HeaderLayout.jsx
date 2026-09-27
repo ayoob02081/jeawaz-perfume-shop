@@ -312,6 +312,7 @@ function DesktopHeader({
                 <p className="text-primary ">{toPersianNumbers("0930")}</p>
               </div>
               <CardIconResponsive
+                as="div"
                 src="/images/call-ringing-4-primary-icon.svg"
                 alt="call-ringing-icon"
                 title="پشتیبانی"

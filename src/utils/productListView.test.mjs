@@ -27,7 +27,7 @@ test("layout renders the Persian empty state, keeps error first and pagination i
   const layout = readFileSync(new URL("../app/(user)/products/_components/ProductsLayout.jsx",
     import.meta.url), "utf8");
   assert.match(layout, /productListView\(\{ isLoading: isProductsLoading, data \}\)/);
-  assert.match(layout, /view === "empty" && \(\s*<NotExisted[^>]*>محصولی با این مشخصات یافت نشد\.<\/NotExisted>/);
+  assert.match(layout, /view === "empty" && \(\s*<NotExisted[^>]*>\s*محصولی با این مشخصات یافت نشد\.\s*<\/NotExisted>/);
   assert.ok(layout.indexOf("if (isProductsError)") < layout.indexOf('view === "empty"'),
     "error state returns before the empty state can render");
   assert.match(layout, /<PagesNumber[\s\S]*totalPages=\{totalPages\}/);

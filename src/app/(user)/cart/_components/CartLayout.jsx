@@ -130,7 +130,7 @@ function CartLayout() {
 
     if (isError) {
       return (
-        <div className="flex items-center justify-center max-md:h-screen md:h-92 w-full">
+        <div className="flex items-center justify-center max-md:h-dvh md:h-92 w-full">
           <span className="flex flex-col items-center justify-center max-md:gap-4 md:gap-6 text-stroke-800">
             <p className="font-bol max-md:text-xl md:text-2xl text-stroke-600">
               خطا در دریافت سبد خرید
@@ -142,7 +142,7 @@ function CartLayout() {
 
     if (!cart || cart.totalProducts === 0) {
       return (
-        <div className="flex items-center justify-center max-md:h-screen md:h-92 w-full">
+        <div className="flex items-center justify-center max-md:h-dvh md:h-92 w-full">
           <span className="flex flex-col items-center justify-center max-md:gap-4 md:gap-6 text-stroke-800">
             <p className="font-bol max-md:text-xl md:text-2xl text-stroke-600">
               سبد خرید شما خالی است!
@@ -364,7 +364,7 @@ function CartOverview({ cart, step, setStep }) {
         {/* MobileCartItems */}
         <div
           dir="ltr"
-          className="max-lg:flex items-center justify-start flex-col gap-4 size-full scrollbar-none overflow-auto max-h-screen lg:hidden"
+          className="max-lg:flex items-center justify-start flex-col gap-4 size-full scrollbar-none overflow-auto max-h-dvh lg:hidden"
         >
           {cart?.items.map((item) => (
             <CartItemsLayout.Mobile key={item.id} cartItem={item} />
@@ -489,7 +489,11 @@ function Checkout({
           `${paymentErrorMessage(result.error)}. سفارش ثبت شده است؛ از صفحه سفارش دوباره پرداخت کنید.`,
           { id: "checkout-payment" },
         );
-        router.push(result.orderId ? `/profile/orders/${result.orderId}` : "/profile/orders");
+        router.push(
+          result.orderId
+            ? `/profile/orders/${result.orderId}`
+            : "/profile/orders",
+        );
       }
     } catch (err) {
       console.error("Checkout error:", err);

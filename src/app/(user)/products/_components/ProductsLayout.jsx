@@ -2,7 +2,6 @@
 
 import PagesNumber from "@/components/PagesNumber";
 import { productKeys, useGetAllProducts } from "@/hooks/useProducts";
-import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 import FilterSection from "./FilterSection";
 import ProductCard from "../../_components/ProductCard";
@@ -12,7 +11,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getAllProductsApi } from "@/services/productServices";
 import ProductCardSkeleton from "../../_components/skeleton/ProductCardSkeletons";
 import { getFiltersFromSearchParams } from "@/utils/queryFilters";
-import { normalizeProductsQuery, productListView } from "@/utils/productFilterContract.mjs";
+import {
+  normalizeProductsQuery,
+  productListView,
+} from "@/utils/productFilterContract.mjs";
 import NotExisted from "@/components/NotExisted";
 
 function ProductsLayout() {
@@ -95,11 +97,11 @@ function ProductsLayout() {
   const view = productListView({ isLoading: isProductsLoading, data });
 
   if (isProductsError) {
-    return <Error className="h-screen" />;
+    return <Error className="h-dvh" />;
   }
 
   return (
-    <main className="container mx-auto xl:max-w-7xl pb-2 px-4 w-full ">
+    <main className="z-0 container mx-auto xl:max-w-7xl pb-2 px-4 w-full ">
       <FilterSection />
       <section
         className={`w-auto flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-3 md:gap-6 pb-6 transition-opacity duration-200 ${
@@ -111,7 +113,9 @@ function ProductsLayout() {
             <ProductCardSkeleton key={index} />
           ))}
         {view === "empty" && (
-          <NotExisted className="h-40">محصولی با این مشخصات یافت نشد.</NotExisted>
+          <NotExisted className="h-40">
+            محصولی با این مشخصات یافت نشد.
+          </NotExisted>
         )}
         {view === "products" &&
           products.map((product) => (
