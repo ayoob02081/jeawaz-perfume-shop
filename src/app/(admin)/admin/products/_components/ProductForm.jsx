@@ -1,6 +1,4 @@
 "use client";
-
-import { Toaster } from "react-hot-toast";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import {
   useGetAllBrandCategories,
@@ -201,7 +199,6 @@ function ProductForm({ productToEdit }) {
 
   return (
     <div className="max-w-6xl px-4">
-      <Toaster />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
         {/* Basic Info */}
         <div className="flex flex-col items-start justify-center gap-6">

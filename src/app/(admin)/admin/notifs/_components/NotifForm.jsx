@@ -1,6 +1,5 @@
 "use client";
 
-import { Toaster } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import RHFTextField from "@/ui/RHFTextField";
 import { useRouter } from "next/navigation";
@@ -102,8 +101,6 @@ function NotifForm() {
 
   return (
     <div className="max-w-6xl p-6">
-      <Toaster />
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
