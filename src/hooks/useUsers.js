@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { useQuery } from "@tanstack/react-query";
+import { getSafeApiErrorMessage } from "@/utils/profileFormContract.mjs";
 
 export const useGetAllUsers = () =>
   useQuery({
@@ -25,22 +26,30 @@ export const useGetUserById = (id) =>
     refetchOnWindowFocus: false,
   });
 
+// AuthContext.updateUser = PATCH /users/me, then checkAuth() refreshes the
+// authenticated user, so onSuccess (toast + back) runs on the fresh user.
 export function useUpdateUser() {
   const router = useRouter();
   const { updateUser } = useAuth();
-  const { mutate, isPending } = useMutation({
+  const { mutateAsync, isPending } = useMutation({
     mutationFn: updateUser,
     onSuccess: () => {
       toast.success("اطلاعات حساب کاربری شما با موفقیت ویرایش شد");
       router.back();
     },
-    onError: () => {
-      toast.error("اطلاعات حساب کاربری شما با خطا مواجه شد");
+    onError: (error) => {
+      toast.error(
+        getSafeApiErrorMessage(
+          error,
+          "اطلاعات حساب کاربری شما با خطا مواجه شد",
+        ),
+        { id: "update-user-error" },
+      );
     },
   });
 
   return {
-    updateUser: mutate,
+    updateUser: mutateAsync,
     isUpdating: isPending,
   };
 }

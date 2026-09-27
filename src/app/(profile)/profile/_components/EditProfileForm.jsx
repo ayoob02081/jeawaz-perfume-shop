@@ -6,9 +6,17 @@ import { useUpdateUser } from "@/hooks/useUsers";
 import PersianDateRHForm from "../../../../ui/PersianDateRHForm";
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/auth/AuthContext";
-import { isValidNationalCode, normalizePhone } from "@/utils/toPersianNumbers";
+import { normalizeIranPhone } from "@/utils/toPersianNumbers";
+import { LockClosedIcon } from "@heroicons/react/24/outline";
+import {
+  PERSIAN_NAME_PATTERN,
+  buildProfileUpdatePayload,
+  profileFormValuesFromUser,
+  validateOptionalNationalCode,
+  validateUsername,
+} from "@/utils/profileFormContract.mjs";
 
-const basicInfoData = [
+const getBasicInfoData = ({ username }) => [
   {
     id: 1,
     label: "نام",
@@ -27,8 +35,8 @@ const basicInfoData = [
         message: "نام نمی‌تواند بیشتر از ۵۰ کاراکتر باشد",
       },
       pattern: {
-        value: /^[آ-یa-zA-Z\s]+$/,
-        message: "نام فقط می‌تواند شامل حروف باشد",
+        value: PERSIAN_NAME_PATTERN,
+        message: "نام فقط می‌تواند شامل حروف فارسی باشد",
       },
     },
   },
@@ -50,26 +58,18 @@ const basicInfoData = [
         message: "نام خانوادگی نمی‌تواند بیشتر از ۵۰ کاراکتر باشد",
       },
       pattern: {
-        value: /^[آ-یa-zA-Z\s]+$/,
-        message: "نام خانوادگی فقط می‌تواند شامل حروف باشد",
+        value: PERSIAN_NAME_PATTERN,
+        message: "نام خانوادگی فقط می‌تواند شامل حروف فارسی باشد",
       },
     },
   },
   {
+    // Identity/login data: shown, never edited or submitted here.
     id: 3,
     label: "شماره موبایل",
     name: "phoneNumber",
-    placeholder: "۰۹۱۲۳۴۵۶۷۸۹",
     type: "tel",
-    isRequired: true,
-    validationSchema: {
-      required: "شماره موبایل الزامی است",
-      validate: (value) => {
-        const phone = normalizePhone(value);
-
-        return /^09\d{9}$/.test(phone) || "شماره موبایل معتبر نیست";
-      },
-    },
+    readOnly: true,
   },
   {
     id: 4,
@@ -77,21 +77,9 @@ const basicInfoData = [
     name: "username",
     placeholder: "RezaJ",
     type: "text",
-    isRequired: true,
+    isRequired: !!username,
     validationSchema: {
-      required: "نام کاربری الزامی است",
-      minLength: {
-        value: 3,
-        message: "نام کاربری باید حداقل ۳ کاراکتر باشد",
-      },
-      maxLength: {
-        value: 30,
-        message: "نام کاربری نمی‌تواند بیشتر از ۳۰ کاراکتر باشد",
-      },
-      pattern: {
-        value: /^(?=.{3,30}$)[a-zA-Z0-9_]+$/,
-        message: "نام کاربری فقط می‌تواند شامل حروف انگلیسی، اعداد و _ باشد",
-      },
+      validate: (value) => validateUsername(value, username),
     },
   },
   {
@@ -120,99 +108,98 @@ const basicInfoData = [
         value: /^\d{10}$/,
         message: "کد ملی باید ۱۰ رقم باشد",
       },
-      validate: (value) => isValidNationalCode(value) || "کد ملی معتبر نیست",
+      validate: validateOptionalNationalCode,
     },
   },
 ];
 
 function EditProfileForm() {
   const router = useRouter();
-  const { user: userToEdit, loading: isLoading } = useAuth();
+  const { user: userToEdit } = useAuth();
 
-  const { isUpdating, updateUser } = useUpdateUser(userToEdit?.id);
-  const {
-    firstName,
-    lastName,
-    phoneNumber,
-    nationalCode,
-    birthday,
-    email,
-    username,
-  } = userToEdit || {};
+  const { isUpdating, updateUser } = useUpdateUser();
+  const { phoneNumber, username } = userToEdit || {};
+  const basicInfoData = getBasicInfoData({ username });
 
   const {
     register,
     control,
     handleSubmit,
-    watch,
     reset,
     formState: { isSubmitting, errors },
   } = useForm({
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
-      nationalCode: undefined,
-      birthday: undefined,
-      email: undefined,
-      username: undefined,
-    },
+    defaultValues: profileFormValuesFromUser(null),
   });
 
   useEffect(() => {
     if (!userToEdit) return;
 
-    reset({
-      firstName: firstName ?? "",
-      lastName: lastName ?? "",
-      phoneNumber: phoneNumber ?? "",
-      nationalCode: nationalCode || undefined,
-      birthday: birthday || undefined,
-      email: email || undefined,
-      username: username || undefined,
-    });
+    reset(profileFormValuesFromUser(userToEdit));
   }, [userToEdit, reset]);
 
   const onSubmit = async (data) => {
-    const payload = {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      phoneNumber: data.phoneNumber,
-      nationalCode: data.nationalCode,
-      birthday: data.birthday,
-      email: data.email || undefined,
-      username: data.username,
-    };
-
-    await updateUser(payload);
+    try {
+      await updateUser(buildProfileUpdatePayload(data));
+    } catch {
+      // useUpdateUser already reported the failure; the form stays editable.
+    }
   };
+
+  const isPending = isSubmitting || isUpdating;
 
   return (
     <div className="max-w-6xl w-full px-4">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
         {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {basicInfoData.map((item) => (
-            <RHFTextField
-              key={item.name}
-              register={register}
-              control={control}
-              errors={errors}
-              isRequired={item.isRequired}
-              label={item.label}
-              name={item.name}
-              type={item.type}
-              className="w-full"
-              validationSchema={item.validationSchema}
-              placeholder={`مثال: ${item.placeholder}`}
-            />
-          ))}
+          {basicInfoData.map((item) =>
+            item.readOnly ? (
+              <div key={item.name} className="flex flex-col gap-2 w-full">
+                <RHFTextField
+                  label={item.label}
+                  name={item.name}
+                  type={item.type}
+                  value={normalizeIranPhone(phoneNumber)}
+                  readOnly
+                  aria-readonly="true"
+                  aria-describedby={`${item.name}-hint`}
+                  className="w-full cursor-not-allowed text-stroke-500"
+                >
+                  <LockClosedIcon
+                    aria-hidden="true"
+                    className="size-5 shrink-0 text-stroke-500"
+                  />
+                </RHFTextField>
+                <p
+                  id={`${item.name}-hint`}
+                  className="text-xs text-stroke-600 mr-2"
+                >
+                  شماره موبایل حساب کاربری از این بخش قابل تغییر نیست
+                </p>
+              </div>
+            ) : (
+              <RHFTextField
+                key={item.name}
+                register={register}
+                control={control}
+                errors={errors}
+                isRequired={item.isRequired}
+                label={item.label}
+                name={item.name}
+                type={item.type}
+                className="w-full"
+                validationSchema={item.validationSchema}
+                placeholder={`مثال: ${item.placeholder}`}
+              />
+            ),
+          )}
           <PersianDateRHForm
             control={control}
             name="birthday"
             label="تولد"
             className="w-full"
             placeholder="مثال: ۱۳۸۱/۲/۴"
+            valueFormat="date"
           />
         </div>
 
@@ -220,10 +207,11 @@ function EditProfileForm() {
         <div className="flex items-center md:items-end flex-col max-md:gap-8 md:gap-6">
           <div className="flex items-center justify-between max-sm:flex-col gap-4 w-full">
             <button
-              disabled={isSubmitting}
+              type="submit"
+              disabled={isPending}
               className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
             >
-              {isLoading ? "در حال ویرایش..." : "ویرایش اطلاعات"}
+              {isPending ? "در حال ویرایش..." : "ویرایش اطلاعات"}
             </button>
             <div
               onClick={() => router.back()}
