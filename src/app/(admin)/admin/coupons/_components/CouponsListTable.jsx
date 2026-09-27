@@ -33,7 +33,7 @@ function CouponsListTable({ coupons }) {
   };
 
   return (
-    <div className="w-full overflow-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar-none">
+    <div className="w-full overflow-auto max-h-dvh pb-0.5 rounded-xl shadow-xl scrollbar-none">
       <>
         <Table className="overflow-auto md:hidden">
           <Table.Header className="">

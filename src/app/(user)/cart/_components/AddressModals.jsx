@@ -112,7 +112,7 @@ export function AllAddresses({
 
 function AddressDeatails({ title, des }) {
   return (
-    <span className="flex items-center justify-center rounded-2.5xl bg-stroke-150 dark:bg-stroke-100 h-8 gap-2 text-sm md:text-xs text-stroke-800 px-4">
+    <span className="flex items-center justify-center rounded-2.5xl bg-stroke-150 h-8 gap-2 text-sm md:text-xs text-stroke-800 px-4">
       <p>{title}</p>
       <p>{des}</p>
     </span>

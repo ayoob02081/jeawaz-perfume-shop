@@ -10,70 +10,57 @@ import {
 import AddressForm from "@/components/AddressForm";
 import RHFTextField from "@/ui/RHFTextField";
 import { useState } from "react";
+import {
+  addressToFormValues,
+  createProvinceChangeHandler,
+  submitAddressForm,
+} from "@/utils/addressFormContract.mjs";
 
+// Built once per authoritative address: the edit page keys this component by
+// getAddressFormKey(address), so fresh server data remounts it with matching
+// form values and isDefault.
 function AddressFormLayout({ addressToEdit }) {
   const router = useRouter();
 
-  const {
-    id,
-    label,
-    fullName,
-    phoneNumber,
-    ostan,
-    shahr,
-    postalCode,
-    addressLine,
-    isDefault: isAddressDefault,
-  } = addressToEdit || {};
-  const [isDefault, setIsDefault] = useState(isAddressDefault || false);
+  const [isDefault, setIsDefault] = useState(!!addressToEdit?.isDefault);
 
   const { isDeleting, removeAddress } = useRemoveAddress();
 
   const removeAddressHandler = async (address) => {
-    const { id } = address;
-    await removeAddress(id);
-    router.back();
+    try {
+      await removeAddress(address.id);
+      router.back();
+    } catch {
+      // useRemoveAddress already reported the failure.
+    }
   };
 
-  const { createAddress, isAdding } = useCreateAddress();
-  const { editAddress, isEditing } = useEditAddress(id);
+  const { createAddress, isCreating } = useCreateAddress();
+  const { editAddress, isUpdating } = useEditAddress();
   const {
     register,
     handleSubmit,
     reset,
     control,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues: {
-      label: addressToEdit ? label : "",
-      fullName: addressToEdit ? fullName : "",
-      phoneNumber: addressToEdit ? phoneNumber : "",
-      ostan: addressToEdit ? ostan : "",
-      shahr: addressToEdit ? shahr : "",
-      postalCode: addressToEdit ? postalCode : "",
-      addressLine: addressToEdit ? addressLine : "",
-      isDefault: true,
-    },
+    defaultValues: addressToFormValues(addressToEdit),
   });
 
-  const onSubmit = async (data) => {
-    const payload = {
-      ...data,
-      isDefault: isDefault,
-    };
-    if (!addressToEdit) {
-      await createAddress(payload);
-      router.back();
-    }
+  const isPending = isSubmitting || isCreating || isUpdating;
 
-    if (!!addressToEdit) {
-      await editAddress({
-        addressId: id,
-        data: payload,
-      });
-      router.back();
-    }
+  const onSubmit = async (values) => {
+    const result = await submitAddressForm({
+      addressToEdit,
+      values,
+      isDefault,
+      createAddress,
+      editAddress,
+    });
+
+    if (result.ok) router.back();
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 w-full px-4">
@@ -97,6 +84,7 @@ function AddressFormLayout({ addressToEdit }) {
           register={register}
           watch={watch}
           reset={reset}
+          onProvinceChange={createProvinceChangeHandler(setValue)}
           onChange={() => setIsDefault(!isDefault)}
           isChecked={isDefault}
           checkBoxLabel="ذخیره به عنوان پیشفرض"
@@ -108,14 +96,14 @@ function AddressFormLayout({ addressToEdit }) {
         <div className="flex items-center justify-between max-sm:flex-col gap-4 w-full">
           <button
             type="submit"
-            disabled={isSubmitting || isEditing}
+            disabled={isPending}
             className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
           >
             {!addressToEdit
-              ? isSubmitting
+              ? isPending
                 ? "در حال ساخت..."
                 : "ساخت آدرس"
-              : isEditing
+              : isPending
                 ? "در حال ویرایش..."
                 : "ویرایش آدرس"}
           </button>

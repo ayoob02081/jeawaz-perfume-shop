@@ -2,7 +2,11 @@
 
 import Error from "@/components/Error";
 import AppImage from "@/components/AppImage";
-import Loading from "@/components/Loading";
+import {
+  GENDER_CATEGORY_SKELETON_COUNT,
+  homeCategoryView,
+} from "@/utils/homeSectionView.mjs";
+import { GenderCategoryCardSkeletons } from "./skeleton/HomeSectionSkeletons";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
@@ -15,7 +19,9 @@ function GenderCategoriesLayout() {
     error,
   } = useGetCategoriesByType("gender");
 
-  if (error) {
+  const view = homeCategoryView({ isPending, error });
+
+  if (view === "error") {
     return <Error />;
   }
 
@@ -33,15 +39,15 @@ function GenderCategoriesLayout() {
         <h2 className="text-stroke-800">محصولات ما</h2>
       </div>
       <div className="mx-6 flex flex-col w-full sm:px-36 md:px-6 md:flex-row gap-4 sm:gap-6 items-center justify-between overflow-x-auto scrollbar-none sm:rounded-2xl">
-        {isPending ? (
-          <Loading />
+        {view === "loading" ? (
+          <GenderCategoryCardSkeletons count={GENDER_CATEGORY_SKELETON_COUNT} />
         ) : (
           genderCategories?.map((item) => (
             <div key={item.id} className="sm:snap-center">
               <CategoreyCard
                 src={item.imageUrl}
                 alt={item.value + "-image"}
-                value={item.value}
+                slug={item.slug}
                 label={item.title}
                 productsCount={item.productsCount}
               />
@@ -55,15 +61,15 @@ function GenderCategoriesLayout() {
 
 export default GenderCategoriesLayout;
 
-function CategoreyCard({ src, alt, value, label, productsCount }) {
+function CategoreyCard({ src, alt, slug, label, productsCount }) {
   const router = useRouter();
 
   return (
     <button
       onClick={() =>
-        router.push(`/products?gender=${encodeURIComponent(value)}`)
+        router.push(`/products?gender=${encodeURIComponent(slug)}`)
       }
-      className="flex h-24 md:h-35 max-[365px]:aspect-6/2 aspect-7/2 md:aspect-9/3 justify-center items-center justify-items-center bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 "
+      className="relative flex h-24 md:h-35 max-[365px]:aspect-6/2 aspect-7/2 md:aspect-9/3 justify-center items-center justify-items-center bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 "
     >
       <div className="h-full self-start justify-self-start px-4">
         <div className="relative flex items-center justify-center aspect-8/10 md:aspect-10/13 w-16 md:w-21 p-3 rounded-b-xl bg-stroke-200">

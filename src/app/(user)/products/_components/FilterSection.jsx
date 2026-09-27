@@ -48,7 +48,7 @@ function FilterSection() {
   const isGenderFilter = filtersFromUrl?.gender;
   const currentGenderData =
     isGenderFilter &&
-    categories.find((category) => category.value === isGenderFilter);
+    categories?.find((category) => category.slug === isGenderFilter);
 
   const {
     register,
@@ -77,12 +77,14 @@ function FilterSection() {
   }
 
   const ToggleModal = () => {
-    setIsModalOpen((prev) => !prev);
+    if (isModalOpen) CloseModal();
+    else setIsModalOpen(true);
   };
 
   const CloseModal = () => {
     setIsModalOpen(false);
     setMode("all");
+    dispatch({ type: "RESET_DRAFT" });
   };
 
   const HandleSubmitfilter = () => {
@@ -109,16 +111,24 @@ function FilterSection() {
       maxPrice: null,
     });
 
-    router.replace(pathname, { scroll: false });
+    const query = buildQueryFromFilters(emptyFilters, searchParams);
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
 
     dispatch({ type: "RESET_ALL_APPLY" });
   }
 
   function resetOneAndSync(key) {
     const newDraft = {
-      ...state.draft,
+      ...filtersFromUrl,
       [key]: emptyFilters[key],
     };
+    if (key === "volumes") {
+      newDraft.minVolume = null;
+      newDraft.maxVolume = null;
+    }
+    if (key === "priceRange") reset({ minPrice: null, maxPrice: null });
 
     const query = buildQueryFromFilters(newDraft, searchParams);
 
@@ -126,7 +136,7 @@ function FilterSection() {
       scroll: false,
     });
 
-    dispatch({ type: "RESET_ONE", key });
+    dispatch({ type: "RESET_ONE_APPLY", key });
   }
 
   useEffect(() => {
@@ -142,7 +152,7 @@ function FilterSection() {
   }, [search, dispatch, reset]);
 
   function toggleBrandAndSync(brandId) {
-    const currentBrandIds = state.draft.brandIds || [];
+    const currentBrandIds = filtersFromUrl.brandIds || [];
 
     const exists = currentBrandIds.some((id) => Number(id) === Number(brandId));
 
@@ -157,7 +167,7 @@ function FilterSection() {
     });
 
     const newDraft = {
-      ...state.draft,
+      ...filtersFromUrl,
       brandIds: newBrandIds,
     };
 
@@ -198,10 +208,10 @@ function FilterSection() {
                   error
                 />
               )}
-              {filtersFromUrl?.accords.length > 0 && (
+              {filtersFromUrl?.fragranceFamilies.length > 0 && (
                 <Badge
                   title="رایحه"
-                  onClick={() => resetOneAndSync("accords")}
+                  onClick={() => resetOneAndSync("fragranceFamilies")}
                   error
                 />
               )}
@@ -216,6 +226,13 @@ function FilterSection() {
                 <Badge
                   title="حجم"
                   onClick={() => resetOneAndSync("volumes")}
+                  error
+                />
+              )}
+              {filtersFromUrl?.type && (
+                <Badge
+                  title={filtersFromUrl.type === "sealed" ? "پلمپ" : "دکانت"}
+                  onClick={() => resetOneAndSync("type")}
                   error
                 />
               )}
@@ -273,10 +290,12 @@ function FilterSection() {
             onSubmit={handleSubmit(HandleSubmitfilter)}
           >
             <FiltersModal
+              isOpen={isModalOpen}
               mode={mode}
               setMode={setMode}
               onClose={CloseModal}
               addFilter={addFilter}
+              resetFilter={resetFilter}
               control={control}
               watch={watch}
               filtersFromUrl={filtersFromUrl}

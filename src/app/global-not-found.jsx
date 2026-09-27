@@ -10,7 +10,7 @@ export default function GlobalNotFound() {
   return (
     <html lang="fa" dir="rtl">
       <body>
-        <div className="flex flex-col items-center justify-start gap-4 h-screen translate-y-1/3">
+        <div className="flex flex-col items-center justify-start gap-4 h-dvh translate-y-1/3">
           <h1 className="font-bold text-2xl">
             متاسفانه صفحه مورد نظر پیدا نشد!
           </h1>

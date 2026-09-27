@@ -102,7 +102,7 @@ export default function RHFTextField({
           {children}
         </div>
         {hasError && (
-          <span className="absolute -bottom-5 right-2 text-error block text-[10px] md:text-xs animate-fadeIn">
+          <span className="text-error block text-[10px] md:text-xs animate-fadeIn">
             {hasError.message}
           </span>
         )}

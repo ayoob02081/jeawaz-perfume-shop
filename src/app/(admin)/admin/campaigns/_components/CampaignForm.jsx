@@ -2,7 +2,6 @@
 
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { Toaster } from "react-hot-toast";
 import RHFTextField from "@/ui/RHFTextField";
 import RHFRadioButton from "@/ui/RHFRadioButton";
 import PersianDateRHForm from "@/ui/PersianDateRHForm";
@@ -102,8 +101,6 @@ function CampaignForm({ campaignToEdit }) {
 
   return (
     <div className="max-w-5xl w-full border-stroke-300 max-xl:px-4">
-      <Toaster />
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 w-full">
         {/* BASIC INFO */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">

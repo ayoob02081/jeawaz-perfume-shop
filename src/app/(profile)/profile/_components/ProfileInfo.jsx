@@ -5,6 +5,8 @@ import { useAuth } from "@/contexts/auth/AuthContext";
 import { toJalali } from "@/utils/date";
 import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
 import Link from "next/link";
+import { parseDateOnly } from "@/utils/dateOnly.mjs";
+import { formatFullName } from "@/utils/profileFormContract.mjs";
 
 function ProfileInfo() {
   const { user, loading: isLoading } = useAuth();
@@ -39,7 +41,7 @@ function ProfileInfo() {
       <div className="flex max-md:flex-col max-md:justify-center md:justify-between md:items-center border-t border-stroke-200 pt-4 max-md:gap-6">
         <InfoSections
           titleOne="نام و نام خانوادگی :"
-          desOne={firstName + " " + lastName || "-"}
+          desOne={formatFullName(firstName, lastName)}
           titleTwo="کد ملی :"
           desTwo={toPersianNumbers(nationalCode) || "-"}
         />
@@ -53,7 +55,7 @@ function ProfileInfo() {
         <InfoSections
           border={true}
           titleOne="تاریخ تولد  :"
-          desOne={birthday ? toJalali(new Date(birthday)) : "-"}
+          desOne={toJalali(parseDateOnly(birthday)) || "-"}
           titleTwo="ایمیل :"
           desTwo={email || "-"}
         />

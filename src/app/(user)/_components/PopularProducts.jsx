@@ -3,7 +3,11 @@
 import { useGetAllProducts } from "@/hooks/useProducts";
 import HomePageSortProductsLayout from "./HomePageSortProductsLayout";
 import ProductCard from "./ProductCard";
-import Loading from "@/components/Loading";
+import { ProductCardSkeletons } from "./skeleton/ProductCardSkeletons";
+import {
+  HOME_SECTION_SKELETON_COUNT,
+  homeSectionView,
+} from "@/utils/homeProductSection.mjs";
 import Error from "@/components/Error";
 import { useState } from "react";
 
@@ -11,6 +15,7 @@ function PopularProducts() {
   const [gender, setGender] = useState();
   const { data, isLoading, error } = useGetAllProducts({
     sort: "best_selling",
+    inStock: true,
     page: 1,
     limit: 8,
     gender: gender || undefined,
@@ -26,12 +31,9 @@ function PopularProducts() {
   };
 
   const products = data?.data || [];
+  const view = homeSectionView({ isLoading, error });
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (error) {
+  if (view === "error") {
     return <Error />;
   }
   return (
@@ -50,9 +52,13 @@ function PopularProducts() {
         " flex-col md:flex-row overflow-hidden sm:overflow-x-auto rounded-2xl"
       }
     >
-      {products?.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
+      {view === "loading" ? (
+        <ProductCardSkeletons count={HOME_SECTION_SKELETON_COUNT} />
+      ) : (
+        products?.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))
+      )}
     </HomePageSortProductsLayout>
   );
 }

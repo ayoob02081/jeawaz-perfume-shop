@@ -62,7 +62,7 @@ export const useGetBrandbyID = (id) =>
 export function useAddCategory() {
   const queryClient = useQueryClient();
 
-  const { isPending: isAdding, mutate: addCategory } = useMutation({
+  const { isPending: isAdding, mutateAsync: addCategory } = useMutation({
     mutationFn: addCategoryApi,
     onSuccess: (data) => {
       toast.success(data?.message || "دسته‌بندی اضافه شد");
@@ -96,7 +96,7 @@ export function useAddBrand() {
 export function useEditCategory(categoryId) {
   const queryClient = useQueryClient();
 
-  const { isPending: isEditing, mutate: editCategory } = useMutation({
+  const { isPending: isEditing, mutateAsync: editCategory } = useMutation({
     mutationFn: (data) => updateCategoryApi({ categoryId, data }),
     onSuccess: (data) => {
       toast.success(data?.message || "دسته‌بندی ویرایش شد");

@@ -1,6 +1,5 @@
 "use client";
 
-import { Toaster } from "react-hot-toast";
 import { Controller, useForm } from "react-hook-form";
 import {
   useAddCategory,
@@ -11,25 +10,34 @@ import RHFTextField from "@/ui/RHFTextField";
 import { useRouter } from "next/navigation";
 import RHFUploadFile from "@/ui/RHFUploadFile";
 
-function CategoryForm({ categoryToEdit, accord, gender }) {
+const categoryLabels = {
+  fragrance_family: "خانواده بویایی",
+  gender: "جنسیت",
+  season: "فصل",
+  temperature: "دما",
+  character: "شخصیت رایحه",
+  occasion: "موقعیت استفاده",
+};
+
+function CategoryForm({ categoryToEdit, categoryType }) {
   const basicInfoData = [
     {
       id: 1,
       label: "عنوان فارسی",
       name: "title",
-      placeholder: accord ? "گلی" : "مردانه",
+      placeholder: "گلی" || "مردانه",
     },
     {
       id: 2,
       label: "عنوان انگلیسی",
       name: "value",
-      placeholder: accord ? "floral" : "men",
+      placeholder: "floral" || "men",
     },
     {
       id: 3,
       label: "توضیحات",
       name: "description",
-      placeholder: accord ? "رایحه گلی" : "عطر مردانه",
+      placeholder: "رایحه گلی" || "عطر مردانه",
     },
   ];
 
@@ -61,7 +69,7 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
       description: description || "",
       imageUrl: imageUrl || "",
       iconUrl: iconUrl || "",
-      type: type || accord || gender,
+      type: type || categoryType,
     },
   });
 
@@ -86,8 +94,6 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
 
   return (
     <div className="max-w-6xl w-full px-4">
-      <Toaster />
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 w-full">
         {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -109,7 +115,7 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
         {/* IconUrl & ImageUrl */}
         <div className="flex flex-col items-start gap-y-4 w-fit bg-stroke-100 p-6 rounded-3xl border border-slate-100">
           <h3 className="text-stroke-800 font-bold text-lg">
-            آیکون و عکس {accord ? "رایحه" : "جنسیت"}
+            آیکون و عکس {categoryLabels[categoryType]}
           </h3>
           <div className="flex flex-wrap gap-6">
             <Controller
@@ -150,22 +156,10 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
               disabled={isSubmitting || isEditing}
               className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
             >
-              {accord &&
-                (!categoryToEdit
-                  ? isSubmitting
-                    ? "در حال ساخت..."
-                    : "ساخت رایحه"
-                  : isEditing
-                    ? "در حال ویرایش..."
-                    : "ویرایش رایحه")}
-              {gender &&
-                (!categoryToEdit
-                  ? isSubmitting
-                    ? "در حال ساخت..."
-                    : "ساخت جنسیت"
-                  : isEditing
-                    ? "در حال ویرایش..."
-                    : "ویرایش جنسیت")}
+              {categoryType &&
+                (isSubmitting || isEditing
+                  ? "در حال ذخیره..."
+                  : `${categoryToEdit ? "ویرایش" : "ساخت"} ${categoryLabels[categoryType]}`)}
             </button>
             <button
               type="button"
@@ -177,7 +171,7 @@ function CategoryForm({ categoryToEdit, accord, gender }) {
           </div>
           {categoryToEdit && (
             <button
-              type="submit"
+              type="button"
               disabled={isDeleting}
               onClick={() => removeCategoryHandler(categoryToEdit)}
               className="btn btn--primary border-0 py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"

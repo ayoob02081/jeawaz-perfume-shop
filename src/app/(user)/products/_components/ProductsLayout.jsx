@@ -1,8 +1,7 @@
 "use client";
 
 import PagesNumber from "@/components/PagesNumber";
-import { useGetAllProducts } from "@/hooks/useProducts";
-import Loading from "@/components/Loading";
+import { productKeys, useGetAllProducts } from "@/hooks/useProducts";
 import Error from "@/components/Error";
 import FilterSection from "./FilterSection";
 import ProductCard from "../../_components/ProductCard";
@@ -11,16 +10,18 @@ import { useCallback, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getAllProductsApi } from "@/services/productServices";
 import ProductCardSkeleton from "../../_components/skeleton/ProductCardSkeletons";
+import { getFiltersFromSearchParams } from "@/utils/queryFilters";
+import {
+  normalizeProductsQuery,
+  productListView,
+} from "@/utils/productFilterContract.mjs";
+import NotExisted from "@/components/NotExisted";
 
 function ProductsLayout() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const searchParams = useSearchParams();
   const search = searchParams.toString();
-  const page = useMemo(() => {
-    const p = Number(searchParams.get("page"));
-    return !p || p < 1 ? 1 : p;
-  }, [searchParams]);
   const updateParams = useCallback(
     (updates) => {
       const params = new URLSearchParams(search);
@@ -42,35 +43,29 @@ function ProductsLayout() {
     [updateParams],
   );
 
+  // One normalized query drives skeletons, request, query key, pagination and prefetch.
   const filters = useMemo(() => {
-    const brandIds = searchParams
-      .getAll("brandIds")
-      .map(Number)
-      .filter(Boolean);
-
-    const accords = searchParams.getAll("accords").filter(Boolean);
-    const volumes = searchParams.getAll("volumes").filter(Boolean);
-
-    return {
+    const applied = getFiltersFromSearchParams(searchParams);
+    return normalizeProductsQuery({
       search: searchParams.get("search") || undefined,
-      brandIds,
-      gender: searchParams.get("gender") || undefined,
-      accords,
-      volumes,
-      inStock: searchParams.get("inStock") || undefined,
-      original: searchParams.get("original") || undefined,
-      minPrice: searchParams.get("minPrice")
-        ? Number(searchParams.get("minPrice"))
-        : undefined,
-      maxPrice: searchParams.get("maxPrice")
-        ? Number(searchParams.get("maxPrice"))
-        : undefined,
-      type: searchParams.get("type") || undefined,
-      sort: searchParams.get("sort") || "newest",
-      page,
-      limit: searchParams.get("limit") ? Number(searchParams.get("limit")) : 12,
-    };
+      brandIds: applied.brandIds,
+      gender: applied.gender,
+      fragranceFamilies: applied.fragranceFamilies,
+      volumes: applied.volumes,
+      minVolume: applied.minVolume,
+      maxVolume: applied.maxVolume,
+      inStock: applied.inStock,
+      original: applied.original,
+      discounted: searchParams.get("discounted") === "true" ? true : undefined,
+      minPrice: applied.priceRange[0],
+      maxPrice: applied.priceRange[1],
+      type: applied.type,
+      sort: applied.sort || "newest",
+      page: searchParams.get("page"),
+      limit: searchParams.get("limit"),
+    });
   }, [searchParams]);
+  const { page } = filters;
 
   const {
     data,
@@ -86,39 +81,46 @@ function ProductsLayout() {
   useEffect(() => {
     if (!totalPages || page >= totalPages) return;
 
-    const nextPageFilters = {
+    const nextPageFilters = normalizeProductsQuery({
       ...filters,
       page: page + 1,
-    };
+    });
 
     queryClient.prefetchQuery({
-      queryKey: ["products", nextPageFilters],
+      queryKey: productKeys.list(nextPageFilters),
       queryFn: () => getAllProductsApi(nextPageFilters),
       staleTime: 30 * 1000,
     });
   }, [page, totalPages, filters, queryClient]);
 
   const skeletonCount = filters.limit;
+  const view = productListView({ isLoading: isProductsLoading, data });
 
   if (isProductsError) {
-    return <Error className="h-screen" />;
+    return <Error className="h-dvh" />;
   }
 
   return (
-    <main className="container mx-auto xl:max-w-7xl pb-2 px-4 w-full ">
+    <main className="z-0 container mx-auto xl:max-w-7xl pb-2 px-4 w-full ">
       <FilterSection />
       <section
         className={`w-auto flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-3 md:gap-6 pb-6 transition-opacity duration-200 ${
           isProductsFetching ? "opacity-60 pointer-events-none" : "opacity-100"
         }`}
       >
-        {isProductsLoading && !data
-          ? Array.from({ length: skeletonCount }).map((_, index) => (
-              <ProductCardSkeleton key={index} />
-            ))
-          : products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+        {view === "loading" &&
+          Array.from({ length: skeletonCount }).map((_, index) => (
+            <ProductCardSkeleton key={index} />
+          ))}
+        {view === "empty" && (
+          <NotExisted className="h-40">
+            محصولی با این مشخصات یافت نشد.
+          </NotExisted>
+        )}
+        {view === "products" &&
+          products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
       </section>
       <div className="flex items-center justify-center h-20">
         <PagesNumber

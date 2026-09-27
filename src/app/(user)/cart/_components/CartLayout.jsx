@@ -6,7 +6,14 @@ import {
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { checkoutAndPay } from "@/utils/paymentFlowContract.mjs";
+import {
+  createPaymentApi,
+  paymentErrorMessage,
+  redirectToGateway,
+} from "@/hooks/usePayment";
 import RadioButton from "@/ui/RadioButton";
 import {
   CheckCircleIcon,
@@ -123,7 +130,7 @@ function CartLayout() {
 
     if (isError) {
       return (
-        <div className="flex items-center justify-center max-md:h-screen md:h-92 w-full">
+        <div className="flex items-center justify-center max-md:h-dvh md:h-92 w-full">
           <span className="flex flex-col items-center justify-center max-md:gap-4 md:gap-6 text-stroke-800">
             <p className="font-bol max-md:text-xl md:text-2xl text-stroke-600">
               خطا در دریافت سبد خرید
@@ -135,7 +142,7 @@ function CartLayout() {
 
     if (!cart || cart.totalProducts === 0) {
       return (
-        <div className="flex items-center justify-center max-md:h-screen md:h-92 w-full">
+        <div className="flex items-center justify-center max-md:h-dvh md:h-92 w-full">
           <span className="flex flex-col items-center justify-center max-md:gap-4 md:gap-6 text-stroke-800">
             <p className="font-bol max-md:text-xl md:text-2xl text-stroke-600">
               سبد خرید شما خالی است!
@@ -357,7 +364,7 @@ function CartOverview({ cart, step, setStep }) {
         {/* MobileCartItems */}
         <div
           dir="ltr"
-          className="max-lg:flex items-center justify-start flex-col gap-4 size-full scrollbar-none overflow-auto max-h-screen lg:hidden"
+          className="max-lg:flex items-center justify-start flex-col gap-4 size-full scrollbar-none overflow-auto max-h-dvh lg:hidden"
         >
           {cart?.items.map((item) => (
             <CartItemsLayout.Mobile key={item.id} cartItem={item} />
@@ -385,7 +392,9 @@ function Checkout({
   const { data: address, isLoading: isAddressLoading } =
     useGetAddressById(addressId);
   const { createAddress, isCreating: isAddressCreating } = useCreateAddress();
-  const { createOrder, isCreating: isOrderCreating } = useCreateOrder();
+  const { createOrder } = useCreateOrder();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const router = useRouter();
   const selectedAddress = addresses?.find((a) => a.id === addressId);
 
   const { totalProducts = 0 } = cart;
@@ -442,6 +451,10 @@ function Checkout({
   }, [selectedAddress, reset]);
 
   const onSubmit = async (data) => {
+    // One checkout at a time: a double submit must never create two Orders.
+    if (isCheckingOut) return;
+    setIsCheckingOut(true);
+
     try {
       let finalAddressId = addressId;
 
@@ -450,25 +463,42 @@ function Checkout({
         finalAddressId = addressData.id;
       }
 
-      if (finalAddress) {
-        await createOrder({
-          addressId: finalAddressId,
-          shippingMethod,
-        });
-      } else {
-        await createOrder({
-          receiverName: data.fullName,
-          receiverPhone: data.phoneNumber,
-          ostan: data.ostan,
-          shahr: data.shahr,
-          fullAddress: data.addressLine,
-          postalCode: data.postalCode,
-          shippingMethod,
-        });
+      const orderPayload = finalAddress
+        ? { addressId: finalAddressId, shippingMethod }
+        : {
+            receiverName: data.fullName,
+            receiverPhone: data.phoneNumber,
+            ostan: data.ostan,
+            shahr: data.shahr,
+            fullAddress: data.addressLine,
+            postalCode: data.postalCode,
+            shippingMethod,
+          };
+
+      const result = await checkoutAndPay({
+        createOrder: () => createOrder(orderPayload),
+        createPayment: createPaymentApi,
+        redirect: redirectToGateway,
+      });
+
+      if (result.stage === "redirected") return;
+
+      if (result.stage === "payment-failed") {
+        // The Order exists; send the user to it to retry payment there.
+        toast.error(
+          `${paymentErrorMessage(result.error)}. سفارش ثبت شده است؛ از صفحه سفارش دوباره پرداخت کنید.`,
+          { id: "checkout-payment" },
+        );
+        router.push(
+          result.orderId
+            ? `/profile/orders/${result.orderId}`
+            : "/profile/orders",
+        );
       }
     } catch (err) {
       console.error("Checkout error:", err);
     }
+    setIsCheckingOut(false);
   };
 
   const onError = (errors) => {
@@ -567,9 +597,10 @@ function Checkout({
         </button>
         <button
           type="submit"
-          className="btn btn--primary border hover:bg-stroke-0 active:bg-stroke-0 size-full py-2"
+          disabled={isCheckingOut}
+          className="btn btn--primary border hover:bg-stroke-0 active:bg-stroke-0 size-full py-2 disabled:opacity-50"
         >
-          پرداخت و خرید محصول
+          {isCheckingOut ? "در حال انتقال به درگاه..." : "پرداخت و خرید محصول"}
         </button>
       </div>
     </form>
@@ -627,125 +658,3 @@ function ShippingOption({ cart, item }) {
     </RadioButton>
   );
 }
-
-// function PaymentResault({ cart, date, totalPrice }) {
-//   const {
-//     totalPriceBeforeDiscount = 0,
-//     shippingMethod = null,
-//     shippingCost = 0,
-//     payableTotal = 0,
-//     discountAmount = 0,
-//     totalProducts = 0,
-//   } = cart;
-//   return (
-//     <div className="flex flex-col md:flex-ro items-center justify-center gap-4 w-full">
-//       <div className="flex flex-col items-center justify-center gap-6 size-full">
-//         <div className="flex flex-col md:flex-row items-center md:items-start justify-between size-full">
-//           <div className="flex flex-col md:flex-row items-center md:items-start justify-start gap-2 size-full">
-//             <AppImage
-//               src="/images/success-badge-icon.svg"
-//               alt="success-badge-icon"
-//               width="max-md:size-12 md:size-16"
-//               sizes="30vw"
-//             />
-//             <div className="flex flex-col items-center md:items-start justify-between gap-4 md:gap-2 text-stroke-800">
-//               <p className="md:text-lg font-bold">
-//                 خرید شما با <strong className="text-success">موفقیت</strong>{" "}
-//                 انجام شد
-//               </p>
-//               <p className="text-stroke-600">
-//                 جهت دریافت جزئیات بیشتر، لطفاً ایمیل یا پیامک خود را بررسی کنید
-//               </p>
-//             </div>
-//           </div>
-//           <div className="md:flex flex-col items-start justify-between gap-2 max-md:hidden">
-//             <p className="text-stroke-600">مبلغ پرداختی</p>
-//             <PriceSection
-//               offValue={0}
-//               basePrice={payableTotal}
-//               unitPrice={payableTotal}
-//               priceClassName="text-3xl"
-//               textClassName="text-sm text-stroke-800 font-normal"
-//             />
-//           </div>
-//         </div>
-//         <div className="flex items-center justify-start overflow-auto gap-4 flex-wrap bg-stroke-100 rounded-2xl py-4 px-6 w-full scrollbar--primary scrollbar-h-1 duration-200">
-//           <Table className="text-right max-lg:hidden">
-//             <Table.Header className="*:text-stroke-400 *:font-normal w-full h-fit">
-//               <th className="pl-2 truncate">کد سفارش شما</th>
-//               <th className="px-2 truncate">تاریخ تراکنش</th>
-//               <th className="px-2 truncate">تعداد سفارشات</th>
-//               <th className="pr-2 truncate">آدرس</th>
-//             </Table.Header>
-//             <Table.body>
-//               <Table.Row className="*:pt-2 *:text-stroke-800 w-full h-fit">
-//                 <td className="pl-2 whitespace-nowrap text-ellipsis w-full">
-//                   #{toPersianNumbers(123456789)}
-//                 </td>
-//                 <td className="px-2 whitespace-nowrap text-ellipsis w-full">
-//                   25 اردیبهشت 1404
-//                 </td>
-//                 <td className="px-2 whitespace-nowrap text-ellipsis w-full">
-//                   {toPersianNumbers(totalProducts)} سفارش
-//                 </td>
-//                 <td className="pr-2 whitespace-nowrap overflow-x-auto w-full py-0.5">
-//                   تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک
-//                   ۱۵
-//                 </td>
-//               </Table.Row>
-//             </Table.body>
-//           </Table>
-//           <Table className="lg:hidden *:*:*:odd:text-right *:*:*:even:text-left *:*:*:pt-6">
-//             <Table.body>
-//               <tr className="*:pt-0">
-//                 <th className="text-stroke-400 font-normal">کد سفارش شما</th>
-//                 <td className="text-stroke-800">
-//                   #{toPersianNumbers(123456789)}
-//                 </td>
-//               </tr>
-//             </Table.body>
-//             <Table.body>
-//               <tr>
-//                 <th className="text-stroke-400 font-normal">تاریخ تراکنش</th>
-//                 <td className="text-stroke-800">25 اردیبهشت 1404</td>
-//               </tr>
-//             </Table.body>
-//             <Table.body>
-//               <tr>
-//                 <th className="text-stroke-400 font-normal">تعداد سفارشات</th>
-//                 <td className="text-stroke-800">
-//                   {toPersianNumbers(cart?.items.length)} سفارش
-//                 </td>
-//               </tr>
-//             </Table.body>
-//             <Table.body>
-//               <tr>
-//                 <th className="text-stroke-400 font-normal">آدرس</th>
-//                 <td className="text-stroke-800">
-//                   تهران، خیابان ولیعصر، منطقه ۱۲، بلوار کاوه، کوچه ابوذر، پلاک
-//                   ۱۵
-//                 </td>
-//               </tr>
-//             </Table.body>
-//           </Table>
-//         </div>
-//         <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-4">
-//           {cart?.items.map((item) => (
-//             <CartItemsLayout.Success key={item.id} cartItem={item} />
-//           ))}
-//         </div>
-//       </div>
-//       <div className="flex max-md:flex-col items-center justify-between gap-4 size-full max-md:px-6 ">
-//         <button
-//           type="button"
-//           className="btn btn--primary--2 border size-full py-2 md:max-w-60"
-//         >
-//           دریافت فاکتور
-//         </button>
-//         <div className="btn btn--secondary--2 size-full py-2 duration-200 md:max-w-60">
-//           <GoBack side="left" label="بازگشت به سایت" className="size-4" />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }

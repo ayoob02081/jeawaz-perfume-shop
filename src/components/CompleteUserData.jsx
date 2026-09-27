@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/auth/AuthContext";
 import Loading from "@/components/Loading";
 import Modal from "@/components/Modal";
 import AuthLayout from "@/app/(user)/auth/_components/AuthLayout";
+import { PERSIAN_NAME_PATTERN } from "@/utils/profileFormContract.mjs";
 
 const formData = [
   {
@@ -18,8 +19,8 @@ const formData = [
     validationSchema: {
       required: "نام الزامی است",
       pattern: {
-        value: /^[a-zA-Zآ-ی\s]+$/,
-        message: "فقط حروف مجاز است",
+        value: PERSIAN_NAME_PATTERN,
+        message: "فقط حروف فارسی مجاز است",
       },
       minLength: {
         value: 2,
@@ -36,8 +37,8 @@ const formData = [
     validationSchema: {
       required: "نام خانوادگی الزامی است",
       pattern: {
-        value: /^[a-zA-Zآ-ی\s]+$/,
-        message: "فقط حروف مجاز است",
+        value: PERSIAN_NAME_PATTERN,
+        message: "فقط حروف فارسی مجاز است",
       },
       minLength: {
         value: 2,

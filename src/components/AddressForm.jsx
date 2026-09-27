@@ -21,6 +21,7 @@ function AddressForm({
   checkout,
   setIsListOpen,
   isPrimary,
+  onProvinceChange,
 }) {
   const selectedOstanId = watch("ostan");
 
@@ -107,6 +108,9 @@ function AddressForm({
               register={register}
               errors={errors}
               options={ostanOptions}
+              validationSchema={
+                onProvinceChange ? { onChange: onProvinceChange } : {}
+              }
               placeholder="انتخاب استان"
             />
             <RHFSelect

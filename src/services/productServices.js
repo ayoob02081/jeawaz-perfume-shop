@@ -1,4 +1,5 @@
 import app from "./httpClient";
+import { historyPaths, recoveryPaths } from "@/utils/priceHistoryContract.mjs";
 
 const cleanParams = (params = {}) => {
   const cleaned = {};
@@ -53,6 +54,42 @@ export const getProductSuggestionsApi = (params) =>
       params: cleanParams(params),
     })
     .then(({ data }) => data);
+
+export const getProductVolumeOptionsApi = () =>
+  app.get("/products/filter-options/volumes").then(({ data }) => data);
+
+export const createBulkPricePreviewApi = (payload) =>
+  app.post("/products/bulk-price/preview", payload).then(({ data }) => data);
+
+export const readBulkPricePreviewApi = ({ operationId, page = 1, limit = 50 }) =>
+  app
+    .get(`/products/bulk-price/${encodeURIComponent(operationId)}/preview`, {
+      params: { page, limit },
+    })
+    .then(({ data }) => data);
+
+export const applyBulkPriceOperationApi = (operationId) =>
+  app
+    .post(`/products/bulk-price/${encodeURIComponent(operationId)}/apply`)
+    .then(({ data }) => data);
+
+export const getPriceHistoryOperationsApi = (params) =>
+  app.get(historyPaths.operations, { params: cleanParams(params) })
+    .then(({ data }) => data);
+
+export const getPriceHistoryOperationApi = ({ operationId, page = 1, limit = 50 }) =>
+  app.get(historyPaths.operation(operationId),
+    { params: { page, limit } }).then(({ data }) => data);
+
+export const createRecoveryPreviewApi = (payload) =>
+  app.post(recoveryPaths.preview, payload).then(({ data }) => data);
+
+export const readRecoveryPreviewApi = ({ operationId, page = 1, limit = 50 }) =>
+  app.get(recoveryPaths.read(operationId), { params: { page, limit } })
+    .then(({ data }) => data);
+
+export const applyRecoveryApi = (operationId) =>
+  app.post(recoveryPaths.apply(operationId)).then(({ data }) => data);
 
 // در آینده اضافه میشود
 

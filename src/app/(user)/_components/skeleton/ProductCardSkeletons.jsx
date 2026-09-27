@@ -13,11 +13,9 @@ function ProductCardSkeleton() {
           <div className="flex flex-col justify-center size-full">
             {/* Category Icons */}
             <div className="flex flex-none items-center justify-between max-md:mb-4 mb-1">
-              <div className="flex gap-2">
-                <Skeleton className="max-md:size-8 md:size-10 rounded-full" />
-                <Skeleton className="max-md:size-8 md:size-10 rounded-full" />
-                <Skeleton className="max-md:size-8 md:size-10 rounded-full" />
-              </div>
+              <Skeleton className="max-md:size-8 md:size-10 rounded-full" />
+              <Skeleton className="max-md:size-8 md:size-10 rounded-full" />
+              <Skeleton className="max-md:size-8 md:size-10 rounded-full" />
               <Skeleton className="max-md:size-8 md:size-10 rounded-full" />
             </div>
 
@@ -54,6 +52,12 @@ function ProductCardSkeleton() {
       </div>
     </article>
   );
+}
+
+export function ProductCardSkeletons({ count }) {
+  return Array.from({ length: count }, (_, index) => (
+    <ProductCardSkeleton key={index} />
+  ));
 }
 
 export default ProductCardSkeleton;

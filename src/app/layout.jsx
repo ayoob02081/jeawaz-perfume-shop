@@ -32,7 +32,7 @@ export default function RootLayout({ children, modal }) {
           <Toaster />
           <Header />
           <Sidebars />
-          <main className="max-sm:min-h-[calc(100vh-9.5rem)] sm:min-h-[calc(100vh-5rem)] lg:min-h-[calc(100vh-11rem)]">
+          <main className="max-sm:min-h-[calc(100dvh-9.5rem)] sm:min-h-[calc(100dvh-5rem)] lg:min-h-[calc(100dvh-11rem)]">
             {modal}
             {children}
           </main>

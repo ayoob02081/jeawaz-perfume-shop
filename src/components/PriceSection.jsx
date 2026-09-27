@@ -2,6 +2,7 @@ import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
+import Link from "next/link";
 
 function PriceSection({
   basePrice = 0,
@@ -29,9 +30,16 @@ function PriceSection({
       <div
         className={`relative flex ${pricesRow} flex-col justify-center items-center md:h-14`}
       >
-        <div className="relative flex items-center justify-start gap-1">
-          <p className={`${priceClassName} font-bold`}>قیمت نامشخص</p>
-        </div>
+        <Link
+          href={"tel:+989302125151"}
+          className="relative flex items-center justify-start gap-1 "
+        >
+          <p
+            className={`${priceClassName} hover:text-primary active:text-primary duration-200 text-stroke-800 font-bold`}
+          >
+            تماس بگیرید
+          </p>
+        </Link>
       </div>
     );
   }
@@ -45,15 +53,17 @@ function PriceSection({
           className={`flex grow items-center ${justify} gap-1 size-full text-stroke-800`}
         >
           {productCard && (
-            <p className=" max-md:text-sm md:text-xl font-bold">از</p>
+            <p className=" max-md:text-sm md:text-xl font-bold translate-y-1">
+              از
+            </p>
           )}
-          <p className={`${priceClassName} font-bold`}>
+          <p className={`${priceClassName} font-bold translate-y-1`}>
             {hasDiscount
               ? toPersianNumbersWithComma(unitPrice)
               : toPersianNumbersWithComma(basePrice)}
           </p>
 
-          <p className={`${textClassName} font-bold`}>تومان</p>
+          <p className={`${textClassName} font-bold translate-y-1`}>تومان</p>
         </div>
 
         {hasDiscount && (
@@ -61,14 +71,16 @@ function PriceSection({
             className={`flex grow items-center ${justify} gap-1 size-full text-stroke-600`}
           >
             <div
-              className={`absolut badge bg-primary text-white py-0 px-2 ${badgeWidth}`}
+              className={`absolut badge bg-primary text-white py-0 px-2 translate-y-1 ${badgeWidth}`}
             >
               <p className="translate-y-0.5">%</p>
 
               <p>{toPersianNumbers(offValue)}</p>
             </div>
 
-            <span className={`flex gap-1 strikeThrough ${OldPricevisibility}`}>
+            <span
+              className={`flex gap-1 strikeThrough border-stroke-600 translate-y-1 ${OldPricevisibility}`}
+            >
               <p className="text-xs font-bold">
                 {toPersianNumbersWithComma(basePrice)}
               </p>

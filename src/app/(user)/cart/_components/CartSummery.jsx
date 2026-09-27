@@ -117,7 +117,7 @@ export function CheckoutCartSummery({ cart, setStep, isPending }) {
         <p className="text-[22px] font-bold">اطلاعات</p>
         <p className="text-lg">خرید</p>
       </span>
-      <div className="flex flex-col items-center justify-between size-full max-h-[80vh] scrollbar--secondary overflow-y-auto max-lg:hidden">
+      <div className="flex flex-col items-center justify-between size-full max-h-[80dvh] scrollbar--secondary overflow-y-auto max-lg:hidden">
         {cart?.items.map((item) => (
           <CartItemsLayout.Summery key={item.id} cartItem={item} />
         ))}

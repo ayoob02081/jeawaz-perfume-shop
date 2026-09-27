@@ -6,8 +6,17 @@ import {
   getProductByIdApi,
   getProductPriceApi,
   getProductSuggestionsApi,
+  getProductVolumeOptionsApi,
   removeProductApi,
   updateProductApi,
+  createBulkPricePreviewApi,
+  readBulkPricePreviewApi,
+  applyBulkPriceOperationApi,
+  getPriceHistoryOperationsApi,
+  getPriceHistoryOperationApi,
+  createRecoveryPreviewApi,
+  readRecoveryPreviewApi,
+  applyRecoveryApi,
 } from "@/services/productServices";
 import { showApiError } from "@/utils/showApiError";
 import {
@@ -18,11 +27,13 @@ import {
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { normalizeProductsQuery, productListKey } from "@/utils/productFilterContract.mjs";
 
 export const productKeys = {
   all: ["products"],
   lists: () => [...productKeys.all, "list"],
-  list: (filters = {}) => [...productKeys.lists(), filters],
+  list: productListKey,
+  volumeOptions: () => [...productKeys.all, "filter-options", "volumes"],
   details: () => [...productKeys.all, "detail"],
   detail: (id) => [...productKeys.details(), id],
   suggestions: (search, limit = 5) => [
@@ -33,31 +44,14 @@ export const productKeys = {
   ],
 };
 
-const normalizeProductsQuery = (query = {}) => ({
-  search: query.search || undefined,
-  brandIds: query.brandIds?.length ? query.brandIds : undefined,
-  original:
-    typeof query.original === "boolean"
-      ? query.original
-      : query.original || undefined,
-  inStock:
-    typeof query.inStock === "boolean"
-      ? query.inStock
-      : query.inStock || undefined,
-  volumes: query.volumes?.length ? query.volumes : undefined,
-  gender: query.gender || undefined,
-  accords: query.accords?.length ? query.accords : undefined,
-  minPrice: query.minPrice || undefined,
-  maxPrice: query.maxPrice || undefined,
-  minVolume: query.minVolume || undefined,
-  maxVolume: query.maxVolume || undefined,
-  type: query.type || undefined,
-  sort: query.sort || "newest",
-  page: query.page || 1,
-  limit: query.limit || 12,
-});
+export const priceHistoryKeys = {
+  all: ["price-history"],
+  operations: (params) => [...priceHistoryKeys.all, "operations", params],
+  detail: (operationId, page, limit) => [...priceHistoryKeys.all,
+    "operation", operationId, page, limit],
+};
 
-export const useGetAllProducts = (query = {}) => {
+export const useGetAllProducts = (query = {}, options = {}) => {
   const normalizedQuery = normalizeProductsQuery(query);
 
   return useQuery({
@@ -66,8 +60,17 @@ export const useGetAllProducts = (query = {}) => {
     retry: false,
     refetchOnWindowFocus: false,
     placeholderData: keepPreviousData,
+    ...options,
   });
 };
+
+export const useGetProductVolumeOptions = (enabled = true) => useQuery({
+  queryKey: productKeys.volumeOptions(),
+  queryFn: getProductVolumeOptionsApi,
+  enabled,
+  retry: false,
+  staleTime: 5 * 60 * 1000,
+});
 
 export const useGetProductSuggestions = ({ search, limit = 5 } = {}) => {
   const normalizedSearch = search?.trim() || "";
@@ -108,6 +111,7 @@ export function useAddProduct() {
       });
 
       queryClient.invalidateQueries({ queryKey: productKeys.all });
+      queryClient.invalidateQueries({ queryKey: priceHistoryKeys.all });
       router.push("/admin/products");
     },
 
@@ -151,6 +155,7 @@ export function useEditProduct(productId) {
       });
 
       queryClient.invalidateQueries({ queryKey: productKeys.all });
+      queryClient.invalidateQueries({ queryKey: priceHistoryKeys.all });
       queryClient.invalidateQueries({
         queryKey: productKeys.detail(productId),
       });
@@ -173,6 +178,7 @@ export function useRemoveProduct() {
     onSuccess: (_, deletedProductId) => {
       toast.success("محصول با موفقیت حذف شد", { id: "remove-product" });
       queryClient.invalidateQueries({ queryKey: productKeys.all });
+      queryClient.invalidateQueries({ queryKey: priceHistoryKeys.all });
       queryClient.removeQueries({
         queryKey: productKeys.detail(deletedProductId),
         exact: true,
@@ -186,4 +192,77 @@ export function useRemoveProduct() {
   });
 
   return { isDeleting, removeProduct };
+}
+
+export function useCreateBulkPricePreview() {
+  const { mutateAsync: createPreview, isPending: isPreviewing } = useMutation({
+    mutationFn: createBulkPricePreviewApi,
+  });
+  return { createPreview, isPreviewing };
+}
+
+export function useReadBulkPricePreview() {
+  const { mutateAsync: readPreview, isPending: isReadingPreview } = useMutation({
+    mutationFn: readBulkPricePreviewApi,
+  });
+  return { readPreview, isReadingPreview };
+}
+
+export function useApplyBulkPriceOperation() {
+  const queryClient = useQueryClient();
+  const { mutateAsync: applyOperation, isPending: isApplying } = useMutation({
+    mutationFn: applyBulkPriceOperationApi,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: productKeys.all });
+      await queryClient.invalidateQueries({ queryKey: priceHistoryKeys.all });
+    },
+  });
+  return { applyOperation, isApplying };
+}
+
+export function usePriceHistoryOperations(params) {
+  return useQuery({
+    queryKey: priceHistoryKeys.operations(params),
+    queryFn: () => getPriceHistoryOperationsApi(params),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function usePriceHistoryOperation(operationId, page = 1, limit = 50) {
+  return useQuery({
+    queryKey: priceHistoryKeys.detail(operationId, page, limit),
+    queryFn: () => getPriceHistoryOperationApi({ operationId, page, limit }),
+    enabled: Boolean(operationId),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useCreateRecoveryPreview() {
+  const { mutateAsync: createPreview, isPending: isPreviewing } = useMutation({
+    mutationFn: createRecoveryPreviewApi,
+  });
+  return { createPreview, isPreviewing };
+}
+
+export function useReadRecoveryPreview() {
+  const { mutateAsync: readPreview, isPending: isReadingPreview } = useMutation({
+    mutationFn: readRecoveryPreviewApi,
+  });
+  return { readPreview, isReadingPreview };
+}
+
+export function useApplyRecovery() {
+  const queryClient = useQueryClient();
+  const { mutateAsync: applyRecovery, isPending: isApplying } = useMutation({
+    mutationFn: applyRecoveryApi,
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: priceHistoryKeys.all }),
+        queryClient.invalidateQueries({ queryKey: productKeys.all }),
+      ]);
+    },
+  });
+  return { applyRecovery, isApplying };
 }

@@ -1,4 +1,5 @@
 // src/utils/priceCalculator.js
+import { toPersianNumbers } from "./toPersianNumbers.js";
 
 export function normalizePrice(price) {
   return Math.floor(Math.round(price) / 1000) * 1000;
@@ -20,47 +21,37 @@ export function calculateDiscountedPrice(basePrice, discountPercent) {
   return normalizePrice(discounted);
 }
 
-export function calculateProductPrice(product, mode, volume) {
-  if (!product || !volume || volume <= 0) {
-    return {
-      basePrice: 0,
-      finalPrice: 0,
-      offValue: 0,
-    };
-  }
-
-  // --------------------------------------------------
-  // BASE PRICE
-  // --------------------------------------------------
-
-  let basePrice = 0;
-
-  // 1. Variant مستقیم
-  const variant = product?.variants?.find(
-    (v) => v.type === mode && Number(v.volume) === Number(volume),
-  );
-
-  if (variant?.price > 0) {
-    basePrice = Number(variant.price);
-  }
-
-  // 2. Decant
-  else if (mode === "decant" && product?.modes?.decant?.pricePerMl > 0) {
-    basePrice = Number(product.modes.decant.pricePerMl) * Number(volume);
-  }
-
-  // 3. Sealed
-  else if (mode === "sealed") {
-    const sealedVariant = product?.modes?.sealed?.variants?.find(
-      (v) => Number(v.volume) === Number(volume),
+export function getVariantsByType(product, type) {
+  return (Array.isArray(product?.variants) ? product.variants : [])
+    .filter(
+      (variant) =>
+        variant?.type === type &&
+        Number.isInteger(Number(variant.volume)) &&
+        Number(variant.volume) > 0 &&
+        Number(variant.price) > 0,
+    )
+    .sort(
+      (a, b) =>
+        Number(a.volume) - Number(b.volume) ||
+        (Number(a.id) - Number(b.id) || 0),
     );
+}
 
-    if (sealedVariant?.price > 0) {
-      basePrice = Number(sealedVariant.price);
-    }
-  }
+export function getMatchingVariant(product, type, volume) {
+  return (
+    getVariantsByType(product, type).find(
+      (variant) => Number(variant.volume) === Number(volume),
+    ) ?? null
+  );
+}
 
-  if (basePrice <= 0) {
+export function calculateProductPrice(product, mode, volume) {
+  const variant = getMatchingVariant(product, mode, volume);
+  return calculateVariantPrice(product, variant);
+}
+
+export function calculateVariantPrice(product, variant) {
+  if (!variant) {
     return {
       basePrice: 0,
       finalPrice: 0,
@@ -68,23 +59,14 @@ export function calculateProductPrice(product, mode, volume) {
     };
   }
 
-  // --------------------------------------------------
-  // DISCOUNT
-  // --------------------------------------------------
+  const basePrice = Number(variant.price);
 
-  const campaignDiscount =
-    mode === "decant"
-      ? Number(product?.campaign?.decant?.discountPercent ?? 0)
-      : Number(product?.campaign?.sealed?.discountPercent ?? 0);
+  const campaignDiscount = Number(product?.campaign?.[variant.type]?.discountPercent ?? 0);
 
   const productDiscount = Number(product?.offValue ?? 0);
 
   // Campaign has priority over normal product discount
   const offValue = campaignDiscount > 0 ? campaignDiscount : productDiscount;
-
-  // --------------------------------------------------
-  // FINAL PRICE
-  // --------------------------------------------------
 
   const normalizedBasePrice = normalizePrice(basePrice);
 
@@ -97,5 +79,26 @@ export function calculateProductPrice(product, mode, volume) {
     basePrice: normalizedBasePrice,
     finalPrice,
     offValue,
+  };
+}
+
+const VARIANT_TYPE_LABELS = { decant: "دکانت", sealed: "پلمپ" };
+
+// Compact "<type> <volume> میل" line for one Variant, e.g. "دکانت ۱۰ میل".
+export function getVariantLabel(variant) {
+  const type = VARIANT_TYPE_LABELS[variant?.type];
+  if (!type) return null;
+  return `${type} ${toPersianNumbers(variant.volume)} میل`;
+}
+
+export function getProductCardPresentation(product) {
+  // Every ProductCard consumer uses GET /products. An explicit null from that
+  // response is authoritative; never reconstruct a representative locally.
+  // Price and label both come from this one backend-selected Variant.
+  const representativeVariant = product?.representativeVariant ?? null;
+  return {
+    representativeVariant,
+    cardPrice: calculateVariantPrice(product, representativeVariant),
+    cardLabel: getVariantLabel(representativeVariant),
   };
 }

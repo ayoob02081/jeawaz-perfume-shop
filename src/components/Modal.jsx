@@ -10,13 +10,13 @@ function Modal({
   category,
   className = "h-full",
   backdropClassName,
+  scrollable = false,
 }) {
-  const outsideRef = useOutsideClick(onClose);
+  // Closed modals stay mounted; only an open modal may react to outside clicks.
+  const outsideRef = useOutsideClick(onClose, true, isOpen);
   const modalRef = useRef(null);
 
-  const dragHandlers = !category
-    ? useDragToClose({ onClose, threshold: 120 })
-    : {};
+  const dragHandlers = useDragToClose({ onClose, threshold: 120 });
 
   useEffect(() => {
     if (isOpen && modalRef.current) {
@@ -28,19 +28,23 @@ function Modal({
   return (
     <Backdrop isOpen={isOpen} category={category} className={backdropClassName}>
       <div
-        className={`flex ${category ? "justify-start lg:container lg:mx-auto max-lg:min-h-screen lg:p-2" : "bottom-2 max-h-[90vh] justify-center max-md:items-end md:items-center size-full container mx-auto"} xl:max-w-7xl`}
+        className={`flex ${category ? "justify-start lg:container lg:mx-auto max-lg:min-h-dvh lg:p-2" : "bottom-2 max-h-[90dvh] justify-center max-md:items-end md:items-center size-full container mx-auto"} xl:max-w-7xl`}
       >
         <section
           ref={(el) => {
             outsideRef.current = el;
             modalRef.current = el;
           }}
-          {...dragHandlers}
+          {...(!category && !scrollable ? dragHandlers : {})}
           className={`modal ${category ? "modal--secondary lg:w-fit" : "modal--primary"} ${
             isOpen &&
             (category ? "animate__fadeInRightBig" : "animate__fadeInUpBig")
           }} animate__animated overflow-hidden ${className}`}
-          style={!category ? { touchAction: "pan-x" } : undefined}
+          style={
+            !category
+              ? { touchAction: scrollable ? "pan-y" : "pan-x" }
+              : undefined
+          }
         >
           {children}
         </section>

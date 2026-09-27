@@ -2,7 +2,9 @@
 
 import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import clsx from "clsx";
+import toast from "react-hot-toast";
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -13,6 +15,16 @@ import {
 import AppImage from "@/components/AppImage";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth/AuthContext";
+import {
+  canOpenLightbox,
+  isPointOnContainedImage,
+  openLightboxSession,
+  thumbnailScrollTarget,
+} from "@/utils/imageSwiperContract.mjs";
+import {
+  buildProductShareUrl,
+  shareProduct,
+} from "@/utils/productShareContract.mjs";
 
 export default function ImageSwiper({ product, images = [] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -26,6 +38,7 @@ export default function ImageSwiper({ product, images = [] }) {
 
   const thumbRefs = useRef([]);
   const thumbRef = useRef(null);
+  const isSharing = useRef(false);
 
   const onSelect = useCallback(() => {
     if (!mainApi) return;
@@ -33,11 +46,19 @@ export default function ImageSwiper({ product, images = [] }) {
     const index = mainApi.selectedScrollSnap();
     setSelectedIndex(index);
 
-    thumbRefs.current[index]?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "start",
-    });
+    // Scroll only the thumbnail strip; scrollIntoView also scrolled the page.
+    const strip = thumbRef.current;
+    const thumb = thumbRefs.current[index];
+    if (!strip || !thumb) return;
+    const { left, top } = thumbnailScrollTarget(
+      {
+        scrollLeft: strip.scrollLeft,
+        scrollTop: strip.scrollTop,
+        rect: strip.getBoundingClientRect(),
+      },
+      thumb.getBoundingClientRect(),
+    );
+    strip.scrollTo({ left, top, behavior: "smooth" });
   }, [mainApi]);
 
   useEffect(() => {
@@ -60,36 +81,63 @@ export default function ImageSwiper({ product, images = [] }) {
     if (mainApi) mainApi.scrollNext();
   };
 
+  const openLightbox = () => {
+    if (
+      canOpenLightbox(images?.length ?? 0, (query) => window.matchMedia(query))
+    ) {
+      setIsLightboxOpen(true);
+    }
+  };
+
   const closeLightbox = () => {
     setIsLightboxOpen(false);
   };
 
-  const handleLightboxKeyDown = useCallback(
-    (e) => {
-      if (!isLightboxOpen) return;
-
-      if (e.key === "Escape") {
-        closeLightbox();
-      }
-
-      if (e.key === "ArrowLeft") {
-        mainApi?.scrollPrev();
-      }
-
-      if (e.key === "ArrowRight") {
-        mainApi?.scrollNext();
-      }
-    },
-    [isLightboxOpen, mainApi],
-  );
+  // Clicks on the visible image stay inside; clicks on the dark area around it
+  // bubble to the backdrop and close the lightbox.
+  const onLightboxImageClick = (e) => {
+    const img = e.currentTarget.querySelector("img");
+    if (
+      img &&
+      isPointOnContainedImage(
+        img.getBoundingClientRect(),
+        img.naturalWidth,
+        img.naturalHeight,
+        e.clientX,
+        e.clientY,
+      )
+    ) {
+      e.stopPropagation();
+    }
+  };
 
   useEffect(() => {
-    window.addEventListener("keydown", handleLightboxKeyDown);
+    if (!isLightboxOpen) return undefined;
+    return openLightboxSession({
+      window,
+      onClose: () => setIsLightboxOpen(false),
+      onPrev: () => mainApi?.scrollPrev(),
+      onNext: () => mainApi?.scrollNext(),
+    });
+  }, [isLightboxOpen, mainApi]);
 
-    return () => {
-      window.removeEventListener("keydown", handleLightboxKeyDown);
-    };
-  }, [handleLightboxKeyDown]);
+  const handleShare = async () => {
+    if (typeof window === "undefined" || isSharing.current) return;
+    isSharing.current = true;
+    try {
+      const result = await shareProduct(
+        {
+          title: product?.perTitle,
+          url: buildProductShareUrl(product?.id, window.location),
+        },
+        { navigator: window.navigator, document: window.document },
+      );
+      if (result === "copied") toast.success("لینک محصول کپی شد");
+      if (result === "failed") toast.error("اشتراک‌گذاری لینک محصول ممکن نشد");
+    } finally {
+      isSharing.current = false;
+    }
+  };
 
   return (
     <div
@@ -100,20 +148,17 @@ export default function ImageSwiper({ product, images = [] }) {
       <div className="lg:flex-1">
         <div ref={mainRef} className="relative overflow-hidden md:rounded-2xl">
           {/* Images */}
-          <div
-            className="flex md:cursor-zoom-in"
-            onClick={() => setIsLightboxOpen(true)}
-          >
+          <div className="flex md:cursor-zoom-in" onClick={openLightbox}>
             {images?.map((src, i) => (
               <div
                 key={i}
-                className="flex-[0_0_100%] relative aspect-square md:bg-stroke-150 md:dark:bg-stroke-50"
+                className="flex-[0_0_100%] relative aspect-square md:bg-stroke-150 md:dark:bg-stroke-50 p-10"
               >
                 <AppImage
                   src={src}
                   alt={`${product?.enTitle || "product"}-image-${i}`}
                   priority={i < 2}
-                  objectFit="object-contain"
+                  objectFit="contain"
                   className="size-full"
                 />
               </div>
@@ -122,7 +167,12 @@ export default function ImageSwiper({ product, images = [] }) {
 
           {/* Share Btn */}
           <div className="absolute flex items-center gap-1 top-5 max-md:left-3 md:right-3 max-md:z-50">
-            <button className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-stroke-0 shadow-sm">
+            <button
+              type="button"
+              onClick={handleShare}
+              aria-label="اشتراک‌گذاری محصول"
+              className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-stroke-0 shadow-sm"
+            >
               <AppImage
                 src="/images/share-icon.svg"
                 alt="share-icon"
@@ -138,6 +188,7 @@ export default function ImageSwiper({ product, images = [] }) {
             <div className="absolute flex items-center gap-1 top-5 max-md:right-3 md:left-3 max-md:z-50">
               <Link
                 href={`/admin/products/edit/${product?.id}`}
+                aria-label="ویرایش محصول"
                 className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-stroke-0 shadow-md"
               >
                 <PencilIcon className="text-primary size-5 sm:size-6 md:size-5 xl:size-6" />
@@ -148,15 +199,19 @@ export default function ImageSwiper({ product, images = [] }) {
           {/* Swiper Btn */}
           <div className="max-md:hidden absolute flex items-center gap-1 bottom-5 right-3">
             <button
+              type="button"
               onClick={scrollPrev}
               disabled={selectedIndex === 0}
+              aria-label="تصویر قبلی"
               className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-stroke-0 disabled:opacity-60 shadow-sm"
             >
               <ChevronLeftIcon className="size-4 stroke-2 text-stroke-800" />
             </button>
             <button
+              type="button"
               onClick={scrollNext}
               disabled={selectedIndex === images?.length - 1}
+              aria-label="تصویر بعدی"
               className="flex items-center justify-center aspect-square md:w-8 xl:w-10 rounded-full bg-stroke-0 disabled:opacity-60 shadow-sm"
             >
               <ChevronRightIcon className="size-4 stroke-2 text-stroke-800" />
@@ -175,22 +230,24 @@ export default function ImageSwiper({ product, images = [] }) {
             {images?.map((imgSrc, i) => (
               <button
                 key={i}
+                type="button"
                 ref={(el) => {
                   thumbRefs.current[i] = el;
                 }}
                 onClick={() => onThumbClick(i)}
+                aria-current={selectedIndex === i ? "true" : undefined}
                 className={clsx(
-                  "relative aspect-square max-[30rem]:size-18 max-md:size-26 md:size-20 lg:size-full *:rounded-xl rounded-xl lg:overflow-hidden border transition duration-200",
+                  "relative aspect-square max-[30rem]:size-18 max-md:size-26 md:size-20 lg:size-full *:*:p-2 *:rounded-xl rounded-xl lg:overflow-hidden border transition duration-200",
                   selectedIndex === i
                     ? "border-primary md:*:bg-stroke-0 *:dark:bg-stroke-50 shadow-md scale-95"
-                    : "border-stroke-250 opacity-60 dark:opacity-30 hover:opacity-100 bg-stroke-0 md:bg-stroke-150 md:dark:bg-stroke-100",
+                    : "border-stroke-250 opacity-60 dark:opacity-30 hover:opacity-100 bg-stroke-0 md:bg-stroke-150",
                 )}
               >
                 <AppImage
                   src={imgSrc}
                   alt={`${product?.enTitle || "product"}-thumb-${i}`}
                   priority={i < 2}
-                  objectFit="object-contain"
+                  objectFit="contain"
                   className="size-full"
                 />
               </button>
@@ -201,8 +258,10 @@ export default function ImageSwiper({ product, images = [] }) {
         {/* Swiper Btn (Desktop Only) */}
         <div className="max-lg:hidden lg:h-28 lg:w-full lg:flex lg:flex-col lg:gap-1 lg:items-center lg:pt-4 lg:justify-start">
           <button
+            type="button"
             onClick={scrollPrev}
             disabled={selectedIndex === 0}
+            aria-label="تصویر قبلی"
             className={clsx(
               "lg:flex lg:items-center lg:justify-center lg:size-8 xl:size-10 lg:rounded-full transition duration-200",
               selectedIndex === 0
@@ -213,8 +272,10 @@ export default function ImageSwiper({ product, images = [] }) {
             <ChevronUpIcon className="size-4 stroke-2 text-stroke-800" />
           </button>
           <button
+            type="button"
             onClick={scrollNext}
             disabled={selectedIndex === images?.length - 1}
+            aria-label="تصویر بعدی"
             className={clsx(
               "lg:flex lg:items-center lg:justify-center lg:size-8 xl:size-10 lg:rounded-full transition duration-200",
               selectedIndex === images?.length - 1
@@ -226,70 +287,78 @@ export default function ImageSwiper({ product, images = [] }) {
           </button>
         </div>
       </div>
-      {isLightboxOpen && (
-        <div
-          className="fixed inset-0 z-99 flex items-center justify-center bg-black/90 p-4 max-md:hidden"
-          onClick={closeLightbox}
-        >
-          {/* Close */}
-          <button
-            type="button"
-            onClick={closeLightbox}
-            className="absolute right-4 top-4 z-10 flex size-11 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20"
-            aria-label="بستن"
-          >
-            <span className="text-2xl leading-none">×</span>
-          </button>
-
-          {/* Previous */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              scrollPrev();
-            }}
-            disabled={selectedIndex === 0}
-            className="absolute left-4 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30"
-            aria-label="تصویر قبلی"
-          >
-            <ChevronLeftIcon className="size-6" />
-          </button>
-
-          {/* Image */}
+      {/* Portaled to <body>: the page overlay's `translate` otherwise becomes
+          the containing block of this `fixed` layer. */}
+      {isLightboxOpen &&
+        createPortal(
           <div
-            className="relative flex h-full w-full items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
+            dir="ltr"
+            role="dialog"
+            aria-modal="true"
+            aria-label="نمایش بزرگ تصویر محصول"
+            className="fixed inset-0 z-99 flex items-center justify-center bg-black/90 p-4 max-md:hidden"
+            onClick={closeLightbox}
           >
-            <AppImage
-              src={images[selectedIndex]}
-              alt={`${product?.enTitle || "product"}-fullscreen-${selectedIndex}`}
-              objectFit="object-contain"
-              className="max-h-[90vh] max-w-[90vw]"
-              sizes="100vw"
-              priority
-            />
-          </div>
+            {/* Close */}
+            <button
+              type="button"
+              onClick={closeLightbox}
+              className="absolute right-4 top-4 z-10 flex size-11 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20"
+              aria-label="بستن"
+            >
+              <span className="text-2xl leading-none">×</span>
+            </button>
 
-          {/* Next */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              scrollNext();
-            }}
-            disabled={selectedIndex === images.length - 1}
-            className="absolute right-4 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30"
-            aria-label="تصویر بعدی"
-          >
-            <ChevronRightIcon className="size-6" />
-          </button>
+            {/* Previous */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                scrollPrev();
+              }}
+              disabled={selectedIndex === 0}
+              className="absolute left-4 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30"
+              aria-label="تصویر قبلی"
+            >
+              <ChevronLeftIcon className="size-6" />
+            </button>
 
-          {/* Counter */}
-          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-sm">
-            {selectedIndex + 1} / {images.length}
-          </div>
-        </div>
-      )}
+            {/* Image */}
+            <div
+              className="relative flex h-full w-full items-center justify-center p-13"
+              onClick={onLightboxImageClick}
+            >
+              <AppImage
+                src={images[selectedIndex]}
+                alt={`${product?.enTitle || "product"}-fullscreen-${selectedIndex}`}
+                objectFit="contain"
+                className="max-h-[90dvh] max-w-[90vw]"
+                sizes="100vw"
+                priority
+              />
+            </div>
+
+            {/* Next */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                scrollNext();
+              }}
+              disabled={selectedIndex === images.length - 1}
+              className="absolute right-4 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30"
+              aria-label="تصویر بعدی"
+            >
+              <ChevronRightIcon className="size-6" />
+            </button>
+
+            {/* Counter */}
+            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-sm">
+              {selectedIndex + 1} / {images.length}
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

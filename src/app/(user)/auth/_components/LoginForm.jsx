@@ -22,9 +22,20 @@ function LoginForm({
   return (
     <form
       data-scroll
-      className="flex flex-col items-center justify-between gap-4 size-full"
+      className="flex flex-col items-center justify-between gap-4 size-full
+   "
       onSubmit={onSubmit}
     >
+      <img
+        src="/images/flower.svg"
+        alt="flower-icon"
+        className="pointer-events-none absolute -z-20 left-0 top-0 w-36 "
+      />
+      <img
+        src="/images/flower.svg"
+        alt="flower-icon"
+        className="pointer-events-none absolute rotate-180 -z-20 right-0 bottom-0 w-36 "
+      />
       {closeBtn && (
         <div className="absolute md:left-6 max-md:top-3 md:top-6 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl max-md:bg-stroke-200">
           <button
@@ -59,11 +70,11 @@ function LoginForm({
           {children}
           <button
             type="submit"
-            disabled={
-              isPasswordType
-                ? !phoneNumberLength || !passLength
-                : !phoneNumberLength
-            }
+            // disabled={
+            //   isPasswordType
+            //     ? !phoneNumberLength || !passLength
+            //     : !phoneNumberLength
+            // }
             className=" btn btn--primary w-full px-3 py-2 h-12 md:h-14 border-0 "
           >
             {isPasswordType === false && step === 1 ? "دریافت کد ورود" : "ورود"}

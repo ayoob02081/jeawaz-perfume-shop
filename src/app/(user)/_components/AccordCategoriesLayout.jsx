@@ -2,7 +2,11 @@
 
 import Error from "@/components/Error";
 import AppImage from "@/components/AppImage";
-import Loading from "@/components/Loading";
+import {
+  ACCORD_CATEGORY_SKELETON_COUNT,
+  homeCategoryView,
+} from "@/utils/homeSectionView.mjs";
+import { AccordCategoryCardSkeletons } from "./skeleton/HomeSectionSkeletons";
 import { useGetCategoriesByType } from "@/hooks/useCategories";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -10,12 +14,14 @@ import { useRouter } from "next/navigation";
 
 function AccordCategoriesLayout() {
   const {
-    data: accordCategories,
+    data: fragranceFamilyCategories,
     isPending,
     error,
-  } = useGetCategoriesByType("accord");
+  } = useGetCategoriesByType("fragrance_family");
 
-  if (error) {
+  const view = homeCategoryView({ isPending, error });
+
+  if (view === "error") {
     return <Error />;
   }
 
@@ -33,15 +39,15 @@ function AccordCategoriesLayout() {
         <h2 className="text-stroke-800">دنیایی متفاوت</h2>
       </div>
       <div className="flex gap-4 justify-between items-center w-full px-16 my-6 scroll--x rounded-2xl">
-        {isPending ? (
-          <Loading />
+        {view === "loading" ? (
+          <AccordCategoryCardSkeletons count={ACCORD_CATEGORY_SKELETON_COUNT} />
         ) : (
-          accordCategories.map((item) => (
+          fragranceFamilyCategories.map((item) => (
             <FilterCard
               key={item.id}
               src={item.imageUrl}
               alt={item.value + "-image"}
-              value={item.value}
+              slug={item.slug}
               label={item.title}
               productsCount={item.productsCount}
             />
@@ -54,14 +60,14 @@ function AccordCategoriesLayout() {
 
 export default AccordCategoriesLayout;
 
-function FilterCard({ src, alt, value, label, productsCount }) {
+function FilterCard({ src, alt, slug, label, productsCount }) {
   const router = useRouter();
 
   return (
     <div className="snap-center">
       <button
         onClick={() =>
-          router.push(`/products?accords=${encodeURIComponent(value)}`)
+          router.push(`/products?fragranceFamilies=${encodeURIComponent(slug)}`)
         }
         className="flex h-24 sm:h-30! aspect-9/3 sm:aspect-5/2 justify-between items-center px-3 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 "
       >

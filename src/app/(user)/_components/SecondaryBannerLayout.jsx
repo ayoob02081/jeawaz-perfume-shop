@@ -4,7 +4,11 @@ import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import AppImage from "@/components/AppImage";
 import { useGetActiveBanners } from "@/hooks/useBanners";
-import Loading from "@/components/Loading";
+import {
+  homeBannerView,
+  SECONDARY_BANNER_SKELETON_COUNT,
+} from "@/utils/homeSectionView.mjs";
+import { SecondaryBannerSkeletons } from "./skeleton/HomeSectionSkeletons";
 
 function SecondaryBannerLayout() {
   const {
@@ -15,11 +19,15 @@ function SecondaryBannerLayout() {
     type: "secondary",
   });
 
-  if (isPending) {
-    return <Loading />;
+  const view = homeBannerView({ isPending, isError, banners });
+
+  if (view === "loading") {
+    return (
+      <SecondaryBannerSkeletons count={SECONDARY_BANNER_SKELETON_COUNT} />
+    );
   }
 
-  if (isError || !banners?.length) {
+  if (view === "hidden") {
     return null;
   }
 

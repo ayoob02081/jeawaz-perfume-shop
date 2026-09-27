@@ -21,7 +21,7 @@ function AdaptiveOverlayPage({
     return (
       <div
         className={`${isOpen ? "translate-x-0 right-0" : "translate-x-full"} top-0 size-fit 
-       max-lg:fixed max-lg:w-screen max-lg:h-screen lg:shadow-xl lg:border lg:rounded-3xl
+       max-lg:fixed max-lg:w-screen max-lg:h-dvh lg:shadow-xl lg:border lg:rounded-3xl
        bg-stroke-0 lg:bg-stroke-100 dark:lg:bg-stroke-50 border-stroke-200 max-lg:z-90 transition-all duration-200 ${overflow} max-md:bottom-20 md:bottom-0 scrollbar-none`}
       >
         <div className="flex flex-col h-full max-md:pb-6 w-full">
@@ -48,7 +48,7 @@ function AdaptiveOverlayPage({
     return (
       <div
         className={`relative  ${isOpen ? "right-0 translate-x-0" : "translate-x-full"} top-0 bg-stroke-0
-           max-lg:fixed max-lg:w-screen max-lg:h-screen
+           max-lg:fixed max-lg:w-screen max-lg:h-dvh
          max-lg:z-90 duration-200 ${overflow} max-md:bottom-20 md:bottom-0 scrollbar-none`}
       >
         <div className="flex flex-col gap-4 h-fit bg-stroke-0 pb-10">
@@ -74,7 +74,7 @@ function AdaptiveOverlayPage({
   if (product) {
     return (
       <div
-        className={`${isOpen ? "translate-x-0 right-0" : "translate-x-full"} top-0 max-md:fixed max-md:w-full max-md:h-screen md:rounded-3xl bg-stroke-0 max-md:z-90 transition-all duration-200 ${overflow} max-md:bottom-20 md:bottom-0 scrollbar-none`}
+        className={`${isOpen ? "translate-x-0 right-0" : "translate-x-full"} top-0 max-md:fixed max-md:w-full max-md:h-dvh md:rounded-3xl bg-stroke-0 max-md:z-90 transition-all duration-200 ${overflow} max-md:bottom-20 md:bottom-0 scrollbar-none`}
       >
         <div className="flex flex-col h-full max-md:pb-6 w-full">
           <div
@@ -99,10 +99,10 @@ function AdaptiveOverlayPage({
 
   return (
     <div
-      className={`${isOpen ? "translate-x-0 right-0" : "translate-x-full"} top-0 ${sidebar ? "size-fit " : "w-full h-fit min-h-[50vh] overflow-hidden"} ${
+      className={`${isOpen ? "translate-x-0 right-0" : "translate-x-full"} top-0 ${sidebar ? "size-fit " : "w-full h-fit min-h-[50dvh] overflow-hidden"} ${
         max
-          ? "max-lg:fixed max-lg:w-screen max-lg:h-screen lg:shadow-xl lg:border lg:rounded-3xl"
-          : "max-md:fixed max-md:w-full max-md:h-screen md:shadow-xl md:border md:rounded-3xl"
+          ? "max-lg:fixed max-lg:w-screen max-lg:h-dvh lg:shadow-xl lg:border lg:rounded-3xl"
+          : "max-md:fixed max-md:w-full max-md:h-dvh md:shadow-xl md:border md:rounded-3xl"
       } bg-stroke-0 ${bgColor} border-stroke-200 max-lg:z-90 transition-all duration-200 ${overflow} max-md:bottom-20 md:bottom-0`}
     >
       <div className="flex flex-col h-full max-md:pb-6 w-full">

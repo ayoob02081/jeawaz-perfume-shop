@@ -46,7 +46,7 @@ function NotifTypePage({ type }) {
   return (
     <div
       ref={containerRef}
-      className="flex flex-col items-start justify-start gap-1 w-full max-md:max-h-screen lg:max-h-[50vh] overflow-auto max-lg:rounded-2xl scrollbar-none"
+      className="flex flex-col items-start justify-start gap-1 w-full max-md:max-h-dvh lg:max-h-[50dvh] overflow-auto max-lg:rounded-2xl scrollbar-none"
     >
       {notifications.length > 0 ? (
         notifications?.map(
@@ -97,7 +97,7 @@ function NotifTypeCard({
 
   return (
     <div
-      className={`flex items-center justify-between gap-2 py-4 w-full rounded-xl px-4 ${className} ${!isRead && " bg-stroke-150 dark:bg-stroke-100"}`}
+      className={`flex items-center justify-between gap-2 py-4 w-full rounded-xl px-4 ${className} ${!isRead && " bg-stroke-150"}`}
     >
       <button
         type="button"

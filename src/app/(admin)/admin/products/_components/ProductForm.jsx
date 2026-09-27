@@ -1,6 +1,4 @@
 "use client";
-
-import { Toaster } from "react-hot-toast";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import {
   useGetAllBrandCategories,
@@ -19,10 +17,20 @@ import {
   useRemoveProduct,
 } from "@/hooks/useProducts";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import RHFUploadFile from "@/ui/RHFUploadFile";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  buildProductFormPayload,
+  concentrationOptions,
+  initialProductFormValues,
+  longevityOptions,
+  projectionOptions,
+  sillageOptions,
+  variantTypes,
+} from "./productFormContract";
+import { runProductDelete } from "./productDeleteContract.mjs";
 
 const basicInfoData = [
   { id: 1, label: "عنوان فارسی", name: "perTitle", placeholder: "بلو شنل" },
@@ -50,19 +58,28 @@ const basicInfoData = [
   },
 ];
 
-const detailInfoData = [
-  { id: 1, label: "سازنده", name: "details.madeIn", placeholder: "امارات" },
-  { id: 2, label: "طراح", name: "details.designedIn", placeholder: "پیکاسو" },
+const multipleCategoryFields = [
   {
-    id: 3,
-    label: "ماندگاری",
-    name: "details.longevity",
-    placeholder: "۸ ساعت",
+    type: "fragrance_family",
+    field: "fragranceFamilyIds",
+    label: "خانوادهٔ بویایی",
   },
-  { id: 4, label: "پخش بو", name: "details.smelling", placeholder: "قوی" },
+  { type: "season", field: "seasonIds", label: "فصل" },
+  { type: "character", field: "characterIds", label: "شخصیت رایحه" },
+  { type: "occasion", field: "occasionIds", label: "موقعیت استفاده" },
 ];
 
 function ProductForm({ productToEdit }) {
+  // Keep the edit baseline from when this Product was opened, even if a query
+  // refreshes while the admin is editing. The backend compares it under lock.
+  const editBaseline = useRef({
+    id: productToEdit?.id,
+    variants: productToEdit?.variants?.map(({ type, volume, price }) => ({
+      type,
+      volume,
+      price,
+    })),
+  });
   const {
     data: brands,
     isLoading: brandsLoading,
@@ -79,116 +96,13 @@ function ProductForm({ productToEdit }) {
   const { addProduct, isAdding } = useAddProduct();
   const { editProduct, isEditing } = useEditProduct(productToEdit?.id);
 
-  const productAccords = productToEdit?.categories.accords;
-  const productGender = productToEdit?.categories.gender;
-  const productBrand = productToEdit?.brand;
-
   const genderCategories = categories?.filter((c) => c.type === "gender") || [];
-  const accordCategories = categories?.filter((c) => c.type === "accord") || [];
-  const seasons = ["بهار", "تابستان", "پاییز", "زمستان"];
-
-  const initialValues = useMemo(() => {
-    const existingImages =
-      productToEdit?.images
-        ?.filter((img) => img && img.trim() !== "")
-        .map((img) => ({ url: img })) || [];
-    const imagesWithEmptySlot = [...existingImages, { url: "" }];
-
-    const decantVariants =
-      productToEdit?.variants?.filter((v) => v.type === "decant") || [];
-
-    const sealedProductVariants =
-      productToEdit?.variants?.filter((v) => v.type === "sealed") || [];
-
-    const volumesString = decantVariants.map((v) => v.volume).join(",");
-
-    const pricePerMl =
-      decantVariants.length && decantVariants[0].volume
-        ? decantVariants[0].price / decantVariants[0].volume
-        : "";
-
-    if (!productToEdit) {
-      return {
-        perTitle: "",
-        enTitle: "",
-        description: "",
-        notesDescription: "",
-        images: [{ url: "" }],
-        offValue: 0,
-        stock: 0,
-        original: false,
-        notes: {
-          top: [""],
-          middle: [""],
-          base: [""],
-        },
-        modes: {
-          decant: {
-            pricePerMl: "",
-            availableVolumes: [],
-          },
-          sealed: {
-            variants: [{ volume: "", price: "" }],
-          },
-        },
-        details: {
-          madeIn: "",
-          designedIn: "",
-          longevity: "",
-          smelling: "",
-          seasons: [],
-        },
-        accordIds: [],
-        genderId: null,
-        brandId: null,
-      };
-    }
-
-    return {
-      perTitle: productToEdit?.perTitle || "",
-      enTitle: productToEdit?.enTitle || "",
-      description: productToEdit?.description || "",
-      notesDescription: productToEdit?.notesDescription || "",
-      images: imagesWithEmptySlot,
-      offValue: productToEdit?.offValue || 0,
-      stock: productToEdit?.stock || 0,
-      original: productToEdit?.original ? "original" : false,
-      notes: {
-        top: productToEdit?.notes?.top?.length ? productToEdit.notes.top : [""],
-        middle: productToEdit?.notes?.middle?.length
-          ? productToEdit.notes.middle
-          : [""],
-        base: productToEdit?.notes?.base?.length
-          ? productToEdit.notes.base
-          : [""],
-      },
-      modes: {
-        decant: {
-          pricePerMl,
-          availableVolumes: volumesString,
-        },
-        sealed: {
-          variants: sealedProductVariants.length
-            ? sealedProductVariants.map((v) => ({
-                volume: v.volume,
-                price: v.price,
-              }))
-            : [{ volume: "", price: "" }],
-        },
-      },
-
-      details: {
-        madeIn: productToEdit?.details?.madeIn || "",
-        designedIn: productToEdit?.details?.designedIn || "",
-        longevity: productToEdit?.details?.longevity || "",
-        smelling: productToEdit?.details?.smelling || "",
-        seasons: productToEdit?.details?.seasons || [],
-      },
-      accordIds: productAccords?.map((a) => String(a.id)) || [],
-      genderId: productGender?.id || null,
-      brandId: productBrand?.id || null,
-    };
-  }, [productToEdit, productAccords, productBrand, productGender]);
+  const temperatureCategories =
+    categories?.filter((c) => c.type === "temperature") || [];
+  const initialValues = useMemo(
+    () => initialProductFormValues(productToEdit),
+    [productToEdit],
+  );
 
   const {
     register,
@@ -196,16 +110,25 @@ function ProductForm({ productToEdit }) {
     reset,
     control,
     watch,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: initialValues,
   });
 
   useEffect(() => {
-    if (productToEdit) {
+    if (productToEdit?.id && editBaseline.current.id !== productToEdit.id) {
+      editBaseline.current = {
+        id: productToEdit.id,
+        variants: productToEdit.variants?.map(({ type, volume, price }) => ({
+          type,
+          volume,
+          price,
+        })),
+      };
       reset(initialValues);
     }
-  }, [productToEdit?.id, reset]);
+  }, [productToEdit, initialValues, reset]);
 
   const {
     fields: imageFields,
@@ -213,9 +136,9 @@ function ProductForm({ productToEdit }) {
     remove,
   } = useFieldArray({ control, name: "images" });
 
-  const sealedFields = useFieldArray({
+  const variantFields = useFieldArray({
     control,
-    name: "modes.sealed.variants",
+    name: "variants",
   });
   const {
     fields: topFields,
@@ -269,95 +192,23 @@ function ProductForm({ productToEdit }) {
     },
   ];
 
-  useEffect(() => {
-    appendTop("");
-    appendMiddle("");
-    appendBase("");
-  }, []);
-
   const onSubmit = async (data) => {
-    const categoryIds = [
-      Number(data.genderId),
-      ...(data.accordIds?.map(Number) || []),
-    ].filter(Boolean);
-
-    const { genderId, accordIds, images, ...rest } = data;
-
-    const decantPricePerMl = Number(data.modes?.decant?.pricePerMl);
-
-    const decantVolumes = String(data.modes?.decant?.availableVolumes || "")
-      .split(/[,،]+/)
-      .map((v) => Number(v.trim()))
-      .filter((v) => !isNaN(v) && v > 0);
-
-    const sealedVariants = (data.modes?.sealed?.variants || [])
-      .map((v) => ({
-        type: "sealed",
-        volume: Number(v.volume),
-        price: Number(v.price),
-        stock: Number(data.stock) || 0,
-      }))
-      .filter((v) => v.volume > 0 && v.price > 0);
-
-    const decantVariants = decantVolumes
-      .map((volume) => ({
-        type: "decant",
-        volume,
-        price: decantPricePerMl * volume,
-        stock: Number(data.stock) || 0,
-      }))
-      .filter((v) => v.volume > 0 && v.price > 0);
-
-    const variants = [...sealedVariants, ...decantVariants];
-
-    const payload = {
-      ...rest,
-
-      stock: Number(data.stock),
-      offValue: Number(data.offValue),
-      original: !!data.original,
-      brandId: Number(data.brandId),
-      categoryIds,
-
-      images: Array.isArray(images)
-        ? images
-            .map((img) => (typeof img === "string" ? img : img?.url))
-            .filter((url) => typeof url === "string" && url.trim() !== "")
-        : [],
-
-      notes: {
-        top: data.notes?.top?.filter(Boolean) || [],
-        middle: data.notes?.middle?.filter(Boolean) || [],
-        base: data.notes?.base?.filter(Boolean) || [],
-      },
-
-      details: {
-        ...data.details,
-        seasons: data.details?.seasons || [],
-      },
-
-      variants,
-
-      modes: {
-        decant: {
-          pricePerMl: decantPricePerMl,
-          availableVolumes: decantVolumes,
-        },
-        sealed: {
-          variants: sealedVariants.map((v) => ({
-            volume: v.volume,
-            price: v.price,
-          })),
-        },
-      },
-    };
+    const { payload, errors: payloadErrors } = buildProductFormPayload(
+      data,
+      productToEdit ? editBaseline.current.variants : undefined,
+    );
+    if (payloadErrors.length) {
+      payloadErrors.forEach(({ field, message }) =>
+        setError(field, { type: "validate", message }),
+      );
+      return;
+    }
 
     productToEdit ? editProduct(payload) : addProduct(payload);
   };
 
   const removeProductHandler = async (product) => {
-    const { id } = product;
-    await removeProduct(id);
+    await runProductDelete({ id: product.id, removeProduct });
   };
 
   if (brandsLoading || categoriesLoading) return <Loading />;
@@ -365,7 +216,6 @@ function ProductForm({ productToEdit }) {
 
   return (
     <div className="max-w-6xl px-4">
-      <Toaster />
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
         {/* Basic Info */}
         <div className="flex flex-col items-start justify-center gap-6">
@@ -386,6 +236,38 @@ function ProductForm({ productToEdit }) {
                   : { register, type: item.type || "text" })}
               />
             ))}
+            <RHFTextField
+              label="سال عرضه"
+              name="releaseYear"
+              control={control}
+              type="tel"
+              min="1700"
+              max={new Date().getFullYear() + 1}
+              register={register}
+              errors={errors}
+              placeholder="اختیاری"
+            />
+            <RHFTextField
+              label="کشور تولید"
+              name="country"
+              register={register}
+              errors={errors}
+              placeholder="اختیاری"
+            />
+            <RHFTextField
+              label="عطرساز"
+              name="perfumer"
+              register={register}
+              errors={errors}
+              placeholder="اختیاری"
+            />
+            <FormSelect
+              label="غلظت"
+              name="concentration"
+              register={register}
+              options={concentrationOptions}
+              error={errors.concentration}
+            />
           </div>
           <RHFTextAreaField
             name="description"
@@ -495,6 +377,7 @@ function ProductForm({ productToEdit }) {
                   className=""
                   checked={isChecked}
                   value={gender.id}
+                  disabled={!gender.isActive && !isChecked}
                   validationSchema={{ required: "انتخاب جنسیت ضروری است" }}
                   name="genderId"
                   register={register}
@@ -536,49 +419,51 @@ function ProductForm({ productToEdit }) {
           </div>
         </div>
 
-        {/* Accord */}
-        <div>
-          <h3 className="font-bold mb-4 text-stroke-800 max-md:text-base text-lg">
-            انتخاب رایحه
-            <span className="text-error">*</span>
-          </h3>
-          <div className="flex items-center max-sm:justify-center justify-start flex-wrap gap-4">
-            {accordCategories.map((accord) => {
-              const isChecked = watch("accordIds").includes(String(accord.id))
-                ? true
-                : false;
-              return (
-                <RHFCheckBox
-                  key={accord.id}
-                  value={accord.id}
-                  id={accord.id}
-                  validationSchema={{ required: "انتخاب رایحه ضروری است" }}
-                  name="accordIds"
-                  register={register}
-                >
-                  <div
-                    className={`flex items-center justify-center border-2 ${isChecked ? "border-primary font-bold text-primary bg-stroke-0" : "border-stroke-150 text-stroke-600 opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="text-xl">{accord.title}</p>
-                      <AppImage
-                        width="size-9"
-                        sizes="15vw"
-                        src={accord.iconUrl}
-                        alt={accord.value + "-icon"}
-                      />
-                    </div>
-                  </div>
-                </RHFCheckBox>
-              );
-            })}
+        {multipleCategoryFields.map(({ type, field, label }) => (
+          <div key={type}>
+            <h3 className="font-bold mb-4 text-stroke-800 text-lg">{label}</h3>
+            <div className="flex flex-wrap gap-4">
+              {categories
+                .filter((category) => category.type === type)
+                .map((category) => {
+                  const selected = (watch(field) || []).includes(
+                    String(category.id),
+                  );
+                  return (
+                    <RHFCheckBox
+                      key={category.id}
+                      value={category.id}
+                      id={`${field}-${category.id}`}
+                      name={field}
+                      register={register}
+                      disabled={!category.isActive && !selected}
+                    >
+                      <div
+                        className={`border-2 rounded-full px-4 py-2 ${selected ? "border-primary text-primary" : "border-stroke-150 text-stroke-600"}`}
+                      >
+                        {category.title}
+                        {!category.isActive && " (غیرفعال)"}
+                      </div>
+                    </RHFCheckBox>
+                  );
+                })}
+            </div>
+            <FieldError error={errors[field]} />
           </div>
-          {errors?.accordIds && (
-            <p className="block text-error text-xs mt-2">
-              {errors?.accordIds?.message}
-            </p>
-          )}
-        </div>
+        ))}
+        <FormSelect
+          label="دما"
+          name="temperatureId"
+          register={register}
+          options={temperatureCategories.map((category) => ({
+            value: category.id,
+            label: `${category.title}${category.isActive ? "" : " (غیرفعال)"}`,
+            disabled:
+              !category.isActive &&
+              String(category.id) !== String(watch("temperatureId")),
+          }))}
+          error={errors.temperatureId}
+        />
 
         {/* Notes */}
 
@@ -611,148 +496,111 @@ function ProductForm({ productToEdit }) {
           </div>
         </div>
 
-        {/* Decant */}
         <div>
-          <h3 className="text-stroke-800 font-bold mb-4">
-            حجم‌های دکانت موجود
-            <span className="text-error">*</span>
-          </h3>
-          <div className="flex flex-wra items-center justify-start gap-4 w-full">
-            <RHFTextField
-              textClassName="font-bold"
-              errors={errors}
-              control={control}
-              isPrice={true}
-              label="قیمت هر میل(تومان)"
-              name="modes.decant.pricePerMl"
-              className="rounded-xl w-full"
-              validationSchema={{ required: "قیمت هر میل ضروری است" }}
-              placeholder="مثال: ۳۴,۰۰۰"
-            />
-            <RHFTextField
-              textClassName="font-bold"
-              register={register}
-              errors={errors}
-              label="حجم‌ها (میلی‌لیتر)"
-              name="modes.decant.availableVolumes"
-              className="rounded-xl w-full"
-              placeholder="مثال: 3,5,10"
-              validationSchema={{
-                required: "وارد کردن حجم‌ دکانت ها ضروری است",
-                pattern: {
-                  value: /^[\d,]+$/,
-                  message: "فقط عدد انگلیسی و کاما وارد کنید",
-                },
-                onChange: (e) => {
-                  e.target.value = e.target.value.replace(/[^0-9,]/g, "");
-                },
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Sealed Variants */}
-        <div>
-          <div className="flex items-center justify-between mb-4 w-full">
-            <h3 className="text-stroke-800 font-bold">
-              حجم‌های پلمپ موجود
-              <span className="text-error">*</span>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-stroke-800">
+              گونه‌ها و قیمت‌های مستقل
             </h3>
             <button
               type="button"
-              onClick={() => sealedFields.append({ volume: "", price: "" })}
+              onClick={() =>
+                variantFields.append({ type: "decant", volume: "", price: "" })
+              }
               className="btn btn--success text-sm py-1.5 px-2.5"
             >
-              اضافه کردن
+              افزودن گونه
             </button>
           </div>
-          {sealedFields.fields.map((field, i) => (
+          <FieldError error={errors.variants} />
+          {variantFields.fields.map((field, index) => (
             <div
               key={field.id}
-              className="relative flex items-end gap-4 mb-2 h-full"
+              className="flex flex-col md:flex-row items-end gap-4 mb-4"
             >
+              <FormSelect
+                label="نوع"
+                name={`variants.${index}.type`}
+                register={register}
+                options={variantTypes.map((type) => ({
+                  value: type,
+                  label: type === "decant" ? "دکانت" : "پلمپ",
+                }))}
+                error={errors.variants?.[index]?.type}
+              />
               <RHFTextField
-                errors={errors}
-                textClassName="font-bold"
+                label="حجم (میلی‌لیتر)"
+                name={`variants.${index}.volume`}
                 control={control}
-                isPrice={true}
-                name={`modes.sealed.variants.${i}.volume`}
-                className="rounded-xl w-full"
+                isPrice
+                errors={errors}
+                placeholder="حجم صحیح مثبت"
                 validationSchema={{ required: "حجم ضروری است" }}
-                placeholder="حجم"
               />
               <RHFTextField
-                textClassName="font-bold"
-                errors={errors}
+                label="قیمت"
+                name={`variants.${index}.price`}
                 control={control}
-                isPrice={true}
-                name={`modes.sealed.variants.${i}.price`}
-                className="rounded-xl w-full"
+                isPrice
+                errors={errors}
+                placeholder="قیمت صحیح مثبت"
                 validationSchema={{ required: "قیمت ضروری است" }}
-                placeholder="قیمت(تومان)"
               />
-              <DeleteButton onClick={() => sealedFields.remove(i)} />
+              <button
+                type="button"
+                onClick={() => variantFields.remove(index)}
+                className="btn btn--primary--2 px-3 py-2"
+              >
+                حذف
+              </button>
             </div>
           ))}
         </div>
 
-        {/* Details */}
-        <div>
-          <h3 className="font-bold mb-6 text-stroke-800 max-md:text-base text-lg">
-            جزئیات محصول
-          </h3>
-          <div className="grid grid-cols-2 gap-6">
-            {detailInfoData.map((item) => (
-              <RHFTextField
-                key={item.name}
-                textClassName="font-bold"
-                register={register}
-                isRequired
-                errors={errors}
-                label={item.label}
-                name={item.name}
-                className="rounded-xl w-full"
-                validationSchema={{ required: `${item.label} ضروری است` }}
-                placeholder={`مثال: ${item.placeholder}`}
-              />
-            ))}
+        <div className="space-y-4">
+          <h3 className="font-bold text-stroke-800">عملکرد عطر</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FormSelect
+              label="سطح ماندگاری"
+              name="performance.longevity.level"
+              register={register}
+              options={longevityOptions}
+              error={errors.performance?.longevity?.level}
+            />
+            <RHFTextField
+              label="حداقل ساعت ماندگاری"
+              name="performance.longevity.minHours"
+              control={control}
+              type="tel"
+              min="0"
+              max="168"
+              register={register}
+              errors={errors}
+            />
+            <RHFTextField
+              label="حداکثر ساعت ماندگاری"
+              name="performance.longevity.maxHours"
+              control={control}
+              type="tel"
+              min="0"
+              max="168"
+              register={register}
+              errors={errors}
+            />
+            <FormSelect
+              label="پخش بو"
+              name="performance.projection"
+              register={register}
+              options={projectionOptions}
+              error={errors.performance?.projection}
+            />
+            <FormSelect
+              label="رد بو"
+              name="performance.sillage"
+              register={register}
+              options={sillageOptions}
+              error={errors.performance?.sillage}
+            />
           </div>
-        </div>
-
-        {/* Sesons */}
-        <div>
-          <h3 className="font-bold mb-4 text-stroke-800 max-md:text-base text-lg">
-            انتخاب فصل مناسب استفاده
-            <span className="text-error">*</span>
-          </h3>
-          <div className="flex items-center justify-center lg:justify-start flex-wrap gap-4">
-            {seasons.map((season) => {
-              const isChecked = watch("details.seasons").includes(season)
-                ? true
-                : false;
-              return (
-                <RHFCheckBox
-                  key={season}
-                  value={season}
-                  id={season}
-                  validationSchema={{ required: "انتخاب فصل ضروری است" }}
-                  name="details.seasons"
-                  register={register}
-                >
-                  <div
-                    className={`flex items-center justify-center border-2 ${isChecked ? "border-primary font-bold text-primary bg-stroke-0 opacity-100" : "border-stroke-150 text-stroke-600 opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
-                  >
-                    <p className="text-xl">{season}</p>
-                  </div>
-                </RHFCheckBox>
-              );
-            })}
-          </div>
-          {errors?.details?.seasons && (
-            <p className="block text-error text-xs mt-2">
-              {errors?.details?.seasons?.message}
-            </p>
-          )}
         </div>
 
         {/* Submit Button */}
@@ -796,6 +644,40 @@ function ProductForm({ productToEdit }) {
 }
 
 export default ProductForm;
+
+function FieldError({ error }) {
+  return error?.message ? (
+    <p className="text-error text-xs mt-2">{error.message}</p>
+  ) : null;
+}
+
+function FormSelect({ label, name, register, options, error }) {
+  return (
+    <label className="flex flex-col gap-2 w-full text-stroke-800">
+      <span className="font-bold">{label}</span>
+      <select
+        {...register(name)}
+        className="textField__input rounded-5xl w-full"
+      >
+        <option value="">انتخاب نشده</option>
+        {options.map((option) => {
+          const value = typeof option === "string" ? option : option.value;
+          const text = typeof option === "string" ? option : option.label;
+          return (
+            <option
+              key={value}
+              value={value}
+              disabled={typeof option === "string" ? false : option.disabled}
+            >
+              {text}
+            </option>
+          );
+        })}
+      </select>
+      <FieldError error={error} />
+    </label>
+  );
+}
 
 function Notes({
   label,

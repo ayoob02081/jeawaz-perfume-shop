@@ -202,7 +202,7 @@ export const productMobileTHeads = [
   },
   {
     id: 6,
-    label: "قیمت دکانت و پلمپ",
+    label: "قیمت گونه‌ها",
   },
   {
     id: 7,
@@ -237,11 +237,11 @@ export const productDesktopTHeads = [
   },
   {
     id: 7,
-    label: "قیمت دکانت",
+    label: "قیمت دکانت‌ها",
   },
   {
     id: 8,
-    label: "قیمت پلمپ",
+    label: "قیمت پلمپ‌ها",
   },
   {
     id: 9,
@@ -625,4 +625,21 @@ export const bannerDesktopTHeads = [
     id: 9,
     label: "عملیات",
   },
+];
+
+export const contactMessageMobileTHeads = [
+  { id: 1, label: "#" },
+  { id: 2, label: "فرستنده" },
+  { id: 3, label: "وضعیت / تاریخ" },
+  { id: 4, label: "" },
+];
+
+export const contactMessageDesktopTHeads = [
+  { id: 1, label: "#" },
+  { id: 2, label: "نام فرستنده" },
+  { id: 3, label: "شماره تماس" },
+  { id: 4, label: "پیام" },
+  { id: 5, label: "وضعیت" },
+  { id: 6, label: "تاریخ دریافت" },
+  { id: 7, label: "" },
 ];
