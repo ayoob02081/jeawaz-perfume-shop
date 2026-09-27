@@ -6,7 +6,14 @@ import { useGetCategorybyID } from "@/hooks/useCategories";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 
-const supportedTypes = ["season", "temperature", "character", "occasion"];
+const supportedTypes = [
+  "fragrance_family",
+  "gender",
+  "season",
+  "temperature",
+  "character",
+  "occasion",
+];
 
 export default function EditCategoryPage() {
   const { type, id } = useParams();

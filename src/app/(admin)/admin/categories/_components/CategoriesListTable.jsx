@@ -4,7 +4,6 @@ import AppImage from "@/components/AppImage";
 import {
   categoryDesktopTHeads,
   categoryMobileTHeads,
-  categoryTHeads,
 } from "@/constants/tableHeads";
 import { useRemoveBrand, useRemoveCategory } from "@/hooks/useCategories";
 import ConfirmModal from "@/ui/ConfirmModal";
@@ -14,7 +13,7 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useState } from "react";
 
-function CategoriesListTable({ categories, brands, fragranceFamilies, genders, categoryRoute }) {
+function CategoriesListTable({ categories, brands, categoryRoute }) {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [category, setCategory] = useState(false);
 
@@ -25,7 +24,7 @@ function CategoriesListTable({ categories, brands, fragranceFamilies, genders, c
   const removeCategoryHandler = async () => {
     const { id } = category;
 
-    if (fragranceFamilies || genders || categoryRoute) {
+    if (categoryRoute) {
       await removeCategory(id);
     } else {
       await removeBrand(id);
@@ -44,7 +43,7 @@ function CategoriesListTable({ categories, brands, fragranceFamilies, genders, c
   };
 
   return (
-    <div className="w-full overflow-x-auto max-h-screen pb-0.5 rounded-xl shadow-xl scrollbar-none">
+    <div className="w-full overflow-x-auto max-h-dvh pb-0.5 rounded-xl shadow-xl scrollbar-none">
       <>
         <Table className="overflow-auto md:hidden">
           <Table.Header>
@@ -56,7 +55,7 @@ function CategoriesListTable({ categories, brands, fragranceFamilies, genders, c
           </Table.Header>
           <Table.body>
             {categories?.map((category, index) => {
-              const type = categoryRoute || (brands ? "brands" : fragranceFamilies ? "accords" : "genders");
+              const type = categoryRoute || (brands && "brands");
               return (
                 <Table.Row key={category.id} className="even:bg-primary/5">
                   <td className="table__td px-3 font-bold rounded-r-xl">
@@ -115,48 +114,43 @@ function CategoriesListTable({ categories, brands, fragranceFamilies, genders, c
               </th>
             ))}
           </Table.Header>
-
           <Table.body>
             {categories?.map((category, index) => {
-              const type = categoryRoute || (brands ? "brands" : fragranceFamilies ? "accords" : "genders");
+              const type = categoryRoute || (brands && "brands");
 
               return (
                 <Table.Row key={category.id} className="even:bg-primary/5">
                   <td className="table__td px-3 font-bold rounded-r-xl">
                     {toPersianNumbers(index + 1)}
                   </td>
-
                   <td className="table__td px-6 max-w-70 truncate font-bold">
                     {category.title}
                   </td>
-
                   <td className="table__td px-6 max-w-70 truncate font-bold">
                     {category.value}
                   </td>
-
                   <td className="table__td px-6 max-w-70 truncate font-bold">
-                    {category.description}
+                    <p className="overflow-auto size-full scrollbar-none">
+                      {category.description}
+                    </p>
                   </td>
-
                   <td className="table__td px-2">
                     <div className="flex items-center justify-center">
                       <AppImage
                         src={category?.iconUrl}
                         alt={category?.value || "category-icon"}
-                        ratio={brands ? "aspect-[4/1]" : "aspect-square"}
-                        width={brands ? "w-16" : "w-7"}
+                        ratio={!brands ? "aspect-[4/1]" : "aspect-square"}
+                        width={!brands ? "w-16" : "w-7"}
                         className={brands ? "dark:invert" : ""}
                         sizes="10vw"
                       />
                     </div>
                   </td>
-
                   <td className="table__td px-6">
                     <span className="badge badge--primary font-bold">
                       {toPersianNumbers(category?.productsCount || 0)}
                     </span>
                   </td>
-
                   <td className="table__td px-3 rounded-l-xl">
                     <div className="flex gap-2 items-center">
                       <Link

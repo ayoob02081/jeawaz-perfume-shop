@@ -11,31 +11,33 @@ import { useRouter } from "next/navigation";
 import RHFUploadFile from "@/ui/RHFUploadFile";
 
 const categoryLabels = {
+  fragrance_family: "خانواده بویایی",
+  gender: "جنسیت",
   season: "فصل",
   temperature: "دما",
   character: "شخصیت رایحه",
   occasion: "موقعیت استفاده",
 };
 
-function CategoryForm({ categoryToEdit, fragranceFamily, gender, categoryType }) {
+function CategoryForm({ categoryToEdit, categoryType }) {
   const basicInfoData = [
     {
       id: 1,
       label: "عنوان فارسی",
       name: "title",
-      placeholder: fragranceFamily ? "گلی" : "مردانه",
+      placeholder: "گلی" || "مردانه",
     },
     {
       id: 2,
       label: "عنوان انگلیسی",
       name: "value",
-      placeholder: fragranceFamily ? "floral" : "men",
+      placeholder: "floral" || "men",
     },
     {
       id: 3,
       label: "توضیحات",
       name: "description",
-      placeholder: fragranceFamily ? "رایحه گلی" : "عطر مردانه",
+      placeholder: "رایحه گلی" || "عطر مردانه",
     },
   ];
 
@@ -67,7 +69,7 @@ function CategoryForm({ categoryToEdit, fragranceFamily, gender, categoryType })
       description: description || "",
       imageUrl: imageUrl || "",
       iconUrl: iconUrl || "",
-      type: type || categoryType || fragranceFamily || gender,
+      type: type || categoryType,
     },
   });
 
@@ -113,7 +115,7 @@ function CategoryForm({ categoryToEdit, fragranceFamily, gender, categoryType })
         {/* IconUrl & ImageUrl */}
         <div className="flex flex-col items-start gap-y-4 w-fit bg-stroke-100 p-6 rounded-3xl border border-slate-100">
           <h3 className="text-stroke-800 font-bold text-lg">
-            آیکون و عکس {categoryLabels[categoryType] || (fragranceFamily ? "رایحه" : "جنسیت")}
+            آیکون و عکس {categoryLabels[categoryType]}
           </h3>
           <div className="flex flex-wrap gap-6">
             <Controller
@@ -154,22 +156,6 @@ function CategoryForm({ categoryToEdit, fragranceFamily, gender, categoryType })
               disabled={isSubmitting || isEditing}
               className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
             >
-              {fragranceFamily &&
-                (!categoryToEdit
-                  ? isSubmitting
-                    ? "در حال ساخت..."
-                    : "ساخت رایحه"
-                  : isEditing
-                    ? "در حال ویرایش..."
-                    : "ویرایش رایحه")}
-              {gender &&
-                (!categoryToEdit
-                  ? isSubmitting
-                    ? "در حال ساخت..."
-                    : "ساخت جنسیت"
-                  : isEditing
-                    ? "در حال ویرایش..."
-                    : "ویرایش جنسیت")}
               {categoryType &&
                 (isSubmitting || isEditing
                   ? "در حال ذخیره..."

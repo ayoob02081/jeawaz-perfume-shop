@@ -7,7 +7,6 @@ import CategoriesListTable from "./CategoriesListTable";
 import {
   useGetAllBrandCategories,
   useGetAllCategories,
-  useGetCategoriesByType,
 } from "@/hooks/useCategories";
 import RadioButton from "@/ui/RadioButton";
 import { useState } from "react";
@@ -21,12 +20,12 @@ const categoriesMode = [
   {
     id: 2,
     label: "رایحه‌ها",
-    value: "fragranceFamilies",
+    value: "fragrance_family",
   },
   {
     id: 3,
     label: "جنسیت‌ها",
-    value: "genders",
+    value: "gender",
   },
   { id: 4, label: "فصل‌ها", value: "season" },
   { id: 5, label: "دما", value: "temperature" },
@@ -34,14 +33,17 @@ const categoriesMode = [
   { id: 7, label: "موقعیت استفاده", value: "occasion" },
 ];
 
-const additionalTypes = ["season", "temperature", "character", "occasion"];
+const additionalTypes = [
+  "fragrance_family",
+  "gender",
+  "season",
+  "temperature",
+  "character",
+  "occasion",
+];
 
 function CategoriesLayout() {
   const [mode, setMode] = useState("brands");
-  const { data: genderCategories, isPending: isGendersPending } =
-    useGetCategoriesByType("gender");
-  const { data: fragranceFamilyCategories, isPending: isFamiliesPending } =
-    useGetCategoriesByType("fragrance_family");
   const { data: allCategories, isPending: isAllCategoriesPending } =
     useGetAllCategories();
   const {
@@ -52,7 +54,7 @@ function CategoriesLayout() {
 
   return (
     <div className="flex flex-col items-start justify-start gap-8 max-lg:py-4 px-4 w-full pb-10">
-      <div className="flex items-center justify-between gap-6 w-full">
+      <div className="flex items-center justify-between max-md:gap-2 gap-4 w-full overflow-auto scrollbar-none">
         {categoriesMode.map((item) => {
           const isChecked = item.value === mode;
           return (
@@ -65,7 +67,7 @@ function CategoriesLayout() {
               value={item.value}
             >
               <p
-                className={`flex items-center justify-center py-2 px-3 border-[1.5px] rounded-full w-full ${isChecked ? "font-bold text-primary border-primary" : "text-stroke-500 border-stroke-500"} transition-all duration-200`}
+                className={`flex items-center justify-center text-nowrap py-2 px-3 border-[1.5px] rounded-full w-full min-w-10 ${isChecked ? "font-bold text-primary border-primary" : "text-stroke-500 border-stroke-500"} transition-all duration-200`}
               >
                 {item.label}
               </p>
@@ -99,52 +101,6 @@ function CategoriesLayout() {
         </div>
       )}
 
-      {/* Accords */}
-      {mode === "fragranceFamilies" && (
-        <div className="w-full">
-          <div className="flex items-center gap-4 justify-between pb-6 w-full">
-            <h1 className="font-bold text-stroke-800 text-xl">رایحه‌ها</h1>
-            <Link
-              href="/admin/categories/accords/add"
-              className="btn btn--primary border py-1.5 px-3"
-            >
-              اضافه کردن رایحه
-            </Link>
-          </div>
-          {isFamiliesPending ? (
-            <Loading />
-          ) : (
-            <CategoriesListTable categories={fragranceFamilyCategories} fragranceFamilies />
-          )}
-          {fragranceFamilyCategories && fragranceFamilyCategories?.length === 0 && (
-            <NotExisted className="h-96">رایحه‌ای وجود نداره!</NotExisted>
-          )}
-        </div>
-      )}
-
-      {/* Genders */}
-      {mode === "genders" && (
-        <div className="w-full">
-          <div className="flex items-center gap-4 justify-between pb-6 w-full">
-            <h1 className="font-bold text-stroke-800 text-xl">جنسیت</h1>
-            <Link
-              href="/admin/categories/genders/add"
-              className="btn btn--primary border py-1.5 px-3"
-            >
-              اضافه کردن جنسیت
-            </Link>
-          </div>
-          {isGendersPending ? (
-            <Loading />
-          ) : (
-            <CategoriesListTable categories={genderCategories} genders />
-          )}
-          {genderCategories && genderCategories?.length === 0 && (
-            <NotExisted className="h-96">جنسیتی وجود نداره!</NotExisted>
-          )}
-        </div>
-      )}
-
       {additionalTypes.includes(mode) && (
         <div className="w-full">
           <div className="flex items-center gap-4 justify-between pb-6 w-full">
@@ -152,7 +108,7 @@ function CategoriesLayout() {
               {categoriesMode.find((item) => item.value === mode)?.label}
             </h1>
             <Link
-              href={`/admin/categories/types/${mode}/add`}
+              href={`/admin/categories/${mode}/add`}
               className="btn btn--primary border py-1.5 px-3"
             >
               افزودن دسته‌بندی
@@ -162,8 +118,10 @@ function CategoriesLayout() {
             <Loading />
           ) : (
             <CategoriesListTable
-              categories={allCategories?.filter((category) => category.type === mode)}
-              categoryRoute={`types/${mode}`}
+              categories={allCategories?.filter(
+                (category) => category.type === mode,
+              )}
+              categoryRoute={mode}
             />
           )}
         </div>
