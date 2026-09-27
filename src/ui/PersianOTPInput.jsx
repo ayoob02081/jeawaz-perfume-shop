@@ -1,39 +1,49 @@
-import React, { useRef } from "react";
-import { cleanNumericValue, toPersianNumbers } from "@/utils/toPersianNumbers";
+import React, { useEffect, useRef } from "react";
+import { toPersianNumbers } from "@/utils/toPersianNumbers";
+import {
+  applyOtpBackspace,
+  applyOtpInput,
+  applyOtpPaste,
+  firstEmptyOtpIndex,
+  getOtpSlots,
+} from "@/utils/otpInputContract.mjs";
 
 export default function PersianOTPInput({ value, onChange, numInputs = 5 }) {
   const inputsRef = useRef([]);
+  const slots = getOtpSlots(value, numInputs);
+
+  // Focus the first empty slot when the OTP step appears.
+  useEffect(() => {
+    inputsRef.current[firstEmptyOtpIndex(value, numInputs)]?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChange = (e, index) => {
-    const val = e.target.value;
-    const cleaned = cleanNumericValue(val);
+    const next = applyOtpInput(value, index, e.target.value, {
+      caret: e.target.selectionEnd,
+      length: numInputs,
+    });
+    onChange(next.value);
 
-    const newValue = value.split("");
-    newValue[index] = cleaned ? cleaned.slice(-1) : "";
-    const finalValue = newValue.join("").slice(0, numInputs);
-    onChange(finalValue);
-
-    if (cleaned && index < numInputs - 1) {
-      inputsRef.current[index + 1].focus();
+    if (next.focusIndex !== index) {
+      inputsRef.current[next.focusIndex].focus();
     }
   };
 
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {
-      if (!value[index] && index > 0) {
-        inputsRef.current[index - 1].focus();
+      const next = applyOtpBackspace(value, index, numInputs);
+      if (next.focusIndex !== index) {
+        inputsRef.current[next.focusIndex].focus();
       }
-      const newValue = value.split("");
-      newValue[index] = "";
-      onChange(newValue.join(""));
+      onChange(next.value);
     }
   };
 
   const handlePaste = (e) => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text");
-    const cleaned = cleanNumericValue(pastedData).slice(0, numInputs);
-    onChange(cleaned);
+    onChange(applyOtpPaste(pastedData, numInputs));
   };
 
   return (
@@ -47,8 +57,10 @@ export default function PersianOTPInput({ value, onChange, numInputs = 5 }) {
           ref={(el) => (inputsRef.current[index] = el)}
           type="text"
           inputMode="numeric"
-          maxLength={1}
-          value={toPersianNumbers(value[index] || "")}
+          // Room for a full autofilled code next to an existing digit; the
+          // controlled value always renders one digit per slot.
+          maxLength={numInputs + 1}
+          value={toPersianNumbers(slots[index])}
           onChange={(e) => handleChange(e, index)}
           onKeyDown={(e) => handleKeyDown(e, index)}
           onPaste={handlePaste}

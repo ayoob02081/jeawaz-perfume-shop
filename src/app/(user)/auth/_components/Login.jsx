@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import PassInput from "@/ui/PassInput";
@@ -12,6 +12,11 @@ import { DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
 import useOtpTimer from "@/hooks/useOtpTimer";
 import RHFTextField from "@/ui/RHFTextField";
 import PersianOTPInput from "@/ui/PersianOTPInput";
+import useWebOtp from "@/hooks/useWebOtp";
+import {
+  createOtpVerificationGuard,
+  isCompleteOtp,
+} from "@/utils/otpInputContract.mjs";
 
 function Login({ closeBtn }) {
   const {
@@ -19,6 +24,7 @@ function Login({ closeBtn }) {
     control,
     watch,
     reset,
+    getValues,
     handleSubmit,
     formState: { errors },
   } = useForm();
@@ -31,6 +37,12 @@ function Login({ closeBtn }) {
   const router = useRouter();
 
   const { checkAuth, login } = useAuth();
+
+  // One OTP verification at a time (manual submit, Enter, WebOTP).
+  const verificationGuardRef = useRef(null);
+  if (!verificationGuardRef.current) {
+    verificationGuardRef.current = createOtpVerificationGuard();
+  }
 
   const togglePasswordType = () => {
     setIsPasswordType((prevState) => !prevState);
@@ -59,19 +71,41 @@ function Login({ closeBtn }) {
     }
   };
 
+  // Verifies the given code, not the `otp` state, so a code that was just set
+  // (WebOTP) is used before React re-renders.
+  const verifyOtp = async (code) => {
+    const result = await verificationGuardRef.current.run(async () => {
+      await verifyOtpApi({ phoneNumber: getValues("phoneNumber"), code });
+      await checkAuth();
+    });
+
+    if (result.skipped) return;
+    if (!result.ok) return toast.error("ورود ناموفق بود، دوباره تلاش کنید");
+
+    toast.success("به جیاواز خوش آمدید!");
+    router.back();
+  };
+
+  useWebOtp({
+    enabled: step === 2 && !isPasswordType,
+    onCode: (code) => {
+      setOtp(code);
+      verifyOtp(code);
+    },
+  });
+
   const handleSubmitForm = async (e) => {
     const { password, phoneNumber } = e;
 
-    try {
-      if (isPasswordType) {
-        if (password.length < 6) return toast.error("رمز عبور کوتاه است");
+    if (!isPasswordType) {
+      if (!isCompleteOtp(otp)) return toast.error("کد تکمیل نشده");
+      return verifyOtp(otp);
+    }
 
-        await login({ phoneNumber, password });
-      } else {
-        if (otp.length < 5) return toast.error("کد تکمیل نشده");
-        await verifyOtpApi({ phoneNumber, code: otp });
-        await checkAuth();
-      }
+    try {
+      if (password.length < 6) return toast.error("رمز عبور کوتاه است");
+
+      await login({ phoneNumber, password });
 
       toast.success("به جیاواز خوش آمدید!");
       router.back();
@@ -115,7 +149,15 @@ function Login({ closeBtn }) {
                 required: "شماره تلفن الزامی است",
                 pattern: {
                   value: /^09\d{9}$/,
-                  message: "شماره موبایل نامعتبر است",
+                  message: "شماره موبایل باید با ۰۹ شروع شود",
+                },
+                minLength: {
+                  value: 11,
+                  message: "شماره همراه باید ۱۱ کاراکتر باشد",
+                },
+                maxLength: {
+                  value: 11,
+                  message: "شماره همراه باید ۱۱ کاراکتر باشد",
                 },
               }}
               isPrimary
@@ -172,7 +214,7 @@ function Login({ closeBtn }) {
   };
 
   return (
-    <div className="relative size-full p-6 md:p-10 md:px-14">
+    <div className="relative size-full max-[30rem]:px-4 sm:py-10 p-6 md:px-14">
       {renderSteps()}
     </div>
   );

@@ -27,7 +27,7 @@ function AuthLayout({
   };
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <div className="flex flex-col items-center justify-between gap-2 sm:gap-4 text-center">
         {login && (
           <span className="max-sm:text-lg sm:text-2xl text-stroke-800 font-bold ">
@@ -93,10 +93,10 @@ function AuthLayout({
       )} */}
       {children}
       {login && (
-        <div className="max-sm:hidden text-stroke-800 pt-">
-          <span className="*:text-primary flex items-center justify-center gap-1.5 flex-wrap">
+        <div className="text-stroke-800">
+          <span className="*:text-primary flex items-center justify-center gap-1.5 flex-wrap text-wrap">
             ورود شما به معنای پذیرش
-            <button onClick={RouteToTerms} type="button">
+            <button onClick={RouteToTerms} type="button" >
               شرایط جیاواز پرفیوم
             </button>
             و
@@ -107,7 +107,7 @@ function AuthLayout({
           </span>
         </div>
       )}
-    </>
+    </div>
   );
 }
 
