@@ -15,6 +15,17 @@ export function resolveOffProductsSource({ activeCampaign, campaignProducts }) {
   return "campaign";
 }
 
+/**
+ * @returns {"loading" | "error" | "products"}
+ * Loading until the source is chosen and that source's list has settled, so
+ * the fallback list never flashes while the campaign is still unresolved.
+ */
+export function offProductsSectionView({ source, section }) {
+  if (source === "loading" || section.isPending) return "loading";
+  if (section.error) return "error";
+  return "products";
+}
+
 /** Milliseconds until endsAt (never negative), or null for an invalid date. */
 export function getRemainingMs(endsAt, now) {
   const end = Date.parse(endsAt);

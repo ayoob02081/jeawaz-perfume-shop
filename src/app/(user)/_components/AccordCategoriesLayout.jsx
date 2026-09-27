@@ -2,7 +2,11 @@
 
 import Error from "@/components/Error";
 import AppImage from "@/components/AppImage";
-import Loading from "@/components/Loading";
+import {
+  ACCORD_CATEGORY_SKELETON_COUNT,
+  homeCategoryView,
+} from "@/utils/homeSectionView.mjs";
+import { AccordCategoryCardSkeletons } from "./skeleton/HomeSectionSkeletons";
 import { useGetCategoriesByType } from "@/hooks/useCategories";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -15,7 +19,9 @@ function AccordCategoriesLayout() {
     error,
   } = useGetCategoriesByType("fragrance_family");
 
-  if (error) {
+  const view = homeCategoryView({ isPending, error });
+
+  if (view === "error") {
     return <Error />;
   }
 
@@ -33,8 +39,8 @@ function AccordCategoriesLayout() {
         <h2 className="text-stroke-800">دنیایی متفاوت</h2>
       </div>
       <div className="flex gap-4 justify-between items-center w-full px-16 my-6 scroll--x rounded-2xl">
-        {isPending ? (
-          <Loading />
+        {view === "loading" ? (
+          <AccordCategoryCardSkeletons count={ACCORD_CATEGORY_SKELETON_COUNT} />
         ) : (
           fragranceFamilyCategories.map((item) => (
             <FilterCard

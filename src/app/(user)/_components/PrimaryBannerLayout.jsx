@@ -6,9 +6,10 @@ import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
 import { useGetActiveBanners } from "@/hooks/useBanners";
 import "swiper/css";
 import "swiper/css/pagination";
-import Loading from "@/components/Loading";
 import { useRef } from "react";
 import PrimaryBannerCard from "@/components/PrimaryBannerCard";
+import { homeBannerView } from "@/utils/homeSectionView.mjs";
+import { PrimaryBannerSkeleton } from "./skeleton/HomeSectionSkeletons";
 
 function PrimaryBannerLayout() {
   const swiperRef = useRef(null);
@@ -21,11 +22,13 @@ function PrimaryBannerLayout() {
     type: "primary",
   });
 
-  if (isPending) {
-    return <Loading />;
+  const view = homeBannerView({ isPending, isError, banners });
+
+  if (view === "loading") {
+    return <PrimaryBannerSkeleton />;
   }
 
-  if (isError || !banners?.length) {
+  if (view === "hidden") {
     return null;
   }
 

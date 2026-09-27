@@ -1,8 +1,12 @@
 "use client";
 
-import Loading from "@/components/Loading";
 import HomePageSortProductsLayout from "./HomePageSortProductsLayout";
 import ProductCard from "./ProductCard";
+import { ProductCardSkeletons } from "./skeleton/ProductCardSkeletons";
+import {
+  HOME_SECTION_SKELETON_COUNT,
+  homeSectionView,
+} from "@/utils/homeProductSection.mjs";
 import { useGetAllProducts } from "@/hooks/useProducts";
 import Error from "@/components/Error";
 import { useState } from "react";
@@ -27,12 +31,9 @@ function RecentProducts() {
   };
 
   const products = data?.data || [];
+  const view = homeSectionView({ isLoading, error });
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (error) {
+  if (view === "error") {
     return <Error />;
   }
   return (
@@ -50,9 +51,13 @@ function RecentProducts() {
       className={"rounded-2xl"}
     >
       <div></div>
-      {products?.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
+      {view === "loading" ? (
+        <ProductCardSkeletons count={HOME_SECTION_SKELETON_COUNT} />
+      ) : (
+        products?.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))
+      )}
     </HomePageSortProductsLayout>
   );
 }

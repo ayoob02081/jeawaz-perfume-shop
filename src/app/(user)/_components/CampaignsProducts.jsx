@@ -4,11 +4,15 @@ import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { productKeys, useGetAllProducts } from "@/hooks/useProducts";
 import { campaignKeys, useGetActiveCampaign } from "@/hooks/useCampaigns";
-import { resolveOffProductsSource } from "@/utils/homeCampaignSection.mjs";
+import {
+  offProductsSectionView,
+  resolveOffProductsSource,
+} from "@/utils/homeCampaignSection.mjs";
+import { HOME_SECTION_SKELETON_COUNT } from "@/utils/homeProductSection.mjs";
 import HomePageSortProductsLayout from "./HomePageSortProductsLayout";
 import ProductCard from "./ProductCard";
+import { ProductCardSkeletons } from "./skeleton/ProductCardSkeletons";
 import CampaignCountdown from "@/components/CampaignCountdown";
-import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 
 const fallbackQuery = {
@@ -57,12 +61,9 @@ function CampaignsProducts() {
   };
 
   const products = section.data?.data || [];
+  const view = offProductsSectionView({ source, section });
 
-  if (source === "loading" || section.isPending) {
-    return <Loading />;
-  }
-
-  if (section.error) {
+  if (view === "error") {
     return <Error />;
   }
   return (
@@ -83,14 +84,18 @@ function CampaignsProducts() {
         )
       }
     >
-      {products?.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          isPending={section.isPending}
-          error={section.error}
-        />
-      ))}
+      {view === "loading" ? (
+        <ProductCardSkeletons count={HOME_SECTION_SKELETON_COUNT} />
+      ) : (
+        products?.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            isPending={section.isPending}
+            error={section.error}
+          />
+        ))
+      )}
     </HomePageSortProductsLayout>
   );
 }
