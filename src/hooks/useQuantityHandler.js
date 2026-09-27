@@ -5,14 +5,21 @@ import {
   useRemoveFromCart,
   useUpdateQuantity,
 } from "./useCart";
+import {
+  findCartLine,
+  resolveDecrement,
+  resolveIncrement,
+} from "@/utils/addedToCartContract.mjs";
 
 export function useQuantityHandler(
   product,
   defaultVolume,
   volumeMode,
   cartItem,
+  { onAdded } = {},
 ) {
-  const { addToCart } = useAddToCart();
+  // `onAdded` only covers a new cart line; quantity updates keep their toast.
+  const { addToCart } = useAddToCart({ onAdded });
   const { removeFromCart } = useRemoveFromCart();
   const { data: cart } = useGetAllCartItems();
   const { updateQuantity } = useUpdateQuantity();
@@ -26,12 +33,11 @@ export function useQuantityHandler(
     }
   }, [defaultVolume]);
 
-  const defaultCartItem = cart?.items?.find(
-    (item) =>
-      item.product.id === product?.id &&
-      item.mode === volumeMode &&
-      item.volume === selectedVolume,
-  );
+  const defaultCartItem = findCartLine(cart, {
+    productId: product?.id,
+    mode: volumeMode,
+    volume: selectedVolume,
+  });
 
   useEffect(() => {
     if (cartItem?.quantity !== undefined) {
@@ -44,16 +50,19 @@ export function useQuantityHandler(
   }, [cartItem, defaultCartItem]);
 
   const RemoveFromCartHandler = async () => {
-    const item = cartItem || defaultCartItem;
-    if (!item) return;
+    const action = resolveDecrement({
+      line: cartItem || defaultCartItem,
+      quantity,
+    });
+    if (!action) return;
 
-    if (quantity > 1) {
+    if (action.type === "update") {
       updateQuantity({
-        itemId: item.id,
-        quantity: quantity - 1,
+        itemId: action.itemId,
+        quantity: action.quantity,
       });
     } else {
-      await removeFromCart(item.id);
+      await removeFromCart(action.itemId);
     }
 
     setQuantity((q) => Math.max(0, q - 1));
@@ -63,23 +72,20 @@ export function useQuantityHandler(
     if (!selectedVolume || !product?.id) return;
     if (selectedVolume > product?.stock) return;
 
-    const existingItem = cartItem || defaultCartItem;
+    const onError = () => setQuantity((q) => Math.max(0, q - 1));
+    const action = resolveIncrement({
+      line: cartItem || defaultCartItem,
+      quantity,
+      request: { productId: product.id, mode: volumeMode, volume: selectedVolume },
+    });
 
-    if (existingItem) {
+    if (action.type === "update") {
       updateQuantity(
-        { itemId: existingItem.id, quantity: quantity + 1 },
-        { onError: () => setQuantity((q) => Math.max(0, q - 1)) },
+        { itemId: action.itemId, quantity: action.quantity },
+        { onError },
       );
     } else {
-      addToCart(
-        {
-          productId: product.id,
-          quantity: 1,
-          mode: volumeMode,
-          volume: selectedVolume,
-        },
-        { onError: () => setQuantity((q) => Math.max(0, q - 1)) },
-      );
+      addToCart(action.payload, { onError });
     }
 
     setQuantity((q) => q + 1);

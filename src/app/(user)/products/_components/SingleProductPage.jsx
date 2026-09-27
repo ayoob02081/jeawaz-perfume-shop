@@ -5,7 +5,7 @@ import CardEvents from "@/components/CardEvents";
 import RadioButton from "@/ui/RadioButton";
 import PriceSection from "@/components/PriceSection";
 import Accordion from "@/ui/Accordion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import ImageSwiper from "@/ui/ImageSwiper";
 import BreadCrumbBase from "@/ui/BreadCrumbBase";
@@ -18,6 +18,16 @@ import {
   getVariantsByType,
 } from "@/utils/priceCalculator";
 import SingleProductSkeleton from "../../_components/skeleton/SingleProductSkeleton";
+import { showAddToCartSuccessToast } from "@/hooks/useCart";
+import {
+  CART_ROUTE,
+  closeAddedItem,
+  initialAddedToCartState,
+  isDesktopViewport,
+  resolveAddSuccessFeedback,
+  showAddedItem,
+} from "@/utils/addedToCartContract.mjs";
+import AddedToCartModal from "./AddedToCartModal";
 
 function SingleProductPage({ product }) {
   if (!product) {
@@ -42,11 +52,20 @@ function SingleProductPage({ product }) {
           />
         </BreadCrumbBase>
       </article>
-      <article className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 md:p-6">
+      <article className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 md:p-6 max-md:pb-24">
         <ImageSwiper images={product?.images} product={product} />
         <ProductDes key={product.id} product={product} />
         <ProductOptions product={product} />
         <ProductDetails product={product} />
+        <Accordion
+          titleStyle="font-bold text-stroke-800"
+          className="max-md:flex md:hidden"
+          label="توضیحات تکمیلی"
+        >
+          <p className="text-stroke-600 text-sm pt-4 border-t border-stroke-200 leading-8">
+            {product?.description}
+          </p>
+        </Accordion>
       </article>
     </main>
   );
@@ -74,8 +93,37 @@ function ProductDes({ product }) {
         ? "sealed"
         : preferredMode;
   const variantsForMode =
-    activeMode === "decant" ? decantVariants : activeMode === "sealed" ? sealedVariants : [];
+    activeMode === "decant"
+      ? decantVariants
+      : activeMode === "sealed"
+        ? sealedVariants
+        : [];
   const defaultVolume = Number(variantsForMode[0]?.volume ?? 0);
+
+  // A new cart line: mobile shows the confirmation modal from the returned
+  // line; desktop, or a line that cannot be identified, keeps the toast.
+  const addButtonRef = useRef(null);
+  const [addedToCart, setAddedToCart] = useState(initialAddedToCartState);
+  const handleAdded = (data, variables) => {
+    const feedback = resolveAddSuccessFeedback({
+      cart: data,
+      variables,
+      isDesktop: isDesktopViewport(window),
+    });
+    if (feedback.kind === "modal") {
+      setAddedToCart((state) => showAddedItem(state, feedback.item));
+    } else {
+      showAddToCartSuccessToast(data);
+    }
+  };
+  const closeAddedToCart = useCallback(
+    () => setAddedToCart(closeAddedItem),
+    [],
+  );
+  const goToCart = () => {
+    closeAddedToCart();
+    router.push(CART_ROUTE);
+  };
 
   const {
     AddToCartHandler,
@@ -83,7 +131,9 @@ function ProductDes({ product }) {
     selectedVolume,
     setSelectedVolume,
     quantity,
-  } = useQuantityHandler(product, defaultVolume, activeMode);
+  } = useQuantityHandler(product, defaultVolume, activeMode, undefined, {
+    onAdded: handleAdded,
+  });
 
   useEffect(() => {
     if (!getMatchingVariant(product, activeMode, selectedVolume)) {
@@ -91,14 +141,19 @@ function ProductDes({ product }) {
     }
   }, [product, activeMode, selectedVolume, defaultVolume, setSelectedVolume]);
 
-  const selectedVariant = getMatchingVariant(product, activeMode, selectedVolume);
+  const selectedVariant = getMatchingVariant(
+    product,
+    activeMode,
+    selectedVolume,
+  );
   const price = calculateProductPrice(
     product,
     selectedVariant?.type,
     selectedVariant?.volume,
   );
   const canPurchase =
-    !!selectedVariant && Number(product.stock) >= Number(selectedVariant.volume);
+    !!selectedVariant &&
+    Number(product.stock) >= Number(selectedVariant.volume);
 
   const selectMode = (type) => {
     setVolumeMode(type);
@@ -249,6 +304,7 @@ function ProductDes({ product }) {
       <div className="flex items-center justify-between w-full gap-4 duration-200">
         {canPurchase && (
           <button
+            ref={addButtonRef}
             onClick={
               quantity === 0 ? AddToCartHandler : () => router.push("/cart")
             }
@@ -283,6 +339,15 @@ function ProductDes({ product }) {
           {product?.description}
         </p>
       </Accordion>
+
+      <AddedToCartModal
+        open={addedToCart.open}
+        item={addedToCart.item}
+        seq={addedToCart.seq}
+        onClose={closeAddedToCart}
+        onGoToCart={goToCart}
+        returnFocusRef={addButtonRef}
+      />
     </article>
   );
 }
@@ -315,7 +380,7 @@ function ProductOptions({ product }) {
           />
           <p className="font-bold text-stroke-800">ویژگی های محصول</p>
         </span>
-        <div className="grid max-sm:grid-cols-3 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-3 gap-x-4 w-full px-2">
+        <div className="grid max-sm:grid-cols-3 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-3 gap-x-4 w-full px-2 overflow-hidden">
           <ProductOption title="کشور تولید کننده" value={product.country} />
           <ProductOption title="عطرساز" value={product.perfumer} />
           <ProductOption
@@ -330,22 +395,28 @@ function ProductOptions({ product }) {
             title="غلظت"
             value={
               product.concentration
-                ? (concentrationLabels[product.concentration] ?? product.concentration)
+                ? (concentrationLabels[product.concentration] ??
+                  product.concentration)
                 : null
             }
           />
           <ProductOption title="ماندگاری" value={longevityValue} />
           <ProductOption
             title="پخش بو"
-            value={performance?.projection
-              ? (projectionLabels[performance.projection] ?? performance.projection)
-              : null}
+            value={
+              performance?.projection
+                ? (projectionLabels[performance.projection] ??
+                  performance.projection)
+                : null
+            }
           />
           <ProductOption
             title="رد بو"
-            value={performance?.sillage
-              ? (sillageLabels[performance.sillage] ?? performance.sillage)
-              : null}
+            value={
+              performance?.sillage
+                ? (sillageLabels[performance.sillage] ?? performance.sillage)
+                : null
+            }
           />
           <ProductOption
             title="نسخه‌های پلمپ"
@@ -357,10 +428,19 @@ function ProductOptions({ product }) {
             title="گروه‌‌بندی رایحه"
             data={categoryTitles(categories.fragranceFamilies)}
           />
-          <ProductOption title="فصل استفاده" data={categoryTitles(categories.seasons)} />
+          <ProductOption
+            title="فصل استفاده"
+            data={categoryTitles(categories.seasons)}
+          />
           <ProductOption title="طبع" value={categories.temperature?.title} />
-          <ProductOption title="شخصیت رایحه" data={categoryTitles(categories.characters)} />
-          <ProductOption title="موقعیت استفاده" data={categoryTitles(categories.occasions)} />
+          <ProductOption
+            title="شخصیت رایحه"
+            data={categoryTitles(categories.characters)}
+          />
+          <ProductOption
+            title="موقعیت استفاده"
+            data={categoryTitles(categories.occasions)}
+          />
         </div>
       </section>
     </article>
@@ -405,17 +485,15 @@ function ProductOption({ title, value, data, volumes = false }) {
         {title}
       </p>
       {!data?.length ? (
-        <p className="text-nowrap max-sm:col-span-2 sm:col-span-3 md:col-span-1 lg:col-span-2 text-sm text-stroke-800 font-bold w-full border-b border-stroke-200 py-3">
+        <p className="text-nowrap max-sm:col-span-2 sm:col-span-3 md:col-span-2 lg:col-span-2 text-sm text-stroke-800 font-bold w-full border-b border-stroke-200 py-3">
           {value}
         </p>
       ) : (
-        <span className="flex items-start gap-2 text-nowrap max-sm:col-span-2 sm:col-span-3 md:col-span-1 lg:col-span-2 text-sm text-stroke-800 font-bold w-full border-b border-stroke-200 py-3">
+        <span className="flex items-start gap-1 text-nowrap flex-wrap max-sm:col-span-2 sm:col-span-3 md:col-span-2 lg:col-span-2 text-sm text-stroke-800 font-bold w-full border-b border-stroke-200 py-3">
           {data.map((item, index) => (
             <span className="flex items-center justify-start gap-1" key={index}>
               {index > 0 && " - "}
-              <p>
-                {volumes ? toPersianNumbers(item.volume) + " میل" : item}
-              </p>
+              <p>{volumes ? toPersianNumbers(item.volume) + " میل" : item}</p>
             </span>
           ))}
         </span>
@@ -439,9 +517,11 @@ function ProductDetails({ product }) {
           />
           <p className="font-bold text-stroke-800">ترکیبات محصول</p>
         </span>
-        <p className="text-xs text-stroke-800">{product?.notesDescription}</p>
+        <p className="text-xs text-stroke-800 leading-6">
+          {product?.notesDescription}
+        </p>
       </div>
-      <div className="flex flex-col items-center justify-end gap-2 size-full max-md:min-h-[28vh]">
+      <div className="flex flex-col items-center justify-end gap-2 size-full max-md:min-h-[28vh] md:max-h-80">
         <Notes type={notes?.base} base />
         <Notes type={notes?.middle} middle />
         <Notes type={notes?.top} top />
@@ -464,18 +544,18 @@ function Notes({ type, top, middle, base }) {
         }`}
         ratio={base ? "aspect-4/3" : middle ? "aspect-4/2" : "aspect-4/1"}
       />
-      <span className="absolute  flex flex-col items-center justify-center gap-1 z-20 w-4/5">
+      <span className="absolute flex flex-col items-center justify-center gap-1 z-20 w-4/5">
         <p className="text-xs text-stroke-800 font-bold">
           {base ? "نت‌های آغازین" : middle ? "نت‌های میانی" : "نت‌های پایانی"}
         </p>
-        <div className="flex items-center justify-center gap-1 w-full text-wrap text-center">
+        <div className="flex flex-wrap items-center justify-center gap-1 w-full text-wrap text-center leading-px">
           {type?.map((s, index) => (
             <span
               className="flex items-center justify-start gap-1 text-wrap"
               key={index}
             >
               {index > 0 && " - "}
-              <p className="text-xs text-stroke-600 ">{s}</p>
+              <p className="text-xs text-stroke-600 text-nowrap">{s}</p>
             </span>
           ))}
         </div>

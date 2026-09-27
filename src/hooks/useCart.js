@@ -9,8 +9,10 @@ import {
   updateShippingMethodApi,
 } from "@/services/cartServices";
 import { showApiError } from "@/utils/showApiError";
+import { cartFromAddResponse } from "@/utils/addedToCartContract.mjs";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 import toast from "react-hot-toast";
 
 export const cartKeys = {
@@ -31,14 +33,28 @@ export const useGetAllCartItems = () => {
   });
 };
 
-export function useAddToCart() {
+export function showAddToCartSuccessToast(data) {
+  toast.success(data?.message || "محصول به سبد خرید اضافه شد", {
+    id: "add-cart-success",
+  });
+}
+
+// With `onAdded`, the caller owns the success feedback and receives the
+// returned cart and the request variables; without it, the toast is shown.
+export function useAddToCart({ onAdded } = {}) {
   const queryClient = useQueryClient();
+  const onAddedRef = useRef(onAdded);
+  onAddedRef.current = onAdded;
+
   const { isPending: isAdding, mutate: addToCart } = useMutation({
     mutationFn: addToCartApi,
-    onSuccess: (data) => {
-      toast.success(data?.message || "محصول به سبد خرید اضافه شد", {
-        id: "add-cart-success",
-      });
+    onSuccess: (data, variables) => {
+      // The response is the full cart: cache it now so the new line is
+      // available to the next quantity change before the refetch returns.
+      const cart = cartFromAddResponse(data);
+      if (cart) queryClient.setQueryData(cartKeys.items(), cart);
+      if (onAddedRef.current) onAddedRef.current(data, variables);
+      else showAddToCartSuccessToast(data);
       queryClient.invalidateQueries({
         queryKey: cartKeys.all,
       });
