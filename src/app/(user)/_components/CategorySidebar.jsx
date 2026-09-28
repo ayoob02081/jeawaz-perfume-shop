@@ -10,12 +10,27 @@ import {
   useGetStorefrontCategoriesByType,
 } from "@/hooks/useCategories";
 import { useGetProductVolumeOptions } from "@/hooks/useProducts";
-import { mergeVolumeOptions } from "@/utils/productFilterContract.mjs";
+import {
+  CONCENTRATION_FILTER_LABEL,
+  TAXONOMY_FILTER_GROUPS,
+  activeFilterCount,
+  mergeVolumeOptions,
+} from "@/utils/productFilterContract.mjs";
+import {
+  PRODUCT_CONCENTRATIONS,
+  concentrationLabel,
+} from "@/utils/productConcentration.mjs";
 import FilterCheckBox from "@/ui/FilterCheckBox";
 import Loading from "@/components/Loading";
 import { buildQueryFromFilters } from "@/utils/queryFilters";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
+
+// The sidebar has its own dedicated gender panel; the generic taxonomy
+// columns render every other shared group.
+const SIDEBAR_TAXONOMY_GROUPS = TAXONOMY_FILTER_GROUPS.filter(
+  ({ key }) => key !== "gender",
+);
 
 const priceRanges = [
   {
@@ -61,6 +76,20 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
   const { data: brandCategories, isPending: isBrandPending } =
     useGetAllBrandCategories();
 
+  const { data: seasonCategories } = useGetStorefrontCategoriesByType("season");
+  const { data: temperatureCategories } =
+    useGetStorefrontCategoriesByType("temperature");
+  const { data: characterCategories } =
+    useGetStorefrontCategoriesByType("character");
+  const { data: occasionCategories } =
+    useGetStorefrontCategoriesByType("occasion");
+  const taxonomyOptions = {
+    seasons: seasonCategories,
+    temperature: temperatureCategories,
+    characters: characterCategories,
+    occasions: occasionCategories,
+  };
+
   const { state, dispatch } = useFilters();
   const {
     data: volumeResponse,
@@ -76,16 +105,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
     (gender) => gender.slug === state.draft.gender,
   );
 
-  const isFilter = Boolean(
-    state.draft.gender ||
-    state.draft.brandIds?.length ||
-    state.draft.fragranceFamilies?.length ||
-    state.draft.inStock ||
-    state.draft.original ||
-    state.draft.discounted ||
-    state.draft.type ||
-    state.draft.volumes?.length,
-  );
+  const isFilter = activeFilterCount(state.draft) > 0;
 
   const isPriceFilter =
     state.draft.priceRange?.[0] !== null ||
@@ -345,6 +365,71 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                         />
                       );
                     })}
+                  </CategriesFilter>
+
+                  {/* Product V2 taxonomy */}
+                  {SIDEBAR_TAXONOMY_GROUPS.map(({ key, label, multiple }) => (
+                    <CategriesFilter key={key} fieldsetId={`${key}-value`} title={label}>
+                      {taxonomyOptions[key]?.map((category) =>
+                        multiple ? (
+                          <FilterCheckBox
+                            key={category.id}
+                            className="flex flex-col items-start justify-start size-full text-xs has-checked:font-bold duration-200"
+                            textClassName="py-2"
+                            checkId={`${key}-${category.slug}`}
+                            name={key}
+                            label={category.title}
+                            checked={state.draft[key].includes(category.slug)}
+                            onChange={() =>
+                              addFilter("SET_ITEMS", key, category.slug)
+                            }
+                          />
+                        ) : (
+                          <button
+                            key={category.id}
+                            type="button"
+                            aria-pressed={state.draft[key] === category.slug}
+                            onClick={() =>
+                              addFilter(
+                                "SET_ITEM",
+                                key,
+                                state.draft[key] === category.slug
+                                  ? null
+                                  : category.slug,
+                              )
+                            }
+                            className={`py-2 text-xs ${
+                              state.draft[key] === category.slug
+                                ? "text-primary font-bold"
+                                : "text-stroke-600"
+                            }`}
+                          >
+                            {category.title}
+                          </button>
+                        ),
+                      )}
+                    </CategriesFilter>
+                  ))}
+
+                  {/* Concentration */}
+                  <CategriesFilter
+                    fieldsetId="concentrations-value"
+                    title={CONCENTRATION_FILTER_LABEL}
+                  >
+                    {PRODUCT_CONCENTRATIONS.map((value) => (
+                      <FilterCheckBox
+                        key={value}
+                        className="flex flex-col items-start justify-start size-full text-xs has-checked:font-bold duration-200"
+                        textClassName="py-2"
+                        checkId={`concentrations-${value}`}
+                        name="concentrations"
+                        label={concentrationLabel(value)}
+                        checked={state.draft.concentrations.includes(value)}
+                        onChange={() =>
+                          addFilter("SET_ITEMS", "concentrations", value)
+                        }
+                      />
+                    ))}
                   </CategriesFilter>
 
                   {/* Price */}

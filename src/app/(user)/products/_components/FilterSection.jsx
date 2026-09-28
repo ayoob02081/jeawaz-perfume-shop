@@ -22,9 +22,13 @@ import {
   getFiltersFromSearchParams,
 } from "@/utils/queryFilters";
 import {
+  TAXONOMY_FILTER_GROUPS,
+  categoryBadgeTitle,
   priceFormValues,
   productListHeading,
+  withoutFilterValue,
 } from "@/utils/productFilterContract.mjs";
+import { concentrationLabel } from "@/utils/productConcentration.mjs";
 import { useForm } from "react-hook-form";
 import Skeleton from "@/ui/Skeleton";
 import { scrollTo } from "@/utils/scrollTo";
@@ -144,6 +148,18 @@ function FilterSection() {
     dispatch({ type: "RESET_ONE_APPLY", key });
   }
 
+  // Removes one selected value (or the single temperature) immediately.
+  function removeValueAndSync(key, value) {
+    const next = withoutFilterValue(filtersFromUrl, key, value);
+    const query = buildQueryFromFilters(next, searchParams);
+
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
+
+    dispatch({ type: "SET_ITEM_APPLY", key, value: next[key] });
+  }
+
   useEffect(() => {
     dispatch({
       type: "HYDRATE_FROM_URL",
@@ -238,13 +254,6 @@ function FilterSection() {
                   error
                 />
               )}
-              {filtersFromUrl?.gender && (
-                <Badge
-                  title="جنسیت"
-                  onClick={() => resetOneAndSync("gender")}
-                  error
-                />
-              )}
               {filtersFromUrl?.original && (
                 <Badge
                   title="اورجینال"
@@ -266,6 +275,27 @@ function FilterSection() {
                   error
                 />
               )}
+              {TAXONOMY_FILTER_GROUPS.flatMap(({ key, type, label }) =>
+                (filtersFromUrl[key]
+                  ? [filtersFromUrl[key]].flat()
+                  : []
+                ).map((slug) => (
+                  <Badge
+                    key={`${key}-${slug}`}
+                    title={categoryBadgeTitle(categories, type, slug, label)}
+                    onClick={() => removeValueAndSync(key, slug)}
+                    error
+                  />
+                )),
+              )}
+              {filtersFromUrl.concentrations.map((value) => (
+                <Badge
+                  key={`concentrations-${value}`}
+                  title={concentrationLabel(value)}
+                  onClick={() => removeValueAndSync("concentrations", value)}
+                  error
+                />
+              ))}
             </section>
           </div>
 

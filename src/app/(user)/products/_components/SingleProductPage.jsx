@@ -28,6 +28,7 @@ import {
   showAddedItem,
 } from "@/utils/addedToCartContract.mjs";
 import AddedToCartModal from "./AddedToCartModal";
+import { CONCENTRATION_LABELS as concentrationLabels } from "@/utils/productConcentration.mjs";
 
 function SingleProductPage({ product }) {
   if (!product) {
@@ -464,16 +465,6 @@ const sillageLabels = {
   MODERATE: "متوسط",
   HIGH: "زیاد",
   VERY_HIGH: "خیلی زیاد",
-};
-const concentrationLabels = {
-  PARFUM: "پارفوم",
-  EXTRAIT_DE_PARFUM: "اکستریت د پارفوم",
-  EAU_DE_PARFUM: "ادو پرفیوم",
-  EAU_DE_TOILETTE: "ادو تویلت",
-  EAU_DE_COLOGNE: "ادو کلن",
-  PERFUME_OIL: "روغن عطر",
-  BODY_MIST: "بادی میست",
-  OTHER: "سایر",
 };
 
 function ProductOption({ title, value, data, volumes = false }) {

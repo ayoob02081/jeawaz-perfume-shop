@@ -1,3 +1,5 @@
+import { PRODUCT_CONCENTRATIONS } from "./productConcentration.mjs";
+
 const decimalInteger = (value, allowZero = false) => {
   if (!/^\d+$/.test(String(value ?? ""))) return null;
   const number = Number(value);
@@ -27,6 +29,13 @@ const normalizeSlugs = (values = []) =>
       ),
     ),
   ].sort();
+const normalizeConcentrations = (values = []) =>
+  PRODUCT_CONCENTRATIONS.filter((value) =>
+    (Array.isArray(values) ? values : [values]).includes(value),
+  );
+// A single-valued URL key: exactly one non-empty value, otherwise none.
+const singleValue = (values) =>
+  values.length === 1 && values[0] ? values[0] : null;
 const variantType = (value) =>
   value === "decant" || value === "sealed" ? value : null;
 const optionalBoolean = (value) =>
@@ -47,6 +56,13 @@ export const emptyFilters = {
   inStock: null,
   original: null,
   gender: null,
+  // Product V2 taxonomy (Category slugs; OR within a group, AND across).
+  seasons: [],
+  temperature: null,
+  characters: [],
+  occasions: [],
+  // Canonical ProductConcentration values.
+  concentrations: [],
   // URL-only (footer/banner links): no modal control, but a visible,
   // resettable filter that Apply carries forward like any other.
   discounted: null,
@@ -146,7 +162,31 @@ const ownedParams = [
   "inStock",
   "original",
   "discounted",
+  "seasons",
+  "temperature",
+  "characters",
+  "occasions",
+  "concentrations",
 ];
+
+// Multi-value Category-slug taxonomies (repeated URL keys, OR within).
+export const TAXONOMY_SLUG_FILTERS = ["seasons", "characters", "occasions"];
+
+// One definition of the Product V2 taxonomy filter groups for every filter UI:
+// filter/URL key, Category type (storefront options) and Persian label.
+export const TAXONOMY_FILTER_GROUPS = [
+  { key: "seasons", type: "season", label: "فصل", multiple: true },
+  { key: "characters", type: "character", label: "شخصیت", multiple: true },
+  {
+    key: "occasions",
+    type: "occasion",
+    label: "موقعیت استفاده",
+    multiple: true,
+  },
+  { key: "temperature", type: "temperature", label: "طبع", multiple: false },
+  { key: "gender", type: "gender", label: "جنسیت", multiple: false },
+];
+export const CONCENTRATION_FILTER_LABEL = "غلظت";
 
 export function buildQueryFromFilters(filters, currentSearchParams) {
   const params = new URLSearchParams(currentSearchParams.toString());
@@ -160,8 +200,15 @@ export function buildQueryFromFilters(filters, currentSearchParams) {
   normalizeVolumes(filters.volumes).forEach((volume) =>
     params.append("volumes", String(volume)),
   );
+  TAXONOMY_SLUG_FILTERS.forEach((key) =>
+    normalizeSlugs(filters[key]).forEach((slug) => params.append(key, slug)),
+  );
+  normalizeConcentrations(filters.concentrations).forEach((value) =>
+    params.append("concentrations", value),
+  );
   if (variantType(filters.type)) params.set("type", filters.type);
   if (filters.gender) params.set("gender", filters.gender);
+  if (filters.temperature) params.set("temperature", filters.temperature);
   if (filters.sort) params.set("sort", filters.sort);
   if (filters.inStock === true) params.set("inStock", "true");
   if (filters.original === true) params.set("original", "true");
@@ -186,6 +233,13 @@ export function getFiltersFromSearchParams(searchParams) {
     volumes: normalizeVolumes(searchParams.getAll("volumes")),
     type: types.length === 1 ? variantType(types[0]) : null,
     gender: searchParams.get("gender") || null,
+    seasons: normalizeSlugs(searchParams.getAll("seasons")),
+    temperature: singleValue(searchParams.getAll("temperature")),
+    characters: normalizeSlugs(searchParams.getAll("characters")),
+    occasions: normalizeSlugs(searchParams.getAll("occasions")),
+    concentrations: normalizeConcentrations(
+      searchParams.getAll("concentrations"),
+    ),
     sort: searchParams.get("sort") || "",
     inStock: searchParams.get("inStock") === "true" ? true : null,
     original: searchParams.get("original") === "true" ? true : null,
@@ -230,6 +284,42 @@ export const storefrontCategoryOptions = (categories) =>
     ? categories.filter((category) => category?.isActive !== false)
     : categories;
 
+// Number of active filter groups (sort is not a filter). Used to enable the
+// reset/apply controls; every owned filter, including URL-only discounted.
+export const activeFilterCount = (filters = {}) =>
+  [
+    filters.brandIds?.length,
+    filters.fragranceFamilies?.length,
+    filters.volumes?.length,
+    filters.minVolume !== null && filters.minVolume !== undefined,
+    filters.maxVolume !== null && filters.maxVolume !== undefined,
+    filters.type,
+    filters.priceRange?.some((price) => price !== null && price !== undefined),
+    filters.inStock,
+    filters.original,
+    filters.gender,
+    filters.discounted,
+    ...TAXONOMY_SLUG_FILTERS.map((key) => filters[key]?.length),
+    filters.temperature,
+    filters.concentrations?.length,
+  ].filter(Boolean).length;
+
+// The filters with one value of a multi-value group, or the single
+// temperature, removed (active-filter badges).
+export const withoutFilterValue = (filters, key, value) =>
+  Array.isArray(filters[key])
+    ? { ...filters, [key]: filters[key].filter((item) => item !== value) }
+    : { ...filters, [key]: structuredClone(emptyFilters[key]) };
+
+// Badge text for a selected Category slug: its Persian title, or the group
+// label while categories load or when the slug is unknown.
+export const categoryBadgeTitle = (categories, type, slug, fallback) =>
+  (Array.isArray(categories)
+    ? categories.find(
+        (category) => category?.type === type && category?.slug === slug,
+      )?.title
+    : null) || fallback;
+
 // Product-list heading: a resolved gender title, never "undefined".
 export const productListHeading = (genderSlug, categories) => {
   if (!genderSlug) return "همه ادکلن‌ها";
@@ -269,9 +359,22 @@ export function normalizeProductsQuery(query = {}) {
   const fragranceFamilies = normalizeSlugs(query.fragranceFamilies);
   const volumes = normalizeVolumes(query.volumes);
   const campaignId = decimalInteger(query.campaignId);
+  const seasons = normalizeSlugs(query.seasons);
+  const characters = normalizeSlugs(query.characters);
+  const occasions = normalizeSlugs(query.occasions);
+  const concentrations = normalizeConcentrations(query.concentrations);
+  const temperature =
+    typeof query.temperature === "string" && query.temperature
+      ? query.temperature
+      : undefined;
   return {
     // Only present when set, so existing query keys keep their exact shape.
     ...(campaignId ? { campaignId } : {}),
+    ...(seasons.length ? { seasons } : {}),
+    ...(temperature ? { temperature } : {}),
+    ...(characters.length ? { characters } : {}),
+    ...(occasions.length ? { occasions } : {}),
+    ...(concentrations.length ? { concentrations } : {}),
     search: query.search || undefined,
     brandIds: brandIds.length ? brandIds : undefined,
     original,

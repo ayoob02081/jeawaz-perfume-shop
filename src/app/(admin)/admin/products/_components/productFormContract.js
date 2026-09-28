@@ -1,13 +1,6 @@
-export const concentrationOptions = [
-  "PARFUM",
-  "EXTRAIT_DE_PARFUM",
-  "EAU_DE_PARFUM",
-  "EAU_DE_TOILETTE",
-  "EAU_DE_COLOGNE",
-  "PERFUME_OIL",
-  "BODY_MIST",
-  "OTHER",
-];
+import { PRODUCT_CONCENTRATIONS } from "../../../../../utils/productConcentration.mjs";
+
+export const concentrationOptions = PRODUCT_CONCENTRATIONS;
 
 export const longevityOptions = ["LOW", "MODERATE", "HIGH", "VERY_HIGH"];
 export const projectionOptions = ["WEAK", "MODERATE", "STRONG", "VERY_STRONG"];

@@ -4,6 +4,7 @@ import test from "node:test";
 import { createFormControl } from "react-hook-form";
 import {
   PRICE_RANGE_ERROR,
+  activeFilterCount,
   buildQueryFromFilters,
   emptyFilters,
   filtersReducer,
@@ -223,8 +224,12 @@ test("a normal Apply keeps discounted active and it reaches the request", async 
   assert.equal(normalizeProductsQuery({ discounted: applied.discounted }).discounted, true);
   assert.equal(normalizeProductsQuery({ discounted: null }).discounted, undefined);
   assert.match(productsLayout, /discounted: applied\.discounted,/);
-  assert.match(filtersModal, /filtersFromUrl\?\.discounted \|\|/);
-  assert.match(categorySidebar, /state\.draft\.discounted \|\|/);
+  // Both filter UIs enable reset/apply through the shared count, which
+  // includes the URL-only discounted filter.
+  assert.equal(activeFilterCount({ ...emptyFilters, discounted: true }), 1);
+  assert.match(filtersModal,
+    /activeFilterCount\(filtersFromUrl\) > 0 \|\| activeFilterCount\(state\.draft\) > 0/);
+  assert.match(categorySidebar, /const isFilter = activeFilterCount\(state\.draft\) > 0;/);
 });
 
 // --- A4: inactive categories ---------------------------------------------------
