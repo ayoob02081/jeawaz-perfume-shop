@@ -86,6 +86,20 @@ test("PriceSection receives the same representative base, final price and badge 
   assert.doesNotMatch(card, /getRepresentativeVariant|product\.variants\.sort|variants\.(find|filter)\(/);
 });
 
+test("the card brand is upper-cased null-safely and non-original shows «سوپر مستر»", () => {
+  const card = readFileSync(new URL("../app/(user)/_components/ProductCard.jsx", import.meta.url), "utf8");
+  assert.match(card, /\{productBrand\?\.value\?\.toUpperCase\(\)\}/);
+  assert.doesNotMatch(card, /\(productBrand\?\.value\)\.toUpperCase\(\)/);
+  // Same expression as the card, for a Product with and without a brand.
+  const brandText = (productBrand) => productBrand?.value?.toUpperCase();
+  assert.equal(brandText({ value: "dior" }), "DIOR");
+  for (const missing of [null, undefined, {}, { value: null }]) {
+    assert.doesNotThrow(() => brandText(missing));
+    assert.equal(brandText(missing), undefined);
+  }
+  assert.match(card, /original === true \? \([\s\S]*?\) : \([\s\S]*?سوپر مستر/);
+});
+
 test("the card icon is a button on cards but a plain element inside the header link", () => {
   const card = readFileSync(new URL("../app/(user)/_components/ProductCard.jsx", import.meta.url), "utf8");
   const header = readFileSync(new URL("../components/HeaderLayout.jsx", import.meta.url), "utf8");

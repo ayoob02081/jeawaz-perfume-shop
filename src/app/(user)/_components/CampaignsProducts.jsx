@@ -47,7 +47,9 @@ function CampaignsProducts() {
     queryClient.invalidateQueries({
       queryKey: productKeys.list({ ...fallbackQuery, campaignId }),
     });
-    queryClient.invalidateQueries({ queryKey: productKeys.list(fallbackQuery) });
+    queryClient.invalidateQueries({
+      queryKey: productKeys.list(fallbackQuery),
+    });
   }, [queryClient, campaignId]);
 
   const section = isCampaign ? campaignProducts : { data, isPending, error };
@@ -72,7 +74,7 @@ function CampaignsProducts() {
       title={"پرتخفیف ترین"}
       des={"محصولات"}
       desc={"پرتخفیف ترین رایحه ها ، همین‌جاست."}
-      className={""}
+      className="overflow-x-auto"
       bgColor="bg-stroke-50 dark:bg-stroke-50/50 rounded-2xl py-6"
       timer={
         isCampaign && (

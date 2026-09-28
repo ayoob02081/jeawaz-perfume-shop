@@ -38,7 +38,7 @@ function ProductCard({ product, isPending, error }) {
 
   return (
     <article
-      className={`relative hover:*:*:last:*:first:*:last:scale-105 *:*:last:*:first:*:last:duration-300 flex items-center justify-center max-md:p-3 p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${inStock ? "" : "opacity-80 dark:opacity-60"} snap-center duration-200 overflow-hidden`}
+      className={`relative hover:*:*:last:*:first:*:last:scale-105 *:*:last:*:first:*:last:duration-300 flex items-center justify-center max-md:p-3 p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${inStock ? "" : "opacity-80 dark:opacity-60"} snap-center duration-200`}
     >
       {/* Mobile Mode Base Image */}
       <div className="flex items-start justify-between size-full">
@@ -104,9 +104,9 @@ function ProductCard({ product, isPending, error }) {
             {/* Products Brand */}
             <div className="flex-none flex items-center justify-between mb-2 md:mt-2 h-6">
               <p className="text-stroke-600 text-sm md:text-base md:font-bold">
-                {productBrand?.value}
+                {productBrand?.value?.toUpperCase()}
               </p>
-              {original === true && (
+              {original === true ? (
                 <AppImage
                   src="/images/bg-original.svg"
                   alt="original-icon"
@@ -115,12 +115,16 @@ function ProductCard({ product, isPending, error }) {
                   width="max-md:w-16 h-full md:w-[4.815rem]"
                   sizes="10vw"
                 />
+              ) : (
+                <span className="inline-flex items-center rounded-full border border-stroke-200 bg-stroke-200 px-2 py-1.5 text-[10px] font-bold text-stroke-500">
+                  سوپر مستر
+                </span>
               )}
             </div>
 
             {/* Products Name */}
-            <div className="flex-none flex items-start justify-start flex-col gap-1 max-md:pb-3 md:pb-6 font-bold border-b border-stroke-250 overflow-hidden">
-              <span className="flex items-start justify-start flex-col w-full text-lg font-bold text-stroke-800 text-nowrap text-start overflow-x-auto scrollbar-none max-md:max-w-55">
+            <div className="flex-none flex items-start justify-start flex-col gap-1 max-md:pb-3 md:pb-6 font-bold border-b border-stroke-250">
+              <span className="flex items-start justify-start flex-col w-full text-lg font-bold text-stroke-800 text-nowrap overflow-hidden *:overflow-x-auto *:scrollbar-none *:py-[0.5px] text-start max-md:max-w-55 md:max-w-68">
                 <p className="w-full max-md:text-base">{enTitle}</p>
                 <p className="w-full max-md:text-sm">{perTitle}</p>
               </span>

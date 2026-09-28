@@ -223,7 +223,7 @@ function ProductDes({ product }) {
               </div>
             </div>
 
-            {product.original === true && (
+            {product.original === true ? (
               <AppImage
                 src="/images/bg-original.svg"
                 alt="original-icon"
@@ -232,6 +232,12 @@ function ProductDes({ product }) {
                 sizes="10vw"
                 className="self-end"
               />
+            ) : (
+              <div className="h-full py-2">
+                <span className="inline-flex items-center h-full rounded-full border border-stroke-200 bg-stroke-200 px-4 py-2 text-sm font-bold text-stroke-500">
+                  سوپر مستر
+                </span>
+              </div>
             )}
           </div>
 
