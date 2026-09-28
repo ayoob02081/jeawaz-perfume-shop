@@ -7,7 +7,7 @@ import {
   homeCategoryView,
 } from "@/utils/homeSectionView.mjs";
 import { AccordCategoryCardSkeletons } from "./skeleton/HomeSectionSkeletons";
-import { useGetCategoriesByType } from "@/hooks/useCategories";
+import { useGetStorefrontCategoriesByType } from "@/hooks/useCategories";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
@@ -17,7 +17,7 @@ function AccordCategoriesLayout() {
     data: fragranceFamilyCategories,
     isPending,
     error,
-  } = useGetCategoriesByType("fragrance_family");
+  } = useGetStorefrontCategoriesByType("fragrance_family");
 
   const view = homeCategoryView({ isPending, error });
 

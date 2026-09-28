@@ -56,7 +56,7 @@ function ProductsLayout() {
       maxVolume: applied.maxVolume,
       inStock: applied.inStock,
       original: applied.original,
-      discounted: searchParams.get("discounted") === "true" ? true : undefined,
+      discounted: applied.discounted,
       minPrice: applied.priceRange[0],
       maxPrice: applied.priceRange[1],
       type: applied.type,

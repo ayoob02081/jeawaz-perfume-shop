@@ -10,14 +10,14 @@ import { GenderCategoryCardSkeletons } from "./skeleton/HomeSectionSkeletons";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import { useGetCategoriesByType } from "@/hooks/useCategories";
+import { useGetStorefrontCategoriesByType } from "@/hooks/useCategories";
 
 function GenderCategoriesLayout() {
   const {
     data: genderCategories,
     isPending,
     error,
-  } = useGetCategoriesByType("gender");
+  } = useGetStorefrontCategoriesByType("gender");
 
   const view = homeCategoryView({ isPending, error });
 

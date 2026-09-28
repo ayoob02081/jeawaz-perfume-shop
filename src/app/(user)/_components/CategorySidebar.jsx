@@ -7,7 +7,7 @@ import AppImage from "@/components/AppImage";
 import { useFilters } from "@/hooks/useFilters";
 import {
   useGetAllBrandCategories,
-  useGetCategoriesByType,
+  useGetStorefrontCategoriesByType,
 } from "@/hooks/useCategories";
 import { useGetProductVolumeOptions } from "@/hooks/useProducts";
 import { mergeVolumeOptions } from "@/utils/productFilterContract.mjs";
@@ -53,10 +53,10 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
   const router = useRouter();
 
   const { data: genderCategories, isPending: isGenderPending } =
-    useGetCategoriesByType("gender");
+    useGetStorefrontCategoriesByType("gender");
 
   const { data: fragranceFamilyCategories, isPending: isFamilyPending } =
-    useGetCategoriesByType("fragrance_family");
+    useGetStorefrontCategoriesByType("fragrance_family");
 
   const { data: brandCategories, isPending: isBrandPending } =
     useGetAllBrandCategories();
@@ -82,6 +82,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
     state.draft.fragranceFamilies?.length ||
     state.draft.inStock ||
     state.draft.original ||
+    state.draft.discounted ||
     state.draft.type ||
     state.draft.volumes?.length,
   );

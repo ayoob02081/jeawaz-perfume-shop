@@ -83,12 +83,12 @@ test("price-only and volume-range direct URLs hydrate and serialize without page
   assert.equal(serialized.get("page"), null);
 });
 
-test("reset-all cleans owned filters and page while retaining unrelated search", () => {
+test("reset-all cleans owned filters (including discounted) and page while retaining unrelated search", () => {
   const previous = new URLSearchParams(
     "search=rose&discounted=true&limit=24&brandIds=1&type=sealed&volumes=100&page=5");
   const reset = new URLSearchParams(buildQueryFromFilters(emptyFilters, previous));
   assert.equal(reset.get("search"), "rose");
-  assert.equal(reset.get("discounted"), "true");
+  assert.equal(reset.get("discounted"), null);
   assert.equal(reset.get("limit"), "24");
   assert.equal(reset.get("brandIds"), null);
   assert.equal(reset.get("type"), null);

@@ -21,6 +21,10 @@ import {
   buildQueryFromFilters,
   getFiltersFromSearchParams,
 } from "@/utils/queryFilters";
+import {
+  priceFormValues,
+  productListHeading,
+} from "@/utils/productFilterContract.mjs";
 import { useForm } from "react-hook-form";
 import Skeleton from "@/ui/Skeleton";
 import { scrollTo } from "@/utils/scrollTo";
@@ -45,10 +49,6 @@ function FilterSection() {
   const { data: categories, isLoading: categoriesLoading } =
     useGetAllCategories();
   const filtersFromUrl = getFiltersFromSearchParams(searchParams);
-  const isGenderFilter = filtersFromUrl?.gender;
-  const currentGenderData =
-    isGenderFilter &&
-    categories?.find((category) => category.slug === isGenderFilter);
 
   const {
     register,
@@ -58,10 +58,7 @@ function FilterSection() {
     watch,
     formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues: {
-      minPrice: filtersFromUrl?.priceRange[0] || null,
-      maxPrice: filtersFromUrl?.priceRange[1] || null,
-    },
+    defaultValues: priceFormValues(filtersFromUrl.priceRange),
   });
 
   function addFilter(actionType, itemKey, itemValue) {
@@ -81,17 +78,25 @@ function FilterSection() {
     else setIsModalOpen(true);
   };
 
-  const CloseModal = () => {
+  const hideModal = () => {
     setIsModalOpen(false);
     setMode("all");
     dispatch({ type: "RESET_DRAFT" });
   };
 
-  const HandleSubmitfilter = () => {
-    applyFilter();
-    setIsModalOpen(false);
+  // Cancel/close without Apply: the price inputs (react-hook-form, copied into
+  // the draft by PriceFilter) go back to the applied URL value too, so a
+  // cancelled price cannot re-enter the draft when the modal is used again.
+  const CloseModal = () => {
+    hideModal();
+    reset(priceFormValues(filtersFromUrl.priceRange));
   };
 
+  const HandleSubmitfilter = () => {
+    applyFilter();
+  };
+
+  // Apply keeps the entered price; the URL change re-hydrates the form.
   function applyFilter() {
     const query = buildQueryFromFilters(state.draft, searchParams);
 
@@ -100,7 +105,7 @@ function FilterSection() {
     });
 
     dispatch({ type: "APPLY_FILTERS" });
-    CloseModal();
+    hideModal();
   }
 
   function resetAllFilters() {
@@ -145,10 +150,7 @@ function FilterSection() {
       payload: filtersFromUrl,
     });
 
-    reset({
-      minPrice: filtersFromUrl?.priceRange[0] || null,
-      maxPrice: filtersFromUrl?.priceRange[1] || null,
-    });
+    reset(priceFormValues(filtersFromUrl.priceRange));
   }, [search, dispatch, reset]);
 
   function toggleBrandAndSync(brandId) {
@@ -257,6 +259,13 @@ function FilterSection() {
                   error
                 />
               )}
+              {filtersFromUrl?.discounted && (
+                <Badge
+                  title="تخفیف‌دار"
+                  onClick={() => resetOneAndSync("discounted")}
+                  error
+                />
+              )}
             </section>
           </div>
 
@@ -298,6 +307,7 @@ function FilterSection() {
               resetFilter={resetFilter}
               control={control}
               watch={watch}
+              errors={errors}
               filtersFromUrl={filtersFromUrl}
               resetAllFilters={resetAllFilters}
             />
@@ -309,9 +319,7 @@ function FilterSection() {
         <div className=" flex items-center justify-center gap-2">
           <div className="bg-primary h-3 w-0.75 rounded-full"></div>
           <p className="text-xl font-bold text-stroke-800">
-            {isGenderFilter
-              ? "ادکلن‌های " + currentGenderData?.title
-              : "همه ادکلن‌ها"}
+            {productListHeading(filtersFromUrl.gender, categories)}
           </p>
         </div>
 

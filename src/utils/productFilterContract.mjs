@@ -47,6 +47,9 @@ export const emptyFilters = {
   inStock: null,
   original: null,
   gender: null,
+  // URL-only (footer/banner links): no modal control, but a visible,
+  // resettable filter that Apply carries forward like any other.
+  discounted: null,
   sort: "",
 };
 
@@ -142,6 +145,7 @@ const ownedParams = [
   "page",
   "inStock",
   "original",
+  "discounted",
 ];
 
 export function buildQueryFromFilters(filters, currentSearchParams) {
@@ -161,6 +165,7 @@ export function buildQueryFromFilters(filters, currentSearchParams) {
   if (filters.sort) params.set("sort", filters.sort);
   if (filters.inStock === true) params.set("inStock", "true");
   if (filters.original === true) params.set("original", "true");
+  if (filters.discounted === true) params.set("discounted", "true");
   const minVolume = decimalInteger(filters.minVolume);
   const maxVolume = decimalInteger(filters.maxVolume);
   const minPrice = decimalInteger(filters.priceRange?.[0]);
@@ -184,6 +189,7 @@ export function getFiltersFromSearchParams(searchParams) {
     sort: searchParams.get("sort") || "",
     inStock: searchParams.get("inStock") === "true" ? true : null,
     original: searchParams.get("original") === "true" ? true : null,
+    discounted: searchParams.get("discounted") === "true" ? true : null,
     minVolume: decimalInteger(searchParams.get("minVolume")),
     maxVolume: decimalInteger(searchParams.get("maxVolume")),
     priceRange: [
@@ -198,6 +204,43 @@ export const mergeVolumeOptions = (options, selected = []) =>
     ...(Array.isArray(options) ? options : []),
     ...normalizeVolumes(selected),
   ]);
+
+// Price form (FilterSection's react-hook-form) ↔ applied priceRange. Empty and
+// zero are "no bound", as in buildQueryFromFilters.
+export const priceFormValues = (priceRange = []) => ({
+  minPrice: decimalInteger(priceRange?.[0]),
+  maxPrice: decimalInteger(priceRange?.[1]),
+});
+
+export const PRICE_RANGE_ERROR =
+  "حداقل قیمت نمی‌تواند بیشتر از حداکثر قیمت باشد";
+
+// The backend rejects maxPrice < minPrice with 400; block it before Apply.
+export const validatePriceRange = (minPrice, maxPrice) => {
+  const min = decimalInteger(minPrice);
+  const max = decimalInteger(maxPrice);
+  return min === null || max === null || min <= max || PRICE_RANGE_ERROR;
+};
+
+// Storefront filter options never offer inactive categories. The shared
+// /categories/type/:type endpoint also serves admin, so this is applied only
+// where the storefront consumes it. Order is preserved.
+export const storefrontCategoryOptions = (categories) =>
+  Array.isArray(categories)
+    ? categories.filter((category) => category?.isActive !== false)
+    : categories;
+
+// Product-list heading: a resolved gender title, never "undefined".
+export const productListHeading = (genderSlug, categories) => {
+  if (!genderSlug) return "همه ادکلن‌ها";
+  const title = Array.isArray(categories)
+    ? categories.find(
+        (category) =>
+          category?.type === "gender" && category?.slug === genderSlug,
+      )?.title
+    : null;
+  return title ? `ادکلن‌های ${title}` : "ادکلن‌ها";
+};
 
 export const PRODUCT_LIST_DEFAULT_LIMIT = 12;
 export const PRODUCT_LIST_MAX_LIMIT = 100;

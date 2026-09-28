@@ -1,11 +1,14 @@
 "use client";
 
 import { useGetProductVolumeOptions } from "@/hooks/useProducts";
-import { mergeVolumeOptions } from "@/utils/productFilterContract.mjs";
+import {
+  mergeVolumeOptions,
+  validatePriceRange,
+} from "@/utils/productFilterContract.mjs";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import {
   useGetAllBrandCategories,
-  useGetCategoriesByType,
+  useGetStorefrontCategoriesByType,
 } from "@/hooks/useCategories";
 import { useFilters } from "@/hooks/useFilters";
 import { Badge } from "@/ui/Badge";
@@ -26,10 +29,11 @@ function FiltersModal({
   filtersFromUrl,
   control,
   watch,
+  errors,
 }) {
-  const { data: genderCategories } = useGetCategoriesByType("gender");
+  const { data: genderCategories } = useGetStorefrontCategoriesByType("gender");
   const { data: fragranceFamilyCategories } =
-    useGetCategoriesByType("fragrance_family");
+    useGetStorefrontCategoriesByType("fragrance_family");
   const { data: brandCategories } = useGetAllBrandCategories();
   const {
     data: volumeResponse,
@@ -58,6 +62,7 @@ function FiltersModal({
     filtersFromUrl?.gender ||
     filtersFromUrl?.original ||
     filtersFromUrl?.inStock ||
+    filtersFromUrl?.discounted ||
     state.draft?.type ||
     state.draft?.volumes.length > 0 ||
     state.draft?.priceRange.some((price) => price !== null) ||
@@ -142,6 +147,7 @@ function FiltersModal({
                   setMode={setMode}
                   control={control}
                   watch={watch}
+                  errors={errors}
                   hidde
                 />
               </FilterOption>
@@ -272,6 +278,7 @@ function FiltersModal({
               setMode={setMode}
               control={control}
               watch={watch}
+              errors={errors}
             />
           </div>
         );
@@ -486,7 +493,7 @@ export function GendersFilter({
   );
 }
 
-export function PriceFilter({ addFilter, control, watch, hidden }) {
+export function PriceFilter({ addFilter, control, watch, errors, hidden }) {
   const minPrice = watch("minPrice");
   const maxPrice = watch("maxPrice");
 
@@ -515,6 +522,8 @@ export function PriceFilter({ addFilter, control, watch, hidden }) {
             control={control}
             isPrice={true}
             name="minPrice"
+            errors={errors}
+            validationSchema={{ deps: ["maxPrice"] }}
             className="w-full px-3"
             placeholder="حداقل"
             containerClassName="size-full *:pr-0"
@@ -527,6 +536,11 @@ export function PriceFilter({ addFilter, control, watch, hidden }) {
             control={control}
             isPrice={true}
             name="maxPrice"
+            errors={errors}
+            validationSchema={{
+              validate: (maxPrice, values) =>
+                validatePriceRange(values.minPrice, maxPrice),
+            }}
             className="w-full px-3"
             placeholder="حداکثر"
             containerClassName="size-full *:pr-0"
