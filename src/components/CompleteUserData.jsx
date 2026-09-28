@@ -18,13 +18,17 @@ const formData = [
     type: "text",
     validationSchema: {
       required: "نام الزامی است",
-      pattern: {
-        value: PERSIAN_NAME_PATTERN,
-        message: "فقط حروف فارسی مجاز است",
-      },
       minLength: {
         value: 2,
-        message: "حداقل ۲ کاراکتر",
+        message: "نام باید حداقل ۲ کاراکتر باشد",
+      },
+      maxLength: {
+        value: 50,
+        message: "نام نمی‌تواند بیشتر از ۵۰ کاراکتر باشد",
+      },
+      pattern: {
+        value: PERSIAN_NAME_PATTERN,
+        message: "نام فقط می‌تواند شامل حروف فارسی باشد",
       },
     },
     placeholder: "نام",
@@ -36,13 +40,17 @@ const formData = [
     type: "text",
     validationSchema: {
       required: "نام خانوادگی الزامی است",
-      pattern: {
-        value: PERSIAN_NAME_PATTERN,
-        message: "فقط حروف فارسی مجاز است",
-      },
       minLength: {
         value: 2,
-        message: "حداقل ۲ کاراکتر",
+        message: "نام خانوادگی باید حداقل ۲ کاراکتر باشد",
+      },
+      maxLength: {
+        value: 50,
+        message: "نام خانوادگی نمی‌تواند بیشتر از ۵۰ کاراکتر باشد",
+      },
+      pattern: {
+        value: PERSIAN_NAME_PATTERN,
+        message: "نام خانوادگی فقط می‌تواند شامل حروف فارسی باشد",
       },
     },
     placeholder: "نام خانوادگی",
