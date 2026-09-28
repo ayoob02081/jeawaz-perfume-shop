@@ -54,7 +54,7 @@ export function RevenueChart({ chartData }) {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                interval={3}
+                interval={6}
                 tickFormatter={(value) =>
                   new Date(value).toLocaleDateString("fa-IR", {
                     month: "short",

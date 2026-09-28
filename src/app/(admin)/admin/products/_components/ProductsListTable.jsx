@@ -91,7 +91,7 @@ function ProductsListTable({
               products?.map((product, index) => {
                 return (
                   <Table.Row key={product.id} className="even:bg-primary/5">
-                    <td className="table__td px-2">
+                    <td className="table__td px-2 rounded-r-xl">
                       <CheckBox
                         value={product.id}
                         name="productIds"
@@ -106,11 +106,21 @@ function ProductsListTable({
                         </div>
                       </CheckBox>
                     </td>
-                    <td className="table__td px-3 font-bold rounded-r-xl">
+                    <td className="table__td px-3 font-bold">
                       <p>{toPersianNumbers(index + 1)}</p>
                     </td>
-                    <td className="table__td px-6 max-w-70 min-w-40 text-wrap">
-                      <p className="font-bold">{product.perTitle}</p>
+                    <td className="table__td p-2 max-w-70 text-wrap">
+                      <div className="flex items-center justify-start gap-2">
+                        <AppImage
+                          src={product?.images?.[0]}
+                          alt={product?.perTitle ? `${product.perTitle}-icon` : "product-icon"}
+                          width="w-16"
+                          sizes="10vw"
+                        />
+                        <p className="font-bold text-start">
+                          {product.perTitle}
+                        </p>
+                      </div>
                     </td>
                     <td className="table__td px-2 max-w-70 truncate">
                       <div className="flex items-center justify-center flex-col gap-2 text-xs">
@@ -155,7 +165,7 @@ function ProductsListTable({
                         </p>
                       </div>
                     </td>
-                    <td className="table__td gap-2 py-2! px-6 flex flex-col justify-center max-h-full">
+                    <td className="table__td gap-2 p-2 flex flex-col justify-center max-h-full">
                       <div className="flex items-center justify-center overflow-hidden h-full">
                         <div className="flex flex-col items-center justify-start gap-2 overflow-auto scrollbar-none h-full">
                           <VariantPriceList
@@ -234,7 +244,7 @@ function ProductsListTable({
               products?.map((product, index) => {
                 return (
                   <Table.Row key={product.id} className="even:bg-primary/5">
-                    <td className="table__td px-2">
+                    <td className="table__td px-2 rounded-r-xl">
                       <CheckBox
                         value={product.id}
                         name="productIds"
@@ -249,11 +259,19 @@ function ProductsListTable({
                         </div>
                       </CheckBox>
                     </td>
-                    <td className="table__td px-3 font-bold rounded-r-xl">
+                    <td className="table__td px-3 font-bold">
                       <p>{toPersianNumbers(index + 1)}</p>
                     </td>
-                    <td className="table__td px-6 max-w-70 truncate">
-                      <p className="font-bold">{product.perTitle}</p>
+                    <td className="table__td px-2">
+                      <div className="flex items-center justify-start gap-2">
+                        <AppImage
+                          src={product?.images?.[0]}
+                          alt={product?.perTitle ? `${product.perTitle}-icon` : "product-icon"}
+                          width="w-16"
+                          sizes="10vw"
+                        />
+                        <p className="font-bold">{product.perTitle}</p>
+                      </div>
                     </td>
                     <td className="table__td px-2 max-w-70 truncate">
                       <div className="flex items-center justify-center flex-col gap-2 text-xs">
@@ -262,7 +280,7 @@ function ProductsListTable({
                           alt={`${product?.brand?.value}-icon` || "brand-icon"}
                           ratio="aspect-[4/1]"
                           className="dark:invert"
-                          width="w-16"
+                          width="w-20"
                           sizes="10vw"
                         />
                         <p className="text-stroke-600">
@@ -271,9 +289,23 @@ function ProductsListTable({
                       </div>
                     </td>
                     <td className="table__td px-2 truncate font-bold">
-                      {product?.categories?.gender?.title}
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <AppImage
+                          src={product?.categories?.gender?.iconUrl}
+                          alt={
+                            product?.categories?.gender?.title
+                              ? `${product.categories.gender.title}-icon`
+                              : "gender-icon"
+                          }
+                          width="w-7"
+                          sizes="10vw"
+                        />
+                        <p className="font-bold">
+                          {product?.categories?.gender?.title}
+                        </p>
+                      </div>
                     </td>
-                    <td className="table__td px-3 py-2! truncate">
+                    <td className="table__td p-2 truncate">
                       <div className="min-w-24 max-w-44 overflow-hidden">
                         <div className="flex flex-wrap items-center justify-start gap-1 h-full w-fit">
                           {product?.categories?.fragranceFamilies?.map(
