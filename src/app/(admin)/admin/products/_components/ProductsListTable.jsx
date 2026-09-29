@@ -53,7 +53,7 @@ function ProductsListTable({
   };
 
   return (
-    <div className="w-full overflow-auto max-h-dvh pb-0.5 rounded-xl shadow-xl scrollbar-none">
+    <div className="w-full overflow-x-auto h-fit pb-0.5 rounded-xl shadow-xl scrollbar-none">
       <>
         <Table className="overflow-auto md:hidden">
           <Table.Header className="">
@@ -113,7 +113,11 @@ function ProductsListTable({
                       <div className="flex items-center justify-start gap-2">
                         <AppImage
                           src={product?.images?.[0]}
-                          alt={product?.perTitle ? `${product.perTitle}-icon` : "product-icon"}
+                          alt={
+                            product?.perTitle
+                              ? `${product.perTitle}-icon`
+                              : "product-icon"
+                          }
                           width="w-16"
                           sizes="10vw"
                         />
@@ -266,7 +270,11 @@ function ProductsListTable({
                       <div className="flex items-center justify-start gap-2">
                         <AppImage
                           src={product?.images?.[0]}
-                          alt={product?.perTitle ? `${product.perTitle}-icon` : "product-icon"}
+                          alt={
+                            product?.perTitle
+                              ? `${product.perTitle}-icon`
+                              : "product-icon"
+                          }
                           width="w-16"
                           sizes="10vw"
                         />

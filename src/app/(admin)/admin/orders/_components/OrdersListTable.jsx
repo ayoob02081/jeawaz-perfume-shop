@@ -179,7 +179,7 @@ function OrdersListTable({ orders, isLoading, status }) {
             )}
         </div>
       )}
-      <div className="w-full overflow-x-auto rounded-xl shadow-xl scrollbar-none">
+      <div className="w-full overflow-x-auto h-fit rounded-xl shadow-xl scrollbar-none">
         {isLoading ? (
           <Loading />
         ) : (

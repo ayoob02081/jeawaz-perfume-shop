@@ -7,7 +7,7 @@ import Link from "next/link";
 
 function UsersListTable({ users }) {
   return (
-    <div className="w-full overflow-x-auto rounded-xl shadow-xl scrollbar-none">
+    <div className="w-full overflow-x-auto h-fit rounded-xl shadow-xl scrollbar-none">
       <>
         <Table className="overflow-auto md:hidden">
           <Table.Header>
@@ -50,11 +50,11 @@ function UsersListTable({ users }) {
                           {user?.role}
                         </p>
                         <p
-                          className={`badge border font-bold ${user?.accountStatus === "active" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
+                          className={`badge border font-bold ${user?.accountStatus === "verified" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
                         >
-                          {user?.accountStatus === "active"
-                            ? "فعال"
-                            : "غیر فعال"}
+                          {user?.accountStatus === "verified"
+                            ? "احراز شده"
+                            : "احراز نشده"}
                         </p>
                       </div>
                     </td>
@@ -128,9 +128,11 @@ function UsersListTable({ users }) {
                     </td>
                     <td className="table__td px-2">
                       <p
-                        className={`badge border font-bold ${user?.accountStatus === "active" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
+                        className={`badge border font-bold ${user?.accountStatus === "verified" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
                       >
-                        {user?.accountStatus === "active" ? "فعال" : "غیر فعال"}
+                        {user?.accountStatus === "verified"
+                          ? "احراز شده"
+                          : "احراز نشده"}
                       </p>
                     </td>
                     <td className="table__td px-2">

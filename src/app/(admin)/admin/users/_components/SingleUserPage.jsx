@@ -36,7 +36,7 @@ function SingleUserPage({ userId }) {
       title: "شماره موبایل :",
       des: normalizeIranPhone(phoneNumber),
     },
-    { id: 3, title: "نقش :", des: role ? "ادمین" : "کاربر" },
+    { id: 3, title: "نقش :", des: role === "admin" ? "ادمین" : "کاربر" },
     {
       id: 4,
       title: "وضعیت :",

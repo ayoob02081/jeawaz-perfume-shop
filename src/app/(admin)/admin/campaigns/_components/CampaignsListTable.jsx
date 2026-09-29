@@ -13,7 +13,7 @@ import Link from "next/link";
 
 function CampaignsListTable({ campaigns }) {
   return (
-    <div className="w-full overflow-auto max-h-dvh rounded-xl shadow-xl scrollbar-none">
+    <div className="w-full overflow-x-auto h-fit rounded-xl shadow-xl scrollbar-none">
       <>
         <Table className="overflow-auto md:hidden">
           <Table.Header className="">
