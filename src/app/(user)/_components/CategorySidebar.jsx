@@ -349,7 +349,20 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                             : "text-stroke-600"
                         }`}
                       >
-                        {label}
+                        <span className="flex items-center justify-start gap-1 w-full">
+                          <div
+                            className={`h-2 w-0.5 rounded-full ${
+                              state.draft.type === type
+                                ? "bg-primary"
+                                : "bg-stroke-50"
+                            } duration-200`}
+                          ></div>
+                          <p
+                            className={` ${state.draft.type === type ? "text-primary" : "text-stroke-800 dark:text-stroke-500"} duration-200`}
+                          >
+                            {label}
+                          </p>
+                        </span>
                       </button>
                     ))}
                   </CategriesFilter>
@@ -384,7 +397,11 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
 
                   {/* Product V2 taxonomy */}
                   {SIDEBAR_TAXONOMY_GROUPS.map(({ key, label, multiple }) => (
-                    <CategriesFilter key={key} fieldsetId={`${key}-value`} title={label}>
+                    <CategriesFilter
+                      key={key}
+                      fieldsetId={`${key}-value`}
+                      title={label}
+                    >
                       {taxonomyOptions[key]?.map((category) =>
                         multiple ? (
                           <FilterCheckBox
@@ -419,7 +436,20 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                                 : "text-stroke-600"
                             }`}
                           >
-                            {category.title}
+                            <span className="flex items-center justify-start gap-1 w-full">
+                              <div
+                                className={`h-2 w-0.5 rounded-full ${
+                                  state.draft[key] === category.slug
+                                    ? "bg-primary"
+                                    : "bg-stroke-50"
+                                } duration-200`}
+                              ></div>
+                              <p
+                                className={` ${state.draft[key] === category.slug ? "text-primary" : "text-stroke-800 dark:text-stroke-500"} duration-200`}
+                              >
+                                {category.title}
+                              </p>
+                            </span>
                           </button>
                         ),
                       )}
@@ -488,7 +518,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                       submitFilters();
                       closeCategory();
                     }}
-                    className="btn btn--primary shadow-xl border-none px-6 md:px-8 size-full"
+                    className="btn btn--primary backdrop-blur-md shadow-xl border-none px-6 md:px-8 size-full"
                   >
                     <p className="text-sm sm:text-xs">اعمال فیلتر</p>
                   </button>
@@ -496,7 +526,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                   <button
                     type="button"
                     onClick={cancelCategory}
-                    className="btn btn--secondary--2 shadow-xl bg-stroke-0 border-stroke-0 px-6 h-full w-1/2 disabled:bg-amber-50"
+                    className="btn btn--secondary--2 backdrop-blur-md shadow-xl bg-stroke-0 border-stroke-0 px-6 h-full w-1/2 disabled:bg-amber-50"
                   >
                     <p className="text-sm sm:text-xs text-stroke-800">انصراف</p>
                   </button>
@@ -515,7 +545,7 @@ export default CategorySidebar;
 function CategriesFilter({ title, fieldsetId, children, className = "" }) {
   return (
     <div
-      className={`flex flex-col items-end justify-start gap-2 overflow-hidden text-sm h-full max-h-1/2 ${className}`}
+      className={`flex flex-col items-end justify-start gap-2 overflow-hidden text-sm h-full max-h-[44%] ${className}`}
     >
       <div className="flex justify-start items-center gap-1 w-full">
         <AppImage
