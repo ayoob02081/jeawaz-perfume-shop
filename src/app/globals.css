@@ -474,3 +474,27 @@ input:-webkit-autofill:active {
     transform: translateX(100%);
   }
 }
+
+/* Printed documents (customer order invoice): A4, black on white. */
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+@media print {
+  html,
+  body {
+    min-height: 0;
+    background: #fff;
+    color: #000;
+  }
+
+  .invoice thead {
+    display: table-header-group;
+  }
+
+  .invoice tr,
+  .invoice-totals {
+    break-inside: avoid;
+  }
+}
