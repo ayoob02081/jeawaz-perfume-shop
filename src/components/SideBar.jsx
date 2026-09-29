@@ -7,7 +7,7 @@ import useOutsideClick from "@/hooks/useOutsideClick";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AdminSidebar from "@/app/(admin)/admin/_components/AdminSidebar";
 import UserSidebar from "@/app/(profile)/profile/_components/UserSidebar";
-import { useEffect } from "react";
+import useBodyScrollLock from "@/hooks/useBodyScrollLock";
 import ThemeToggle from "@/ui/ThemeToggle";
 
 const filterLinks = [
@@ -60,23 +60,7 @@ function Sidebar({ toggleSidebar, toggleCategory, isSidebarOpen }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (isSidebarOpen) {
-      const scrollbarWidth =
-        window.innerWidth - document.documentElement.clientWidth;
-
-      document.body.style.overflow = "hidden";
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    } else {
-      document.body.style.overflow = "";
-      document.body.style.paddingRight = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-      document.body.style.paddingRight = "";
-    };
-  }, [isSidebarOpen]);
+  useBodyScrollLock(isSidebarOpen);
 
   return (
     <ul

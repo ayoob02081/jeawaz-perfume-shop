@@ -141,19 +141,34 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
     : [];
 
   return (
+    // Mobile: the fixed Backdrop is the only viewport-sized box; the panel
+    // fills it (h-full, no second dvh measurement) and [data-scroll] is the
+    // single vertical scroller, contained so it never scrolls the page behind.
     <Modal
       isOpen={isCategoryOpen}
       onClose={cancelCategory}
       category
-      className="max-lg:h-dvh"
+      className="max-lg:h-full"
+      backdropClassName="max-lg:overflow-hidden"
     >
+      {/* Closed: offscreen and inert (not focusable, hidden from assistive
+          technology). Open: a modal dialog. */}
       <div
         data-scroll
-        className="size-full max-lg:h-full max-lg:overflow-auto lg:overflow-hidden bg-stroke-100 scrollbar-none"
+        inert={!isCategoryOpen}
+        role={isCategoryOpen ? "dialog" : undefined}
+        aria-modal={isCategoryOpen ? "true" : undefined}
+        aria-label="دسته بندی محصولات"
+        className="size-full max-lg:h-full max-lg:overflow-auto overscroll-y-contain lg:overflow-hidden bg-stroke-100 scrollbar-none"
       >
         {/* Mobile Category Button */}
-        <div className="fixed z-10 flex items-center justify-between px-4 w-full py-6 lg:hidden lg:h-0 bg-stroke-0">
-          <button type="button" className="size-6" onClick={cancelCategory}>
+        <div className="fixed top-0 z-10 flex items-center justify-between px-4 w-full py-6 lg:hidden lg:h-0 bg-stroke-0">
+          <button
+            type="button"
+            className="size-6"
+            onClick={cancelCategory}
+            aria-label="بستن فیلترها"
+          >
             <ArrowRightIcon className="size-5 text-stroke-800" />
           </button>
           <span className="text-stroke-800 font-bold">دسته بندی محصولات</span>
@@ -246,9 +261,9 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
             )}
 
             {/* Other Categories */}
-            <div className="flex flex-col gap-6 md:gap-4 max-md:p-4 md:py-4 md:pl-4 max-lg:w-full max-md:border-t border-stroke-200">
+            <div className="flex flex-col gap-6 md:gap-4 max-md:p-4 md:py-4 md:pl-4 max-lg:w-full max-lg:max-h-svh max-md:border-t border-stroke-200">
               <div className="size-full rounded-2xl bg-stroke-0 py-4 overflow-hidden max-sm:mb-10">
-                <div className="flex flex-wrap items-start justify-start size-full overflow-y-aut scrollbar-none gap-6 pr-4 scroll-smooth **:scroll-smooth">
+                <div className="flex flex-wrap items-start justify-start size-full overflow-y-auto scrollbar-none gap-6 px-4 scroll-smooth **:scroll-smooth">
                   {/* Brands */}
                   <CategriesFilter fieldsetId="brand-value" title="برند">
                     {brandCategories?.map((brand) => {
