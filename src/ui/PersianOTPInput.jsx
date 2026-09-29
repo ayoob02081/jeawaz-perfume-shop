@@ -8,7 +8,14 @@ import {
   getOtpSlots,
 } from "@/utils/otpInputContract.mjs";
 
-export default function PersianOTPInput({ value, onChange, numInputs = 5 }) {
+// `readOnly` keeps focus and the entered digits but ignores edits (e.g. while
+// the code is being verified).
+export default function PersianOTPInput({
+  value,
+  onChange,
+  numInputs = 5,
+  readOnly = false,
+}) {
   const inputsRef = useRef([]);
   const slots = getOtpSlots(value, numInputs);
 
@@ -19,6 +26,7 @@ export default function PersianOTPInput({ value, onChange, numInputs = 5 }) {
   }, []);
 
   const handleChange = (e, index) => {
+    if (readOnly) return;
     const next = applyOtpInput(value, index, e.target.value, {
       caret: e.target.selectionEnd,
       length: numInputs,
@@ -31,7 +39,7 @@ export default function PersianOTPInput({ value, onChange, numInputs = 5 }) {
   };
 
   const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace") {
+    if (e.key === "Backspace" && !readOnly) {
       const next = applyOtpBackspace(value, index, numInputs);
       if (next.focusIndex !== index) {
         inputsRef.current[next.focusIndex].focus();
@@ -42,6 +50,7 @@ export default function PersianOTPInput({ value, onChange, numInputs = 5 }) {
 
   const handlePaste = (e) => {
     e.preventDefault();
+    if (readOnly) return;
     const pastedData = e.clipboardData.getData("text");
     onChange(applyOtpPaste(pastedData, numInputs));
   };
@@ -61,6 +70,7 @@ export default function PersianOTPInput({ value, onChange, numInputs = 5 }) {
           // controlled value always renders one digit per slot.
           maxLength={numInputs + 1}
           value={toPersianNumbers(slots[index])}
+          readOnly={readOnly}
           onChange={(e) => handleChange(e, index)}
           onKeyDown={(e) => handleKeyDown(e, index)}
           onPaste={handlePaste}

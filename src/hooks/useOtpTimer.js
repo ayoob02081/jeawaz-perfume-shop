@@ -1,37 +1,30 @@
 import { useEffect, useState } from "react";
+import { resendRemainingSeconds } from "@/utils/otpLoginFlow.mjs";
 
-export default function useOtpTimer() {
-  const [expiresAt, setExpiresAt] = useState(null);
-  const [remaining, setRemaining] = useState(0);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("otp_expires_at");
-    if (saved) {
-      setExpiresAt(Number(saved));
-    }
-  }, []);
+// Resend countdown for the current code. `resendAt` belongs to the phone the
+// code was issued for (otpLoginFlow.mjs owns it and its phone-scoped
+// persistence); it is a client-side hint and the backend cooldown stays
+// authoritative.
+export default function useOtpTimer(resendAt) {
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    if (!expiresAt) return;
+    if (!resendAt) return;
+
+    const tick = () => {
+      const current = Date.now();
+      setNow(current);
+      return current;
+    };
+
+    if (tick() >= resendAt) return;
 
     const interval = setInterval(() => {
-      const diff = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
-
-      setRemaining(diff);
-
-      if (diff === 0) {
-        clearInterval(interval);
-        localStorage.removeItem("otp_expires_at");
-      }
+      if (tick() >= resendAt) clearInterval(interval);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [expiresAt]);
+  }, [resendAt]);
 
-  const startTimer = (timestamp) => {
-    localStorage.setItem("otp_expires_at", timestamp);
-    setExpiresAt(timestamp); // ✅ این باعث فعال شدن useEffect دوم میشه
-  };
-
-  return { remaining, startTimer };
+  return { resendRemaining: resendRemainingSeconds(resendAt, now) };
 }

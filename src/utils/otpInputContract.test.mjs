@@ -218,17 +218,27 @@ test("the OTP inputs keep numeric one-time-code entry and autofocus on mount", (
   assert.doesNotMatch(otpInputSource, /setTimeout/);
 });
 
+// The flow rules themselves (otpPhone, attempts, resend) are covered by
+// otpLoginFlow.test.mjs; these only check that Login is wired to them.
 test("WebOTP verifies the received code, not the previous OTP state", () => {
-  assert.match(loginSource, /enabled: step === 2 && !isPasswordType/);
-  assert.match(loginSource, /setOtp\(code\);\s*verifyOtp\(code\);/);
-  assert.match(loginSource, /verifyOtpApi\(\{ phoneNumber: getValues\("phoneNumber"\), code \}\)/);
+  assert.match(loginSource, /enabled: isWebOtpActive\(flow\) && !isPasswordType/);
+  assert.match(loginSource, /requestKey: flow\.attempt/);
+  assert.match(
+    loginSource,
+    /if \(!isCurrentAttempt\(flowRef\.current, requestKey\)\) return;\s*setOtp\(code\);\s*verifyOtp\(code\);/,
+  );
+  assert.match(loginSource, /getVerifyRequest\(flowRef\.current, code\)/);
+  assert.match(loginSource, /verifyOtpApi\(\{ phoneNumber: otpPhone, code \}\)/);
+  assert.doesNotMatch(loginSource, /getValues\(/);
   assert.match(loginSource, /verificationGuardRef\.current\.run\(/);
   assert.match(loginSource, /if \(!isCompleteOtp\(otp\)\) return toast\.error\("کد تکمیل نشده"\);\s*return verifyOtp\(otp\);/);
 });
 
 test("the WebOTP hook aborts on cleanup and names no domain", () => {
   assert.match(webOtpHookSource, /return \(\) => controller\.abort\(\);/);
-  assert.match(webOtpHookSource, /\[enabled, length\]/);
+  // One listener per OTP request: a new request key aborts the previous one.
+  assert.match(webOtpHookSource, /\[enabled, requestKey, length\]/);
+  assert.match(webOtpHookSource, /onCodeRef\.current\?\.\(code, requestKey\)/);
   for (const source of [webOtpHookSource, loginSource, read("./otpInputContract.mjs")]) {
     assert.doesNotMatch(source, /jeawaz\.com/);
   }
