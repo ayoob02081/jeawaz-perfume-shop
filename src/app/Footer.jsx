@@ -53,7 +53,7 @@ function Footer() {
                     <Link href={"/page/terms"}>قوانین و مقررات</Link>
                   </li>
                   <li>
-                    <Link href={"/profile/me"}>پروفایل من</Link>
+                    <Link href={"/profile/me"} prefetch={false}>پروفایل من</Link>
                   </li>
                 </div>
               </ul>

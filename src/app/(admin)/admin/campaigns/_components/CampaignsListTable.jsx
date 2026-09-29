@@ -86,6 +86,7 @@ function CampaignsListTable({ campaigns }) {
                       <div className="flex justify-center items-center w-full">
                         <Link
                           href={`/admin/campaigns/edit/${campaign.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200 w-fit"
                         >
                           <PencilIcon className=" size-5" />
@@ -167,6 +168,7 @@ function CampaignsListTable({ campaigns }) {
                       <div className="flex justify-center items-center w-full">
                         <Link
                           href={`/admin/campaigns/edit/${campaign.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200 w-fit"
                         >
                           <PencilIcon className=" size-5" />

@@ -411,6 +411,7 @@ function StatusButtons({
     <div className="flex items-center justify-center gap-2">
       <Link
         href={`/admin/orders/${order?.id}`}
+        prefetch={false}
         className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
       >
         <EyeIcon className="size-5" />

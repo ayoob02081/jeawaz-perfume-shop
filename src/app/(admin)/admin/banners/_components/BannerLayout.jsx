@@ -20,6 +20,7 @@ function BannerLayout() {
         <h1 className="font-bold text-stroke-800 text-xl">بنرها</h1>
         <Link
           href={"/admin/banners/add"}
+          prefetch={false}
           className="btn btn--primary border py-1.5 px-3"
         >
           اضافه کردن بنر

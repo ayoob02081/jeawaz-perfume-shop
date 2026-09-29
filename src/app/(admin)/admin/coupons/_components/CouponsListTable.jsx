@@ -98,6 +98,7 @@ function CouponsListTable({ coupons }) {
                       <div className="flex gap-2 items-center">
                         <Link
                           href={`/admin/coupons/edit/${coupon.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200"
                         >
                           <PencilIcon className=" size-5" />
@@ -185,6 +186,7 @@ function CouponsListTable({ coupons }) {
                       <div className="flex gap-2 items-center">
                         <Link
                           href={`/admin/coupons/edit/${coupon.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200"
                         >
                           <PencilIcon className=" size-5" />

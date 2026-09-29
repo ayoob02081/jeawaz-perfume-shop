@@ -33,6 +33,7 @@ function ProfileInfo() {
         </p>
         <Link
           href="/profile/me/edit"
+          prefetch={false}
           className="text-primary hover:text-success active:text-success duration-200"
         >
           ویرایش اطلاعات

@@ -66,6 +66,7 @@ function AdminDashboardLayout() {
             {data?.summary?.inventoryAlerts.map((item) => (
               <Link
                 href={`/admin/products/edit/${item.id}`}
+                prefetch={false}
                 key={item.id}
                 className="flex flex-col items-center justify-center snap-center gap-2 border rounded-2xl text-stroke-800 p-2 min-w-30"
               >
@@ -90,6 +91,7 @@ function AdminDashboardLayout() {
             {data?.topProducts?.map((item) => (
               <Link
                 href={`/admin/products/edit/${item.productId}`}
+                prefetch={false}
                 key={item.productId}
                 className="flex flex-col items-center justify-center snap-center gap-2 border rounded-2xl text-stroke-800 p-2 min-w-30"
               >
@@ -114,6 +116,7 @@ function AdminDashboardLayout() {
             {data?.bestCustomers?.map((item) => (
               <Link
                 href={`/admin/users/${item.userId}`}
+                prefetch={false}
                 key={item.userId}
                 className="flex flex-col items-center justify-center snap-center gap-2 border rounded-2xl text-stroke-800 p-2 min-w-28"
               >
@@ -189,6 +192,7 @@ function CardButton({ children, href }) {
   return (
     <Link
       href={href}
+      prefetch={false}
       className="flex flex-none items-start justify-start size-11 aspect-square bg-stroke-100 rounded-2xl"
     >
       <div className="size-6 aspect-square bg-stroke-0 "></div>

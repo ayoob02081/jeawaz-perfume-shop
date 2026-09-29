@@ -216,6 +216,7 @@ export function ProfileLink({
             <Link
               onClick={toggleSidebar}
               href={"/profile/me"}
+              prefetch={false}
               className="flex items-center justify-between max-lg:gap-4 lg:gap-4 overflow-hidden"
             >
               <UserIcon className="p-3 text-stroke-800 size-14 bg-stroke-150 lg:bg-stroke-0 rounded-xl z-10" />
@@ -240,6 +241,7 @@ export function ProfileLink({
             <Link
               onClick={toggleSidebar}
               href={"/profile/me"}
+              prefetch={false}
               className="flex items-center justify-center lg:opacity-0 lg:w-0 group-hover:lg:opacity-100 2xl:opacity-100 group-hover:lg:w-fit 2xl:w-fit transition-all duration-200"
             >
               <PencilSquareIcon className="size-6 text-stroke-800 hover:text-success active:text-success duration-200" />
@@ -256,6 +258,7 @@ export function ProfileLink({
       <Link
         onClick={toggleSidebar}
         href={href}
+        prefetch={false}
         className={`flex items-center justify-start gap-4
             ${
               isPathName

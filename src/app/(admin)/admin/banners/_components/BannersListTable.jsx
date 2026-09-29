@@ -101,12 +101,14 @@ function BannersListTable({ banners }) {
                       <div className="flex gap-2 items-center">
                         <Link
                           href={`/admin/banners/${banner.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-blue duration-200"
                         >
                           <EyeIcon className=" size-5" />
                         </Link>
                         <Link
                           href={`/admin/banners/edit/${banner.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200"
                         >
                           <PencilIcon className=" size-5" />
@@ -190,12 +192,14 @@ function BannersListTable({ banners }) {
                       <div className="flex gap-2 items-center">
                         <Link
                           href={`/admin/banners/${banner.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-blue duration-200"
                         >
                           <EyeIcon className=" size-5" />
                         </Link>
                         <Link
                           href={`/admin/banners/edit/${banner.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200"
                         >
                           <PencilIcon className=" size-5" />

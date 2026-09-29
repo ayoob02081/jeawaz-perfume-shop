@@ -83,6 +83,7 @@ function CategoriesLayout() {
             <h1 className="font-bold text-stroke-800 text-xl">برند‌ها</h1>
             <Link
               href="/admin/categories/brands/add"
+              prefetch={false}
               className="btn btn--primary border py-1.5 px-3"
             >
               اضافه کردن برند
@@ -109,6 +110,7 @@ function CategoriesLayout() {
             </h1>
             <Link
               href={`/admin/categories/${mode}/add`}
+              prefetch={false}
               className="btn btn--primary border py-1.5 px-3"
             >
               افزودن دسته‌بندی

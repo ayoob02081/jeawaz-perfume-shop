@@ -88,6 +88,7 @@ function CategoriesListTable({ categories, brands, categoryRoute }) {
                     <div className="flex gap-2 items-center justify-center">
                       <Link
                         href={`/admin/categories/${type}/edit/${category.id}`}
+                        prefetch={false}
                         className="text-stroke-450 hover:text-success duration-200"
                       >
                         <PencilIcon className="size-5" />
@@ -155,6 +156,7 @@ function CategoriesListTable({ categories, brands, categoryRoute }) {
                     <div className="flex gap-2 items-center">
                       <Link
                         href={`/admin/categories/${type}/edit/${category.id}`}
+                        prefetch={false}
                         className="text-stroke-450 hover:text-success duration-200"
                       >
                         <PencilIcon className="size-5" />

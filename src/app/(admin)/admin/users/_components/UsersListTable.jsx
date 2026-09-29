@@ -70,6 +70,7 @@ function UsersListTable({ users }) {
                     <td className="table__td flex items-center justify-center rounded-l-xl gap-2 px-3">
                       <Link
                         href={`/admin/users/${user?.id}`}
+                        prefetch={false}
                         className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
                       >
                         <EyeIcon className="size-5" />
@@ -148,6 +149,7 @@ function UsersListTable({ users }) {
                     <td className="table__td flex items-center justify-center rounded-l-xl gap-2 px-3">
                       <Link
                         href={`/admin/users/${user?.id}`}
+                        prefetch={false}
                         className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
                       >
                         <EyeIcon className="size-5" />

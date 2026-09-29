@@ -87,6 +87,7 @@ function ProductsLayout() {
         <div className="flex flex-wrap gap-2">
           <Link
             href="/admin/products/price-history"
+            prefetch={false}
             className="btn border py-1.5 px-3 max-[33rem]:w-full"
           >
             تاریخچه قیمت‌ها
@@ -100,6 +101,7 @@ function ProductsLayout() {
           </button>
           <Link
             href="/admin/products/add"
+            prefetch={false}
             className="btn btn--primary border py-1.5 px-3 max-[33rem]:w-full"
           >
             اضافه کردن محصول
