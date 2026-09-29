@@ -60,7 +60,7 @@ export function AccordCategoryCardSkeletons({ count }) {
     <div key={index} className="snap-center">
       <div className="flex h-24 sm:h-30! aspect-9/3 sm:aspect-5/2 justify-between items-center px-3 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250">
         <div className="flex items-center justify-center h-full px-4">
-          <Skeleton className="aspect-square h-16 md:h-20" rounded="rounded-xl" />
+          <Skeleton className="aspect-square h-11 md:h-13" rounded="rounded-xl" />
         </div>
         <div className="grow flex flex-col gap-2 p-4 justify-center items-start">
           <Skeleton className="w-24 sm:w-28 h-5 sm:h-6" />

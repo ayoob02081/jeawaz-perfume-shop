@@ -4,6 +4,7 @@ import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
 import { getProductCardPresentation } from "@/utils/priceCalculator";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 function ProductCard({ product, isPending, error }) {
   const router = useRouter();
@@ -181,10 +182,11 @@ export function CardIconResponsive({
   alt,
   title,
   type,
-  // "button" (focus reveals the title on mobile) or a plain "div" inside an
-  // existing link, which must not contain another interactive element.
   as: Wrapper = "button",
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const wrapperRef = useRef(null);
+
   let bgColor;
 
   switch (type) {
@@ -193,11 +195,11 @@ export function CardIconResponsive({
       break;
 
     case "sweet":
-      bgColor = "bg-dark-orange/10 text-dark-orange dark:bg-dark-orange/5 ";
+      bgColor = "bg-dark-orange/10 text-dark-orange dark:bg-dark-orange/5";
       break;
 
     case "sour":
-      bgColor = "bg-dark-orange/10 text-amber-300 dark:bg-dark-orange/5 ";
+      bgColor = "bg-dark-orange/10 text-amber-300 dark:bg-dark-orange/5";
       break;
 
     case "moderate":
@@ -240,21 +242,74 @@ export function CardIconResponsive({
       break;
   }
 
+  useEffect(() => {
+    if (Wrapper !== "button") return;
+
+    const handlePointerDown = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [Wrapper]);
+
+  const canToggle = Wrapper === "button";
+
   return (
     <Wrapper
-      {...(Wrapper === "button" && { type: "button" })}
+      ref={wrapperRef}
+      {...(canToggle && {
+        type: "button",
+        onClick: () => setIsOpen((prev) => !prev),
+      })}
       dir={category ? "rtl" : "ltr"}
-      className={`overflow-hidden flex items-center justify-center group rounded-5xl max-md:focus:aspect-auto max-md:focus:px-2 md:hover:px-2 md:hover:aspect-auto aspect-square ${bgColor} ${className} duration-300`}
+      className={`
+        group flex aspect-square items-center justify-center
+        overflow-hidden rounded-5xl
+        duration-300
+
+        ${canToggle && isOpen ? "max-md:aspect-auto max-md:px-2" : ""}
+
+        md:hover:aspect-auto
+        md:hover:px-2
+
+        ${bgColor}
+        ${className}
+      `}
     >
       <AppImage
         src={src}
         alt={alt}
-        className={`text-nowrap z-10 ${category ? "" : "justify-end"}`}
+        className={`z-10 text-nowrap ${category ? "" : "justify-end"}`}
         width={size}
         sizes="10vw"
       />
+
       <p
-        className={`w-0 opacity-0 max-md:group-focus:opacity-100 md:group-hover:opacity-100 max-md:group-focus:duration-300 md:group-hover:duration-300 max-md:group-focus:w-auto md:group-hover:w-auto text-nowrap ${category ? "translate-x-full max-md:group-focus:pr-1 md:group-hover:pr-1" : "-translate-x-full max-md:group-focus:pl-1 md:group-hover:pl-1"} max-md:group-focus:translate-x-0 md:group-hover:translate-x-0 translate-y-px max-md:text-xs md:text-sm font-bold transition-all
+        className={`
+          w-0 translate-y-px whitespace-nowrap
+          opacity-0 transition-all
+          max-md:text-xs md:text-sm
+          font-bold
+
+          ${
+            category
+              ? `translate-x-full ${
+                  isOpen
+                    ? "max-md:w-auto max-md:translate-x-0 max-md:pr-1 max-md:opacity-100 max-md:duration-300"
+                    : ""
+                } md:group-hover:w-auto md:group-hover:translate-x-0 md:group-hover:pr-1 md:group-hover:opacity-100 md:group-hover:duration-300`
+              : `-translate-x-full ${
+                  isOpen
+                    ? "max-md:w-auto max-md:translate-x-0 max-md:pl-1 max-md:opacity-100 max-md:duration-300"
+                    : ""
+                } md:group-hover:w-auto md:group-hover:translate-x-0 md:group-hover:pl-1 md:group-hover:opacity-100 md:group-hover:duration-300`
+          }
         `}
       >
         {title}

@@ -7,8 +7,8 @@ function Footer() {
   return (
     <article className="max-w-480 mx-auto 2xl:rounded-t-4xl overflow-hidden">
       <OptionsFooter />
-      <section className="bg-black size-full max-md:hidden px-16 py-8">
-        <div className="flex flex-col items-center gap-6 py-6">
+      <section className="bg-black size-full max-sm:px-4 sm:px-16 py-8">
+        <div className="flex flex-col items-center gap-6 max-sm:pb-6 sm:py-6">
           <Link
             href={"/"}
             className="flex flex-col items-center justify-center gap-4 text-white"
@@ -22,7 +22,7 @@ function Footer() {
             />
             <p className="text-sm">جیاواز، دنیای رایحه‌های خاصه</p>
           </Link>
-          <div className="flex flex-col items-center justify-evenly gap-2 text-stroke-600 dark:text-stroke-600/50 text-xs">
+          <div className="flex flex-col items-center justify-evenly gap-2 text-stroke-600 dark:text-stroke-600/50 text-xs max-md:text-center">
             <p>
               ما اینجاییم تا کمک کنیم عطری رو پیدا کنی که با شخصیتت هم‌صدا باشه.
             </p>
@@ -86,7 +86,7 @@ function Footer() {
               </ul>
             </nav>
           </section>
-          <article className="flex items-center justify-between w-full px-16 text-white">
+          <article className="flex max-sm:flex-col max-sm:gap-6 items-center justify-between w-full sm:px-16 text-white">
             <section className="flex flex-col justify-between gap-4">
               <div className="flex items-center justify-between">
                 <Link href={"tel:+989302125151"} className="flex items-center">
@@ -112,9 +112,11 @@ function Footer() {
                   </p>
                 </Link>
               </div>
-              <span className="flex items-center text-sm gap-0.5">
-                <p className="font-bold ">منتظر صدای گرم شما هستیم!! </p>
-                <p className="text-stroke-550 dark:text-stroke-200 font-semibod">
+              <span className="flex items-start text-sm gap-0.5 max-sm:w-full">
+                <p className="font-bold text-nowrap">
+                  منتظر صدای گرم شما هستیم!!{" "}
+                </p>
+                <p className="text-stroke-550 dark:text-stroke-200 font-semibod max-sm:w-full">
                   اگر سوالی داشتید با ما تماس بگیرید
                 </p>
               </span>

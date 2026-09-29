@@ -37,9 +37,13 @@ test("the banner sections render skeletons instead of the spinner", () => {
   const secondary = home("SecondaryBannerLayout");
   assert.match(
     secondary,
-    /if \(view === "loading"\) \{\s*return \(\s*<SecondaryBannerSkeletons count=\{SECONDARY_BANNER_SKELETON_COUNT\} \/>\s*\);/,
+    /if \(view === "loading"\) \{\s*return \(?\s*<SecondaryBannerSkeletons count=\{SECONDARY_BANNER_SKELETON_COUNT\} \/>\s*\)?;/,
   );
   assert.match(secondary, /if \(view === "hidden"\) \{\s*return null;/);
+  // The admin edit button sits inside the banner Link: it must navigate with
+  // the router object and cancel the Link's own navigation.
+  assert.match(secondary, /event\.preventDefault\(\);\s*router\.push\(`\/admin\/banners\/edit\/\$\{item\?\.id\}`\);/);
+  assert.doesNotMatch(secondary, /router\(/);
   for (const source of [primary, secondary]) {
     assert.match(source, /homeBannerView\(\{ isPending, isError, banners \}\)/);
     assert.doesNotMatch(source, /Loading/);
@@ -94,7 +98,9 @@ test("category skeletons keep the card box and the image shape", () => {
   assertCovers(["aspect-8/10", "md:aspect-10/13", "w-16", "md:w-21", "rounded-b-xl", "sm:snap-center"], sk, "gender image");
   const accord = home("AccordCategoriesLayout");
   assertCovers(geometry(accord, "sm:aspect-5/2"), sk, "accord card");
-  assertCovers(["aspect-square", "h-16", "md:h-20", "rounded-xl", "snap-center"], sk, "accord image");
+  // The Character card image box (h-11 md:h-13) is what the skeleton mirrors.
+  assert.match(accord, /aspect-square h-11 md:h-13 rounded-xl/);
+  assertCovers(["aspect-square", "h-11", "md:h-13", "rounded-xl", "snap-center"], sk, "accord image");
   // Both real cards show text (title + product count): two text lines each.
   assert.match(gender, /\{label\}[\s\S]*محصول/);
   assert.match(accord, /\{label\}[\s\S]*محصول/);

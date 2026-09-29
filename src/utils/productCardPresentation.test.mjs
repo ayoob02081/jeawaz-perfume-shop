@@ -106,7 +106,11 @@ test("the card icon is a button on cards but a plain element inside the header l
   const icon = card.slice(card.indexOf("export function CardIconResponsive"));
 
   assert.match(icon, /as: Wrapper = "button",/);
-  assert.match(icon, /<Wrapper\s+\{\.\.\.\(Wrapper === "button" && \{ type: "button" \}\)\}/);
+  // Button semantics, the tap toggle and the outside-tap listener apply only
+  // to the button form, never to the plain element inside a link.
+  assert.match(icon, /const canToggle = Wrapper === "button";/);
+  assert.match(icon, /<Wrapper\s+ref=\{wrapperRef\}\s+\{\.\.\.\(canToggle && \{\s*type: "button",\s*onClick:/);
+  assert.match(icon, /useEffect\(\(\) => \{\s*if \(Wrapper !== "button"\) return;/);
   assert.match(icon, /<\/Wrapper>/);
   assert.doesNotMatch(icon, /<button\b/);
   // A falsy condition must not leak a literal "false" class.

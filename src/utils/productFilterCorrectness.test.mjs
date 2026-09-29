@@ -263,7 +263,7 @@ test("Home category sections render only storefront (active) categories", () => 
   // select drops inactive categories; the components add no filtering of their own.
   for (const [name, type, list] of [
     ["GenderCategoriesLayout", "gender", "genderCategories"],
-    ["AccordCategoriesLayout", "fragrance_family", "fragranceFamilyCategories"],
+    ["AccordCategoriesLayout", "character", "characters"],
   ]) {
     const home = source(`../app/(user)/_components/${name}.jsx`);
     assert.match(home,
@@ -272,6 +272,10 @@ test("Home category sections render only storefront (active) categories", () => 
     assert.doesNotMatch(home, /useGetCategoriesByType\(|isActive/);
     assert.match(home, new RegExp(`${list}\\??\\.map\\(`));
   }
+  // The Character cards filter the product list by the same taxonomy.
+  const accord = source("../app/(user)/_components/AccordCategoriesLayout.jsx");
+  assert.match(accord, /router\.push\(`\/products\?characters=\$\{encodeURIComponent\(slug\)\}`\)/);
+  assert.doesNotMatch(accord, /fragranceFamilies=/);
   const rendered = storefrontCategoryOptions([
     { id: 1, slug: "male", isActive: true },
     { id: 2, slug: "retired", isActive: false },

@@ -248,7 +248,7 @@
     focus-within:text-stroke-800 focus-within:bg-stroke-0 focus:bg-stroke-0 focus-within:border focus-within:border-primary transition-all duration-200;
   }
   .footer--link {
-    @apply grid gap-x-6 gap-y-1 text-base text-nowrap text-stroke-600 dark:text-stroke-600/50 *:hover:text-primary *:active:text-primary *:duration-200;
+    @apply max-sm:flex max-sm:flex-col max-sm:gap-2 sm:grid gap-x-6 gap-y-1 text-base text-nowrap text-stroke-600 dark:text-stroke-600/50 *:hover:text-primary *:active:text-primary *:duration-200;
   }
 }
 

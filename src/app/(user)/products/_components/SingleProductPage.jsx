@@ -29,8 +29,13 @@ import {
 } from "@/utils/addedToCartContract.mjs";
 import AddedToCartModal from "./AddedToCartModal";
 import { CONCENTRATION_LABELS as concentrationLabels } from "@/utils/productConcentration.mjs";
+import Link from "next/link";
+import { PencilIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/contexts/auth/AuthContext";
 
 function SingleProductPage({ product }) {
+  const { user } = useAuth();
+
   if (!product) {
     return (
       <main className=" container mx-auto xl:max-w-7xl">
@@ -53,7 +58,7 @@ function SingleProductPage({ product }) {
           />
         </BreadCrumbBase>
       </article>
-      <article className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 md:p-6 max-md:pb-24">
+      <article className="relative grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 md:p-6 max-md:pb-24">
         <ImageSwiper images={product?.images} product={product} />
         <ProductDes key={product.id} product={product} />
         <ProductOptions product={product} />
@@ -67,6 +72,19 @@ function SingleProductPage({ product }) {
             {product?.description}
           </p>
         </Accordion>
+        {/* Edit Btn */}
+        {user?.role === "admin" && (
+          <div className="absolute flex items-center gap-1 top-5 md:top-10 max-md:right-3 md:left-21/40 max-md:z-50">
+            <Link
+              href={`/admin/products/edit/${product?.id}`}
+              prefetch={false}
+              aria-label="ویرایش محصول"
+              className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-stroke-0 shadow-md"
+            >
+              <PencilIcon className="text-primary size-5 sm:size-6 md:size-5 xl:size-6" />
+            </Link>
+          </div>
+        )}
       </article>
     </main>
   );

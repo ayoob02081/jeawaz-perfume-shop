@@ -44,7 +44,6 @@ import {
   useGetAddresses,
 } from "@/hooks/useAddress";
 import { useCreateOrder } from "@/hooks/useOrders";
-import Modal from "@/components/Modal";
 
 const shippingOptions = [
   {

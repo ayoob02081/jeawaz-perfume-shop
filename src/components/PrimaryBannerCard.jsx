@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import AppImage from "./AppImage";
 import Link from "next/link";
@@ -5,9 +7,12 @@ import {
   ArrowLeftIcon,
   ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
+import { useAuth } from "@/contexts/auth/AuthContext";
+import { PencilIcon } from "lucide-react";
 
 export function PrimaryBannerCard({ banner, priority = false }) {
-  const { title, imageUrl, mobileImageUrl, link } = banner;
+  const { id, title, imageUrl, mobileImageUrl, link } = banner;
+  const { user } = useAuth();
 
   return (
     <div className="relative flex w-full items-center justify-center overflow-hidden rounded-xl md:rounded-3xl banner--primary ">
@@ -15,7 +20,7 @@ export function PrimaryBannerCard({ banner, priority = false }) {
       <AppImage
         src={imageUrl}
         alt={title || "بنر"}
-        className="hidden sm:block"
+        className="max-[30rem]:hidden block"
         objectFit="cover"
         width="size-full"
         loading={priority ? "eager" : "lazy"}
@@ -26,15 +31,28 @@ export function PrimaryBannerCard({ banner, priority = false }) {
       <AppImage
         src={mobileImageUrl || imageUrl}
         alt={title || "بنر"}
-        className="block sm:hidden"
+        className="max-[30rem]:block hidden"
         objectFit="cover"
         width="size-full"
         loading={priority ? "eager" : "lazy"}
         sizes="100vw"
       />
 
-      {/* Actions */}
+      {/* Edit Button */}
+      {user?.role === "admin" && (
+        <div className="absolute flex items-center gap-1 top-3 left-3 max-md:z-50">
+          <Link
+            href={`/admin/banners/edit/${id}`}
+            prefetch={false}
+            aria-label="ویرایش بنر"
+            className="flex items-center justify-center aspect-square size-10 lg:size-12 rounded-full bg-stroke-0 shadow-md"
+          >
+            <PencilIcon className="text-primary size-4 lg:size-5" />
+          </Link>
+        </div>
+      )}
 
+      {/* Actions */}
       <div className="absolute bottom-5 right-4 flex items-center justify-start gap-3 md:bottom-7 md:right-6 lg:bottom-10 lg:right-7 ">
         {link && (
           <Link

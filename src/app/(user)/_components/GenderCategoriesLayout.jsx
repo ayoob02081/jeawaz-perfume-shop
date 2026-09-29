@@ -79,6 +79,7 @@ function CategoreyCard({ src, alt, slug, label, productsCount }) {
             className="grow justify-center -rotate-12 z-10"
             objectFit="cover"
             sizes="10vw"
+            ratio="aspect-3/4"
           />
           <div className="absolute bottom-1/6 blur-md w-2/3 h-1 md:h-1.5 bg-stroke-600 rounded-full"></div>
         </div>
