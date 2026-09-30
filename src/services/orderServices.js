@@ -1,4 +1,5 @@
 import app from "./httpClient";
+import { adminOrderByNumberPath } from "@/utils/adminOrdersListContract.mjs";
 
 /* ================= USER ================= */
 
@@ -18,7 +19,7 @@ export const getOrderTimelineApi = (id) =>
   app.get(`/orders/${id}/timeline`).then(({ data }) => data);
 
 export const getOrderByNumberApi = (orderNumber) =>
-  app.get(`/orders/number/${orderNumber}`).then(({ data }) => data);
+  app.get(adminOrderByNumberPath(orderNumber)).then(({ data }) => data);
 
 /* ================= ADMIN ================= */
 
