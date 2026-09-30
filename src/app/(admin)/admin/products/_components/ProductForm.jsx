@@ -26,6 +26,7 @@ import {
   concentrationOptions,
   initialProductFormValues,
   longevityOptions,
+  PRINT_NAME_MAX,
   projectionOptions,
   sillageOptions,
   variantTypes,
@@ -268,6 +269,22 @@ function ProductForm({ productToEdit }) {
               options={concentrationOptions}
               error={errors.concentration}
             />
+            {/* Admin-only label for order Excel/print; enTitle is only the
+                placeholder and is never written into the field. */}
+            <div className="flex flex-col gap-1 w-full md:col-span-2">
+              <RHFTextField
+                label="نام کوتاه برای چاپ"
+                name="printName"
+                register={register}
+                errors={errors}
+                dir="auto"
+                maxLength={PRINT_NAME_MAX}
+                placeholder={watch("enTitle") || "نام انگلیسی محصول"}
+              />
+              <p className="text-xs text-stroke-600 mr-2">
+                اختیاری؛ در صورت خالی بودن، نام انگلیسی محصول استفاده می‌شود.
+              </p>
+            </div>
           </div>
           <RHFTextAreaField
             name="description"

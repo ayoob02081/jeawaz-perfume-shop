@@ -12,6 +12,8 @@ export const PRODUCT_STOCK_MAX = 2_147_483_647;
 export const VARIANT_PRICE_MAX = 2_147_483_647;
 // Cart/Order persist volume as FLOAT; 2^24 keeps every volume exact.
 export const VARIANT_VOLUME_MAX = 16_777_216;
+// Optional admin short name for order Excel/print; empty = use enTitle.
+export const PRINT_NAME_MAX = 100;
 
 const isEmpty = (value) => value === "" || value === null || value === undefined;
 const inIntegerRange = (value, min, max) =>
@@ -46,6 +48,7 @@ export function initialProductFormValues(product) {
     country: product?.country ?? "",
     concentration: product?.concentration ?? "",
     perfumer: product?.perfumer ?? "",
+    printName: product?.printName ?? "",
     images: [...images, { url: "" }],
     offValue: product?.offValue ?? "",
     stock: product?.stock ?? 0,
@@ -95,6 +98,8 @@ export function buildProductFormPayload(data, originalVariants) {
       : Number(data.releaseYear);
   const country = optionalText(data.country);
   const perfumer = optionalText(data.perfumer);
+  // Empty clears the override (null); enTitle is never copied in.
+  const printName = optionalText(data.printName);
   const concentration = data.concentration || null;
 
   if (!inIntegerRange(stock, 0, PRODUCT_STOCK_MAX)) {
@@ -116,6 +121,11 @@ export function buildProductFormPayload(data, originalVariants) {
   }
   if (perfumer && perfumer.length > 150) {
     errors.push(invalid("perfumer", "عطرساز نباید بیش از ۱۵۰ نویسه باشد"));
+  }
+  if (printName && printName.length > PRINT_NAME_MAX) {
+    errors.push(
+      invalid("printName", "نام کوتاه برای چاپ نباید بیش از ۱۰۰ نویسه باشد"),
+    );
   }
   if (concentration && !concentrationOptions.includes(concentration)) {
     errors.push(invalid("concentration", "غلظت معتبر نیست"));
@@ -226,6 +236,7 @@ export function buildProductFormPayload(data, originalVariants) {
       country,
       concentration,
       perfumer,
+      printName,
       stock,
       offValue,
       original: Boolean(data.original),
