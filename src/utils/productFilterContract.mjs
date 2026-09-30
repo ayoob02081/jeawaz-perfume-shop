@@ -370,6 +370,8 @@ export function normalizeProductsQuery(query = {}) {
   return {
     // Only present when set, so existing query keys keep their exact shape.
     ...(campaignId ? { campaignId } : {}),
+    // Admin management opts out of the backend's availability-first ordering.
+    ...(query.availabilityFirst === false ? { availabilityFirst: false } : {}),
     ...(seasons.length ? { seasons } : {}),
     ...(temperature ? { temperature } : {}),
     ...(characters.length ? { characters } : {}),

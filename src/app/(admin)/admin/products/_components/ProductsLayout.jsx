@@ -40,6 +40,7 @@ function ProductsLayout() {
     ...filters,
     page,
     limit: 12,
+    availabilityFirst: false,
   });
   const { data: brands = [] } = useGetAllBrandCategories();
   const { data: categories = [] } = useGetAllCategories();

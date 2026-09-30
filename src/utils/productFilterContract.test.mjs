@@ -150,3 +150,18 @@ test("storefront prefetch uses the normal key factory and options use the backen
   assert.match(layout, /queryKey: productKeys\.list\(nextPageFilters\)/);
   assert.match(service, /getProductVolumeOptionsApi[\s\S]*?\/products\/filter-options\/volumes/);
 });
+
+test("only an explicit admin opt-out reaches the API; storefront keys keep their shape", () => {
+  for (const value of [undefined, true, "false", 0, null]) {
+    assert.equal("availabilityFirst" in normalizeProductsQuery({ availabilityFirst: value }), false);
+  }
+  assert.deepEqual(productListKey({ sort: "newest" }), productListKey({}));
+  const admin = normalizeProductsQuery({ availabilityFirst: false, page: 1, limit: 12 });
+  assert.equal(admin.availabilityFirst, false);
+  const params = new URL(app.getUri({ url: "/products", params: admin }), "http://localhost")
+    .searchParams;
+  assert.equal(params.get("availabilityFirst"), "false");
+  const adminLayout = readFileSync(new URL(
+    "../app/(admin)/admin/products/_components/ProductsLayout.jsx", import.meta.url), "utf8");
+  assert.match(adminLayout, /useGetAllProducts\(\{[\s\S]*?availabilityFirst: false,[\s\S]*?\}\)/);
+});
