@@ -209,13 +209,22 @@ test("a failed verification releases the guard for a corrected code", async () =
 
 // --- wiring -----------------------------------------------------------------
 
-test("the OTP inputs keep numeric one-time-code entry and autofocus on mount", () => {
+// The defaults are the login OTP's (it passes neither prop): one-time-code
+// suggestions and focus on mount. Only the two-code phone-change screen turns
+// them off.
+test("the OTP inputs keep numeric one-time-code entry and autofocus on mount by default", () => {
   assert.match(otpInputSource, /inputMode="numeric"/);
-  assert.match(otpInputSource, /autoComplete="one-time-code"/);
+  assert.match(otpInputSource, /autoComplete = "one-time-code",/);
+  assert.match(otpInputSource, /autoFocus = true,/);
+  assert.match(otpInputSource, /autoComplete=\{autoComplete\}/);
   assert.match(otpInputSource, /maxLength=\{numInputs \+ 1\}/);
   assert.doesNotMatch(otpInputSource, /maxLength=\{1\}/);
-  assert.match(otpInputSource, /firstEmptyOtpIndex\(value, numInputs\)\]\?\.focus\(\)/);
+  assert.match(
+    otpInputSource,
+    /if \(!autoFocus\) return;\s*inputsRef\.current\[firstEmptyOtpIndex\(value, numInputs\)\]\?\.focus\(\)/,
+  );
   assert.doesNotMatch(otpInputSource, /setTimeout/);
+  assert.doesNotMatch(loginSource, /autoComplete=|autoFocus=/);
 });
 
 // The flow rules themselves (otpPhone, attempts, resend) are covered by

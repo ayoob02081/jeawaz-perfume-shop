@@ -26,7 +26,7 @@ test("loginApi posts the credentials with the cookie-sending client", () => {
   assert.match(source, /^import app from "\.\/httpClient";$/m);
   assert.match(
     source,
-    /export function loginApi\(data\) \{\s*return app\.post\("\/auth\/login", data\)\.then\(\(\{ data \}\) => data\);\s*\}/,
+    /export function loginApi\(data\) \{\s*return app\s*\.post\("\/auth\/login", data, \{ skipAuthRefresh: true \}\)\s*\.then\(\(\{ data \}\) => data\);\s*\}/,
   );
   assert.match(read("services/httpClient.js"), /withCredentials: true/);
 });

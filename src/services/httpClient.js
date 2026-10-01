@@ -18,9 +18,13 @@ app.interceptors.response.use(
     const originalConfig = err.config;
     const url = originalConfig?.url || "";
 
+    // `skipAuthRefresh`: a request whose 401 is a domain answer (e.g. a wrong
+    // phone-change code) is never refreshed-and-resent, which would submit it
+    // a second time.
     if (
       err.response?.status === 401 &&
       !originalConfig._retry &&
+      !originalConfig.skipAuthRefresh &&
       !url.includes("/auth/refresh")
     ) {
       originalConfig._retry = true;

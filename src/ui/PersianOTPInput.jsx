@@ -9,18 +9,26 @@ import {
 } from "@/utils/otpInputContract.mjs";
 
 // `readOnly` keeps focus and the entered digits but ignores edits (e.g. while
-// the code is being verified).
+// the code is being verified). The defaults are the login OTP's: browser SMS
+// code suggestions and focus on mount. A screen with two codes turns both off
+// (`autoComplete="off"`, `autoFocus={false}` on the second) so a suggestion
+// can never land in the wrong code. `label` names each slot for screen
+// readers.
 export default function PersianOTPInput({
   value,
   onChange,
   numInputs = 5,
   readOnly = false,
+  autoComplete = "one-time-code",
+  autoFocus = true,
+  label,
 }) {
   const inputsRef = useRef([]);
   const slots = getOtpSlots(value, numInputs);
 
   // Focus the first empty slot when the OTP step appears.
   useEffect(() => {
+    if (!autoFocus) return;
     inputsRef.current[firstEmptyOtpIndex(value, numInputs)]?.focus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -74,7 +82,10 @@ export default function PersianOTPInput({
           onChange={(e) => handleChange(e, index)}
           onKeyDown={(e) => handleKeyDown(e, index)}
           onPaste={handlePaste}
-          autoComplete="one-time-code"
+          autoComplete={autoComplete}
+          aria-label={
+            label ? `${label}، رقم ${toPersianNumbers(index + 1)}` : undefined
+          }
           className="flex items-center justify-center text-center max-sm:size-11 sm:size-14 bg-stroke-50 border border-stroke-50 rounded-full outline-0 text-stroke-800 max-sm:text-lg sm:text-xl duration-200 focus:bg-stroke-0 focus:border-primary"
         />
       ))}

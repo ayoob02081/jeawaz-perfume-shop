@@ -141,6 +141,17 @@ test("a retried request that is still 401 is rejected, not refreshed again (_ret
   assert.deepEqual(server.calls, ["/always-401", "/auth/refresh", "/always-401"]);
 });
 
+test("a request sent with skipAuthRefresh gets its 401 as is: no refresh, no resend", async () => {
+  const app = loadHttpClient();
+  const server = createServer(app);
+
+  await assert.rejects(app.get("/a", { skipAuthRefresh: true }), (error) => {
+    assert.equal(error.response.status, 401);
+    return true;
+  });
+  assert.deepEqual(server.calls, ["/a"]);
+});
+
 test("non-401 errors pass through without a refresh", async () => {
   const app = loadHttpClient();
   const server = createServer(app);
