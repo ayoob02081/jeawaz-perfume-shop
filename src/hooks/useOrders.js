@@ -136,7 +136,9 @@ export function useExportOrders() {
 
 /* ================= CREATE ================= */
 
-export function useCreateOrder() {
+// `silentAuthErrors`: the caller (checkout) answers a 401 with its own
+// re-login prompt, so no generic error toast is shown for it.
+export function useCreateOrder({ silentAuthErrors = false } = {}) {
   const queryClient = useQueryClient();
 
   const { isPending: isCreating, mutateAsync: createOrder } = useMutation({
@@ -147,6 +149,7 @@ export function useCreateOrder() {
       toast.success("سفارش با موفقیت ثبت شد");
     },
     onError: (err) => {
+      if (silentAuthErrors && err?.response?.status === 401) return;
       toast.error(err?.response?.data?.message || "خطا در ثبت سفارش");
     },
   });

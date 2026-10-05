@@ -12,7 +12,11 @@ const require = createRequire(import.meta.url);
 const axios = require("axios");
 
 function rewrite(file, replacements) {
-  let source = readFileSync(new URL(file, import.meta.url), "utf8");
+  // Line endings depend on the checkout (core.autocrlf); match on LF.
+  let source = readFileSync(new URL(file, import.meta.url), "utf8").replace(
+    /\r\n/g,
+    "\n",
+  );
   for (const [from, to] of replacements) {
     assert.equal(source.split(from).length, 2, `${file}: ${from}`);
     source = source.replace(from, to);
@@ -24,12 +28,26 @@ function loadServices() {
   const app = new Function(
     "axios",
     "process",
+    "isDefinitiveRefreshFailure",
+    "notifySessionExpired",
     rewrite("./httpClient.js", [
       ['"use client";', ""],
       ['import axios from "axios";', ""],
+      [
+        `import {
+  isDefinitiveRefreshFailure,
+  notifySessionExpired,
+} from "../utils/authSessionEvents.mjs";`,
+        "",
+      ],
       ["export default app;", "return app;"],
     ]),
-  )(axios, { env: { NEXT_PUBLIC_API_URL: "http://api.test" } });
+  )(
+    axios,
+    { env: { NEXT_PUBLIC_API_URL: "http://api.test" } },
+    (error) => error?.response?.status === 401,
+    () => {},
+  );
 
   const services = new Function(
     "app",

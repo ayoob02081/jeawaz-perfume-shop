@@ -17,29 +17,48 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import test from "node:test";
+import { isDefinitiveRefreshFailure } from "../utils/authSessionEvents.mjs";
 
 const require = createRequire(import.meta.url);
 const axios = require("axios");
 
 const API = "http://api.test";
 
+const SESSION_EVENTS_IMPORT = `import {
+  isDefinitiveRefreshFailure,
+  notifySessionExpired,
+} from "../utils/authSessionEvents.mjs";`;
+
 // httpClient.js is an ES module for Next.js but not loadable by plain Node
-// (no "type": "module"), so its exact source is evaluated with axios
-// injected. Each rewrite must match exactly once, so a changed module fails
-// here instead of being silently skipped.
-function loadHttpClient() {
-  let source = readFileSync(new URL("./httpClient.js", import.meta.url), "utf8");
+// (no "type": "module"), so its exact source is evaluated with axios and the
+// session-loss signal injected (`onSessionExpired` records each signal).
+// Each rewrite must match exactly once, so a changed module fails here
+// instead of being silently skipped.
+function loadHttpClient({ onSessionExpired = () => {} } = {}) {
+  // Line endings depend on the checkout (core.autocrlf); match on LF.
+  let source = readFileSync(new URL("./httpClient.js", import.meta.url), "utf8")
+    .replace(/\r\n/g, "\n");
   for (const [from, to] of [
     ['"use client";', ""],
     ['import axios from "axios";', ""],
+    [SESSION_EVENTS_IMPORT, ""],
     ["export default app;", "return app;"],
   ]) {
     assert.equal(source.split(from).length, 2, `httpClient.js: ${from}`);
     source = source.replace(from, to);
   }
-  return new Function("axios", "process", source)(axios, {
-    env: { NEXT_PUBLIC_API_URL: API },
-  });
+  return new Function(
+    "axios",
+    "process",
+    "isDefinitiveRefreshFailure",
+    "notifySessionExpired",
+    source,
+  )(
+    axios,
+    { env: { NEXT_PUBLIC_API_URL: API } },
+    isDefinitiveRefreshFailure,
+    onSessionExpired,
+  );
 }
 
 // A server whose session is fixed per scenario; records every request.
@@ -184,6 +203,35 @@ test("after the session ends, every new 401 starts another refresh attempt (Reac
   }
 
   assert.equal(server.count("/auth/refresh"), 4);
+});
+
+// --- session loss signal (checkout/auth Phase 2B) ----------------------------
+
+test("a refresh rejected with 401 signals session loss exactly once, however many requests waited", async () => {
+  const signals = [];
+  const app = loadHttpClient({ onSessionExpired: () => signals.push("expired") });
+  createServer(app, { refreshStatus: 401, refreshDelay: 10 });
+
+  await Promise.allSettled(["/a", "/b", "/c"].map((path) => app.get(path)));
+
+  assert.deepEqual(signals, ["expired"]);
+});
+
+test("a successful refresh, a non-401 refresh failure and a credential 401 never signal session loss", async () => {
+  for (const scenario of [
+    { refreshStatus: 200, request: (app) => app.get("/a") },
+    { refreshStatus: 500, request: (app) => app.get("/a") },
+    { refreshStatus: 401, request: (app) => app.get("/a", { skipAuthRefresh: true }) },
+    { refreshStatus: 401, request: (app) => app.post("/auth/refresh") },
+  ]) {
+    const signals = [];
+    const app = loadHttpClient({ onSessionExpired: () => signals.push("expired") });
+    createServer(app, { refreshStatus: scenario.refreshStatus });
+
+    await scenario.request(app).catch(() => {});
+
+    assert.deepEqual(signals, [], `refresh ${scenario.refreshStatus}`);
+  }
 });
 
 test("the client sends credentials (cookies) with every request", () => {

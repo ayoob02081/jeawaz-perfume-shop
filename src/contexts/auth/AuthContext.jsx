@@ -12,13 +12,27 @@ import {
 
 import { loginApi, logoutApi } from "@/services/authServices";
 import { getUserApi, updateUserApi } from "@/services/usersServices";
+import { onSessionExpired } from "@/utils/authSessionEvents.mjs";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  // `loading` is also raised by every later login/re-check; `initialized`
+  // marks the end of the first one, so screens can tell bootstrapping apart
+  // from a re-check and keep their content (and form state) mounted.
+  const [initialized, setInitialized] = useState(false);
+  // Set when a signed-in session ended because its refresh was rejected.
+  const [sessionExpiredAt, setSessionExpiredAt] = useState(null);
   const authGeneration = useRef(0);
+  const userRef = useRef(null);
+  userRef.current = user;
+
+  const settle = useCallback(() => {
+    setLoading(false);
+    setInitialized(true);
+  }, []);
 
   const checkAuth = useCallback(async () => {
     const generation = ++authGeneration.current;
@@ -39,14 +53,30 @@ export function AuthProvider({ children }) {
       }
     } finally {
       if (generation === authGeneration.current) {
-        setLoading(false);
+        settle();
       }
     }
-  }, []);
+  }, [settle]);
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  // The HTTP client signals a rejected refresh (the backend has cleared the
+  // auth cookies). A guest's failed refresh is no session loss; a signed-in
+  // user becomes logged out, and any pending re-check is superseded.
+  useEffect(
+    () =>
+      onSessionExpired(() => {
+        if (!userRef.current) return;
+        authGeneration.current += 1;
+        userRef.current = null;
+        setUser(null);
+        settle();
+        setSessionExpiredAt(Date.now());
+      }),
+    [settle],
+  );
 
   const login = useCallback(
     async (data) => {
@@ -57,7 +87,7 @@ export function AuthProvider({ children }) {
         await loginApi(data);
       } catch (error) {
         if (generation === authGeneration.current) {
-          setLoading(false);
+          settle();
         }
 
         throw error;
@@ -67,7 +97,7 @@ export function AuthProvider({ children }) {
         await checkAuth();
       }
     },
-    [checkAuth],
+    [checkAuth, settle],
   );
 
   const updateUser = useCallback(
@@ -79,7 +109,7 @@ export function AuthProvider({ children }) {
         await updateUserApi(data);
       } catch (error) {
         if (generation === authGeneration.current) {
-          setLoading(false);
+          settle();
         }
 
         throw error;
@@ -89,7 +119,7 @@ export function AuthProvider({ children }) {
         await checkAuth();
       }
     },
-    [checkAuth],
+    [checkAuth, settle],
   );
 
   const logout = useCallback(async () => {
@@ -100,7 +130,7 @@ export function AuthProvider({ children }) {
       await logoutApi();
     } catch (error) {
       if (generation === authGeneration.current) {
-        setLoading(false);
+        settle();
       }
 
       throw error;
@@ -108,21 +138,32 @@ export function AuthProvider({ children }) {
 
     if (generation === authGeneration.current) {
       setUser(null);
-      setLoading(false);
+      settle();
     }
-  }, []);
+  }, [settle]);
 
   const value = useMemo(
     () => ({
       user,
       loading,
+      initializing: !initialized,
+      sessionExpiredAt,
       isAuthenticated: !!user,
       checkAuth,
       login,
       updateUser,
       logout,
     }),
-    [user, loading, checkAuth, login, updateUser, logout],
+    [
+      user,
+      loading,
+      initialized,
+      sessionExpiredAt,
+      checkAuth,
+      login,
+      updateUser,
+      logout,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

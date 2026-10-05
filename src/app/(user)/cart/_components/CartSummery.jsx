@@ -7,7 +7,8 @@ import CartItemsLayout from "./CartItemsLayout";
 import { useState } from "react";
 import { useApplyCoupon } from "@/hooks/useCart";
 
-export function OrderSummaryCard({ cart, setStep }) {
+// `onContinue`: step 1 → step 2, through CartLayout's auth gate.
+export function OrderSummaryCard({ cart, onContinue }) {
   const [coupon, setCoupon] = useState();
 
   const {
@@ -98,8 +99,8 @@ export function OrderSummaryCard({ cart, setStep }) {
       </div>
       <div className="max-md:sticky bottom-9 flex items-center justify-center w-full">
         <button
-          type="submit"
-          onClick={() => setStep(2)}
+          type="button"
+          onClick={onContinue}
           className=" h-12 btn btn--success size-full py-2 "
         >
           تایید و تکمیل سفارش
@@ -157,7 +158,9 @@ export function CheckoutCartSummery({ cart, setStep, isPending }) {
         </span>
       </div>
       <div className="size-full flex items-center justify-between gap-4">
+        {/* Inside the checkout form: a plain button, never a submit. */}
         <button
+          type="button"
           onClick={() => setStep(1)}
           className="btn btn--secondary--2 bg-stroke-0 size-full py-2 max-sm:max-w-1/3"
         >

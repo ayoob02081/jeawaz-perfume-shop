@@ -1,6 +1,10 @@
 "use client";
 
 import axios from "axios";
+import {
+  isDefinitiveRefreshFailure,
+  notifySessionExpired,
+} from "../utils/authSessionEvents.mjs";
 
 const app = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -31,9 +35,20 @@ app.interceptors.response.use(
 
       try {
         if (!refreshPromise) {
-          refreshPromise = app.post("/auth/refresh").finally(() => {
-            refreshPromise = null;
-          });
+          // One signal per failed refresh, however many requests wait on it:
+          // a rejected refresh means the session is over (the backend has
+          // cleared its cookies), so the app must become logged out.
+          refreshPromise = app
+            .post("/auth/refresh")
+            .catch((refreshError) => {
+              if (isDefinitiveRefreshFailure(refreshError)) {
+                notifySessionExpired();
+              }
+              throw refreshError;
+            })
+            .finally(() => {
+              refreshPromise = null;
+            });
         }
 
         await refreshPromise;

@@ -44,7 +44,10 @@ import {
 // `afterLoginHref` is where the full /auth/login page goes after a successful
 // login (a direct load or proxy redirect may have no useful history). Without
 // it, the intercepted modal closes back to the page it was opened over.
-function Login({ closeBtn, afterLoginHref }) {
+// `onAuthenticated` / `onClose` (checkout's in-place modal): the caller is
+// told about a successful login or a close and decides what happens next;
+// nothing navigates.
+function Login({ closeBtn, afterLoginHref, onAuthenticated, onClose }) {
   const {
     register,
     control,
@@ -99,8 +102,11 @@ function Login({ closeBtn, afterLoginHref }) {
     verificationGuardRef.current = createOtpVerificationGuard();
   }
 
-  const leaveAfterLogin = () =>
-    afterLoginHref ? router.replace(afterLoginHref) : router.back();
+  const leaveAfterLogin = () => {
+    if (onAuthenticated) return onAuthenticated();
+    return afterLoginHref ? router.replace(afterLoginHref) : router.back();
+  };
+  const close = onClose ?? (() => router.back());
 
   const togglePasswordType = () => {
     setIsPasswordType((prevState) => !prevState);
@@ -279,7 +285,7 @@ function Login({ closeBtn, afterLoginHref }) {
             otp={otp}
             step={flow.step}
             phoneNumber={phoneNumber}
-            onClose={() => router.back()}
+            onClose={close}
             onSubmit={submitStep1}
             closeBtn={closeBtn}
           >
@@ -349,7 +355,7 @@ function Login({ closeBtn, afterLoginHref }) {
             resendRemaining={resendRemaining}
             requestPending={requestPending}
             verifyPending={verifyPending}
-            onClose={() => router.back()}
+            onClose={close}
             onSubmit={submitStep2}
             closeBtn={closeBtn}
           >

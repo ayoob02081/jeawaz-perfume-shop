@@ -33,6 +33,18 @@ export const useGetAllCartItems = () => {
   });
 };
 
+// The cart as the server has it now, e.g. right after a login merged the
+// guest cart: a fetch that may have started under the previous session is
+// cancelled, then a new one runs and its result is cached.
+export async function fetchFreshCart(queryClient) {
+  await queryClient.cancelQueries({ queryKey: cartKeys.all });
+  return queryClient.fetchQuery({
+    queryKey: cartKeys.items(),
+    queryFn: getAllCartItemsApi,
+    staleTime: 0,
+  });
+}
+
 export function showAddToCartSuccessToast(data) {
   toast.success(data?.message || "محصول به سبد خرید اضافه شد", {
     id: "add-cart-success",
