@@ -276,17 +276,16 @@ function FilterSection() {
                 />
               )}
               {TAXONOMY_FILTER_GROUPS.flatMap(({ key, type, label }) =>
-                (filtersFromUrl[key]
-                  ? [filtersFromUrl[key]].flat()
-                  : []
-                ).map((slug) => (
-                  <Badge
-                    key={`${key}-${slug}`}
-                    title={categoryBadgeTitle(categories, type, slug, label)}
-                    onClick={() => removeValueAndSync(key, slug)}
-                    error
-                  />
-                )),
+                (filtersFromUrl[key] ? [filtersFromUrl[key]].flat() : []).map(
+                  (slug) => (
+                    <Badge
+                      key={`${key}-${slug}`}
+                      title={categoryBadgeTitle(categories, type, slug, label)}
+                      onClick={() => removeValueAndSync(key, slug)}
+                      error
+                    />
+                  ),
+                ),
               )}
               {filtersFromUrl.concentrations.map((value) => (
                 <Badge
@@ -375,40 +374,38 @@ function BrandsFilter({
     ? state.map(Number).filter(Boolean)
     : [];
   return (
-    <form className="relative max-md:hidden flex items-center gap-2 w-full h-12 lg:h-14 border border-primary/10 dark:border-stroke-200 bg-stroke-50 rounded-full size-full overflow-hidden px-2">
-      <div className="flex items-center justify-start size-full">
-        <div className="absolute right-0 z-10 flex items-center justify-center bg-stroke-0/10 backdrop-blur-md text-primary px-2 lg:text-lg font-bold h-full aspect-square">
-          برندها
-        </div>
-        <div
-          ref={ref}
-          className="flex items-center justify-start gap-2 p-2 pr-14 pl-6 h-full rounded-full overflow-x-auto scrollbar-none snap-x scroll-smooth"
-        >
-          {brandsLoading
-            ? Array.from({ length: 14 }).map((_, index) => (
-                <Skeleton
-                  key={index}
-                  className="flex-none h-1/2 w-24 rounded-full bg-stroke-300"
+    <form className="relative max-md:hidden flex items-center justify-start gap-2 w-full h-12 lg:h-14 border border-primary/10 dark:border-stroke-200 bg-stroke-50 rounded-full size-full px-2 overflow-hidden">
+      <div className="absolute right-0 z-10 flex items-center justify-center bg-stroke-0/10 backdrop-blur-md text-primary px-2 lg:text-lg font-bold h-full aspect-square">
+        برندها
+      </div>
+      <div
+        ref={ref}
+        className="flex items-center justify-start gap-2 p-2 pr-14 pl-10 h-full max-w-full rounded-full overflow-x-auto scrollbar-none snap-x"
+      >
+        {brandsLoading
+          ? Array.from({ length: 14 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                className="flex-none h-1/2 w-24 rounded-full bg-stroke-300"
+              />
+            ))
+          : brands?.map((brand) => {
+              const isChecked = selectedBrandIds.includes(Number(brand.id));
+              return (
+                <FilterCheckBox
+                  key={brand.id}
+                  checkId={brand.id}
+                  imageSrc={brand.iconUrl}
+                  name={"brandFilter"}
+                  onChange={() => toggleBrandAndSync(brand.id)}
+                  checked={isChecked}
+                  className={`flex items-center justify-center text-nowrap size-full snap-center
+                    ${isChecked && "dark:*:bg-stroke-0 *:border-2 dark:*:border-[1.5px] *:bg-white *:border-primary dark:*:border-stroke-200"}`}
+                  imageClassName="px-2 h-full rounded-full duration-200 dark:*:invert "
+                  ratio="aspect-3/2"
                 />
-              ))
-            : brands?.map((brand) => {
-                const isChecked = selectedBrandIds.includes(Number(brand.id));
-
-                return (
-                  <FilterCheckBox
-                    key={brand.id}
-                    checkId={brand.id}
-                    imageSrc={brand.iconUrl}
-                    name={"brandFilter"}
-                    onChange={() => toggleBrandAndSync(brand.id)}
-                    checked={isChecked}
-                    className={`justify-center text-nowrap has-checked:*:border-2 dark:has-checked:*:border-[1.5px] has-checked:*:bg-white  dark:has-checked:*:bg-stroke-0  *:border-primary dark:*:border-stroke-200 has-checked:*:border-primary dark:has-checked:*:border-stroke-200 size-full snap-center`}
-                    imageClassName="px-2 lg h-full lg:h- w- rounded-full duration-200 dark:*:invert "
-                    ratio="aspect-3/2"
-                  />
-                );
-              })}
-        </div>
+              );
+            })}
       </div>
       <button
         type="button"
