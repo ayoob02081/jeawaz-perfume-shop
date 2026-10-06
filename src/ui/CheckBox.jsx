@@ -12,7 +12,7 @@ function CheckBox({
   return (
     <label
       htmlFor={id}
-      className={`flex flex-col items-center gap-2 ${className}`}
+      className={`relative flex flex-col items-center gap-2 ${className}`}
     >
       <input
         type="checkbox"
@@ -21,7 +21,7 @@ function CheckBox({
         checked={checked}
         value={value}
         onChange={onChange}
-        className="sr-only size-"
+        className="sr-only"
       />
       {children}
       {label && <p className={`text-stroke-800 ${textClassName}`}>{label}</p>}
