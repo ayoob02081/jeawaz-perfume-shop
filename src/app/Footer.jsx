@@ -7,7 +7,7 @@ function Footer() {
   return (
     <article className="max-w-480 mx-auto 2xl:rounded-t-4xl overflow-hidden">
       <OptionsFooter />
-      <section className="bg-black size-full max-sm:px-4 sm:px-16 py-8">
+      <section className="bg-black size-full max-sm:px-4 max-md:pb-24 sm:px-16 py-8">
         <div className="flex flex-col items-center gap-6 max-sm:pb-6 sm:py-6">
           <Link
             href={"/"}
@@ -53,7 +53,9 @@ function Footer() {
                     <Link href={"/page/terms"}>قوانین و مقررات</Link>
                   </li>
                   <li>
-                    <Link href={"/profile/me"} prefetch={false}>پروفایل من</Link>
+                    <Link href={"/profile/me"} prefetch={false}>
+                      پروفایل من
+                    </Link>
                   </li>
                 </div>
               </ul>
@@ -112,7 +114,7 @@ function Footer() {
                   </p>
                 </Link>
               </div>
-              <span className="flex items-start text-sm gap-0.5 max-sm:w-full">
+              <span className="flex max-sm:flex-col max-sm:text-center max-sm:items-center items-start text-sm gap-0.5 max-sm:w-full">
                 <p className="font-bold text-nowrap">
                   منتظر صدای گرم شما هستیم!!{" "}
                 </p>
@@ -151,8 +153,8 @@ function Footer() {
             </section>
           </article>
         </div>
-        <section className="flex items-center justify-between w-full pt-6 border-t border-stroke-600/60">
-          <p className="text-white">
+        <section className="flex max-sm:flex-col-reverse max-sm:gap-4 items-center max-sm:justify-center justify-between w-full pt-6 border-t border-stroke-600/60">
+          <p className="text-white max-sm:text-center">
             تمامی حقوق مادی و معنوی برای جیاواز محفوظ می‌باشد
           </p>
           <nav>
