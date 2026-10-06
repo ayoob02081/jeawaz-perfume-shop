@@ -64,21 +64,18 @@ function ProductCard({ product, isPending, error }) {
                 className="max-md:h-8 md:h-10"
                 size="max-md:size-5 md:size-6"
               />
-              {productCharacters?.map(
-                (character, index) =>
-                  index >= 1 && (
-                    <CardIconResponsive
-                      key={character?.id}
-                      category={true}
-                      src={character?.iconUrl}
-                      alt={character?.value + "-icon"}
-                      title={character?.title}
-                      type={character?.value}
-                      className="max-md:h-8 md:h-10"
-                      size="max-md:size-5 md:size-6"
-                    />
-                  ),
-              )}
+              {productCharacters?.slice(0, 2).map((character) => (
+                <CardIconResponsive
+                  key={character?.id}
+                  category={true}
+                  src={character?.iconUrl}
+                  alt={character?.value + "-icon"}
+                  title={character?.title}
+                  type={character?.value}
+                  className="max-md:h-8 md:h-10"
+                  size="max-md:size-5 md:size-6"
+                />
+              ))}
               <CardIconResponsive
                 src={productGender?.iconUrl}
                 alt={productGender?.value + "-icon"}
