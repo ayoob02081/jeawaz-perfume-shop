@@ -126,7 +126,7 @@ function CompleteUserData() {
             <button
               type="submit"
               disabled={isAllFieldesSet}
-              className=" btn btn--primary w-full px-3 py-2 h-12 md:h-14 border-0 "
+              className=" btn btn--primary w-full px-3 py-2 h-12 md:h-14 border-0 backdrop-blur-md"
             >
               {isPending ? <Loading bgColor="white" /> : "تایید اطلاعات"}
             </button>

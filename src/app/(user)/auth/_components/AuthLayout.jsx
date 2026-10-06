@@ -46,7 +46,17 @@ function AuthLayout({
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
+      <img
+        src="/images/flower.svg"
+        alt="flower-icon"
+        className="pointer-events-none absolute -z-20 left-0 top-0 w-36 "
+      />
+      <img
+        src="/images/flower.svg"
+        alt="flower-icon"
+        className="pointer-events-none absolute rotate-180 -z-20 right-0 bottom-0 w-36 "
+      />
       <div className="flex flex-col items-center justify-between gap-2 sm:gap-4 text-center">
         {login && (
           <span className="max-sm:text-lg sm:text-2xl text-stroke-800 font-bold ">
@@ -78,7 +88,7 @@ function AuthLayout({
             </p>
           ))}
         {!login && (
-          <p className="text-lg sm:text-xl text-stroke-600">
+          <p className="text-lg sm:text-xl text-stroke-800">
             لطفا نام و نام خانوادگی خود را وارد کنید
           </p>
         )}
@@ -113,29 +123,29 @@ function AuthLayout({
         )}
         {step === "otp" &&
           (otpScreen === "ready" || otpScreen === "resending") && (
-          <div className="flex items-center justify-center gap-1 text-stroke-800">
-            {resendRemaining > 0 && (
-              <>
-                <p className="text-primary">
-                  {toPersianNumbers(resendRemaining)}
-                </p>
-                <p>ثانیه تا</p>
-              </>
-            )}
-            <button
-              type="button"
-              className={`flex items-center justify-center gap-1 ${canResend ? "text-primary underline" : ""}`}
-              onClick={onResend}
-              disabled={!canResend}
-              aria-busy={resendPending}
-            >
-              {resendPending ? "در حال ارسال کد..." : "ارسال مجدد کد"}
-              {canResend && (
-                <ArrowPathRoundedSquareIcon className="size-4 text-primary" />
+            <div className="flex items-center justify-center gap-1 text-stroke-800">
+              {resendRemaining > 0 && (
+                <>
+                  <p className="text-primary">
+                    {toPersianNumbers(resendRemaining)}
+                  </p>
+                  <p>ثانیه تا</p>
+                </>
               )}
-            </button>
-          </div>
-        )}
+              <button
+                type="button"
+                className={`flex items-center justify-center gap-1 ${canResend ? "text-primary underline" : ""}`}
+                onClick={onResend}
+                disabled={!canResend}
+                aria-busy={resendPending}
+              >
+                {resendPending ? "در حال ارسال کد..." : "ارسال مجدد کد"}
+                {canResend && (
+                  <ArrowPathRoundedSquareIcon className="size-4 text-primary" />
+                )}
+              </button>
+            </div>
+          )}
       </div>
       {/* {login && step === 1 && (
         <button
@@ -151,7 +161,7 @@ function AuthLayout({
         <div className="text-stroke-800">
           <span className="*:text-primary flex items-center justify-center gap-1.5 flex-wrap text-wrap">
             ورود شما به معنای پذیرش
-            <button onClick={RouteToTerms} type="button" >
+            <button onClick={RouteToTerms} type="button">
               شرایط جیاواز پرفیوم
             </button>
             و
