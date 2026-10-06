@@ -150,11 +150,14 @@ export default function ImageSwiper({ product, images = [] }) {
                 key={i}
                 className="flex-[0_0_100%] relative aspect-square md:bg-stroke-150 md:dark:bg-stroke-50 p-10"
               >
+                {/* The slide is already square. aspect-ratio on this 100% x 100%
+                    wrapper made iOS Safari enlarge the image after each pinch zoom. */}
                 <AppImage
                   src={src}
                   alt={`${product?.enTitle || "product"}-image-${i}`}
                   priority={i < 2}
                   objectFit="contain"
+                  ratio=""
                   className="size-full"
                 />
               </div>
