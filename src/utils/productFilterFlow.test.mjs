@@ -101,8 +101,10 @@ test("Modal only listens for outside clicks while open", () => {
   // Both always-mounted Modals on the storefront reset the shared draft on close.
   assert.match(source("../app/(user)/_components/CategorySidebar.jsx"),
     /function cancelCategory\(\) \{\s*dispatch\(\{ type: "RESET_DRAFT" \}\);/);
-  assert.match(source("../app/(user)/products/_components/FilterSection.jsx"),
-    /const CloseModal = \(\) => \{[\s\S]*?dispatch\(\{ type: "RESET_DRAFT" \}\);/);
+  const filterSection = source("../app/(user)/products/_components/FilterSection.jsx");
+  assert.match(filterSection,
+    /const hideModal = \(\) => \{[\s\S]*?dispatch\(\{ type: "RESET_DRAFT" \}\);/);
+  assert.match(filterSection, /const CloseModal = \(\) => \{\s*hideModal\(\);/);
 });
 
 const realisticFlow = (page) => {

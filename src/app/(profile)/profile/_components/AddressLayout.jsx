@@ -22,6 +22,7 @@ function AddressLayout() {
         </p>
         <Link
           href={"/profile/me/address/add"}
+          prefetch={false}
           className="flex items-center justify-center gap-2 text-primary hover:text-blue active:text-blue duration-200"
         >
           <PlusIcon className="size-4" />
@@ -114,6 +115,7 @@ function AddressBtn({ id }) {
     <div className="md:col-start-3 md:row-start-1 flex items-center justify-between md:justify-end gap-4 w-full text-nowrap">
       <Link
         href={`/profile/me/address/edit/${id}`}
+        prefetch={false}
         className="group flex items-center justify-center gap-1 max-md:h-12 max-md:border max-md:border-stroke-200 text-stroke-800 hover:text-success active:text-success max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold transition-all duration-200"
       >
         <div className="flex flex-col items-center justify-center gap-0.5 size-5">

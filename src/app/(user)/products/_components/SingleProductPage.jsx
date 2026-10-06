@@ -28,8 +28,14 @@ import {
   showAddedItem,
 } from "@/utils/addedToCartContract.mjs";
 import AddedToCartModal from "./AddedToCartModal";
+import { CONCENTRATION_LABELS as concentrationLabels } from "@/utils/productConcentration.mjs";
+import Link from "next/link";
+import { PencilIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/contexts/auth/AuthContext";
 
 function SingleProductPage({ product }) {
+  const { user } = useAuth();
+
   if (!product) {
     return (
       <main className=" container mx-auto xl:max-w-7xl">
@@ -52,7 +58,7 @@ function SingleProductPage({ product }) {
           />
         </BreadCrumbBase>
       </article>
-      <article className="grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 md:p-6 max-md:pb-24">
+      <article className="relative grid grid-cols-1 md:grid-cols-2 h-full gap-6 md:gap-x-6 lg:gap-6 md:p-6">
         <ImageSwiper images={product?.images} product={product} />
         <ProductDes key={product.id} product={product} />
         <ProductOptions product={product} />
@@ -66,6 +72,19 @@ function SingleProductPage({ product }) {
             {product?.description}
           </p>
         </Accordion>
+        {/* Edit Btn */}
+        {user?.role === "admin" && (
+          <div className="absolute flex items-center gap-1 top-5 md:top-10 max-md:right-3 md:left-21/40 max-md:z-50">
+            <Link
+              href={`/admin/products/edit/${product?.id}`}
+              prefetch={false}
+              aria-label="ویرایش محصول"
+              className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-stroke-0 shadow-md"
+            >
+              <PencilIcon className="text-primary size-5 sm:size-6 md:size-5 xl:size-6" />
+            </Link>
+          </div>
+        )}
       </article>
     </main>
   );
@@ -222,7 +241,7 @@ function ProductDes({ product }) {
               </div>
             </div>
 
-            {product.original === true && (
+            {product.original === true ? (
               <AppImage
                 src="/images/bg-original.svg"
                 alt="original-icon"
@@ -231,6 +250,12 @@ function ProductDes({ product }) {
                 sizes="10vw"
                 className="self-end"
               />
+            ) : (
+              <div className="h-full py-2">
+                <span className="inline-flex items-center h-full rounded-full border border-stroke-200 bg-stroke-200 px-4 py-2 text-sm font-bold text-stroke-500">
+                  سوپر مستر
+                </span>
+              </div>
             )}
           </div>
 
@@ -464,16 +489,6 @@ const sillageLabels = {
   MODERATE: "متوسط",
   HIGH: "زیاد",
   VERY_HIGH: "خیلی زیاد",
-};
-const concentrationLabels = {
-  PARFUM: "پارفوم",
-  EXTRAIT_DE_PARFUM: "اکستریت د پارفوم",
-  EAU_DE_PARFUM: "ادو پرفیوم",
-  EAU_DE_TOILETTE: "ادو تویلت",
-  EAU_DE_COLOGNE: "ادو کلن",
-  PERFUME_OIL: "روغن عطر",
-  BODY_MIST: "بادی میست",
-  OTHER: "سایر",
 };
 
 function ProductOption({ title, value, data, volumes = false }) {

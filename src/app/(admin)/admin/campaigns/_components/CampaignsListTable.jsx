@@ -13,7 +13,7 @@ import Link from "next/link";
 
 function CampaignsListTable({ campaigns }) {
   return (
-    <div className="w-full overflow-auto max-h-dvh rounded-xl shadow-xl scrollbar-none">
+    <div className="w-full overflow-x-auto h-fit rounded-xl shadow-xl scrollbar-none">
       <>
         <Table className="overflow-auto md:hidden">
           <Table.Header className="">
@@ -86,6 +86,7 @@ function CampaignsListTable({ campaigns }) {
                       <div className="flex justify-center items-center w-full">
                         <Link
                           href={`/admin/campaigns/edit/${campaign.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200 w-fit"
                         >
                           <PencilIcon className=" size-5" />
@@ -167,6 +168,7 @@ function CampaignsListTable({ campaigns }) {
                       <div className="flex justify-center items-center w-full">
                         <Link
                           href={`/admin/campaigns/edit/${campaign.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200 w-fit"
                         >
                           <PencilIcon className=" size-5" />

@@ -36,7 +36,7 @@ function SingleUserPage({ userId }) {
       title: "شماره موبایل :",
       des: normalizeIranPhone(phoneNumber),
     },
-    { id: 3, title: "نقش :", des: role ? "ادمین" : "کاربر" },
+    { id: 3, title: "نقش :", des: role === "admin" ? "ادمین" : "کاربر" },
     {
       id: 4,
       title: "وضعیت :",
@@ -111,6 +111,7 @@ function SingleUserPage({ userId }) {
           <Link
             key={item.id}
             href={`/admin/users/${userId}${item.page}`}
+            prefetch={false}
             className="fex flex-col items-ceter justify-betwen btn bg-stroke-100 border border-stroke-100 hover:border-primary hadow-stroke-800/40 rounded-2xl p-6 gap-2 shrink grow transition-all duration-200"
           >
             <p className="text-base text-stroke-800 md:text-stroke-600">

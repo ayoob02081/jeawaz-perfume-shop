@@ -4,7 +4,7 @@ import RHFTextField from "@/ui/RHFTextField";
 import { useRouter } from "next/navigation";
 import { useUpdateUser } from "@/hooks/useUsers";
 import PersianDateRHForm from "../../../../ui/PersianDateRHForm";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { normalizeIranPhone } from "@/utils/toPersianNumbers";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
@@ -15,6 +15,7 @@ import {
   validateOptionalNationalCode,
   validateUsername,
 } from "@/utils/profileFormContract.mjs";
+import PhoneChangeDialog from "./PhoneChangeDialog";
 
 const getBasicInfoData = ({ username }) => [
   {
@@ -118,6 +119,7 @@ function EditProfileForm() {
   const { user: userToEdit } = useAuth();
 
   const { isUpdating, updateUser } = useUpdateUser();
+  const [isPhoneChangeOpen, setIsPhoneChangeOpen] = useState(false);
   const { phoneNumber, username } = userToEdit || {};
   const basicInfoData = getBasicInfoData({ username });
 
@@ -170,12 +172,23 @@ function EditProfileForm() {
                     className="size-5 shrink-0 text-stroke-500"
                   />
                 </RHFTextField>
-                <p
-                  id={`${item.name}-hint`}
-                  className="text-xs text-stroke-600 mr-2"
-                >
-                  شماره موبایل حساب کاربری از این بخش قابل تغییر نیست
-                </p>
+                <div className="flex items-center justify-between gap-3 mr-2">
+                  <p
+                    id={`${item.name}-hint`}
+                    className="text-xs text-stroke-600"
+                  >
+                    تغییر شماره موبایل با تایید پیامکی انجام می‌شود
+                  </p>
+                  {/* A verified flow with its own dialog; the field itself
+                      is never edited or submitted. */}
+                  <button
+                    type="button"
+                    onClick={() => setIsPhoneChangeOpen(true)}
+                    className="shrink-0 text-sm font-medium text-primary underline-offset-4 hover:underline"
+                  >
+                    تغییر شماره موبایل
+                  </button>
+                </div>
               </div>
             ) : (
               <RHFTextField
@@ -222,6 +235,12 @@ function EditProfileForm() {
           </div>
         </div>
       </form>
+      {/* Outside the profile form: Enter in the dialog never submits it. */}
+      <PhoneChangeDialog
+        isOpen={isPhoneChangeOpen}
+        onClose={() => setIsPhoneChangeOpen(false)}
+        currentPhone={phoneNumber}
+      />
     </div>
   );
 }

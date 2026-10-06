@@ -83,12 +83,12 @@ test("price-only and volume-range direct URLs hydrate and serialize without page
   assert.equal(serialized.get("page"), null);
 });
 
-test("reset-all cleans owned filters and page while retaining unrelated search", () => {
+test("reset-all cleans owned filters (including discounted) and page while retaining unrelated search", () => {
   const previous = new URLSearchParams(
     "search=rose&discounted=true&limit=24&brandIds=1&type=sealed&volumes=100&page=5");
   const reset = new URLSearchParams(buildQueryFromFilters(emptyFilters, previous));
   assert.equal(reset.get("search"), "rose");
-  assert.equal(reset.get("discounted"), "true");
+  assert.equal(reset.get("discounted"), null);
   assert.equal(reset.get("limit"), "24");
   assert.equal(reset.get("brandIds"), null);
   assert.equal(reset.get("type"), null);
@@ -149,4 +149,19 @@ test("storefront prefetch uses the normal key factory and options use the backen
   const service = readFileSync(new URL("../services/productServices.js", import.meta.url), "utf8");
   assert.match(layout, /queryKey: productKeys\.list\(nextPageFilters\)/);
   assert.match(service, /getProductVolumeOptionsApi[\s\S]*?\/products\/filter-options\/volumes/);
+});
+
+test("only an explicit admin opt-out reaches the API; storefront keys keep their shape", () => {
+  for (const value of [undefined, true, "false", 0, null]) {
+    assert.equal("availabilityFirst" in normalizeProductsQuery({ availabilityFirst: value }), false);
+  }
+  assert.deepEqual(productListKey({ sort: "newest" }), productListKey({}));
+  const admin = normalizeProductsQuery({ availabilityFirst: false, page: 1, limit: 12 });
+  assert.equal(admin.availabilityFirst, false);
+  const params = new URL(app.getUri({ url: "/products", params: admin }), "http://localhost")
+    .searchParams;
+  assert.equal(params.get("availabilityFirst"), "false");
+  const adminLayout = readFileSync(new URL(
+    "../app/(admin)/admin/products/_components/ProductsLayout.jsx", import.meta.url), "utf8");
+  assert.match(adminLayout, /useGetAllProducts\(\{[\s\S]*?availabilityFirst: false,[\s\S]*?\}\)/);
 });

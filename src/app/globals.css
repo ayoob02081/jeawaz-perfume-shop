@@ -248,7 +248,7 @@
     focus-within:text-stroke-800 focus-within:bg-stroke-0 focus:bg-stroke-0 focus-within:border focus-within:border-primary transition-all duration-200;
   }
   .footer--link {
-    @apply grid gap-x-6 gap-y-1 text-base text-nowrap text-stroke-600 dark:text-stroke-600/50 *:hover:text-primary *:active:text-primary *:duration-200;
+    @apply max-sm:flex max-sm:flex-col max-sm:gap-2 sm:grid gap-x-6 gap-y-1 text-base text-nowrap text-stroke-600 dark:text-stroke-600/50 *:hover:text-primary *:active:text-primary *:duration-200;
   }
 }
 
@@ -267,6 +267,25 @@ body {
 html {
   scrollbar-gutter: stable;
 }
+
+/* No document-level horizontal overflow: closed off-canvas panels (SideBar,
+   category Backdrop) are fixed boxes parked one or more viewport widths to the
+   right, and iOS Safari could otherwise pan/zoom into that width and widen the
+   layout viewport the fixed product overlay is sized from. Set on body, not
+   html: html must stay `visible` so body's overflow keeps propagating to the
+   viewport — the scroll locks (bodyScrollLock, lightbox) write
+   body.style.overflow and rely on that. Propagated, `clip` and `hidden` both
+   act as `hidden` on the viewport; body itself never becomes a scroll
+   container, so window scrolling and sticky elements are unchanged. */
+body {
+  overflow-x: hidden;
+}
+@supports (overflow-x: clip) {
+  body {
+    overflow-x: clip;
+  }
+}
+
 html,
 body {
   scrollbar-width: none; /* Firefox */
@@ -472,5 +491,29 @@ input:-webkit-autofill:active {
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
+  }
+}
+
+/* Printed documents (customer order invoice): A4, black on white. */
+@page {
+  size: A4;
+  margin: 12mm;
+}
+
+@media print {
+  html,
+  body {
+    min-height: 0;
+    background: #fff;
+    color: #000;
+  }
+
+  .invoice thead {
+    display: table-header-group;
+  }
+
+  .invoice tr,
+  .invoice-totals {
+    break-inside: avoid;
   }
 }

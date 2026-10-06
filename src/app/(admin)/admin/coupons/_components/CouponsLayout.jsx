@@ -17,6 +17,7 @@ function CouponsLayout() {
         <h1 className="font-bold text-stroke-800 text-xl">کد تخفیف‌ها</h1>
         <Link
           href={"/admin/coupons/add"}
+          prefetch={false}
           className="btn btn--primary border py-1.5 px-3"
         >
           اضافه کردن کد تخفیف

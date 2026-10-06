@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PencilIcon } from "@heroicons/react/24/outline";
 import AppImage from "@/components/AppImage";
 import { useGetActiveBanners } from "@/hooks/useBanners";
 import {
@@ -9,8 +9,12 @@ import {
   SECONDARY_BANNER_SKELETON_COUNT,
 } from "@/utils/homeSectionView.mjs";
 import { SecondaryBannerSkeletons } from "./skeleton/HomeSectionSkeletons";
+import { useAuth } from "@/contexts/auth/AuthContext";
+import { useRouter } from "next/navigation";
 
 function SecondaryBannerLayout() {
+  const { user } = useAuth();
+  const router = useRouter();
   const {
     data: banners,
     isPending,
@@ -22,9 +26,7 @@ function SecondaryBannerLayout() {
   const view = homeBannerView({ isPending, isError, banners });
 
   if (view === "loading") {
-    return (
-      <SecondaryBannerSkeletons count={SECONDARY_BANNER_SKELETON_COUNT} />
-    );
+    return <SecondaryBannerSkeletons count={SECONDARY_BANNER_SKELETON_COUNT} />;
   }
 
   if (view === "hidden") {
@@ -57,6 +59,23 @@ function SecondaryBannerLayout() {
                 <ArrowLeftIcon className="size-2 sm:size-3 xl:size-4 group-hover:size-2.5 sm:group-hover:size-3.5 xl:group-hover:size-4.5" />
               </div>
             </div>
+            {/* Edit Button */}
+            {user?.role === "admin" && (
+              <div className="absolute z-20 flex items-center gap-1 top-3 left-3 max-md:z-50">
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    // The whole banner is a Link; keep its navigation out.
+                    event.preventDefault();
+                    router.push(`/admin/banners/edit/${item?.id}`);
+                  }}
+                  aria-label="ویرایش بنر"
+                  className="flex items-center justify-center aspect-square size-8 md:size-10 rounded-full bg-stroke-0 shadow-md"
+                >
+                  <PencilIcon className="text-primary size-3 md:size-4" />
+                </button>
+              </div>
+            )}
           </Link>
         );
       })}

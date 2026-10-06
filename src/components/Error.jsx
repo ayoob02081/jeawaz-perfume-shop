@@ -3,7 +3,9 @@
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
-function Error({ className }) {
+// `onRetry` (optional) re-runs a client-side query; without it the button
+// refreshes the route as before.
+function Error({ className, onRetry }) {
   const router = useRouter();
   return (
     <div
@@ -11,7 +13,7 @@ function Error({ className }) {
     >
       <p className="text-error font-bold text-2xl">خطا در بارگذاری اطلاعات</p>
       <button
-        onClick={() => router.refresh()}
+        onClick={() => (onRetry ? onRetry() : router.refresh())}
         className="flex items-center justify-center gap-1 btn hover:text-primary active:text-primary duration-200 "
       >
         <p className="text-lg">تازه سازی صفحه</p>

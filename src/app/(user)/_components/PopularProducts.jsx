@@ -49,7 +49,7 @@ function PopularProducts() {
       des={"محصولات ما"}
       desc={"رایحه هایی که همیشه می درخشن"}
       className={
-        " flex-col md:flex-row overflow-hidden sm:overflow-x-auto rounded-2xl"
+        " flex-col md:flex-row sm:overflow-x-auto rounded-2xl"
       }
     >
       {view === "loading" ? (

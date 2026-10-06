@@ -21,6 +21,14 @@ import {
   buildQueryFromFilters,
   getFiltersFromSearchParams,
 } from "@/utils/queryFilters";
+import {
+  TAXONOMY_FILTER_GROUPS,
+  categoryBadgeTitle,
+  priceFormValues,
+  productListHeading,
+  withoutFilterValue,
+} from "@/utils/productFilterContract.mjs";
+import { concentrationLabel } from "@/utils/productConcentration.mjs";
 import { useForm } from "react-hook-form";
 import Skeleton from "@/ui/Skeleton";
 import { scrollTo } from "@/utils/scrollTo";
@@ -45,10 +53,6 @@ function FilterSection() {
   const { data: categories, isLoading: categoriesLoading } =
     useGetAllCategories();
   const filtersFromUrl = getFiltersFromSearchParams(searchParams);
-  const isGenderFilter = filtersFromUrl?.gender;
-  const currentGenderData =
-    isGenderFilter &&
-    categories?.find((category) => category.slug === isGenderFilter);
 
   const {
     register,
@@ -58,10 +62,7 @@ function FilterSection() {
     watch,
     formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues: {
-      minPrice: filtersFromUrl?.priceRange[0] || null,
-      maxPrice: filtersFromUrl?.priceRange[1] || null,
-    },
+    defaultValues: priceFormValues(filtersFromUrl.priceRange),
   });
 
   function addFilter(actionType, itemKey, itemValue) {
@@ -81,17 +82,25 @@ function FilterSection() {
     else setIsModalOpen(true);
   };
 
-  const CloseModal = () => {
+  const hideModal = () => {
     setIsModalOpen(false);
     setMode("all");
     dispatch({ type: "RESET_DRAFT" });
   };
 
-  const HandleSubmitfilter = () => {
-    applyFilter();
-    setIsModalOpen(false);
+  // Cancel/close without Apply: the price inputs (react-hook-form, copied into
+  // the draft by PriceFilter) go back to the applied URL value too, so a
+  // cancelled price cannot re-enter the draft when the modal is used again.
+  const CloseModal = () => {
+    hideModal();
+    reset(priceFormValues(filtersFromUrl.priceRange));
   };
 
+  const HandleSubmitfilter = () => {
+    applyFilter();
+  };
+
+  // Apply keeps the entered price; the URL change re-hydrates the form.
   function applyFilter() {
     const query = buildQueryFromFilters(state.draft, searchParams);
 
@@ -100,7 +109,7 @@ function FilterSection() {
     });
 
     dispatch({ type: "APPLY_FILTERS" });
-    CloseModal();
+    hideModal();
   }
 
   function resetAllFilters() {
@@ -139,16 +148,25 @@ function FilterSection() {
     dispatch({ type: "RESET_ONE_APPLY", key });
   }
 
+  // Removes one selected value (or the single temperature) immediately.
+  function removeValueAndSync(key, value) {
+    const next = withoutFilterValue(filtersFromUrl, key, value);
+    const query = buildQueryFromFilters(next, searchParams);
+
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
+
+    dispatch({ type: "SET_ITEM_APPLY", key, value: next[key] });
+  }
+
   useEffect(() => {
     dispatch({
       type: "HYDRATE_FROM_URL",
       payload: filtersFromUrl,
     });
 
-    reset({
-      minPrice: filtersFromUrl?.priceRange[0] || null,
-      maxPrice: filtersFromUrl?.priceRange[1] || null,
-    });
+    reset(priceFormValues(filtersFromUrl.priceRange));
   }, [search, dispatch, reset]);
 
   function toggleBrandAndSync(brandId) {
@@ -236,13 +254,6 @@ function FilterSection() {
                   error
                 />
               )}
-              {filtersFromUrl?.gender && (
-                <Badge
-                  title="جنسیت"
-                  onClick={() => resetOneAndSync("gender")}
-                  error
-                />
-              )}
               {filtersFromUrl?.original && (
                 <Badge
                   title="اورجینال"
@@ -257,6 +268,33 @@ function FilterSection() {
                   error
                 />
               )}
+              {filtersFromUrl?.discounted && (
+                <Badge
+                  title="تخفیف‌دار"
+                  onClick={() => resetOneAndSync("discounted")}
+                  error
+                />
+              )}
+              {TAXONOMY_FILTER_GROUPS.flatMap(({ key, type, label }) =>
+                (filtersFromUrl[key] ? [filtersFromUrl[key]].flat() : []).map(
+                  (slug) => (
+                    <Badge
+                      key={`${key}-${slug}`}
+                      title={categoryBadgeTitle(categories, type, slug, label)}
+                      onClick={() => removeValueAndSync(key, slug)}
+                      error
+                    />
+                  ),
+                ),
+              )}
+              {filtersFromUrl.concentrations.map((value) => (
+                <Badge
+                  key={`concentrations-${value}`}
+                  title={concentrationLabel(value)}
+                  onClick={() => removeValueAndSync("concentrations", value)}
+                  error
+                />
+              ))}
             </section>
           </div>
 
@@ -298,6 +336,7 @@ function FilterSection() {
               resetFilter={resetFilter}
               control={control}
               watch={watch}
+              errors={errors}
               filtersFromUrl={filtersFromUrl}
               resetAllFilters={resetAllFilters}
             />
@@ -309,9 +348,7 @@ function FilterSection() {
         <div className=" flex items-center justify-center gap-2">
           <div className="bg-primary h-3 w-0.75 rounded-full"></div>
           <p className="text-xl font-bold text-stroke-800">
-            {isGenderFilter
-              ? "ادکلن‌های " + currentGenderData?.title
-              : "همه ادکلن‌ها"}
+            {productListHeading(filtersFromUrl.gender, categories)}
           </p>
         </div>
 
@@ -337,40 +374,38 @@ function BrandsFilter({
     ? state.map(Number).filter(Boolean)
     : [];
   return (
-    <form className="relative max-md:hidden flex items-center gap-2 w-full h-12 lg:h-14 border border-primary/10 dark:border-stroke-200 bg-stroke-50 rounded-full size-full overflow-hidden px-2">
-      <div className="flex items-center justify-start size-full">
-        <div className="absolute right-0 z-10 flex items-center justify-center bg-stroke-0/10 backdrop-blur-md text-primary px-2 lg:text-lg font-bold h-full aspect-square">
-          برندها
-        </div>
-        <div
-          ref={ref}
-          className="flex items-center justify-start gap-2 p-2 pr-14 pl-6 h-full rounded-full overflow-x-auto scrollbar-none snap-x scroll-smooth"
-        >
-          {brandsLoading
-            ? Array.from({ length: 14 }).map((_, index) => (
-                <Skeleton
-                  key={index}
-                  className="flex-none h-1/2 w-24 rounded-full bg-stroke-300"
+    <form className="relative max-md:hidden flex items-center justify-start gap-2 w-full h-12 lg:h-14 border border-primary/10 dark:border-stroke-200 bg-stroke-50 rounded-full size-full px-2 overflow-hidden">
+      <div className="absolute right-0 z-10 flex items-center justify-center bg-stroke-0/10 backdrop-blur-md text-primary px-2 lg:text-lg font-bold h-full aspect-square">
+        برندها
+      </div>
+      <div
+        ref={ref}
+        className="flex items-center justify-start gap-2 p-2 pr-14 pl-10 h-full max-w-full rounded-full overflow-x-auto scrollbar-none snap-x"
+      >
+        {brandsLoading
+          ? Array.from({ length: 14 }).map((_, index) => (
+              <Skeleton
+                key={index}
+                className="flex-none h-1/2 w-24 rounded-full bg-stroke-300"
+              />
+            ))
+          : brands?.map((brand) => {
+              const isChecked = selectedBrandIds.includes(Number(brand.id));
+              return (
+                <FilterCheckBox
+                  key={brand.id}
+                  checkId={brand.id}
+                  imageSrc={brand.iconUrl}
+                  name={"brandFilter"}
+                  onChange={() => toggleBrandAndSync(brand.id)}
+                  checked={isChecked}
+                  className={`flex items-center justify-center text-nowrap size-full snap-center
+                    ${isChecked && "dark:*:bg-stroke-0 *:border-2 dark:*:border-[1.5px] *:bg-white *:border-primary dark:*:border-stroke-200"}`}
+                  imageClassName="px-2 h-full rounded-full duration-200 dark:*:invert "
+                  ratio="aspect-3/2"
                 />
-              ))
-            : brands?.map((brand) => {
-                const isChecked = selectedBrandIds.includes(Number(brand.id));
-
-                return (
-                  <FilterCheckBox
-                    key={brand.id}
-                    checkId={brand.id}
-                    imageSrc={brand.iconUrl}
-                    name={"brandFilter"}
-                    onChange={() => toggleBrandAndSync(brand.id)}
-                    checked={isChecked}
-                    className={`justify-center text-nowrap has-checked:*:border-2 dark:has-checked:*:border-[1.5px] has-checked:*:bg-white  dark:has-checked:*:bg-stroke-0  *:border-primary dark:*:border-stroke-200 has-checked:*:border-primary dark:has-checked:*:border-stroke-200 size-full snap-center`}
-                    imageClassName="px-2 lg h-full lg:h- w- rounded-full duration-200 dark:*:invert "
-                    ratio="aspect-3/2"
-                  />
-                );
-              })}
-        </div>
+              );
+            })}
       </div>
       <button
         type="button"

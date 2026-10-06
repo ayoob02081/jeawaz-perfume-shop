@@ -3,7 +3,6 @@
 import {
   couponDesktopTHeads,
   couponMobileTHeads,
-  couponTHeads,
 } from "@/constants/tableHeads";
 import { useRemoveCoupon } from "@/hooks/useCoupons";
 import Table from "@/ui/Table";
@@ -33,7 +32,7 @@ function CouponsListTable({ coupons }) {
   };
 
   return (
-    <div className="w-full overflow-auto max-h-dvh pb-0.5 rounded-xl shadow-xl scrollbar-none">
+    <div className="w-full overflow-x-auto h-fit pb-0.5 rounded-xl shadow-xl scrollbar-none">
       <>
         <Table className="overflow-auto md:hidden">
           <Table.Header className="">
@@ -99,6 +98,7 @@ function CouponsListTable({ coupons }) {
                       <div className="flex gap-2 items-center">
                         <Link
                           href={`/admin/coupons/edit/${coupon.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200"
                         >
                           <PencilIcon className=" size-5" />
@@ -186,6 +186,7 @@ function CouponsListTable({ coupons }) {
                       <div className="flex gap-2 items-center">
                         <Link
                           href={`/admin/coupons/edit/${coupon.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200"
                         >
                           <PencilIcon className=" size-5" />

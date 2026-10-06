@@ -13,6 +13,7 @@ import {
 } from "@/services/categoriesServices";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { storefrontCategoryOptions } from "@/utils/productFilterContract.mjs";
 import toast from "react-hot-toast";
 
 export const useGetAllCategories = () =>
@@ -41,6 +42,19 @@ export const useGetCategoriesByType = (type) =>
     retry: false,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
+  });
+
+// Storefront filter options: same request and cache as useGetCategoriesByType
+// (admin keeps every category), with inactive categories selected out.
+export const useGetStorefrontCategoriesByType = (type) =>
+  useQuery({
+    queryKey: ["categories", type],
+    queryFn: () => getCategoriesByTypeApi(type),
+    enabled: !!type,
+    retry: false,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    select: storefrontCategoryOptions,
   });
 
 export const useGetCategorybyID = (id) =>

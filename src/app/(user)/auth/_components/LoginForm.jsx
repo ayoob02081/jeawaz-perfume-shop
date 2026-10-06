@@ -6,18 +6,34 @@ function LoginForm({
   isPasswordType,
   onClose,
   phoneNumber,
-  MoveBack,
+  onEditPhone,
+  onResend,
+  onRetry,
+  editDisabled = false,
+  otpScreen,
+  requestError,
   step,
-  setStep,
   children,
   otp,
   password,
   onSubmit,
   closeBtn,
-  remaining,
+  resendRemaining,
+  requestPending = false,
+  verifyPending = false,
 }) {
-  const phoneNumberLength = phoneNumber.length === 11;
   const passLength = isPasswordType ? password.length >= 6 : otp?.length === 5;
+  // Disabled only while a request or verification is in flight, and on the
+  // code step until a code was confirmed.
+  const busy = requestPending || verifyPending;
+  const submitDisabled = busy || (step === "otp" && otpScreen !== "ready");
+
+  let submitLabel =
+    isPasswordType === false && step === "phone" ? "دریافت کد ورود" : "ورود";
+  if (step === "otp" && (otpScreen === "sending" || otpScreen === "resending")) {
+    submitLabel = "در حال ارسال کد...";
+  }
+  if (step === "otp" && verifyPending) submitLabel = "در حال بررسی...";
 
   return (
     <form
@@ -26,16 +42,6 @@ function LoginForm({
    "
       onSubmit={onSubmit}
     >
-      <img
-        src="/images/flower.svg"
-        alt="flower-icon"
-        className="pointer-events-none absolute -z-20 left-0 top-0 w-36 "
-      />
-      <img
-        src="/images/flower.svg"
-        alt="flower-icon"
-        className="pointer-events-none absolute rotate-180 -z-20 right-0 bottom-0 w-36 "
-      />
       {closeBtn && (
         <div className="absolute md:left-6 max-md:top-3 md:top-6 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl max-md:bg-stroke-200">
           <button
@@ -47,11 +53,12 @@ function LoginForm({
           </button>
         </div>
       )}
-      {step === 2 && (
+      {step === "otp" && (
         <button
           type="button"
           className="absolute max-md:right-0 md:right-6 max-md:top-4 md:top-6 btn max-md:border-0 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl md:border-[1.5px] border-stroke-200 md:size-10 md:rounded-full md:p-0  duration-200"
-          onClick={MoveBack}
+          onClick={onEditPhone}
+          disabled={editDisabled}
         >
           <ArrowRightIcon className="size-5 text-stroke-800" />
         </button>
@@ -59,25 +66,29 @@ function LoginForm({
       <AuthLayout
         isPasswordType={isPasswordType}
         step={step}
-        setStep={setStep}
         togglePasswordType={togglePasswordType}
         passLength={passLength}
         phoneNumber={phoneNumber}
         login
-        remaining={remaining}
+        otpScreen={otpScreen}
+        requestError={requestError}
+        onEditPhone={onEditPhone}
+        onResend={onResend}
+        onRetry={onRetry}
+        editDisabled={editDisabled}
+        resendRemaining={resendRemaining}
+        resendPending={otpScreen === "resending"}
+        actionsDisabled={busy}
       >
         <div className="flex flex-col items-center justify-center gap-4 size-full">
           {children}
           <button
             type="submit"
-            // disabled={
-            //   isPasswordType
-            //     ? !phoneNumberLength || !passLength
-            //     : !phoneNumberLength
-            // }
+            disabled={submitDisabled}
+            aria-busy={busy}
             className=" btn btn--primary w-full px-3 py-2 h-12 md:h-14 border-0 "
           >
-            {isPasswordType === false && step === 1 ? "دریافت کد ورود" : "ورود"}
+            {submitLabel}
           </button>
         </div>
       </AuthLayout>

@@ -26,6 +26,7 @@ function ViewLink({ id }) {
   return (
     <Link
       href={`/admin/contact-messages/${id}`}
+      prefetch={false}
       aria-label="مشاهده پیام"
       className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
     >

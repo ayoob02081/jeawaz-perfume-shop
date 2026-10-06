@@ -35,7 +35,7 @@ function BannersListTable({ banners }) {
     }
   };
   return (
-    <div className="w-full overflow-auto max-h-dvh rounded-xl shadow-xl scrollbar-none">
+    <div className="w-full overflow-x-auto h-fit rounded-xl shadow-xl scrollbar-none">
       <>
         <Table className="overflow-auto md:hidden">
           <Table.Header className="">
@@ -101,12 +101,14 @@ function BannersListTable({ banners }) {
                       <div className="flex gap-2 items-center">
                         <Link
                           href={`/admin/banners/${banner.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-blue duration-200"
                         >
                           <EyeIcon className=" size-5" />
                         </Link>
                         <Link
                           href={`/admin/banners/edit/${banner.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200"
                         >
                           <PencilIcon className=" size-5" />
@@ -190,12 +192,14 @@ function BannersListTable({ banners }) {
                       <div className="flex gap-2 items-center">
                         <Link
                           href={`/admin/banners/${banner.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-blue duration-200"
                         >
                           <EyeIcon className=" size-5" />
                         </Link>
                         <Link
                           href={`/admin/banners/edit/${banner.id}`}
+                          prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200"
                         >
                           <PencilIcon className=" size-5" />

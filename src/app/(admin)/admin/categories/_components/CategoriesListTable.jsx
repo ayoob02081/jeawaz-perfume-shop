@@ -43,7 +43,7 @@ function CategoriesListTable({ categories, brands, categoryRoute }) {
   };
 
   return (
-    <div className="w-full overflow-x-auto max-h-dvh pb-0.5 rounded-xl shadow-xl scrollbar-none">
+    <div className="w-full overflow-x-auto h-fit pb-0.5 rounded-xl shadow-xl scrollbar-none">
       <>
         <Table className="overflow-auto md:hidden">
           <Table.Header>
@@ -61,13 +61,13 @@ function CategoriesListTable({ categories, brands, categoryRoute }) {
                   <td className="table__td px-3 font-bold rounded-r-xl">
                     {toPersianNumbers(index + 1)}
                   </td>
-                  <td className="table__td px-6 max-w-70 min-w-40 text-wrap font-bold">
+                  <td className="table__td p-2 max-w-70 w-fit text-wrap font-bold">
                     <div className="flex flex-col items-center justify-center gap-1">
                       <p>{category.title}</p>
                       <p>{category.value}</p>
                     </div>
                   </td>
-                  <td className="table__td px-2">
+                  <td className="table__td py-1 px-2">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <div className="flex items-center justify-center">
                         <AppImage
@@ -84,10 +84,11 @@ function CategoriesListTable({ categories, brands, categoryRoute }) {
                       </span>
                     </div>
                   </td>
-                  <td className="table__td px-3 rounded-l-xl">
-                    <div className="flex gap-2 items-center">
+                  <td className="table__td px-2 rounded-l-xl">
+                    <div className="flex gap-2 items-center justify-center">
                       <Link
                         href={`/admin/categories/${type}/edit/${category.id}`}
+                        prefetch={false}
                         className="text-stroke-450 hover:text-success duration-200"
                       >
                         <PencilIcon className="size-5" />
@@ -123,24 +124,24 @@ function CategoriesListTable({ categories, brands, categoryRoute }) {
                   <td className="table__td px-3 font-bold rounded-r-xl">
                     {toPersianNumbers(index + 1)}
                   </td>
-                  <td className="table__td px-6 max-w-70 truncate font-bold">
+                  <td className="table__td px-2 max-w-70 truncate font-bold">
                     {category.title}
                   </td>
-                  <td className="table__td px-6 max-w-70 truncate font-bold">
+                  <td className="table__td px-2 max-w-70 truncate font-bold">
                     {category.value}
                   </td>
-                  <td className="table__td px-6 max-w-70 truncate font-bold">
+                  <td className="table__td px-2 max-w-70 truncate font-bold">
                     <p className="overflow-auto size-full scrollbar-none">
                       {category.description}
                     </p>
                   </td>
-                  <td className="table__td px-2">
+                  <td className="table__td py-1 px-2">
                     <div className="flex items-center justify-center">
                       <AppImage
                         src={category?.iconUrl}
                         alt={category?.value || "category-icon"}
-                        ratio={!brands ? "aspect-[4/1]" : "aspect-square"}
-                        width={!brands ? "w-16" : "w-7"}
+                        ratio={brands ? "aspect-[4/1]" : "aspect-square"}
+                        width={brands ? "w-16" : "w-10"}
                         className={brands ? "dark:invert" : ""}
                         sizes="10vw"
                       />
@@ -155,6 +156,7 @@ function CategoriesListTable({ categories, brands, categoryRoute }) {
                     <div className="flex gap-2 items-center">
                       <Link
                         href={`/admin/categories/${type}/edit/${category.id}`}
+                        prefetch={false}
                         className="text-stroke-450 hover:text-success duration-200"
                       >
                         <PencilIcon className="size-5" />

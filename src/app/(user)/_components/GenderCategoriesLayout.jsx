@@ -10,14 +10,14 @@ import { GenderCategoryCardSkeletons } from "./skeleton/HomeSectionSkeletons";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import { useGetCategoriesByType } from "@/hooks/useCategories";
+import { useGetStorefrontCategoriesByType } from "@/hooks/useCategories";
 
 function GenderCategoriesLayout() {
   const {
     data: genderCategories,
     isPending,
     error,
-  } = useGetCategoriesByType("gender");
+  } = useGetStorefrontCategoriesByType("gender");
 
   const view = homeCategoryView({ isPending, error });
 
@@ -79,6 +79,7 @@ function CategoreyCard({ src, alt, slug, label, productsCount }) {
             className="grow justify-center -rotate-12 z-10"
             objectFit="cover"
             sizes="10vw"
+            ratio="aspect-3/4"
           />
           <div className="absolute bottom-1/6 blur-md w-2/3 h-1 md:h-1.5 bg-stroke-600 rounded-full"></div>
         </div>

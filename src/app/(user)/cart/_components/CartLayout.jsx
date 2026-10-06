@@ -5,10 +5,26 @@ import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { checkoutAndPay } from "@/utils/paymentFlowContract.mjs";
+import { cartSnapshot } from "@/utils/cartSnapshot.mjs";
+import {
+  CHECKOUT_AUTH_REASON,
+  decideAdvance,
+  decideAuthClosed,
+  decideResumeAfterAuth,
+  decideSubmit,
+  isAuthFailure,
+} from "@/utils/checkoutAuthFlow.mjs";
+import {
+  buildCheckoutOrderPayload,
+  checkoutShippingMethod,
+} from "@/utils/checkoutOrderPayload.mjs";
+import Modal from "@/components/Modal";
+import Login from "@/app/(user)/auth/_components/Login";
 import {
   createPaymentApi,
   paymentErrorMessage,
@@ -30,7 +46,11 @@ import { CheckoutCartSummery, OrderSummaryCard } from "./CartSummery";
 import AdaptiveOverlayPage from "@/components/AdaptiveOverlayPage";
 import Loading from "@/components/Loading";
 import Accordion from "@/ui/Accordion";
-import { useGetAllCartItems, useUpdateShippingMethod } from "@/hooks/useCart";
+import {
+  fetchFreshCart,
+  useGetAllCartItems,
+  useUpdateShippingMethod,
+} from "@/hooks/useCart";
 import CartItemsLayout from "./CartItemsLayout";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth/AuthContext";
@@ -44,7 +64,6 @@ import {
   useGetAddresses,
 } from "@/hooks/useAddress";
 import { useCreateOrder } from "@/hooks/useOrders";
-import Modal from "@/components/Modal";
 
 const shippingOptions = [
   {
@@ -70,16 +89,37 @@ const shippingOptions = [
 
 function CartLayout() {
   const pathName = usePathname();
+  const queryClient = useQueryClient();
   const [cartOpen, setCartOpen] = useState(false);
   const [addressId, setAddressId] = useState(null);
   const [isListOpen, setIsListOpen] = useState(false);
-
-  const { loading } = useAuth();
-  const { data: cart, isLoading, isError } = useGetAllCartItems();
-  const { data: addresses, isLoading: addressesLoading } = useGetAddresses();
-
-  const [shippingMethod, setShippingMethod] = useState("tipax");
   const [step, setStep] = useState(1);
+  // In-place login over the cart (checkoutAuthFlow.mjs): { reason, before },
+  // `before` being the snapshot of the cart the shopper saw when it opened.
+  const [authPrompt, setAuthPrompt] = useState(null);
+  // A signed-in checkout whose session ended keeps showing the cart it was
+  // built on (the live query meanwhile answers for a guest) until the
+  // shopper has logged in again and the server cart has been compared.
+  const [heldCart, setHeldCart] = useState(null);
+  const [reviewNotice, setReviewNotice] = useState(null);
+  const resumingRef = useRef(false);
+
+  const { initializing, isAuthenticated, sessionExpiredAt } = useAuth();
+  const {
+    data: liveCart,
+    isLoading,
+    isError,
+  } = useGetAllCartItems();
+  const cart = heldCart ?? liveCart;
+  // Addresses belong to the account and are only needed on step 2.
+  const { data: addresses, isLoading: addressesLoading } = useGetAddresses({
+    enabled: isAuthenticated && step === 2,
+  });
+
+  const authPromptRef = useRef(authPrompt);
+  authPromptRef.current = authPrompt;
+  const stepRef = useRef(step);
+  stepRef.current = step;
 
   const toggleCart = () => {
     setCartOpen((prevState) => !prevState);
@@ -89,33 +129,102 @@ function CartLayout() {
     setCartOpen(true);
   }
 
-  useEffect(() => {
-    if (cart?.shippingCost !== undefined) {
-      setShippingMethod(cart.shippingMethod);
+  // Session lost while on step 2 (AuthContext: refresh rejected). Adjusted
+  // during render, before the identity bridge's effect resets the cart
+  // query, so `liveCart` is still the signed-in cart and the checkout form
+  // is never unmounted in between.
+  const [seenSessionExpiry, setSeenSessionExpiry] = useState(sessionExpiredAt);
+  if (sessionExpiredAt !== seenSessionExpiry) {
+    setSeenSessionExpiry(sessionExpiredAt);
+    if (step === 2 && liveCart && !heldCart && !authPrompt) {
+      setHeldCart(liveCart);
+      setAuthPrompt({
+        reason: CHECKOUT_AUTH_REASON.SESSION_EXPIRED,
+        before: cartSnapshot(liveCart),
+      });
     }
-  }, [cart?.shippingCost]);
+  }
 
   useEffect(() => {
-    if (!cart || cart.totalProducts === 0) {
+    if (cart && cart.totalProducts === 0) {
       setStep(1);
     }
   }, [cart]);
 
+  // Step 1 → step 2: a guest logs in here, over the cart.
+  const handleAdvance = () => {
+    const decision = decideAdvance({ isAuthenticated });
+    setReviewNotice(null);
+    if (decision.type === "OPEN_AUTH") {
+      setAuthPrompt({ reason: decision.reason, before: cartSnapshot(cart) });
+      return;
+    }
+    setStep(decision.step);
+  };
+
+  // Checkout found no session (submit as a guest, or a 401 after the
+  // client's refresh failed): keep the form and the cart, ask for a login.
+  const promptReauthentication = () => {
+    setHeldCart((held) => held ?? cart);
+    setAuthPrompt(
+      (prompt) =>
+        prompt ?? {
+          reason: CHECKOUT_AUTH_REASON.SESSION_EXPIRED,
+          before: cartSnapshot(cart),
+        },
+    );
+  };
+
+  const closeAuthPrompt = () => {
+    const prompt = authPromptRef.current;
+    if (!prompt || resumingRef.current) return;
+    setStep(decideAuthClosed({ reason: prompt.reason, step }).step);
+    setAuthPrompt(null);
+  };
+
+  // Logged in: the server merged the guest cart, so its cart is fetched
+  // anew and compared before deciding the step. Never submits: the shopper
+  // presses pay again.
+  const handleAuthenticated = async () => {
+    const prompt = authPromptRef.current;
+    if (!prompt || resumingRef.current) return;
+    resumingRef.current = true;
+
+    let freshCart = null;
+    try {
+      freshCart = await fetchFreshCart(queryClient);
+    } catch {
+      freshCart = null;
+    }
+
+    const decision = decideResumeAfterAuth({
+      reason: prompt.reason,
+      step: stepRef.current,
+      before: prompt.before,
+      after: cartSnapshot(freshCart),
+    });
+    resumingRef.current = false;
+    setHeldCart(null);
+    setAuthPrompt(null);
+    setStep(decision.step);
+    setReviewNotice(decision.notice);
+  };
+
   const renderSteps = () => {
     switch (step) {
       case 1:
-        return <CartOverview cart={cart} step={step} setStep={setStep} />;
+        return <CartOverview cart={cart} onContinue={handleAdvance} />;
       case 2:
         return (
           <Checkout
             cart={cart}
             setStep={setStep}
-            shippingMethod={shippingMethod}
-            setShippingMethod={setShippingMethod}
             addresses={addresses}
             setIsListOpen={setIsListOpen}
             addressId={addressId}
             setAddressId={setAddressId}
+            isAuthenticated={isAuthenticated}
+            onAuthRequired={promptReauthentication}
           />
         );
       default:
@@ -124,11 +233,13 @@ function CartLayout() {
   };
 
   const renderCartContent = () => {
-    if (loading || isLoading) {
+    // Only the first authentication check (or a cart not loaded yet) may
+    // replace the cart; later re-checks keep the checkout and its form.
+    if (initializing || (isLoading && !cart)) {
       return <Loading />;
     }
 
-    if (isError) {
+    if (isError && !cart) {
       return (
         <div className="flex items-center justify-center max-md:h-dvh md:h-92 w-full">
           <span className="flex flex-col items-center justify-center max-md:gap-4 md:gap-6 text-stroke-800">
@@ -163,6 +274,17 @@ function CartLayout() {
         <div className="flex items-center justify-center md:container md:mx-auto size-full h-[7.15rem] md:h-40 bg-stroke-100 md:rounded-3xl duration-200">
           <CheckoutStepper step={step} setStep={setStep} />
         </div>
+
+        {step === 1 && reviewNotice && (
+          <div className="flex items-center justify-center w-full max-sm:px-4 px-6">
+            <p
+              role="status"
+              className="container w-full rounded-xl bg-stroke-100 text-stroke-800 text-sm leading-6 p-4"
+            >
+              {reviewNotice}
+            </p>
+          </div>
+        )}
 
         <div className="flex items-center justify-center w-full max-sm:px-4 px-6">
           <div
@@ -205,6 +327,22 @@ function CartLayout() {
           isLoading={addressesLoading}
         />
       )}
+
+      {/* In-place login: the cart route (and an open checkout form) stays
+          mounted behind it; nothing navigates. */}
+      <Modal
+        isOpen={!!authPrompt}
+        onClose={closeAuthPrompt}
+        className="h-fit justify-end"
+      >
+        {authPrompt && (
+          <Login
+            closeBtn={true}
+            onAuthenticated={handleAuthenticated}
+            onClose={closeAuthPrompt}
+          />
+        )}
+      </Modal>
     </>
   );
 }
@@ -327,7 +465,7 @@ function CheckoutStepper({ step, setStep }) {
   );
 }
 
-function CartOverview({ cart, step, setStep }) {
+function CartOverview({ cart, onContinue }) {
   const { totalProducts = 0 } = cart;
 
   return (
@@ -374,7 +512,7 @@ function CartOverview({ cart, step, setStep }) {
 
       {/* CartSummery */}
       <div className="flex items-center justify-center size-full max-md:mx-auto md:max-w-92">
-        <OrderSummaryCard cart={cart} setStep={setStep} />
+        <OrderSummaryCard cart={cart} onContinue={onContinue} />
       </div>
     </div>
   );
@@ -383,16 +521,20 @@ function CartOverview({ cart, step, setStep }) {
 function Checkout({
   cart,
   setStep,
-  shippingMethod,
   addresses,
   setIsListOpen,
   addressId,
   setAddressId,
+  isAuthenticated,
+  onAuthRequired,
 }) {
   const { data: address, isLoading: isAddressLoading } =
     useGetAddressById(addressId);
-  const { createAddress, isCreating: isAddressCreating } = useCreateAddress();
-  const { createOrder } = useCreateOrder();
+  // A 401 here opens the re-login prompt instead of a generic error toast.
+  const { createAddress, isCreating: isAddressCreating } = useCreateAddress({
+    silentAuthErrors: true,
+  });
+  const { createOrder } = useCreateOrder({ silentAuthErrors: true });
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const router = useRouter();
   const selectedAddress = addresses?.find((a) => a.id === addressId);
@@ -436,8 +578,14 @@ function Checkout({
     if (def) setAddressId(def.id);
   }, [addresses, addressId]);
 
+  // Fill the form when another saved address is selected, not when the list
+  // is merely refetched (e.g. after a re-login): typed edits must survive.
+  const filledAddressIdRef = useRef(null);
   useEffect(() => {
-    if (!selectedAddress) return;
+    if (!selectedAddress || filledAddressIdRef.current === selectedAddress.id) {
+      return;
+    }
+    filledAddressIdRef.current = selectedAddress.id;
 
     reset({
       label: selectedAddress.label ?? "",
@@ -453,6 +601,13 @@ function Checkout({
   const onSubmit = async (data) => {
     // One checkout at a time: a double submit must never create two Orders.
     if (isCheckingOut) return;
+    // Without a signed-in user nothing is sent (no address, order or
+    // payment); the shopper logs in and presses pay again.
+    const decision = decideSubmit({ isAuthenticated, isCheckingOut });
+    if (decision.type === "OPEN_AUTH") {
+      onAuthRequired();
+      return;
+    }
     setIsCheckingOut(true);
 
     try {
@@ -463,17 +618,13 @@ function Checkout({
         finalAddressId = addressData.id;
       }
 
-      const orderPayload = finalAddress
-        ? { addressId: finalAddressId, shippingMethod }
-        : {
-            receiverName: data.fullName,
-            receiverPhone: data.phoneNumber,
-            ostan: data.ostan,
-            shahr: data.shahr,
-            fullAddress: data.addressLine,
-            postalCode: data.postalCode,
-            shippingMethod,
-          };
+      // The carrier the shipping radios show (the cart's), whatever it costs.
+      const orderPayload = buildCheckoutOrderPayload({
+        useSavedAddress: finalAddress,
+        addressId: finalAddressId,
+        form: data,
+        shippingMethod: checkoutShippingMethod(cart),
+      });
 
       const result = await checkoutAndPay({
         createOrder: () => createOrder(orderPayload),
@@ -482,6 +633,10 @@ function Checkout({
       });
 
       if (result.stage === "redirected") return;
+
+      if (result.stage === "order-failed" && isAuthFailure(result.error)) {
+        onAuthRequired();
+      }
 
       if (result.stage === "payment-failed") {
         // The Order exists; send the user to it to retry payment there.
@@ -496,7 +651,11 @@ function Checkout({
         );
       }
     } catch (err) {
-      console.error("Checkout error:", err);
+      if (isAuthFailure(err)) {
+        onAuthRequired();
+      } else {
+        console.error("Checkout error:", err);
+      }
     }
     setIsCheckingOut(false);
   };

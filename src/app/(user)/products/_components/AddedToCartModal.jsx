@@ -4,7 +4,6 @@ import AppImage from "@/components/AppImage";
 import Modal from "@/components/Modal";
 import PriceSection from "@/components/PriceSection";
 import { openAddedToCartSession } from "@/utils/addedToCartContract.mjs";
-import { toPersianNumbersWithComma } from "@/utils/toPersianNumbers";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import { useCallback, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -78,7 +77,7 @@ function AddedToCartModal({
         <div className="flex gap-3 p-3 border-[1.5px] border-stroke-200 rounded-2xl">
           <AppImage
             src={item.image}
-            alt={item.title}
+            alt={item?.title + "-عکس"}
             width="size-16 shrink-0"
             sizes="30vw"
           />
@@ -88,13 +87,13 @@ function AddedToCartModal({
               <span className="badge badge--secondary w-fit">
                 <p>{item.variantLabel}</p>
               </span>
-              <p className="flex items-end gap-1 text-stroke-800">
+              <div className="flex items-end gap-1 text-stroke-800">
                 <PriceSection
                   unitPrice={item.unitPrice}
                   basePrice={item.unitPrice}
                   priceClassName="max-[30rem]:text-sm"
                 />
-              </p>
+              </div>
             </div>
           </div>
         </div>
@@ -107,7 +106,7 @@ function AddedToCartModal({
             className="btn btn--primary gap-2 w-full flex-2 h-12 px-2 font-bold text-sm"
           >
             <div className="size-4.5">
-              <AppImage src="/images/bag-white-icon.svg" />
+              <AppImage src="/images/bag-white-icon.svg" alt="bag-icon" />
             </div>
             <p>رفتن به سبد خرید</p>
           </button>

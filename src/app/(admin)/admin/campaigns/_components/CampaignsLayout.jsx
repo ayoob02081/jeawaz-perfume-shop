@@ -17,6 +17,7 @@ function CampaignsLayout() {
         <h1 className="font-bold text-stroke-800 text-xl">کمپین‌ها</h1>
         <Link
           href={"/admin/campaigns/add"}
+          prefetch={false}
           className="btn btn--primary border py-1.5 px-3"
         >
           اضافه کردن کمپین

@@ -7,17 +7,17 @@ import {
   homeCategoryView,
 } from "@/utils/homeSectionView.mjs";
 import { AccordCategoryCardSkeletons } from "./skeleton/HomeSectionSkeletons";
-import { useGetCategoriesByType } from "@/hooks/useCategories";
+import { useGetStorefrontCategoriesByType } from "@/hooks/useCategories";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 
 function AccordCategoriesLayout() {
   const {
-    data: fragranceFamilyCategories,
+    data: characters,
     isPending,
     error,
-  } = useGetCategoriesByType("fragrance_family");
+  } = useGetStorefrontCategoriesByType("character");
 
   const view = homeCategoryView({ isPending, error });
 
@@ -42,7 +42,7 @@ function AccordCategoriesLayout() {
         {view === "loading" ? (
           <AccordCategoryCardSkeletons count={ACCORD_CATEGORY_SKELETON_COUNT} />
         ) : (
-          fragranceFamilyCategories.map((item) => (
+          characters.map((item) => (
             <FilterCard
               key={item.id}
               src={item.imageUrl}
@@ -67,18 +67,19 @@ function FilterCard({ src, alt, slug, label, productsCount }) {
     <div className="snap-center">
       <button
         onClick={() =>
-          router.push(`/products?fragranceFamilies=${encodeURIComponent(slug)}`)
+          router.push(`/products?characters=${encodeURIComponent(slug)}`)
         }
-        className="flex h-24 sm:h-30! aspect-9/3 sm:aspect-5/2 justify-between items-center px-3 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 "
+        className="relative flex h-24 sm:h-30! aspect-9/3 sm:aspect-5/2 justify-between items-center px-3 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 "
       >
         <div className="relative flex items-center justify-center h-full px-4">
-          <div className=" flex items-center justify-center aspect-square h-16 md:h-20 rounded-xl">
+          <div className=" flex items-center justify-center aspect-square h-11 md:h-13 rounded-xl">
             <AppImage
               src={src}
               alt={alt}
               className=" justify-center -rotate-12 z-10"
               objectFit="cover"
               sizes="10vw"
+              ratio="aspect-3/4"
             />
           </div>
           <div className="absolute bottom-1/6 blur-[10px] w-1/2 h-1 sm:h-1.5 bg-stroke-600 rounded-full"></div>

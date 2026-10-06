@@ -176,6 +176,7 @@ function PaymentResult() {
         {actions.orderLink && (
           <Link
             href={actions.orderLink.href}
+            prefetch={false}
             className="btn btn--secondary--2 size-full py-2 duration-200 md:max-w-60"
           >
             {actions.orderLink.label}

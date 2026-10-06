@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import Sidebars from "./Sidebars";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -26,18 +27,28 @@ export default function RootLayout({ children, modal }) {
     >
       <body
         dir="rtl"
-        className="font-display antialiased scrollbar-none bg-stroke-0! duration-200"
+        className="font-display antialiased scrollbar-none bg-stroke-0! print:bg-white! duration-200"
       >
+        <Script
+          src="https://kit.fontawesome.com/0d5a818c03.js"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <Providers>
           <Toaster />
-          <Header />
-          <Sidebars />
-          <main className="max-sm:min-h-[calc(100dvh-9.5rem)] sm:min-h-[calc(100dvh-5rem)] lg:min-h-[calc(100dvh-11rem)]">
+          {/* Site chrome is left out of printed pages (e.g. the order invoice). */}
+          <div className="contents print:hidden">
+            <Header />
+            <Sidebars />
+          </div>
+          <main className="max-sm:min-h-[calc(100dvh-9.5rem)] sm:min-h-[calc(100dvh-5rem)] lg:min-h-[calc(100dvh-11rem)] print:min-h-0!">
             {modal}
             {children}
           </main>
-          <Footer />
-          <MobilePannel />
+          <div className="contents print:hidden">
+            <Footer />
+            <MobilePannel />
+          </div>
         </Providers>
       </body>
     </html>

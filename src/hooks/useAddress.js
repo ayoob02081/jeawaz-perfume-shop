@@ -9,10 +9,13 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-export const useGetAddresses = () =>
+// `enabled: false` keeps a guest (or a screen that does not need them yet)
+// from requesting the account's addresses.
+export const useGetAddresses = ({ enabled = true } = {}) =>
   useQuery({
     queryKey: ["addresses"],
     queryFn: getAllAddressesApi,
+    enabled,
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -25,7 +28,9 @@ export const useGetAddressesByUserId = (userId) =>
     retry: false,
   });
 
-export function useCreateAddress() {
+// `silentAuthErrors`: the caller (checkout) answers a 401 with its own
+// re-login prompt, so no generic error toast is shown for it.
+export function useCreateAddress({ silentAuthErrors = false } = {}) {
   const queryClient = useQueryClient();
 
   const { isPending: isCreating, mutateAsync: createAddress } = useMutation({
@@ -35,6 +40,7 @@ export function useCreateAddress() {
       toast.success("آدرس جدید با موفقیت ثبت شد", { id: "create-address" });
     },
     onError: (err) => {
+      if (silentAuthErrors && err?.response?.status === 401) return;
       const msg = err?.response?.data?.message || "خطا در ثبت آدرس";
       toast.error(msg, { id: "create-address-error" });
     },

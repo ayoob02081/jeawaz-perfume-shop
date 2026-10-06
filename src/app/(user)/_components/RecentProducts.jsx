@@ -48,7 +48,7 @@ function RecentProducts() {
       title={"جدید ترین "}
       des={"محصولات ما"}
       desc={"ترندهای رایحه، همین‌جاست."}
-      className={"rounded-2xl"}
+      className={"rounded-2xl overflow-x-auto"}
     >
       <div></div>
       {view === "loading" ? (

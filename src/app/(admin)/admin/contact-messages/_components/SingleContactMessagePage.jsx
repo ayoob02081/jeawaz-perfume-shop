@@ -106,7 +106,7 @@ function SingleContactMessagePage({ messageId }) {
 
 function BackLink() {
   return (
-    <Link href="/admin/contact-messages" className="btn border px-3 py-2">
+    <Link href="/admin/contact-messages" prefetch={false} className="btn border px-3 py-2">
       بازگشت به پیام‌ها
     </Link>
   );

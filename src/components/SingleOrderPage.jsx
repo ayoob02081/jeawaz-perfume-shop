@@ -9,6 +9,7 @@ import {
   userStatusConfig,
 } from "@/constants/orderStatus";
 import GoBack from "@/ui/GoBack";
+import { canPrintInvoice, getInvoiceHref } from "@/utils/orderInvoice.mjs";
 import { toLocalDateString } from "@/utils/toLocalDate";
 import {
   toPersianNumbers,
@@ -113,17 +114,23 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
                   </div>
                   <p className="text-stroke-600 text-xs">مرسوله ۱ از ۱</p>
                 </div>
-                <button className="flex items-center justify-end gap-2 text-nowrap">
-                  <AppImage
-                    src="/images/factor-icon.svg"
-                    alt="recipt icon"
-                    width="size-5"
-                    sizes="10vw"
-                  />
-                  <p className="text-sm md:text-base font-bold text-primary">
-                    مشاهده فاکتور
-                  </p>
-                </button>
+                {!admin && canPrintInvoice(order?.status) && (
+                  <Link
+                    href={getInvoiceHref(order.id)}
+                    prefetch={false}
+                    className="flex items-center justify-end gap-2 text-nowrap"
+                  >
+                    <AppImage
+                      src="/images/factor-icon.svg"
+                      alt="recipt icon"
+                      width="size-5"
+                      sizes="10vw"
+                    />
+                    <p className="text-sm md:text-base font-bold text-primary">
+                      مشاهده فاکتور
+                    </p>
+                  </Link>
+                )}
               </div>
               <div className="w-full mb-4">
                 <div className="flex flex-wrap max-md:items-start justify-start gap-4 w-full mb-4">

@@ -40,6 +40,7 @@ function ProductsLayout() {
     ...filters,
     page,
     limit: 12,
+    availabilityFirst: false,
   });
   const { data: brands = [] } = useGetAllBrandCategories();
   const { data: categories = [] } = useGetAllCategories();
@@ -87,6 +88,7 @@ function ProductsLayout() {
         <div className="flex flex-wrap gap-2">
           <Link
             href="/admin/products/price-history"
+            prefetch={false}
             className="btn border py-1.5 px-3 max-[33rem]:w-full"
           >
             تاریخچه قیمت‌ها
@@ -100,6 +102,7 @@ function ProductsLayout() {
           </button>
           <Link
             href="/admin/products/add"
+            prefetch={false}
             className="btn btn--primary border py-1.5 px-3 max-[33rem]:w-full"
           >
             اضافه کردن محصول

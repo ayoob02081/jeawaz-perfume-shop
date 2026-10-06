@@ -7,15 +7,30 @@ import AppImage from "@/components/AppImage";
 import { useFilters } from "@/hooks/useFilters";
 import {
   useGetAllBrandCategories,
-  useGetCategoriesByType,
+  useGetStorefrontCategoriesByType,
 } from "@/hooks/useCategories";
 import { useGetProductVolumeOptions } from "@/hooks/useProducts";
-import { mergeVolumeOptions } from "@/utils/productFilterContract.mjs";
+import {
+  CONCENTRATION_FILTER_LABEL,
+  TAXONOMY_FILTER_GROUPS,
+  activeFilterCount,
+  mergeVolumeOptions,
+} from "@/utils/productFilterContract.mjs";
+import {
+  PRODUCT_CONCENTRATIONS,
+  concentrationLabel,
+} from "@/utils/productConcentration.mjs";
 import FilterCheckBox from "@/ui/FilterCheckBox";
 import Loading from "@/components/Loading";
 import { buildQueryFromFilters } from "@/utils/queryFilters";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
+
+// The sidebar has its own dedicated gender panel; the generic taxonomy
+// columns render every other shared group.
+const SIDEBAR_TAXONOMY_GROUPS = TAXONOMY_FILTER_GROUPS.filter(
+  ({ key }) => key !== "gender",
+);
 
 const priceRanges = [
   {
@@ -53,13 +68,27 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
   const router = useRouter();
 
   const { data: genderCategories, isPending: isGenderPending } =
-    useGetCategoriesByType("gender");
+    useGetStorefrontCategoriesByType("gender");
 
   const { data: fragranceFamilyCategories, isPending: isFamilyPending } =
-    useGetCategoriesByType("fragrance_family");
+    useGetStorefrontCategoriesByType("fragrance_family");
 
   const { data: brandCategories, isPending: isBrandPending } =
     useGetAllBrandCategories();
+
+  const { data: seasonCategories } = useGetStorefrontCategoriesByType("season");
+  const { data: temperatureCategories } =
+    useGetStorefrontCategoriesByType("temperature");
+  const { data: characterCategories } =
+    useGetStorefrontCategoriesByType("character");
+  const { data: occasionCategories } =
+    useGetStorefrontCategoriesByType("occasion");
+  const taxonomyOptions = {
+    seasons: seasonCategories,
+    temperature: temperatureCategories,
+    characters: characterCategories,
+    occasions: occasionCategories,
+  };
 
   const { state, dispatch } = useFilters();
   const {
@@ -76,15 +105,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
     (gender) => gender.slug === state.draft.gender,
   );
 
-  const isFilter = Boolean(
-    state.draft.gender ||
-    state.draft.brandIds?.length ||
-    state.draft.fragranceFamilies?.length ||
-    state.draft.inStock ||
-    state.draft.original ||
-    state.draft.type ||
-    state.draft.volumes?.length,
-  );
+  const isFilter = activeFilterCount(state.draft) > 0;
 
   const isPriceFilter =
     state.draft.priceRange?.[0] !== null ||
@@ -120,19 +141,34 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
     : [];
 
   return (
+    // Mobile: the fixed Backdrop is the only viewport-sized box; the panel
+    // fills it (h-full, no second dvh measurement) and [data-scroll] is the
+    // single vertical scroller, contained so it never scrolls the page behind.
     <Modal
       isOpen={isCategoryOpen}
       onClose={cancelCategory}
       category
-      className="max-lg:h-dvh"
+      className="max-lg:h-full"
+      backdropClassName="max-lg:overflow-hidden"
     >
+      {/* Closed: offscreen and inert (not focusable, hidden from assistive
+          technology). Open: a modal dialog. */}
       <div
         data-scroll
-        className="size-full max-lg:h-full max-lg:overflow-auto lg:overflow-hidden bg-stroke-100 scrollbar-none"
+        inert={!isCategoryOpen}
+        role={isCategoryOpen ? "dialog" : undefined}
+        aria-modal={isCategoryOpen ? "true" : undefined}
+        aria-label="دسته بندی محصولات"
+        className="size-full max-lg:h-full max-lg:overflow-auto overscroll-y-contain lg:overflow-hidden bg-stroke-100 scrollbar-none"
       >
         {/* Mobile Category Button */}
-        <div className="fixed z-10 flex items-center justify-between px-4 w-full py-6 lg:hidden lg:h-0 bg-stroke-0">
-          <button type="button" className="size-6" onClick={cancelCategory}>
+        <div className="fixed top-0 z-10 flex items-center justify-between px-4 w-full py-6 lg:hidden lg:h-0 bg-stroke-0">
+          <button
+            type="button"
+            className="size-6"
+            onClick={cancelCategory}
+            aria-label="بستن فیلترها"
+          >
             <ArrowRightIcon className="size-5 text-stroke-800" />
           </button>
           <span className="text-stroke-800 font-bold">دسته بندی محصولات</span>
@@ -225,9 +261,9 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
             )}
 
             {/* Other Categories */}
-            <div className="flex flex-col gap-6 md:gap-4 max-md:p-4 md:py-4 md:pl-4 max-lg:w-full max-md:border-t border-stroke-200">
+            <div className="flex flex-col gap-6 md:gap-4 max-md:p-4 md:py-4 md:pl-4 max-lg:w-full max-lg:max-h-svh max-md:border-t border-stroke-200">
               <div className="size-full rounded-2xl bg-stroke-0 py-4 overflow-hidden max-sm:mb-10">
-                <div className="flex flex-wrap items-start justify-start size-full overflow-y-aut scrollbar-none gap-6 pr-4 scroll-smooth **:scroll-smooth">
+                <div className="flex flex-wrap items-start justify-start size-full overflow-y-auto scrollbar-none gap-6 px-4 scroll-smooth **:scroll-smooth">
                   {/* Brands */}
                   <CategriesFilter fieldsetId="brand-value" title="برند">
                     {brandCategories?.map((brand) => {
@@ -313,7 +349,20 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                             : "text-stroke-600"
                         }`}
                       >
-                        {label}
+                        <span className="flex items-center justify-start gap-1 w-full">
+                          <div
+                            className={`h-2 w-0.5 rounded-full ${
+                              state.draft.type === type
+                                ? "bg-primary"
+                                : "bg-stroke-50"
+                            } duration-200`}
+                          ></div>
+                          <p
+                            className={` ${state.draft.type === type ? "text-primary" : "text-stroke-800 dark:text-stroke-500"} duration-200`}
+                          >
+                            {label}
+                          </p>
+                        </span>
                       </button>
                     ))}
                   </CategriesFilter>
@@ -344,6 +393,88 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                         />
                       );
                     })}
+                  </CategriesFilter>
+
+                  {/* Product V2 taxonomy */}
+                  {SIDEBAR_TAXONOMY_GROUPS.map(({ key, label, multiple }) => (
+                    <CategriesFilter
+                      key={key}
+                      fieldsetId={`${key}-value`}
+                      title={label}
+                    >
+                      {taxonomyOptions[key]?.map((category) =>
+                        multiple ? (
+                          <FilterCheckBox
+                            key={category.id}
+                            className="flex flex-col items-start justify-start size-full text-xs has-checked:font-bold duration-200"
+                            textClassName="py-2"
+                            checkId={`${key}-${category.slug}`}
+                            name={key}
+                            label={category.title}
+                            checked={state.draft[key].includes(category.slug)}
+                            onChange={() =>
+                              addFilter("SET_ITEMS", key, category.slug)
+                            }
+                          />
+                        ) : (
+                          <button
+                            key={category.id}
+                            type="button"
+                            aria-pressed={state.draft[key] === category.slug}
+                            onClick={() =>
+                              addFilter(
+                                "SET_ITEM",
+                                key,
+                                state.draft[key] === category.slug
+                                  ? null
+                                  : category.slug,
+                              )
+                            }
+                            className={`py-2 text-xs ${
+                              state.draft[key] === category.slug
+                                ? "text-primary font-bold"
+                                : "text-stroke-600"
+                            }`}
+                          >
+                            <span className="flex items-center justify-start gap-1 w-full">
+                              <div
+                                className={`h-2 w-0.5 rounded-full ${
+                                  state.draft[key] === category.slug
+                                    ? "bg-primary"
+                                    : "bg-stroke-50"
+                                } duration-200`}
+                              ></div>
+                              <p
+                                className={` ${state.draft[key] === category.slug ? "text-primary" : "text-stroke-800 dark:text-stroke-500"} duration-200`}
+                              >
+                                {category.title}
+                              </p>
+                            </span>
+                          </button>
+                        ),
+                      )}
+                    </CategriesFilter>
+                  ))}
+
+                  {/* Concentration */}
+                  <CategriesFilter
+                    fieldsetId="concentrations-value"
+                    title={CONCENTRATION_FILTER_LABEL}
+                  >
+                    {PRODUCT_CONCENTRATIONS.map((value) => (
+                      <FilterCheckBox
+                        key={value}
+                        className="flex flex-col items-start justify-start size-full text-xs has-checked:font-bold duration-200"
+                        textClassName="py-2"
+                        checkId={`concentrations-${value}`}
+                        name="concentrations"
+                        label={concentrationLabel(value)}
+                        checked={state.draft.concentrations.includes(value)}
+                        onChange={() =>
+                          addFilter("SET_ITEMS", "concentrations", value)
+                        }
+                      />
+                    ))}
                   </CategriesFilter>
 
                   {/* Price */}
@@ -387,7 +518,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                       submitFilters();
                       closeCategory();
                     }}
-                    className="btn btn--primary shadow-xl border-none px-6 md:px-8 size-full"
+                    className="btn btn--primary backdrop-blur-md shadow-xl border-none px-6 md:px-8 size-full"
                   >
                     <p className="text-sm sm:text-xs">اعمال فیلتر</p>
                   </button>
@@ -395,7 +526,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                   <button
                     type="button"
                     onClick={cancelCategory}
-                    className="btn btn--secondary--2 shadow-xl bg-stroke-0 border-stroke-0 px-6 h-full w-1/2 disabled:bg-amber-50"
+                    className="btn btn--secondary--2 backdrop-blur-md shadow-xl bg-stroke-0 border-stroke-0 px-6 h-full w-1/2 disabled:bg-amber-50"
                   >
                     <p className="text-sm sm:text-xs text-stroke-800">انصراف</p>
                   </button>
@@ -414,7 +545,7 @@ export default CategorySidebar;
 function CategriesFilter({ title, fieldsetId, children, className = "" }) {
   return (
     <div
-      className={`flex flex-col items-end justify-start gap-2 overflow-hidden text-sm h-full max-h-1/2 ${className}`}
+      className={`flex flex-col items-end justify-start gap-2 overflow-hidden text-sm h-full max-h-[44%] ${className}`}
     >
       <div className="flex justify-start items-center gap-1 w-full">
         <AppImage

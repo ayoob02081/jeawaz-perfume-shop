@@ -402,7 +402,13 @@ test("closing leaves no active overlay, scroll lock or focusable content", () =>
   assert.match(modal, /<Modal isOpen=\{open\} onClose=\{dismiss\}/);
   assert.match(modal, /inert=\{!open\}/);
   assert.match(source("../components/Modal.jsx"), /useOutsideClick\(onClose, true, isOpen\)/);
-  assert.match(source("../ui/Backdrop.jsx"), /\} else \{\s*document\.body\.style\.overflow = "";\s*document\.body\.style\.paddingRight = "";/);
+  // Backdrop holds the shared page lock only while open; closing or
+  // unmounting releases it (bodyScrollLock.test.mjs covers the release).
+  assert.match(source("../ui/Backdrop.jsx"), /useBodyScrollLock\(isOpen\);/);
+  assert.match(
+    source("../hooks/useBodyScrollLock.js"),
+    /if \(!active\) return undefined;[\s\S]*return \(\) => unlockBodyScroll\(owner\);/,
+  );
   // Escape / desktop listeners exist only while open (behaviour tested above).
   assert.match(modal, /if \(!open\) return undefined;\s*return openAddedToCartSession/);
 });

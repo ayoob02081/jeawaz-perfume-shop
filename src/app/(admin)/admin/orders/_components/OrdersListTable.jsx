@@ -20,7 +20,8 @@ import {
 import { CheckIcon, PrinterIcon } from "@heroicons/react/24/outline";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { PRINT_ALL_FILTERED_HINT } from "@/utils/adminOrdersListContract.mjs";
 
 const ORDER_STATUS_FLOW = {
   PENDING: ["PAID", "CANCELLED"],
@@ -32,7 +33,19 @@ const ORDER_STATUS_FLOW = {
   EXPIRED: [],
 };
 
-function OrdersListTable({ orders, isLoading, status }) {
+// `orders` are the backend rows for the current query, never re-filtered here.
+// While `isStale` (previous query's rows shown during a fetch) no row can be
+// selected or acted on; `selectionKey` changes clear every selection.
+function OrdersListTable({
+  orders,
+  isLoading,
+  status,
+  isStale = false,
+  selectionKey,
+  emptyMessage,
+  canPrintAll = false,
+  printAllBlockedByFilters = false,
+}) {
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [orderIds, setOrderIds] = useState([]);
   const [orderId, setOrderId] = useState([]);
@@ -43,16 +56,13 @@ function OrdersListTable({ orders, isLoading, status }) {
   const { exportOrders, isPending: isExportPending } = useExportOrders();
 
   const nextPossibleBulkStatuses = ORDER_STATUS_FLOW[status] || [];
-  const filteredOrders = useMemo(() => {
-    if (!status) return orders;
-    return orders?.filter((o) => o.status === status);
-  }, [orders, status]);
   const isAllSelected =
     orderIds?.length >= 1 &&
-    filteredOrders?.length >= 1 &&
-    orderIds?.length === filteredOrders?.length;
+    orders?.length >= 1 &&
+    orderIds?.length === orders?.length;
 
   const handleOrderIds = (data) => {
+    if (isStale) return;
     const id = Number(data?.target.value);
 
     if (orderIds.includes(id)) {
@@ -64,11 +74,12 @@ function OrdersListTable({ orders, isLoading, status }) {
   };
 
   const addAll = () => {
-    const filteredOrderIds = filteredOrders.map((o) => o.id);
-    if (filteredOrderIds.length === orderIds.length) {
+    if (isStale) return;
+    const visibleOrderIds = orders.map((o) => o.id);
+    if (visibleOrderIds.length === orderIds.length) {
       setOrderIds([]);
     } else {
-      setOrderIds(filteredOrderIds);
+      setOrderIds(visibleOrderIds);
     }
   };
 
@@ -76,6 +87,7 @@ function OrdersListTable({ orders, isLoading, status }) {
     if (!data.id) {
       setStatusModalOpen(false);
       setNextStatus();
+      setOrderId([]);
     }
     if (data.id) {
       setStatusModalOpen(true);
@@ -90,6 +102,8 @@ function OrdersListTable({ orders, isLoading, status }) {
 
   const handleExportPrintFile = async (forceAll = false) => {
     if (forceAll) {
+      // Exports every READY_TO_PRINT order, not a search/date subset.
+      if (!canPrintAll) return;
       await exportOrders({
         onlyReadyToPrint: status === "READY_TO_PRINT",
         status: status !== "READY_TO_PRINT" ? status : undefined,
@@ -114,9 +128,10 @@ function OrdersListTable({ orders, isLoading, status }) {
   };
 
   const handleUpdateStatus = async () => {
+    if (isStale) return;
     const isBulk = orderIds.length > 0;
 
-    if (nextStatus?.value === "PRINTED") {
+    if (nextStatus?.value === "PRINTED" && (isBulk || orderId.length > 0)) {
       await handleExportPrintFile();
     }
 
@@ -140,7 +155,7 @@ function OrdersListTable({ orders, isLoading, status }) {
   useEffect(() => {
     setOrderIds([]);
     setOrderId([]);
-  }, [status]);
+  }, [selectionKey]);
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl p-4 pt-0 overflow-hidden w-full">
@@ -150,7 +165,9 @@ function OrdersListTable({ orders, isLoading, status }) {
             <button
               type="button"
               onClick={addAll}
-              disabled={!nextPossibleBulkStatuses || orders?.length <= 0}
+              disabled={
+                !nextPossibleBulkStatuses || orders?.length <= 0 || isStale
+              }
               className={`btn btn--primary--2 px-3 py-1 disabled:opacity-60 w-fit gap-2 hover:*:odd:border-stroke-0 ${
                 isAllSelected
                   ? "font-bold hover:*:text-primary hover:*:even:text-stroke-0 hover:*:odd:bg-stroke-0 "
@@ -166,11 +183,15 @@ function OrdersListTable({ orders, isLoading, status }) {
             </button>
           )}
           {!isLoading &&
-            filteredOrders?.length >= 1 &&
+            orders?.length >= 1 &&
             status === "READY_TO_PRINT" && (
               <button
                 type="submit"
                 onClick={() => handleExportPrintFile(true)}
+                disabled={!canPrintAll}
+                title={
+                  printAllBlockedByFilters ? PRINT_ALL_FILTERED_HINT : undefined
+                }
                 className={` btn btn--primary border  rounded-lg h-full w-fit py-1 px-3 gap-1 disabled:opacity-40 opacity-100 duration-200`}
               >
                 <PrinterIcon className=" size-5 duration-200" />
@@ -179,7 +200,18 @@ function OrdersListTable({ orders, isLoading, status }) {
             )}
         </div>
       )}
-      <div className="w-full overflow-x-auto rounded-xl shadow-xl scrollbar-none">
+      {!isLoading &&
+        orders?.length >= 1 &&
+        status === "READY_TO_PRINT" &&
+        printAllBlockedByFilters && (
+          <p className="text-xs text-stroke-600">{PRINT_ALL_FILTERED_HINT}</p>
+        )}
+      <div
+        aria-busy={isStale}
+        className={`w-full overflow-x-auto h-fit rounded-xl shadow-xl scrollbar-none transition-opacity duration-200 ${
+          isStale ? "opacity-60 pointer-events-none select-none" : ""
+        }`}
+      >
         {isLoading ? (
           <Loading />
         ) : (
@@ -193,7 +225,7 @@ function OrdersListTable({ orders, isLoading, status }) {
                 ))}
               </Table.Header>
               <Table.body>
-                {filteredOrders?.map((order, index) => {
+                {orders?.map((order, index) => {
                   const currentStatus = adminStatusConfig?.find(
                     (s) => s.value === order?.status,
                   );
@@ -258,6 +290,7 @@ function OrdersListTable({ orders, isLoading, status }) {
                           nextPossibleStatuses={nextPossibleStatuses}
                           status={status}
                           handleStatusModal={handleStatusModal}
+                          disabled={isStale}
                         />
                       </td>
                     </Table.Row>
@@ -274,7 +307,7 @@ function OrdersListTable({ orders, isLoading, status }) {
                 ))}
               </Table.Header>
               <Table.body className="max-md:hidden">
-                {filteredOrders?.map((order, index) => {
+                {orders?.map((order, index) => {
                   const currentStatus = adminStatusConfig?.find(
                     (s) => s.value === order?.status,
                   );
@@ -344,6 +377,7 @@ function OrdersListTable({ orders, isLoading, status }) {
                           nextPossibleStatuses={nextPossibleStatuses}
                           status={status}
                           handleStatusModal={handleStatusModal}
+                          disabled={isStale}
                         />
                       </td>
                     </Table.Row>
@@ -372,7 +406,7 @@ function OrdersListTable({ orders, isLoading, status }) {
       )}
       <div className="flex items-center justify-center max-md:gap-4 md:gap-6 w-full md: *:even:w-2/3">
         {!isLoading &&
-          (filteredOrders?.length >= 1 ? (
+          (orders?.length >= 1 ? (
             nextPossibleBulkStatuses?.map((status) => {
               const nextStatusData = adminStatusConfig?.find(
                 (s) => s.value === status,
@@ -383,7 +417,7 @@ function OrdersListTable({ orders, isLoading, status }) {
                   type={
                     nextStatusData?.value === "CANCELLED" ? "button" : "submit"
                   }
-                  disabled={orderIds?.length === 0}
+                  disabled={orderIds?.length === 0 || isStale}
                   onClick={() => handleStatusModal({ status: nextStatusData })}
                   className={` btn btn--secondary--2 size-full py-2 gap-1 ${nextStatusData?.textColor} ${nextStatusData?.color} disabled:opacity-40 opacity-100`}
                 >
@@ -392,7 +426,7 @@ function OrdersListTable({ orders, isLoading, status }) {
               );
             })
           ) : (
-            <p>در این بخش هیچ سفارشی وجود ندارد</p>
+            <p>{emptyMessage}</p>
           ))}
       </div>
     </div>
@@ -406,11 +440,13 @@ function StatusButtons({
   nextPossibleStatuses,
   status,
   handleStatusModal,
+  disabled = false,
 }) {
   return (
     <div className="flex items-center justify-center gap-2">
       <Link
         href={`/admin/orders/${order?.id}`}
+        prefetch={false}
         className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
       >
         <EyeIcon className="size-5" />
@@ -423,6 +459,7 @@ function StatusButtons({
         return (
           <button
             key={status}
+            disabled={disabled}
             onClick={() =>
               handleStatusModal({
                 id: order?.id,

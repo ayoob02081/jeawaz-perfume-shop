@@ -1,3 +1,5 @@
+import { mergeCookieHeader } from "./requestCookies.mjs";
+
 function getSetCookies(headers) {
   if (typeof headers.getSetCookie === "function") {
     return headers.getSetCookie();
@@ -6,13 +8,6 @@ function getSetCookies(headers) {
   const setCookie = headers.get("set-cookie");
 
   return setCookie ? [setCookie] : [];
-}
-
-function cookiesFromSetCookieHeaders(setCookies) {
-  return setCookies
-    .map((cookie) => cookie.split(";")[0])
-    .filter(Boolean)
-    .join("; ");
 }
 
 export default async function middlewareAuth(req) {
@@ -68,14 +63,13 @@ export default async function middlewareAuth(req) {
 
       // ---------------------------------
       // Build cookies containing new tokens
-      // for the retry request
+      // for the retry request: refreshed values
+      // replace the originals by name (the backend
+      // reads the first of a repeated name, which
+      // would be the expired token)
       // ---------------------------------
 
-      const refreshedCookies = cookiesFromSetCookieHeaders(setCookies);
-
-      const retryCookie = [originalCookie, refreshedCookies]
-        .filter(Boolean)
-        .join("; ");
+      const retryCookie = mergeCookieHeader(originalCookie, setCookies);
       // ---------------------------------
       // Retry /users/me with new token
       // ---------------------------------

@@ -14,18 +14,33 @@ import {
   getFullAdminDashboardApi,
 } from "@/services/orderServices";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  adminOrderKeys,
+  buildAdminOrdersListParams,
+  shouldRetryAdminOrdersQuery,
+} from "@/utils/adminOrdersListContract.mjs";
+
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 /* ================= GET ================= */
 
-export const useGetAdminOrders = ({ page, limit, status }) =>
-  useQuery({
-    queryKey: ["admin-orders", page, limit, status],
-    queryFn: () => getAdminOrdersApi({ page, limit, status }),
-    keepPreviousData: true,
+// Previous rows stay visible (isPlaceholderData) while a new query loads.
+export const useGetAdminOrders = (query) => {
+  const params = buildAdminOrdersListParams(query);
+  return useQuery({
+    queryKey: adminOrderKeys.list(params),
+    queryFn: () => getAdminOrdersApi(params),
+    placeholderData: keepPreviousData,
     staleTime: 30_000,
+    retry: shouldRetryAdminOrdersQuery,
   });
+};
 
 export const useGetOrders = ({ page = 1, limit = 10, status } = {}) =>
   useQuery({
@@ -121,7 +136,9 @@ export function useExportOrders() {
 
 /* ================= CREATE ================= */
 
-export function useCreateOrder() {
+// `silentAuthErrors`: the caller (checkout) answers a 401 with its own
+// re-login prompt, so no generic error toast is shown for it.
+export function useCreateOrder({ silentAuthErrors = false } = {}) {
   const queryClient = useQueryClient();
 
   const { isPending: isCreating, mutateAsync: createOrder } = useMutation({
@@ -132,6 +149,7 @@ export function useCreateOrder() {
       toast.success("سفارش با موفقیت ثبت شد");
     },
     onError: (err) => {
+      if (silentAuthErrors && err?.response?.status === 401) return;
       toast.error(err?.response?.data?.message || "خطا در ثبت سفارش");
     },
   });

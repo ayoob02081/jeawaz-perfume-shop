@@ -10,11 +10,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronUpIcon,
-  PencilIcon,
 } from "@heroicons/react/24/outline";
 import AppImage from "@/components/AppImage";
-import Link from "next/link";
-import { useAuth } from "@/contexts/auth/AuthContext";
 import {
   canOpenLightbox,
   isPointOnContainedImage,
@@ -29,7 +26,6 @@ import {
 export default function ImageSwiper({ product, images = [] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const { user } = useAuth();
 
   const [mainRef, mainApi] = useEmblaCarousel({
     loop: false,
@@ -154,11 +150,14 @@ export default function ImageSwiper({ product, images = [] }) {
                 key={i}
                 className="flex-[0_0_100%] relative aspect-square md:bg-stroke-150 md:dark:bg-stroke-50 p-10"
               >
+                {/* The slide is already square. aspect-ratio on this 100% x 100%
+                    wrapper made iOS Safari enlarge the image after each pinch zoom. */}
                 <AppImage
                   src={src}
                   alt={`${product?.enTitle || "product"}-image-${i}`}
                   priority={i < 2}
                   objectFit="contain"
+                  ratio=""
                   className="size-full"
                 />
               </div>
@@ -182,19 +181,6 @@ export default function ImageSwiper({ product, images = [] }) {
               />
             </button>
           </div>
-
-          {/* Edit Btn */}
-          {user?.role === "admin" && (
-            <div className="absolute flex items-center gap-1 top-5 max-md:right-3 md:left-3 max-md:z-50">
-              <Link
-                href={`/admin/products/edit/${product?.id}`}
-                aria-label="ویرایش محصول"
-                className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-stroke-0 shadow-md"
-              >
-                <PencilIcon className="text-primary size-5 sm:size-6 md:size-5 xl:size-6" />
-              </Link>
-            </div>
-          )}
 
           {/* Swiper Btn */}
           <div className="max-md:hidden absolute flex items-center gap-1 bottom-5 right-3">

@@ -84,7 +84,7 @@ export default function PriceHistoryLayout() {
     <div className="flex flex-wrap justify-between items-center gap-3">
       <div><h1 className="text-xl font-bold">تاریخچه قیمت واریانت‌ها</h1>
         <p className="text-sm text-stroke-600">قیمت‌های پایه به تومان؛ تخفیف و کمپین جداگانه اعمال می‌شوند.</p></div>
-      <Link href="/admin/products" className="btn border px-3 py-2">بازگشت به محصولات</Link>
+      <Link href="/admin/products" prefetch={false} className="btn border px-3 py-2">بازگشت به محصولات</Link>
     </div>
 
     <form onSubmit={applyFilters} className="flex flex-wrap items-end gap-3 rounded-xl border border-stroke-200 p-3 text-sm">
