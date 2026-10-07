@@ -10,11 +10,19 @@ import {
 } from "@/constants/orderStatus";
 import GoBack from "@/ui/GoBack";
 import { canPrintInvoice, getInvoiceHref } from "@/utils/orderInvoice.mjs";
-import { toLocalDateString } from "@/utils/toLocalDate";
+import { getOrderItemType } from "@/utils/orderItemDisplay.mjs";
+import { getOrderPaymentDisplay } from "@/utils/orderPaymentDisplay.mjs";
+import { toLocalDateString, toLocalTimeString } from "@/utils/toLocalDate";
 import {
+  normalizeIranPhone,
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
+import {
+  CheckCircleIcon,
+  ClockIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 function SingleOrderPage({ order, isOrderLoading, admin }) {
@@ -26,8 +34,11 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
         (s) => s.value === renderUserStatuses(order?.status),
       );
 
-  const { orderNumber, items, orderDate, pricing, shipping } = order || {};
-  const { title, textColor, icon: Icon, des } = currentStatus || {};
+  const { orderNumber, items, orderDate, pricing, shipping, customer } =
+    order || {};
+  // Admin data carries `payments` (all attempts), customer data `payment`.
+  const payment = getOrderPaymentDisplay(order, { admin });
+  const { title, value, textColor, icon: Icon, des } = currentStatus || {};
 
   return (
     <div className="size-full sm:px-4">
@@ -47,12 +58,29 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
           <div className="flex flex-wrap w-full max-md:gap-4 md:gap-6 max-lg:pb-4 lg:py-4">
             <OrderDetail
               label="تاریخ ثبت سفارش :"
-              title={toLocalDateString(orderDate)}
+              title={
+                toLocalDateString(orderDate) +
+                "  " +
+                toLocalTimeString(orderDate)
+              }
             />
+            {payment?.paidAt && payment?.paidAt !== null && (
+              <OrderDetail
+                label="تاریخ پرداخت سفارش :"
+                title={
+                  toLocalDateString(payment?.paidAt) +
+                  "  " +
+                  toLocalTimeString(payment?.paidAt)
+                }
+              />
+            )}
             <OrderDetail
               label="کد پیگیری سفارش :"
               title={toPersianNumbers(orderNumber)}
             />
+            {payment?.gateway && (
+              <OrderDetail label="درگاه پرداخت :" title={payment?.gateway} />
+            )}
           </div>
           <div className="flex w-full flex-wrap py-4 border-t border-stroke-250 gap-4">
             <div className="flex max-md:flex-col items-start justify-center max-lg:gap-4 md:gap-6">
@@ -77,15 +105,24 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
               title={toPersianNumbersWithComma(pricing?.grandTotal) + " تومان"}
             />
             <OrderDetail label="وضعیت پرداخت :">
-              <div className="flex items-center justify-center gap-1 text-success ">
-                <AppImage
-                  src="/images/success-stroke-icon.svg"
-                  alt="success icon"
-                  width="size-5"
-                  sizes="10vw"
-                />
-                <p className="font-bold text-stroke-800">موفق</p>
-              </div>
+              {payment.state === "failed" && (
+                <div className="flex items-center justify-center gap-0.5 text-primary">
+                  <XCircleIcon className="size-6 stroke-2" />
+                  <p className="font-bold text-stroke-800">ناموفق</p>
+                </div>
+              )}
+              {payment.state === "success" && (
+                <div className="flex items-center justify-center gap-0.5 text-success">
+                  <CheckCircleIcon className="size-6 stroke-2" />
+                  <p className="font-bold text-stroke-800">موفق</p>
+                </div>
+              )}
+              {payment.state === "pending" && (
+                <div className="flex items-center justify-center gap-0.5 text-blue">
+                  <ClockIcon className="size-6 stroke-2" />
+                  <p className="font-bold text-stroke-800">در انتظار پرداخت</p>
+                </div>
+              )}
             </OrderDetail>
             <OrderDetail
               label="هزینه بسته بندی و ارسال :"
@@ -144,7 +181,7 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
                     <div
                       className={`flex items-center justify-center gap-1 ${textColor} `}
                     >
-                      <Icon className="size-6" />
+                      {Icon && <Icon className="size-6" />}
                       <p className="font-bold ">{title}</p>
                     </div>
                   </OrderDetail>
@@ -152,7 +189,7 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
                     label="کد رهگیری مرسوله :"
                     title={
                       "پس از ارسال مرسوله، کد رهگیری به شماره " +
-                      toPersianNumbers(shipping?.phone) +
+                      normalizeIranPhone(customer?.phone) +
                       " پیامک میشود."
                     }
                   />
@@ -168,7 +205,7 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
                 {items?.map((item) => (
                   <Link
                     href={`/products/${item.productId}`}
-                    className="flex items-center justify-between flex-wrap gap-1 max-lg:bg-stroke-0 lg:border-t border-stroke-200 p-4 max-lg:rounded-xl"
+                    className="flex items-end justify-between flex-wrap gap-1 max-lg:bg-stroke-0 lg:border-t border-stroke-200 p-4 max-lg:rounded-xl"
                     key={item.id}
                   >
                     <div className="flex items-center justify-start gap-2 md:gap-4">
@@ -190,7 +227,15 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
                           {item.enTitle}
                         </p>
                         <p className="max-md:text-sm text-lg font-bold text-stroke-800">
-                          {item.perTitle}
+                          {(getOrderItemType(item, { admin }) === "decant"
+                            ? "دکانت"
+                            : "نسخه پلمپ") +
+                            "  " +
+                            toPersianNumbers(item?.volume) +
+                            "  " +
+                            "میل" +
+                            "  " +
+                            item.perTitle}
                         </p>
                       </div>
                     </div>
@@ -205,14 +250,29 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
                 ))}
               </div>
               <div className="flex items-center flex-wrap justify-start p-6 mt-6 bg-warning/20 dark:bg-stroke-900 rounded-xl text-start text-stroke-800">
-                در صورت عدم دریافت پیامک کد رهگیری مرسوله، لطفا به شماره{" "}
-                <Link
-                  className="px-1 text-primary font-bold"
-                  href="tel:+989302125151"
-                >
-                  ۰۹۳۰۲۱۲۵۱۵۱
-                </Link>
-                در واتساپ یا روبیکا پیام دهید.
+                <div>
+                  در صورت عدم دریافت پیامک کد رهگیری مرسوله، لطفا{" "}
+                  <span>
+                    به{" "}
+                    <Link
+                      className="px-1 text-primary font-bold"
+                      href="https://t.me/jeaawazperfume"
+                    >
+                      کانال تلگرام جیاواز
+                    </Link>{" "}
+                    مراجعه کنید و یا{" "}
+                  </span>
+                  <span>
+                    به شماره{" "}
+                    <Link
+                      className="px-1 text-primary font-bold"
+                      href="tel:+989302125151"
+                    >
+                      ۰۹۳۰۲۱۲۵۱۵۱
+                    </Link>
+                    در واتساپ یا روبیکا پیام دهید.
+                  </span>
+                </div>
               </div>
             </div>
           </div>
