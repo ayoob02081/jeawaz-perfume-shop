@@ -1,6 +1,7 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useController, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import RHFTextField from "@/ui/RHFTextField";
 import RHFCheckBox from "@/ui/RHFCheckBox";
@@ -11,6 +12,17 @@ import {
   useRemoveCoupon,
 } from "@/hooks/useCoupons";
 import PersianDateRHForm from "@/ui/PersianDateRHForm";
+import UserPicker, {
+  UserSummary,
+  userDisplayName,
+} from "../../_components/picker/UserPicker";
+import SelectedEntityList from "../../_components/picker/SelectedEntityList";
+import {
+  COUPON_TARGETS,
+  buildCouponTargetPayload,
+  couponUserSnapshots,
+  removeFromSelection,
+} from "@/utils/entityPickerContract.mjs";
 
 function CouponForm({ couponToEdit }) {
   const router = useRouter();
@@ -20,6 +32,7 @@ function CouponForm({ couponToEdit }) {
   const { addCoupon, isAdding } = useAddCoupon();
   const { editCoupon, isEditing } = useEditCoupon(id);
   const { isDeleting, removeCoupon } = useRemoveCoupon();
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const {
     register,
@@ -45,8 +58,9 @@ function CouponForm({ couponToEdit }) {
       startsAt: couponToEdit?.startsAt || "",
       expiresAt: couponToEdit?.expiresAt || "",
 
-      target: couponToEdit?.target || "ALL",
-      userIds: couponToEdit?.userIds?.join(",") || "",
+      target: couponToEdit?.target || COUPON_TARGETS.ALL,
+      // Snapshots from GET /coupons/:id allowedUsers; only IDs are sent.
+      selectedUsers: couponUserSnapshots(couponToEdit),
 
       isActive: couponToEdit?.isActive ?? true,
     },
@@ -54,6 +68,21 @@ function CouponForm({ couponToEdit }) {
 
   const type = watch("type");
   const target = watch("target");
+
+  const {
+    field: usersField,
+    fieldState: { error: usersError },
+  } = useController({
+    name: "selectedUsers",
+    control,
+    rules: {
+      validate: (value, values) =>
+        values.target !== COUPON_TARGETS.SELECTED_USERS ||
+        value.length > 0 ||
+        "حداقل یک کاربر را انتخاب کنید",
+    },
+  });
+  const selectedUsers = usersField.value;
 
   const onSubmit = async (data) => {
     const payload = {
@@ -77,26 +106,21 @@ function CouponForm({ couponToEdit }) {
       startsAt: data.startsAt || undefined,
       expiresAt: data.expiresAt || undefined,
 
-      target: data.target,
-
-      userIds:
-        data.target === "USERS"
-          ? data.userIds
-              .split(",")
-              .map((x) => Number(x.trim()))
-              .filter(Boolean)
-          : undefined,
+      // userIds only for SELECTED_USERS; ALL omits it.
+      ...buildCouponTargetPayload({
+        target: data.target,
+        selectedUsers: data.selectedUsers,
+      }),
 
       isActive: data.isActive,
     };
 
+    // The mutation hooks navigate on success; a failed request keeps the form.
     if (couponToEdit) {
-      await editCoupon(payload);
+      editCoupon(payload);
     } else {
-      await addCoupon(payload);
+      addCoupon(payload);
     }
-
-    router.back();
   };
 
   const handleDelete = async () => {
@@ -210,13 +234,13 @@ function CouponForm({ couponToEdit }) {
 
           <RHFTextField
             textClassName="font-bold"
-            label="تعداد کاربرهای مجاز"
+            label="سقف کل استفاده"
             name="usageLimit"
             isRequired
             errors={errors}
             register={register}
             control={control}
-            validationSchema={{ required: "تعداد کاربرهای مجاز ضروری است" }}
+            validationSchema={{ required: "سقف کل استفاده ضروری است" }}
             isPrice
           />
 
@@ -274,26 +298,35 @@ function CouponForm({ couponToEdit }) {
           <RHFRadioButton
             id="users"
             name="target"
-            value="USERS"
+            value={COUPON_TARGETS.SELECTED_USERS}
             register={register}
-            checked={watch("target") === "USERS"}
+            checked={watch("target") === COUPON_TARGETS.SELECTED_USERS}
           >
             <p
-              className={`flex items-center justify-center border-primary font-bold ${watch("target") === "USERS" ? "border-2 text-primary bg-stroke-0" : "opacity-70"} px-2 py-1 h-10 lg:h-12 rounded-full duration-200 `}
+              className={`flex items-center justify-center border-primary font-bold ${watch("target") === COUPON_TARGETS.SELECTED_USERS ? "border-2 text-primary bg-stroke-0" : "opacity-70"} px-2 py-1 h-10 lg:h-12 rounded-full duration-200 `}
             >
               کاربران خاص
             </p>
           </RHFRadioButton>
         </div>
 
-        {/* USERS INPUT */}
-        {target === "USERS" && (
-          <RHFTextField
-            textClassName="font-bold"
-            label="آی‌دی کاربران"
-            name="userIds"
-            register={register}
-            placeholder="1,2,3"
+        {/* SELECTED USERS */}
+        {target === COUPON_TARGETS.SELECTED_USERS && (
+          <SelectedEntityList
+            label="کاربران مجاز"
+            isRequired
+            items={selectedUsers}
+            entityLabel="کاربر"
+            addLabel="انتخاب کاربران"
+            emptyText="هنوز کاربری انتخاب نشده است."
+            renderItem={(user) => <UserSummary user={user} />}
+            getItemName={userDisplayName}
+            onOpen={() => setIsPickerOpen(true)}
+            onRemove={(userId) =>
+              usersField.onChange(removeFromSelection(selectedUsers, userId))
+            }
+            onClear={() => usersField.onChange([])}
+            error={usersError?.message}
           />
         )}
 
@@ -343,6 +376,14 @@ function CouponForm({ couponToEdit }) {
           )}
         </div>
       </form>
+
+      {/* Outside the form: nothing in the picker can submit it. */}
+      <UserPicker
+        isOpen={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+        value={selectedUsers}
+        onConfirm={usersField.onChange}
+      />
     </div>
   );
 }
