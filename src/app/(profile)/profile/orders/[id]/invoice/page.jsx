@@ -3,14 +3,17 @@
 import Error from "@/components/Error";
 import Loading from "@/components/Loading";
 import { useGetOrderById } from "@/hooks/useOrders";
-import { buildInvoiceView, waitForDocumentFonts } from "@/utils/orderInvoice.mjs";
+import {
+  buildInvoiceView,
+  waitForDocumentFonts,
+} from "@/utils/orderInvoice.mjs";
 import { toLocalDateString } from "@/utils/toLocalDate";
 import {
   normalizeIranPhone,
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
-import { PrinterIcon } from "@heroicons/react/24/outline";
+import { ArrowRightIcon, PrinterIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
@@ -58,7 +61,7 @@ export default function page() {
     return (
       <InvoiceShell>
         <Error />
-        <BackLink href="/profile/orders" label="بازگشت به سفارش‌ها" />
+        <BackLink href="/profile/orders" label="بازگشت" />
       </InvoiceShell>
     );
 
@@ -68,7 +71,7 @@ export default function page() {
         <p className="py-10 text-center font-bold text-stroke-800">
           چاپ فاکتور پس از تکمیل پرداخت سفارش امکان‌پذیر است.
         </p>
-        <BackLink href={`/profile/orders/${id}`} label="بازگشت به سفارش" />
+        <BackLink href={`/profile/orders/${id}`} label="بازگشت" />
       </InvoiceShell>
     );
 
@@ -77,7 +80,7 @@ export default function page() {
   return (
     <InvoiceShell>
       <div className="flex items-center justify-between gap-4 w-full max-w-[210mm] print:hidden">
-        <BackLink href={`/profile/orders/${id}`} label="بازگشت به سفارش" />
+        <BackLink href={`/profile/orders/${id}`} label="بازگشت" />
         <button
           type="button"
           onClick={handlePrint}
@@ -121,7 +124,10 @@ export default function page() {
               value={normalizeIranPhone(customer.phone)}
             />
           )}
-          <InvoiceField label="تحویل گیرنده" value={shipping.receiver ?? EMPTY} />
+          <InvoiceField
+            label="تحویل گیرنده"
+            value={shipping.receiver ?? EMPTY}
+          />
           <InvoiceField
             label="شماره تماس گیرنده"
             value={normalizeIranPhone(shipping.phone) || EMPTY}
@@ -144,11 +150,19 @@ export default function page() {
             <thead>
               <tr className="bg-neutral-100 text-black">
                 <th className="border border-neutral-300 p-2 text-start">#</th>
-                <th className="border border-neutral-300 p-2 text-start">محصول</th>
-                <th className="border border-neutral-300 p-2 text-start">نوع</th>
+                <th className="border border-neutral-300 p-2 text-start">
+                  محصول
+                </th>
+                <th className="border border-neutral-300 p-2 text-start">
+                  نوع
+                </th>
                 <th className="border border-neutral-300 p-2">تعداد</th>
-                <th className="border border-neutral-300 p-2">قیمت واحد (تومان)</th>
-                <th className="border border-neutral-300 p-2">مبلغ کل (تومان)</th>
+                <th className="border border-neutral-300 p-2">
+                  قیمت واحد (تومان)
+                </th>
+                <th className="border border-neutral-300 p-2">
+                  مبلغ کل (تومان)
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -160,7 +174,10 @@ export default function page() {
                   <td className="border border-neutral-300 p-2">
                     <p className="font-bold">{item.title ?? EMPTY}</p>
                     {item.subtitle && (
-                      <p dir="ltr" className="text-xs text-neutral-600 text-end">
+                      <p
+                        dir="ltr"
+                        className="text-xs text-neutral-600 text-end"
+                      >
                         {item.subtitle}
                       </p>
                     )}
@@ -193,7 +210,10 @@ export default function page() {
               <InvoiceField label="درگاه پرداخت" value={payment.gatewayLabel} />
             )}
             {payment.paidAt && (
-              <InvoiceField label="تاریخ پرداخت" value={formatDate(payment.paidAt)} />
+              <InvoiceField
+                label="تاریخ پرداخت"
+                value={formatDate(payment.paidAt)}
+              />
             )}
             {invoice.trackingCode && (
               <InvoiceField
@@ -204,7 +224,10 @@ export default function page() {
           </div>
           <dl className="flex flex-col gap-2 min-w-64 max-sm:w-full">
             {invoice.totals.map((row) => (
-              <div key={row.key} className="flex items-center justify-between gap-4">
+              <div
+                key={row.key}
+                className="flex items-center justify-between gap-4"
+              >
                 <dt className="text-neutral-700">{row.label}</dt>
                 <dd>{formatToman(row.amount)}</dd>
               </div>
@@ -237,13 +260,17 @@ function InvoiceField({ label, value }) {
   );
 }
 
+// Links to a known order route instead of going back in browser history: the
+// invoice is often opened in a new tab or bookmarked, where history back would
+// do nothing or leave the site.
 function BackLink({ href, label }) {
   return (
     <Link
       href={href}
       prefetch={false}
-      className="text-primary font-bold hover:underline print:hidden"
+      className="flex items-center gap-2 font-bold text-stroke-800 hover:text-primary duration-200 print:hidden"
     >
+      <ArrowRightIcon className="size-5 text-primary" />
       {label}
     </Link>
   );

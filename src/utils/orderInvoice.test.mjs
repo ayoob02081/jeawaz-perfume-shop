@@ -239,6 +239,15 @@ test("unpaid and error states offer no print and link back", () => {
   for (const state of [unpaid, failed]) assert.doesNotMatch(state, /handlePrint|<button/);
 });
 
+test("invoice back navigation goes to fixed order routes, never browser history", () => {
+  // The invoice is often opened in a new tab or bookmarked, where history back
+  // would do nothing or leave the site.
+  assert.doesNotMatch(invoicePage, /router\.back|history\.back|<GoBack\b/);
+  const printable = invoicePage.slice(invoicePage.indexOf("const { customer, shipping, payment }"), invoicePage.indexOf("<article"));
+  assert.match(printable, /<BackLink href=\{`\/profile\/orders\/\$\{id\}`\}/);
+  assert.match(invoicePage, /function BackLink\(\{ href, label \}\) \{\s*return \(\s*<Link\s+href=\{href\}\s+prefetch=\{false\}/);
+});
+
 test("invoice is a print-safe RTL document without images or hardcoded data", () => {
   assert.match(invoicePage, /<article\s+dir="rtl"/);
   assert.match(invoicePage, /bg-white text-black font-display/);
