@@ -62,7 +62,6 @@ function OrdersLayout() {
     limit: 10,
     status,
   });
-  console.log(orders);
 
   const totalPages = isLoading ? 0 : (orders?.meta?.totalPages ?? 1);
 
