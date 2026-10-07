@@ -24,6 +24,7 @@ import {
   useGetStorefrontCategoriesByType,
 } from "@/hooks/useCategories";
 import { useFilters } from "@/hooks/useFilters";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { Badge } from "@/ui/Badge";
 import FilterCheckBox from "@/ui/FilterCheckBox";
 import RHFTextField from "@/ui/RHFTextField";
@@ -43,16 +44,30 @@ function FiltersModal({
   watch,
   errors,
 }) {
-  const { data: genderCategories } = useGetStorefrontCategoriesByType("gender");
-  const { data: fragranceFamilyCategories } =
+  // Selected filter values become titles from brand and category caches that
+  // the root layout's CategorySidebar may fill before this subtree hydrates:
+  // withhold query data until hydrated so the first client render matches the
+  // server HTML (which never has it). Static options stay as they are.
+  const isHydrated = useIsHydrated();
+  const hydratedOnly = (data) => (isHydrated ? data : undefined);
+  const { data: cachedGenderCategories } =
+    useGetStorefrontCategoriesByType("gender");
+  const genderCategories = hydratedOnly(cachedGenderCategories);
+  const { data: cachedFragranceFamilyCategories } =
     useGetStorefrontCategoriesByType("fragrance_family");
-  const { data: seasonCategories } = useGetStorefrontCategoriesByType("season");
-  const { data: temperatureCategories } =
+  const fragranceFamilyCategories = hydratedOnly(cachedFragranceFamilyCategories);
+  const { data: cachedSeasonCategories } =
+    useGetStorefrontCategoriesByType("season");
+  const seasonCategories = hydratedOnly(cachedSeasonCategories);
+  const { data: cachedTemperatureCategories } =
     useGetStorefrontCategoriesByType("temperature");
-  const { data: characterCategories } =
+  const temperatureCategories = hydratedOnly(cachedTemperatureCategories);
+  const { data: cachedCharacterCategories } =
     useGetStorefrontCategoriesByType("character");
-  const { data: occasionCategories } =
+  const characterCategories = hydratedOnly(cachedCharacterCategories);
+  const { data: cachedOccasionCategories } =
     useGetStorefrontCategoriesByType("occasion");
+  const occasionCategories = hydratedOnly(cachedOccasionCategories);
   const taxonomyOptions = {
     seasons: seasonCategories,
     temperature: temperatureCategories,
@@ -61,7 +76,8 @@ function FiltersModal({
     concentrations: concentrationOptions,
     gender: genderCategories,
   };
-  const { data: brandCategories } = useGetAllBrandCategories();
+  const { data: cachedBrandCategories } = useGetAllBrandCategories();
+  const brandCategories = hydratedOnly(cachedBrandCategories);
   const {
     data: volumeResponse,
     isPending: volumesLoading,

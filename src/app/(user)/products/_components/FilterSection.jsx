@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import Modal from "@/components/Modal";
 import { useFilters } from "@/hooks/useFilters";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
 import SortSection from "@/components/SortSection";
 import FilterCheckBox from "@/ui/FilterCheckBox";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -50,6 +51,10 @@ function FilterSection() {
     isLoading: brandsLoading,
     error,
   } = useGetAllBrandCategories();
+  // The root layout's CategorySidebar runs the same brands query and can fill
+  // the cache before this subtree hydrates; render the server's skeletons
+  // until hydration ends so the first client render matches the HTML.
+  const isHydrated = useIsHydrated();
   const { data: categories, isLoading: categoriesLoading } =
     useGetAllCategories();
   const filtersFromUrl = getFiltersFromSearchParams(searchParams);
@@ -304,7 +309,7 @@ function FilterSection() {
             ref={brandsRef}
             state={state.draft?.brandIds}
             toggleBrandAndSync={toggleBrandAndSync}
-            brandsLoading={brandsLoading}
+            brandsLoading={!isHydrated || brandsLoading}
           />
 
           {/* Bread Crumbs */}
