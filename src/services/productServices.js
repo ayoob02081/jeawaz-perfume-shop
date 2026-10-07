@@ -20,10 +20,11 @@ const cleanParams = (params = {}) => {
   return cleaned;
 };
 
-export const getAllProductsApi = (params = {}) =>
+export const getAllProductsApi = (params = {}, { signal } = {}) =>
   app
     .get("/products", {
       params: cleanParams(params),
+      signal,
     })
     .then(({ data }) => data);
 

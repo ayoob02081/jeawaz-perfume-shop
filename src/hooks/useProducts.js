@@ -21,6 +21,7 @@ import {
 import { showApiError } from "@/utils/showApiError";
 import {
   keepPreviousData,
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -28,6 +29,7 @@ import {
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { normalizeProductsQuery, productListKey } from "@/utils/productFilterContract.mjs";
+import { getNextProductPage } from "@/utils/entityPickerContract.mjs";
 
 export const productKeys = {
   all: ["products"],
@@ -42,6 +44,8 @@ export const productKeys = {
     search,
     limit,
   ],
+  // Infinite-query data: never shares a key with the plain list queries.
+  picker: (params) => [...productKeys.all, "picker", params],
 };
 
 export const priceHistoryKeys = {
@@ -63,6 +67,23 @@ export const useGetAllProducts = (query = {}, options = {}) => {
     ...options,
   });
 };
+
+// Admin picker pages of GET /products (params from buildProductPickerParams).
+export const useProductPickerSearch = (params, { enabled = true } = {}) =>
+  useInfiniteQuery({
+    queryKey: productKeys.picker(params),
+    queryFn: ({ pageParam, signal }) =>
+      getAllProductsApi(normalizeProductsQuery({ ...params, page: pageParam }), {
+        signal,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: getNextProductPage,
+    enabled,
+    retry: false,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+    staleTime: 30 * 1000,
+  });
 
 export const useGetProductVolumeOptions = (enabled = true) => useQuery({
   queryKey: productKeys.volumeOptions(),

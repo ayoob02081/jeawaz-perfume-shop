@@ -1,12 +1,46 @@
 "use client";
 
-import { getAllUsersApi, getUserByIdApi } from "@/services/usersServices";
-import { useMutation } from "@tanstack/react-query";
+import {
+  getAllUsersApi,
+  getUserByIdApi,
+  searchAdminUsersApi,
+} from "@/services/usersServices";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useMutation,
+} from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { getSafeApiErrorMessage } from "@/utils/profileFormContract.mjs";
+import { getNextUserCursor } from "@/utils/entityPickerContract.mjs";
+
+// Infinite-query data: never shares a key with the plain ["users"] query.
+export const userPickerKeys = {
+  all: ["users", "picker"],
+  list: (params) => ["users", "picker", params],
+};
+
+// Admin picker cursor pages of GET /users/admin (params from
+// buildUserPickerParams).
+export const useAdminUserPickerSearch = (params, { enabled = true } = {}) =>
+  useInfiniteQuery({
+    queryKey: userPickerKeys.list(params),
+    queryFn: ({ pageParam, signal }) =>
+      searchAdminUsersApi(
+        { ...params, cursor: pageParam || undefined },
+        { signal },
+      ),
+    initialPageParam: null,
+    getNextPageParam: getNextUserCursor,
+    enabled,
+    retry: false,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+    staleTime: 30 * 1000,
+  });
 
 export const useGetAllUsers = () =>
   useQuery({

@@ -23,3 +23,10 @@ export function removeUserApi(id) {
 export function getAllUsersApi() {
   return app.get("/users/admin").then((res) => res.data.data);
 }
+
+// One cursor page of GET /users/admin: { data, nextCursor }.
+export function searchAdminUsersApi({ search, cursor, limit } = {}, { signal } = {}) {
+  return app
+    .get("/users/admin", { params: { search, cursor, limit }, signal })
+    .then(({ data }) => data);
+}
