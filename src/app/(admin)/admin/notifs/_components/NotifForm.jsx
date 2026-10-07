@@ -1,10 +1,21 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useController, useForm } from "react-hook-form";
 import RHFTextField from "@/ui/RHFTextField";
 import { useRouter } from "next/navigation";
 import { useSendNotification } from "@/hooks/useNotification";
 import RHFRadioButton from "@/ui/RHFRadioButton";
+import UserPicker, {
+  UserSummary,
+  userDisplayName,
+} from "../../_components/picker/UserPicker";
+import SelectedEntityList from "../../_components/picker/SelectedEntityList";
+import {
+  NOTIFICATION_TARGETS,
+  buildNotificationTargetPayload,
+  removeFromSelection,
+} from "@/utils/entityPickerContract.mjs";
 
 const basicInfoData = [
   {
@@ -59,11 +70,13 @@ function NotifForm() {
   const router = useRouter();
 
   const { isSending, sendNotification } = useSendNotification();
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -71,32 +84,45 @@ function NotifForm() {
       message: "",
       type: "SYSTEM",
       channel: "IN_APP",
-      target: "ALL",
-      userIds: "",
+      target: NOTIFICATION_TARGETS.ALL,
+      // Snapshots for display; only their IDs are sent.
+      selectedUsers: [],
     },
   });
 
   const target = watch("target");
 
-  const onSubmit = async (data) => {
+  const {
+    field: usersField,
+    fieldState: { error: usersError },
+  } = useController({
+    name: "selectedUsers",
+    control,
+    rules: {
+      validate: (value, values) =>
+        values.target !== NOTIFICATION_TARGETS.USER ||
+        value.length > 0 ||
+        "حداقل یک کاربر را انتخاب کنید",
+    },
+  });
+  const selectedUsers = usersField.value;
+
+  const onSubmit = (data) => {
     const payload = {
       title: data.title,
       message: data.message,
       type: data.type,
       channel: data.channel,
-      target: data.target,
+      // userIds only for USER; ALL omits it.
+      ...buildNotificationTargetPayload({
+        target: data.target,
+        selectedUsers: data.selectedUsers,
+      }),
     };
 
-    if (data.target === "USER") {
-      payload.userIds = data.userIds
-        .split(",")
-        .map((id) => Number(id.trim()))
-        .filter(Boolean);
-    }
-
-    await sendNotification(payload);
-
-    router.back();
+    // mutate does not wait for the server: leave only after a confirmed
+    // success; a failed send keeps the form and its selection.
+    sendNotification(payload, { onSuccess: () => router.back() });
   };
 
   return (
@@ -147,15 +173,22 @@ function NotifForm() {
           />
         </div>
 
-        {target === "USER" && (
-          <RHFTextField
-            register={register}
-            label="شناسه کاربران"
-            name="userIds"
-            placeholder="مثلاً 1,5,12"
-            textClassName="font-bold"
-            className="rounded-xl w-full"
-            isPrimary
+        {target === NOTIFICATION_TARGETS.USER && (
+          <SelectedEntityList
+            label="کاربران گیرنده"
+            isRequired
+            items={selectedUsers}
+            entityLabel="کاربر"
+            addLabel="انتخاب کاربران"
+            emptyText="هنوز کاربری انتخاب نشده است."
+            renderItem={(user) => <UserSummary user={user} />}
+            getItemName={userDisplayName}
+            onOpen={() => setIsPickerOpen(true)}
+            onRemove={(userId) =>
+              usersField.onChange(removeFromSelection(selectedUsers, userId))
+            }
+            onClear={() => usersField.onChange([])}
+            error={usersError?.message}
           />
         )}
 
@@ -191,6 +224,14 @@ function NotifForm() {
           )} */}
         </div>
       </form>
+
+      {/* Outside the form: nothing in the picker can submit it. */}
+      <UserPicker
+        isOpen={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+        value={selectedUsers}
+        onConfirm={usersField.onChange}
+      />
     </div>
   );
 }
