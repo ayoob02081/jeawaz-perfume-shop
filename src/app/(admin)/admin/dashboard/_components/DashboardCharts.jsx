@@ -114,7 +114,7 @@ export function GenderSalesPieChart({ genderSales }) {
       color: "var(--color-stroke-800)",
     },
 
-    female: {
+    women: {
       label: "زنانه",
       color: "var(--color-primary)",
     },
@@ -127,7 +127,7 @@ export function GenderSalesPieChart({ genderSales }) {
 
   const genderKey = {
     مردانه: "male",
-    زنانه: "female",
+    زنانه: "women",
     یونیسکس: "unisex",
   };
 
@@ -201,7 +201,7 @@ export function BrandSalesBarChart({ brandSales }) {
           <CardTitle>پرفروش‌ترین برندها 👤</CardTitle>
         </CardHeader>
 
-        <CardContent>
+        <CardContent dir="ltr">
           <ChartContainer config={chartConfig} className="min-h-80 w-full">
             <BarChart
               accessibilityLayer
@@ -457,8 +457,8 @@ export function AccordSales({ accordSales }) {
       color: "var(--color-dark-orange)",
     },
 
-    مرکبات: {
-      label: "مرکبات",
+    مرکباتی: {
+      label: "مرکباتی",
       color: "var(--color-orange)",
     },
 
@@ -467,23 +467,38 @@ export function AccordSales({ accordSales }) {
       color: "var(--color-rose-500)",
     },
 
+    میوه‌ای: {
+      label: "میوه‌ای",
+      color: "var(--color-rose-500)",
+    },
+
     چرمی: {
       label: "چرمی",
       color: "var(--color-stroke-900)",
     },
 
-    امبر: {
-      label: "امبر",
+    عنبرین: {
+      label: "عنبرین",
       color: "var(--color-warning)",
     },
 
-    شیپره: {
-      label: "شیپره",
+    گورماند: {
+      label: "گورماند",
+      color: "var(--color-warning)",
+    },
+
+    مُشکی: {
+      label: "مُشکی",
       color: "var(--color-brown)",
     },
 
-    ادویه: {
-      label: "ادویه",
+    دریایی: {
+      label: "دریایی",
+      color: "var(--color-blue)",
+    },
+
+    ادویه‌ای: {
+      label: "ادویه‌ای",
       color: "var(--color-amber-600)",
     },
 
@@ -508,7 +523,7 @@ export function AccordSales({ accordSales }) {
           <CardTitle>پرفروش‌ترین رایحه‌ها 🌿</CardTitle>
         </CardHeader>
 
-        <CardContent>
+        <CardContent dir="ltr">
           <ChartContainer
             config={accordChartConfig}
             className="min-h-80 w-full"
