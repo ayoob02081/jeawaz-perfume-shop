@@ -199,10 +199,10 @@
     @apply border border-stroke-600 hover:bg-error hover:text-stroke-100 hover:border-stroke-100 active:bg-primary active:text-stroke-100 active:border-stroke-100 duration-200;
   }
   .btn--secondary--2 {
-    @apply border border-stroke-150 bg-stroke-150 hover:bg-stroke-0 hover:text-primary hover:border-primary active:bg-white text-stroke-800 active:text-primary active:border-primary duration-200;
+    @apply border border-stroke-200 bg-stroke-150 hover:bg-stroke-0 hover:text-primary hover:border-primary active:bg-white text-stroke-800 active:text-primary active:border-primary duration-200;
   }
   .btn--success {
-    @apply border bg-success border-stroke-100 text-white hover:border-success hover:text-success hover:bg-stroke-0 **:text-success hover:border active:text-success active:bg-white active:**:text-success active:border-success duration-200;
+    @apply border bg-success border-stroke-100 text-white hover:border-success hover:text-success hover:bg-stroke-0 hover:border active:text-success active:bg-white active:**:text-success active:border-success duration-200;
   }
   .btn--type {
     @apply bg-stroke-0 text-stroke-800 border border-stroke-250 dark:has-checked:border-primary hover:bg-stroke-900/30 has-checked:bg-stroke-900 has-checked:text-stroke-0 dark:hover:bg-primary/40 dark:bg-stroke-50 dark:has-checked:bg-primary dark:has-checked:text-stroke-800;
