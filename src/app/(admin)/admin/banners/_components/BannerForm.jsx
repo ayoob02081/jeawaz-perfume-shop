@@ -17,6 +17,8 @@ import RHFSelect from "@/ui/RHFSelect";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import ConfirmModal from "@/ui/ConfirmModal";
 import { useState } from "react";
+import ActionButtons from "../../_components/ActionButtons";
+import { NoSymbolIcon } from "@heroicons/react/24/outline";
 
 const bannerTypeOptions = [
   {
@@ -114,7 +116,10 @@ function BannerForm({ bannerToEdit }) {
 
   return (
     <div className="max-w-6xl w-full px-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 w-full">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="relative space-y-8 w-full"
+      >
         {/* اطلاعات اصلی */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <RHFTextField
@@ -260,58 +265,50 @@ function BannerForm({ bannerToEdit }) {
         </label>
 
         {/* Buttons */}
-        <div className="flex flex-col gap-6">
-          <div className="flex items-center justify-between max-sm:flex-col gap-4 w-full">
-            <button
-              type="submit"
-              disabled={isBusy}
-              className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
-            >
-              {!bannerToEdit
-                ? isBusy
-                  ? "در حال ساخت..."
-                  : "ساخت بنر"
-                : isEditing
-                  ? "در حال ویرایش..."
-                  : "ویرایش بنر"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="btn btn--primary--2 border-2 border-primary py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
-            >
-              بازگشت
-            </button>
-          </div>
-
+        <ActionButtons
+          confurmLabel={
+            !bannerToEdit
+              ? isBusy
+                ? "در حال ساخت..."
+                : "ساخت بنر"
+              : isEditing
+                ? "در حال ویرایش..."
+                : "ویرایش بنر"
+          }
+          isPending={isBusy}
+        >
           {bannerToEdit && (
-            <div className="flex items-center justify-between gap-4 w-full">
+            <div className="flex items-center justify-between gap-2 flex-4">
               <button
                 type="button"
                 disabled={isToggling}
                 onClick={handleToggle}
-                className="btn btn--primary border-2 bg-warning hover:bg-stroke-0 hover:border-warning hover:text-warning py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
+                className="btn btn--primary border bg-warning hover:bg-stroke-0 hover:border-warning hover:text-warning max-md:py-2.5 py-3.5 max-md:px-2.5 px-7 rounded-x disabled:bg-warning/50 md:w-44 max-md:flex-2"
               >
-                {isToggling
-                  ? "در حال تغییر..."
-                  : bannerToEdit.isActive
-                    ? "غیرفعال کردن بنر"
-                    : "فعال کردن بنر"}
+                <p className="sm:flex max-sm:hidden text-white!">
+                  {isToggling
+                    ? "در حال تغییر..."
+                    : bannerToEdit.isActive
+                      ? "غیرفعال کردن بنر"
+                      : "فعال کردن بنر"}
+                </p>
+                <NoSymbolIcon className="max-sm:flex stroke-2 text-priam  size-4 sm:hidden" />
               </button>
 
               <button
                 type="button"
                 disabled={isDeleting}
                 onClick={() => handleModal(bannerToEdit)}
-                className="btn btn--primary gap-2 py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
+                className="btn btn--primary gap-2 max-md:py-2.5 py-3.5 max-md:px-2.5 px-7 rounded-x disabled:bg-primary/50 md:w-44 max-md:flex-1"
               >
-                <TrashIcon className="size-5 text-stroke-0" />
-                <p>{isDeleting ? "در حال حذف..." : "حذف"}</p>
+                <p className="sm:flex max-sm:hidden text-white!">
+                  {isDeleting ? "در حال حذف..." : "حذف"}
+                </p>
+                <TrashIcon className="max-sm:flex stroke-2 text-priam  size-4 sm:hidden" />
               </button>
             </div>
           )}
-        </div>
+        </ActionButtons>
       </form>
       {confirmModalOpen && (
         <ConfirmModal

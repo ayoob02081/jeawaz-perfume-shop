@@ -16,7 +16,6 @@ import {
   useEditProduct,
   useRemoveProduct,
 } from "@/hooks/useProducts";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
 import RHFUploadFile from "@/ui/RHFUploadFile";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
@@ -32,6 +31,7 @@ import {
   variantTypes,
 } from "./productFormContract";
 import { runProductDelete } from "./productDeleteContract.mjs";
+import ActionButtons from "../../_components/ActionButtons";
 
 const basicInfoData = [
   { id: 1, label: "عنوان فارسی", name: "perTitle", placeholder: "بلو شنل" },
@@ -91,7 +91,6 @@ function ProductForm({ productToEdit }) {
     isLoading: categoriesLoading,
     error: categoriesError,
   } = useGetAllCategories();
-  const router = useRouter();
 
   const { isDeleting, removeProduct } = useRemoveProduct();
   const { addProduct, isAdding } = useAddProduct();
@@ -216,8 +215,8 @@ function ProductForm({ productToEdit }) {
   if (brandsError || categoriesError) return <Error />;
 
   return (
-    <div className="max-w-6xl px-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
+    <div className="max-w-6xl px-4 w-full">
+      <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-12">
         {/* Basic Info */}
         <div className="flex flex-col items-start justify-center gap-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
@@ -295,7 +294,7 @@ function ProductForm({ productToEdit }) {
             register={register}
             placeholder="توضیحات محصول"
             validationSchema={{ required: "توضیحات محصول ضروری است" }}
-            className="rounded-2xl w-full"
+            className="rounded-2xl w-full scrollbar-none"
           />
         </div>
 
@@ -341,7 +340,7 @@ function ProductForm({ productToEdit }) {
             انتخاب برند
             <span className="text-error">*</span>
           </h3>
-          <div className="flex items-start justify-center flex-wrap gap-6 h-64 w-full overflow-auto scrollbar--primary scrollbar-w-1.5">
+          <div className="flex items-start justify-center flex-wrap gap-6 h-64 w-full overflow-auto scrollbar-none">
             {brands.map((brand) => {
               const isChecked =
                 Number(watch("brandId")) === brand.id ? true : false;
@@ -456,10 +455,16 @@ function ProductForm({ productToEdit }) {
                       disabled={!category.isActive && !selected}
                     >
                       <div
-                        className={`border-2 rounded-full px-4 py-2 ${selected ? "border-primary text-primary" : "border-stroke-150 text-stroke-600"}`}
+                        className={`flex items-center justify-between gap-2 md:gap-3 border-2 rounded-full px-4 py-2 ${selected ? "border-primary text-primary" : "border-stroke-150 text-stroke-600"} transition-all duration-200`}
                       >
                         {category.title}
                         {!category.isActive && " (غیرفعال)"}
+                        <AppImage
+                          src={category?.iconUrl}
+                          alt="icon"
+                          sizes="10vw"
+                          width="w-8 md:w-10"
+                        />
                       </div>
                     </RHFCheckBox>
                   );
@@ -494,7 +499,7 @@ function ProductForm({ productToEdit }) {
             register={register}
             placeholder="توضیحات نت ها"
             validationSchema={{ required: "توضیحات نت ها ضروری است" }}
-            className="rounded-2xl w-full"
+            className="rounded-2xl w-full scrollbar-none"
           />
           <div className="flex flex-wrap items-start justify-start gap-6 w-full">
             {/* Notes */}
@@ -620,41 +625,19 @@ function ProductForm({ productToEdit }) {
           </div>
         </div>
 
-        {/* Submit Button */}
-        <div className="flex items-center md:items-end flex-col max-md:gap-8 md:gap-6">
-          <div className="flex items-center justify-between max-sm:flex-col gap-4 w-full">
-            <button
-              type="submit"
-              disabled={isSubmitting || isEditing}
-              className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
-            >
-              {!productToEdit
-                ? isSubmitting
-                  ? "در حال ساخت..."
-                  : "ساخت محصول"
-                : isEditing
-                  ? "در حال ویرایش..."
-                  : "ویرایش محصول"}
-            </button>
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="btn btn--primary--2 border-2 border-primary py-3.5 px-7 disabled:opacity-50 max-md:w-full md:w-44"
-            >
-              بازگشت
-            </button>
-          </div>
-          {productToEdit && (
-            <button
-              type="button"
-              disabled={isDeleting || isAdding || isEditing || isSubmitting}
-              onClick={() => removeProductHandler(productToEdit)}
-              className="btn btn--primary border-0 py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
-            >
-              {isDeleting ? "در حال حذف..." : "حذف محصول"}
-            </button>
-          )}
-        </div>
+        {/* Action Buttons */}
+        <ActionButtons
+          confurmLabel={
+            !productToEdit
+              ? isSubmitting
+                ? "در حال ساخت..."
+                : "ساخت محصول"
+              : isEditing
+                ? "در حال ویرایش..."
+                : "ویرایش محصول"
+          }
+          isPending={isSubmitting || isEditing}
+        />
       </form>
     </div>
   );

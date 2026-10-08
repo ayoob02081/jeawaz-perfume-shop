@@ -16,6 +16,7 @@ import {
   buildNotificationTargetPayload,
   removeFromSelection,
 } from "@/utils/entityPickerContract.mjs";
+import ActionButtons from "../../_components/ActionButtons";
 
 const basicInfoData = [
   {
@@ -126,7 +127,7 @@ function NotifForm() {
   };
 
   return (
-    <div className="max-w-6xl p-6">
+    <div className="max-w-6xl p-6 w-full">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Basic Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -192,37 +193,11 @@ function NotifForm() {
           />
         )}
 
-        {/* Submit Button */}
-        <div className="flex items-center md:items-end flex-col max-md:gap-8 md:gap-6">
-          <div className="flex items-center justify-between max-sm:flex-col gap-4 w-full">
-            <button
-              type="submit"
-              disabled={isSending}
-              className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
-            >
-              {isSending ? "در حال ارسال..." : "ارسال اعلان"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="btn btn--primary--2 border-2 border-primary py-3.5 px-7 rounded-x max-md:w-full md:w-44"
-            >
-              بازگشت
-            </button>
-          </div>
-
-          {/* {notifToEdit && (
-            <button
-              type="submit"
-              disabled={isDeleting}
-              onClick={() => removeNotifHandler(notifToEdit)}
-              className="btn btn--primary border-0 py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
-            >
-              {isDeleting ? "در حال حذف..." : "حذف برند"}
-            </button>
-          )} */}
-        </div>
+        {/* Action Buttons */}
+        <ActionButtons
+          confurmLabel={isSending ? "در حال ارسال..." : "ارسال اعلان"}
+          isPending={isSending}
+        />
       </form>
 
       {/* Outside the form: nothing in the picker can submit it. */}

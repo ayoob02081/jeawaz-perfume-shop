@@ -12,11 +12,7 @@ function EditBrandPage() {
 
   if (isLoading) return <Loading />;
 
-  return (
-    <div>
-      <BrandForm brandToEdit={brand} />
-    </div>
-  );
+  return <BrandForm brandToEdit={brand} />;
 }
 
 export default EditBrandPage;

@@ -7,6 +7,7 @@ import test from "node:test";
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
 const notifForm = read("./NotifForm.jsx");
+const actionButtons = read("../../_components/ActionButtons.jsx");
 const useNotification = read("../../../../../hooks/useNotification.js");
 
 test("the raw user-ID input is gone", () => {
@@ -50,9 +51,15 @@ test("notification submit navigates only after a confirmed success", () => {
   // The success callback is the submit's only navigation; nothing on error.
   assert.equal(onSubmit.match(/router\./g)?.length, 1);
   assert.doesNotMatch(onSubmit, /onError|onSettled/);
-  // Elsewhere only the explicit back button navigates.
-  assert.equal(notifForm.match(/router\.back\(\)/g)?.length, 2);
-  assert.match(notifForm, /onClick=\{\(\) => router\.back\(\)\}/);
+  // Elsewhere only the explicit back button navigates: the shared
+  // ActionButtons, as a non-submitting button.
+  assert.equal(notifForm.match(/router\.back\(\)/g)?.length, 1);
+  assert.match(notifForm, /<ActionButtons\b/);
+  assert.equal(actionButtons.match(/router\.back\(\)/g)?.length, 1);
+  assert.match(
+    actionButtons,
+    /type="button"\s+onClick=\{\(\) => router\.back\(\)\}/,
+  );
 
   // The picker wiring is unchanged.
   assert.match(notifForm, /onConfirm=\{usersField\.onChange\}/);

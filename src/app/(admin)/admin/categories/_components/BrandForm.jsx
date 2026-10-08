@@ -9,6 +9,7 @@ import {
 import RHFTextField from "@/ui/RHFTextField";
 import { useRouter } from "next/navigation";
 import RHFUploadFile from "@/ui/RHFUploadFile";
+import ActionButtons from "../../_components/ActionButtons";
 
 const basicInfoData = [
   {
@@ -121,41 +122,19 @@ function BrandForm({ brandToEdit }) {
           )}
         </div>
 
-        {/* Submit Button */}
-        <div className="flex items-center md:items-end flex-col max-md:gap-8 md:gap-6">
-          <div className="flex items-center justify-between max-sm:flex-col gap-4 w-full">
-            <button
-              type="submit"
-              disabled={isSubmitting || isEditing}
-              className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
-            >
-              {!brandToEdit
-                ? isSubmitting
-                  ? "در حال ساخت..."
-                  : "ساخت برند"
-                : isEditing
-                  ? "در حال ویرایش..."
-                  : "ویرایش برند"}
-            </button>
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="btn btn--primary--2 border-2 border-primary py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
-            >
-              بازگشت
-            </button>
-          </div>
-          {brandToEdit && (
-            <button
-              type="submit"
-              disabled={isDeleting}
-              onClick={() => removeCategoryHandler(brandToEdit)}
-              className="btn btn--primary border-0 py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
-            >
-              {isDeleting ? "در حال حذف..." : "حذف برند"}
-            </button>
-          )}
-        </div>
+        {/* Action Buttons */}
+        <ActionButtons
+          confurmLabel={
+            !brandToEdit
+              ? isSubmitting
+                ? "در حال ساخت..."
+                : "ساخت برند"
+              : isEditing
+                ? "در حال ویرایش..."
+                : "ویرایش برند"
+          }
+          isPending={isSubmitting || isEditing}
+        />
       </form>
     </div>
   );
