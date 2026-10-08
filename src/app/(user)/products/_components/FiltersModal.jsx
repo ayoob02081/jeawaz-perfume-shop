@@ -55,7 +55,9 @@ function FiltersModal({
   const genderCategories = hydratedOnly(cachedGenderCategories);
   const { data: cachedFragranceFamilyCategories } =
     useGetStorefrontCategoriesByType("fragrance_family");
-  const fragranceFamilyCategories = hydratedOnly(cachedFragranceFamilyCategories);
+  const fragranceFamilyCategories = hydratedOnly(
+    cachedFragranceFamilyCategories,
+  );
   const { data: cachedSeasonCategories } =
     useGetStorefrontCategoriesByType("season");
   const seasonCategories = hydratedOnly(cachedSeasonCategories);
@@ -116,7 +118,7 @@ function FiltersModal({
     switch (mode) {
       case "all":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl md:pl-3">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl">
             <div className="flex flex-col justify-between md:gap-4">
               <FilterOption
                 button
@@ -387,32 +389,35 @@ function FiltersModal({
   };
 
   return (
-    <div className=" flex flex-col max-md:py-4 md:p-6 size-full max-md:gap-4 gap-6">
-      <div className="flex items-center justify-between border-b-[1.5px] border-stroke-250 max-md:px-4 pb-6">
-        <p className="md:text-xl font-bold text-stroke-800">{titles[mode]}</p>
-        <button
-          disabled={!hasFilters}
-          type="button"
-          onClick={resetAllFilters}
-          className="btn btn--primary--2 disabled:text-stroke-600 border-[1.5px] flex items-center justify-center h-8 md:h-12 gap-2 px-4 text-xs md:text-lg"
-        >
-          حذف فیلتر ها
-        </button>
+    <div className="relative flex flex-col max-md:py-4 md:p-6 size-full">
+      <div className="flex flex-col max-md:gap-4 gap-6 w-full">
+        <div className="flex items-center justify-between max-md:px-4">
+          <p className="md:text-xl font-bold text-stroke-800">{titles[mode]}</p>
+          <button
+            disabled={!hasFilters}
+            type="button"
+            onClick={resetAllFilters}
+            className="btn btn--primary--2 disabled:text-stroke-600 border-[1.5px] flex items-center justify-center h-8 md:h-12 gap-2 px-4 text-xs md:text-lg"
+          >
+            حذف فیلتر ها
+          </button>
+        </div>
+        <div className=" border-b-[1.5px] border-stroke-250 max-md:px-4"></div>
       </div>
-      <div className="h-full overflow-y-auto scrollbar-none">
+      <div className="size-full overflow-y-auto scrollbar-none px-px max-md:py-4 py-6 pb-16!">
         {renderTypes()}
       </div>
-      <div className="flex items-center justify-between md:justify-end flex-row-reverse gap-4 w-full h-10 sm:h-12 max-md:px-4">
+      <div className="absolute flex items-center justify-between md:justify-end flex-row-reverse gap-4 w-full max-w-full px-4 md:px-6 h-10 sm:h-12 left-0 right-0 bottom-4 md:bottom-6 z-10">
         <button
           type="submit"
-          className="btn btn--primary border-none px-6 md:px-18 size-full"
+          className="btn btn--primary px-6 md:px-18 size-full flex-2"
         >
           <p className="text-sm sm:text-base ">اعمال فیلتر</p>
         </button>
         <button
           type="button"
           onClick={mode === "all" ? onClose : () => setMode("all")}
-          className="btn btn--secondary--2 px-6 h-full w-1/2 "
+          className="btn btn--secondary--2 px-6 h-full w-full flex-1"
         >
           <p className="text-sm sm:text-base">
             {mode === "all" ? "انصراف" : "بازگشت"}

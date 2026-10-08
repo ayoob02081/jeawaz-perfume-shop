@@ -18,7 +18,7 @@ function FilterCheckBox({
 }) {
   return (
     <CheckBox
-      className={`${className} w-full cursor-pointer scroll-smooth duration-200`}
+      className={`${className} w-full cursor-pointer scroll-smooth px-px duration-200`}
       id={checkId + "-" + name}
       name={name}
       value={checkId}

@@ -55,7 +55,7 @@ test("FiltersModal gates every query-derived option list on hydration", () => {
   for (const cached of queryResults) {
     const gated = cached.replace(/^cached(\w)/, (_, first) => first.toLowerCase());
     assert.equal(occurrences(filtersModal, cached), 2, cached);
-    assert.match(filtersModal, new RegExp(`const ${gated} = hydratedOnly\\(${cached}\\);`), gated);
+    assert.match(filtersModal, new RegExp(`const ${gated} = hydratedOnly\\(\\s*${cached},?\\s*\\);`), gated);
   }
 
   // taxonomyOptions (gender, season, temperature, character, occasion) is
