@@ -20,8 +20,8 @@ function ActionButtons({
           aria-label={confurmLabel || "ذخیره"}
           className="btn btn--success max-md:py-2.5 py-3 max-md:px-2.5 px-7 rounded-x disabled:bg-success/50 md:w-44 flex-2 backdrop-blur-md text-nowrap font-bold"
         >
-          <p className="sm:flex max-sm:hidden text-white">{confurmLabel}</p>
-          <CheckIcon className="max-sm:flex stroke-4 text-white size-4 sm:hidden" />
+          <p className="sm:flex max-sm:hidden">{confurmLabel}</p>
+          <CheckIcon className="max-sm:flex stroke-4 size-4 sm:hidden" />
         </button>
         {children}
         <button
@@ -30,8 +30,8 @@ function ActionButtons({
           aria-label="بازگشت"
           className="btn btn--primary--2 border-2 border-primary max-md:py-2.5 py-3 max-md:px-2.5 px-7 disabled:bg-stroke-0/50 md:w-44 flex-1 backdrop-blur-md text-nowrap font-bold"
         >
-          <p className="sm:flex max-sm:hidden text-primary">بازگشت</p>
-          <ArrowLeftIcon className="max-sm:flex stroke-3 text-primary size-4 sm:hidden" />
+          <p className="sm:flex max-sm:hidden">بازگشت</p>
+          <ArrowLeftIcon className="max-sm:flex stroke-3 size-4 sm:hidden" />
         </button>
       </div>
       {/* {children} */}

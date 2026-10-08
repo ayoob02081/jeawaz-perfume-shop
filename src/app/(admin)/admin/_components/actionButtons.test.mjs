@@ -38,6 +38,16 @@ test("Banner toggle and delete buttons have accessible names", () => {
   assert.match(remove, /aria-label="حذف بنر"/);
 });
 
+test("action labels and icons inherit the button color", () => {
+  // A child text-* utility beats the .btn--* hover colors (components layer),
+  // so labels vanished on hover (white on white, primary on primary).
+  const childColor = /<(?:p|\w+Icon)\b[^>]*className="[^"]*\btext-(?:white|primary)\b/;
+  assert.doesNotMatch(actionButtons, childColor);
+  const bannerActions = bannerForm.slice(bannerForm.indexOf("<ActionButtons"), bannerForm.indexOf("</ActionButtons>"));
+  assert.ok(bannerActions.length > 0);
+  assert.doesNotMatch(bannerActions, childColor);
+});
+
 test("Banner action icons carry no misspelled color class", () => {
   assert.doesNotMatch(bannerForm, /text-priam/);
 });
