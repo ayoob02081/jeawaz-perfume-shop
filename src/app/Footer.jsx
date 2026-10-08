@@ -164,7 +164,12 @@ function Footer() {
                   href={"/"}
                   className="text-white hover:text-green-500 hover:fill-stroke-200 duration-200"
                 >
-                  <i className="fa-brands fa-whatsapp fa-xl "></i>
+                <AppImage
+                  width="size-6"
+                  src="/images/whatsapp.png"
+                  alt="whatsapp"
+                  sizes="10vw"
+                />
                 </Link>
               </li>
               <li>
@@ -172,7 +177,12 @@ function Footer() {
                   href="https://t.me/jeaawazperfume"
                   className="text-white hover:text-cyan-500 hover:fill-stroke-200 duration-200"
                 >
-                  <i className="fa-brands fa-telegram fa-xl "></i>
+                  <AppImage
+                    width="size-6"
+                    src="/images/telegram.png"
+                    alt="telegram"
+                    sizes="10vw"
+                  />
                 </Link>
               </li>
               <li>
@@ -180,7 +190,12 @@ function Footer() {
                   href="https://www.instagram.com/jeawaz_perfume/"
                   className="text-white hover:text-rose-700 hover:fill-stroke-200 duration-200"
                 >
-                  <i className="fa-brands fa-instagram fa-xl "></i>
+                  <AppImage
+                    width="size-6"
+                    src="/images/instagram.png"
+                    alt="instagram"
+                    sizes="10vw"
+                  />
                 </Link>
               </li>
             </ul>
