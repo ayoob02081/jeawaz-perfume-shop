@@ -68,7 +68,7 @@ function OrdersLayout() {
   return (
     <div className="flex flex-col justify-between lg:gap-6 w-full lg:w-[calc(100%-100px)] px-4">
       <div className="flex flex-col lg:gap-6">
-        <div className="flex items-center justify-start max-lg:pb-6 gap-8 px-0.5 snap-x overflow-x-scroll scrollbar-none">
+        <div className="flex items-center justify-start max-lg:pb-6 max-md:gap-4 gap-8 px-0.5 snap-x overflow-x-scroll scrollbar-none">
           {userStatusConfig?.map((s) => (
             <OrderStatusButton
               user

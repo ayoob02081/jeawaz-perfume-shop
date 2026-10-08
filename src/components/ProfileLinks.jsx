@@ -212,12 +212,12 @@ export function ProfileLink({
     return (
       <div className=" flex flex-col items-center justify-center size-full px-4 lg:px-2">
         <div className="flex items-center justify-start py-4 lg:pt-6 size-full rounded-3xl">
-          <div className="flex items-center max-lg:justify-between justify-start lg:-translate-x-1 group-hover:lg:translate-x-0 2xl:translate-x-0 w-full h-full group-hover:lg:gap-12 2xl:gap-12">
+          <div className="flex items-center max-lg:justify-between justify-center group-hover:lg:justify-start 2xl:justify-start w-full h-full group-hover:lg:gap-12 2xl:gap-12 transition-all duration-200">
             <Link
               onClick={toggleSidebar}
               href={"/profile/me"}
               prefetch={false}
-              className="flex items-center justify-between max-lg:gap-4 lg:gap-4 overflow-hidden"
+              className="flex items-center justify-between max-lg:gap-4 group-hover:lg:gap-4 2xl:gap-4 overflow-hidden"
             >
               <UserIcon className="p-3 text-stroke-800 size-14 bg-stroke-150 lg:bg-stroke-0 rounded-xl z-10" />
               {isPending ? (
