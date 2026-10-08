@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import Modal from "@/components/Modal";
 import {
   toEnglishNumbers,
+  toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import {
@@ -24,6 +25,7 @@ import {
   validateBulkPriceForm,
 } from "./bulkPriceContract.mjs";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import Table from "@/ui/Table";
 
 const targetLabels = {
   [TARGET.SELECTED]: "محصولات انتخاب‌شده",
@@ -186,7 +188,7 @@ function BulkPriceDialog({ isOpen, selectedIds, filters, onClose, onApplied }) {
       isOpen={isOpen}
       onClose={close}
       scrollable
-      className="relative flex flex-col w-fit max-w-4xl max-h-[90dvh] overflow-y-auto p-4 md:p-6 space-y-4"
+      className="relative flex flex-col justify-start w-fit max-w-4xl max-h-[90dvh] overflow-y-auto scrollbar-none p-4 md:p-6 space-y-4"
     >
       <button
         type="button"
@@ -344,7 +346,7 @@ function BulkPriceDialog({ isOpen, selectedIds, filters, onClose, onApplied }) {
               busy || Boolean(validateBulkPriceForm(form, selectedIds, filters))
             }
           >
-            {isPreviewing ? "در حال آماده‌سازی…" : "نمایش پیش‌نمایش"}
+            {isPreviewing ? "در حال آماده‌سازی…" : "پیش‌ نمایش"}
           </button>
           {preview && (
             <span className="text-stroke-600">
@@ -378,57 +380,97 @@ function BulkPriceDialog({ isOpen, selectedIds, filters, onClose, onApplied }) {
       )}
 
       {preview && (
-        <section className="space-y-3 border-t border-stroke-200 pt-4 text-sm">
-          <div className="flex flex-wrap gap-x-5 gap-y-1">
-            <span>محدوده: {targetLabels[preview.target?.kind]}</span>
-            <span>واریانت: {scopeLabels[preview.variantScope]}</span>
-            <span>
-              عملیات: {operationLabels[preview.operation]} {preview.value}
-              {preview.operation?.startsWith("PERCENT_") ? "٪" : " تومان"}
+        <section className="flex flex-col space-y-3 border-t border-stroke-200 pt-4 text-sm max-w-full w-full">
+          <div className="flex flex-wrap gap-x-5 gap-y-1 w-full">
+            <span className="flex items-center justify-start gap-1">
+              <p className="text-stroke-600">محدوده:</p>
+              <p className="font-bold">{targetLabels[preview.target?.kind]}</p>
+            </span>
+            <span className="flex items-center justify-start gap-1">
+              <p className="text-stroke-600">واریانت:</p>
+              <p className="font-bold">{scopeLabels[preview.variantScope]}</p>
+            </span>
+            <span className="flex items-center justify-start gap-1">
+              <p className="text-stroke-600">عملیات:</p>
+              <p className="font-bold">
+                {operationLabels[preview.operation]}{" "}
+                {toPersianNumbers(preview.value)}
+                {preview.operation?.startsWith("PERCENT_") ? "٪" : " تومان"}
+              </p>
             </span>
           </div>
-          <div className="flex flex-wrap gap-x-5 gap-y-1 font-bold">
-            <span>محصول: {preview.summary.targetedProducts}</span>
-            <span>واریانت: {preview.summary.targetedVariants}</span>
-            <span>تغییر: {preview.summary.changedVariants}</span>
-            <span>بدون تغییر: {preview.summary.unchangedVariants}</span>
-            <span>
-              محصول بدون واریانت واجد شرایط:{" "}
-              {preview.summary.zeroEligibleVariantProducts}
+          <div className="flex flex-wrap gap-x-5 gap-y-1 font-bold w-full">
+            <span className="flex items-center justify-start gap-1">
+              <p className="text-stroke-600">واریانت:</p>
+              <p className="font-bold">{scopeLabels[preview.variantScope]}</p>
+            </span>
+            <span className="flex items-center justify-start gap-1">
+              <p className="text-stroke-600">محصول:</p>
+              <p className="font-bold">
+                {toPersianNumbers(preview.summary.targetedProducts)}
+              </p>
+            </span>
+            <span className="flex items-center justify-start gap-1">
+              <p className="text-stroke-600">واریانت:</p>
+              <p className="font-bold">
+                {toPersianNumbers(preview.summary.targetedVariants)}
+              </p>
+            </span>
+            <span className="flex items-center justify-start gap-1">
+              <p className="text-stroke-600">تغییر:</p>
+              <p className="font-bold">
+                {toPersianNumbers(preview.summary.changedVariants)}
+              </p>
+            </span>
+            <span className="flex items-center justify-start gap-1">
+              <p className="text-stroke-600">بدون تغییر:</p>
+              <p className="font-bold">
+                {toPersianNumbers(preview.summary.unchangedVariants)}
+              </p>
+            </span>
+            <span className="flex items-center justify-start gap-1">
+              <p className="text-stroke-600">محصول بدون واریانت واجد شرایط:</p>
+              <p className="font-bold">
+                {toPersianNumbers(preview.summary.zeroEligibleVariantProducts)}
+              </p>
             </span>
           </div>
           <p className="text-stroke-600">
             اعتبار پیش‌نمایش تا{" "}
             {new Date(preview.expiresAt).toLocaleString("fa-IR")}
           </p>
-          <div className="overflow-x-auto rounded-lg border border-stroke-200">
-            <table className="w-full min-w-[600px] text-right">
-              <thead>
-                <tr className="border-b border-stroke-200">
-                  <th className="p-2">محصول</th>
-                  <th className="p-2">واریانت</th>
-                  <th className="p-2">حجم</th>
-                  <th className="p-2">قیمت پایهٔ قبلی</th>
-                  <th className="p-2">قیمت پایهٔ جدید</th>
-                </tr>
-              </thead>
-              <tbody>
+          <div className="overflow-x-auto scrollbar-none rounded-lg border border-stroke-200 w-full shadow">
+            <Table className="overflow-x-aut w-full">
+              <Table.Header>
+                <th className="p-2 table__th truncate">محصول</th>
+                <th className="p-2 table__th truncate">واریانت</th>
+                <th className="p-2 table__th truncate">حجم</th>
+                <th className="p-2 table__th truncate">قیمت پایهٔ قبلی</th>
+                <th className="p-2 table__th truncate">قیمت پایهٔ جدید</th>
+              </Table.Header>
+              <Table.body>
                 {preview.rows.map((row) => (
-                  <tr
+                  <Table.Row
                     key={row.variantId}
                     className="border-b border-stroke-200"
                   >
-                    <td className="p-2">{row.productTitle}</td>
-                    <td className="p-2">
+                    <td className="p-2 table__td ">{row.productTitle}</td>
+                    <td className="p-2 table__td ">
                       {row.type === "decant" ? "دکانت" : "پلمپ"}
                     </td>
-                    <td className="p-2">{row.volume} میل</td>
-                    <td className="p-2">{formatPrice(row.oldPrice)} تومان</td>
-                    <td className="p-2">{formatPrice(row.newPrice)} تومان</td>
-                  </tr>
+                    <td className="p-2 table__td ">
+                      {toPersianNumbers(row.volume)} میل
+                    </td>
+                    <td className="p-2 table__td ">
+                      {formatPrice(row.oldPrice)} تومان
+                    </td>
+                    <td className="p-2 table__td ">
+                      {formatPrice(row.newPrice)} تومان
+                    </td>
+                  </Table.Row>
                 ))}
-              </tbody>
-            </table>
+              </Table.body>
+            </Table>
           </div>
           <div className="flex items-center justify-center gap-3">
             <button
@@ -440,7 +482,8 @@ function BulkPriceDialog({ isOpen, selectedIds, filters, onClose, onApplied }) {
               قبلی
             </button>
             <span>
-              صفحه {preview.meta.page} از {Math.max(1, preview.meta.totalPages)}
+              صفحه {toPersianNumbers(preview.meta.page)} از{" "}
+              {toPersianNumbers(Math.max(1, preview.meta.totalPages))}
             </span>
             <button
               type="button"

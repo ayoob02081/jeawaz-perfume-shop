@@ -190,19 +190,19 @@ export const productMobileTHeads = [
   },
   {
     id: 3,
-    label: "برند و جنسیت",
+    label: "قیمت و نوع",
   },
   {
     id: 4,
-    label: "رایحه‌ها",
-  },
-  {
-    id: 5,
     label: "موجودی و تخفیف",
   },
   {
+    id: 5,
+    label: "رایحه‌ها",
+  },
+  {
     id: 6,
-    label: "قیمت گونه‌ها",
+    label: "برند و جنسیت",
   },
   {
     id: 7,

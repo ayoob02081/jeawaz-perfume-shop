@@ -188,7 +188,7 @@ function EntityPickerModal({
             </p>
           </div>
 
-          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 md:px-6 border-y border-stroke-250">
+          <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain scrollbar-none px-4 md:px-6 border-y border-stroke-250">
             {tab === "results" ? (
               isLoading ? (
                 <p className="py-8 text-center text-stroke-500">

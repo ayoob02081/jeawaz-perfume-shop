@@ -91,12 +91,12 @@ function ProductsListTable({
               products?.map((product, index) => {
                 return (
                   <Table.Row key={product.id} className="even:bg-primary/5">
-                    <td className="table__td px-2 rounded-r-xl">
+                    <td className="table__td p-0 rounded-r-xl">
                       <CheckBox
                         value={product.id}
                         name="productIds"
                         checked={selectedIds.includes(product.id)}
-                        className="flex flex-row! items-center justify-between font-bold"
+                        className="flex flex-row! items-center justify-center font-bold size-full"
                         onChange={() => onToggleSelected?.(product.id)}
                       >
                         <div
@@ -106,11 +106,25 @@ function ProductsListTable({
                         </div>
                       </CheckBox>
                     </td>
-                    <td className="table__td px-3 font-bold">
-                      <p>{toPersianNumbers(index + 1)}</p>
+                    <td className="table__td p-0 font-bold">
+                      <CheckBox
+                        value={product.id}
+                        name="productIds"
+                        checked={selectedIds.includes(product.id)}
+                        className="flex flex-row! items-center justify-center font-bold size-full"
+                        onChange={() => onToggleSelected?.(product.id)}
+                      >
+                        <p>{toPersianNumbers(index + 1)}</p>
+                      </CheckBox>
                     </td>
-                    <td className="table__td p-2 max-w-70 text-wrap">
-                      <div className="flex items-center justify-start gap-2">
+                    <td className="table__td p-0 max-w-70 text-wrap">
+                      <CheckBox
+                        value={product.id}
+                        name="productIds"
+                        checked={selectedIds.includes(product.id)}
+                        className="flex flex-row! items-center justify-start font-bold size-full p-2"
+                        onChange={() => onToggleSelected?.(product.id)}
+                      >
                         <AppImage
                           src={product?.images?.[0]}
                           alt={
@@ -124,20 +138,33 @@ function ProductsListTable({
                         <p className="font-bold text-start">
                           {product.perTitle}
                         </p>
+                      </CheckBox>
+                    </td>
+                    <td className="table__td gap-2 p-2 flex flex-col justify-center max-h-full">
+                      <div className="flex items-center justify-center overflow-hidden h-full">
+                        <div className="flex flex-col items-center justify-start gap-2 overflow-auto scrollbar-none h-full">
+                          <VariantPriceList
+                            product={product}
+                            type="decant"
+                            showType
+                          />
+                          <VariantPriceList
+                            product={product}
+                            type="sealed"
+                            showType
+                          />
+                        </div>
                       </div>
                     </td>
-                    <td className="table__td px-2 max-w-70 truncate">
-                      <div className="flex items-center justify-center flex-col gap-2 text-xs">
-                        <AppImage
-                          src={product?.brand?.iconUrl || "/brand-icon"}
-                          alt={`${product?.brand?.value}-icon` || "brand-icon"}
-                          ratio="aspect-[4/1]"
-                          className="dark:invert"
-                          width="w-16"
-                          sizes="10vw"
-                        />
-                        <p className="text-stroke-800">
-                          {product?.categories?.gender?.title}
+                    <td className="table__td px-2">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <p className="badge badge--primary font-bold">
+                          %{toPersianNumbers(product.offValue)} تخفیف
+                        </p>
+                        <p
+                          className={`badge badge--primary border ${product.stock >= 100 ? "border-success bg-success/10 text-success" : "border-red-600 bg-red-600/10 text-red-600"} font-bold`}
+                        >
+                          موجودی {toPersianNumbers(product.stock)} میل
                         </p>
                       </div>
                     </td>
@@ -157,32 +184,19 @@ function ProductsListTable({
                         </div>
                       </div>
                     </td>
-                    <td className="table__td px-2">
-                      <div className="flex flex-col items-center justify-center gap-2">
-                        <p className="badge badge--primary font-bold">
-                          %{toPersianNumbers(product.offValue)} تخفیف
+                    <td className="table__td px-2 max-w-70 truncate">
+                      <div className="flex items-center justify-center flex-col gap-2 text-xs">
+                        <AppImage
+                          src={product?.brand?.iconUrl || "/brand-icon"}
+                          alt={`${product?.brand?.value}-icon` || "brand-icon"}
+                          ratio="aspect-[4/1]"
+                          className="dark:invert"
+                          width="w-16"
+                          sizes="10vw"
+                        />
+                        <p className="text-stroke-800">
+                          {product?.categories?.gender?.title}
                         </p>
-                        <p
-                          className={`badge badge--primary border ${product.stock >= 100 ? "border-success bg-success/10 text-success" : "border-red-600 bg-red-600/10 text-red-600"} font-bold`}
-                        >
-                          {toPersianNumbers(product.stock)} میل
-                        </p>
-                      </div>
-                    </td>
-                    <td className="table__td gap-2 p-2 flex flex-col justify-center max-h-full">
-                      <div className="flex items-center justify-center overflow-hidden h-full">
-                        <div className="flex flex-col items-center justify-start gap-2 overflow-auto scrollbar-none h-full">
-                          <VariantPriceList
-                            product={product}
-                            type="decant"
-                            showType
-                          />
-                          <VariantPriceList
-                            product={product}
-                            type="sealed"
-                            showType
-                          />
-                        </div>
                       </div>
                     </td>
                     <td className="table__td px-3 rounded-l-xl">
@@ -249,12 +263,12 @@ function ProductsListTable({
               products?.map((product, index) => {
                 return (
                   <Table.Row key={product.id} className="even:bg-primary/5">
-                    <td className="table__td px-2 rounded-r-xl">
+                    <td className="table__td p-0 rounded-r-xl">
                       <CheckBox
                         value={product.id}
                         name="productIds"
                         checked={selectedIds.includes(product.id)}
-                        className="flex flex-row! items-center justify-between font-bold"
+                        className="flex flex-row! items-center justify-center font-bold"
                         onChange={() => onToggleSelected?.(product.id)}
                       >
                         <div
@@ -264,11 +278,26 @@ function ProductsListTable({
                         </div>
                       </CheckBox>
                     </td>
-                    <td className="table__td px-3 font-bold">
-                      <p>{toPersianNumbers(index + 1)}</p>
+                    <td className="table__td p-0 font-bold">
+                      <CheckBox
+                        value={product.id}
+                        name="productIds"
+                        checked={selectedIds.includes(product.id)}
+                        className="flex flex-row! items-center justify-center font-bold size-full"
+                        onChange={() => onToggleSelected?.(product.id)}
+                      >
+                        <p>{toPersianNumbers(index + 1)}</p>
+                      </CheckBox>
                     </td>
-                    <td className="table__td px-2">
-                      <div className="flex items-center justify-start gap-2">
+                    <td className="table__td p-0">
+                      <CheckBox
+                        value={product.id}
+                        name="productIds"
+                        checked={selectedIds.includes(product.id)}
+                        className="flex flex-row! items-center justify-start font-bold size-full p-2"
+                        onChange={() => onToggleSelected?.(product.id)}
+                      >
+
                         <AppImage
                           src={product?.images?.[0]}
                           alt={
@@ -278,9 +307,9 @@ function ProductsListTable({
                           }
                           width="w-16"
                           sizes="10vw"
-                        />
+                          />
                         <p className="font-bold">{product.perTitle}</p>
-                      </div>
+                          </CheckBox>
                     </td>
                     <td className="table__td px-2 max-w-70 truncate">
                       <div className="flex items-center justify-center flex-col gap-2 text-xs">
