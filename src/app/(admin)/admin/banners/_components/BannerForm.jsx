@@ -283,28 +283,32 @@ function BannerForm({ bannerToEdit }) {
                 type="button"
                 disabled={isToggling}
                 onClick={handleToggle}
+                aria-label={
+                  bannerToEdit.isActive ? "غیرفعال کردن بنر" : "فعال کردن بنر"
+                }
                 className="btn btn--primary border bg-warning hover:bg-stroke-0 hover:border-warning hover:text-warning max-md:py-2.5 py-3.5 max-md:px-2.5 px-7 rounded-x disabled:bg-warning/50 md:w-44 max-md:flex-2"
               >
-                <p className="sm:flex max-sm:hidden text-white!">
+                <p className="sm:flex max-sm:hidden text-white">
                   {isToggling
                     ? "در حال تغییر..."
                     : bannerToEdit.isActive
                       ? "غیرفعال کردن بنر"
                       : "فعال کردن بنر"}
                 </p>
-                <NoSymbolIcon className="max-sm:flex stroke-2 text-priam  size-4 sm:hidden" />
+                <NoSymbolIcon className="max-sm:flex stroke-2 size-4 sm:hidden" />
               </button>
 
               <button
                 type="button"
                 disabled={isDeleting}
                 onClick={() => handleModal(bannerToEdit)}
+                aria-label="حذف بنر"
                 className="btn btn--primary gap-2 max-md:py-2.5 py-3.5 max-md:px-2.5 px-7 rounded-x disabled:bg-primary/50 md:w-44 max-md:flex-1"
               >
-                <p className="sm:flex max-sm:hidden text-white!">
+                <p className="sm:flex max-sm:hidden text-white">
                   {isDeleting ? "در حال حذف..." : "حذف"}
                 </p>
-                <TrashIcon className="max-sm:flex stroke-2 text-priam  size-4 sm:hidden" />
+                <TrashIcon className="max-sm:flex stroke-2 size-4 sm:hidden" />
               </button>
             </div>
           )}

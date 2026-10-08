@@ -17,6 +17,7 @@ function ActionButtons({
         <button
           type="submit"
           disabled={isPending}
+          aria-label={confurmLabel || "ذخیره"}
           className="btn btn--success max-md:py-2.5 py-3 max-md:px-2.5 px-7 rounded-x disabled:bg-success/50 md:w-44 flex-2 backdrop-blur-md text-nowrap font-bold"
         >
           <p className="sm:flex max-sm:hidden text-white">{confurmLabel}</p>
@@ -26,6 +27,7 @@ function ActionButtons({
         <button
           type="button"
           onClick={() => router.back()}
+          aria-label="بازگشت"
           className="btn btn--primary--2 border-2 border-primary max-md:py-2.5 py-3 max-md:px-2.5 px-7 disabled:bg-stroke-0/50 md:w-44 flex-1 backdrop-blur-md text-nowrap font-bold"
         >
           <p className="sm:flex max-sm:hidden text-primary">بازگشت</p>

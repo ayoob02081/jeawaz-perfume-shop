@@ -401,17 +401,13 @@ function BulkPriceDialog({ isOpen, selectedIds, filters, onClose, onApplied }) {
           </div>
           <div className="flex flex-wrap gap-x-5 gap-y-1 font-bold w-full">
             <span className="flex items-center justify-start gap-1">
-              <p className="text-stroke-600">واریانت:</p>
-              <p className="font-bold">{scopeLabels[preview.variantScope]}</p>
-            </span>
-            <span className="flex items-center justify-start gap-1">
               <p className="text-stroke-600">محصول:</p>
               <p className="font-bold">
                 {toPersianNumbers(preview.summary.targetedProducts)}
               </p>
             </span>
             <span className="flex items-center justify-start gap-1">
-              <p className="text-stroke-600">واریانت:</p>
+              <p className="text-stroke-600">تعداد واریانت:</p>
               <p className="font-bold">
                 {toPersianNumbers(preview.summary.targetedVariants)}
               </p>
@@ -440,7 +436,7 @@ function BulkPriceDialog({ isOpen, selectedIds, filters, onClose, onApplied }) {
             {new Date(preview.expiresAt).toLocaleString("fa-IR")}
           </p>
           <div className="overflow-x-auto scrollbar-none rounded-lg border border-stroke-200 w-full shadow">
-            <Table className="overflow-x-aut w-full">
+            <Table className="w-full">
               <Table.Header>
                 <th className="p-2 table__th truncate">محصول</th>
                 <th className="p-2 table__th truncate">واریانت</th>
