@@ -18,6 +18,7 @@ import {
 } from "@/utils/notificationsContract.mjs";
 import AdminNotificationsFilters from "./AdminNotificationsFilters";
 import AdminNotificationsListTable from "./AdminNotificationsListTable";
+import Link from "next/link";
 
 const TYPE_TABS = [
   { value: "ALL", label: "همه" },
@@ -84,18 +85,19 @@ function AdminNotificationsLayout() {
 
   return (
     <div className="flex flex-col justify-between gap-4 lg:gap-6 max-lg:w-full lg:w-[calc(100%-88px)] 2xl:w-[calc(100%-270px)] lg:px-4 2xl:px-0 pt-0 pb-10">
-      <div className="flex items-center justify-between gap-2 px-4">
-        <h1 className="font-bold text-xl text-stroke-800">مدیریت اعلان‌ها</h1>
-        <button
-          type="button"
-          onClick={() => router.push("/admin/notifs/add")}
-          className="btn btn--primary border gap-1 px-2 py-1"
+      <div className="flex max-[30rem]:flex-wrap items-center justify-between gap-2 px-4">
+        <h1 className="font-bold text-xl text-stroke-800 max-[30rem]:flex-2 text-nowrap">
+          مدیریت اعلان‌ها
+        </h1>
+        <Link
+          href={"/admin/notifs/add"}
+          prefetch={false}
+          className="btn btn--primary gap-1 border py-1.5 px-3 max-[30rem]:flex-1 text-nowrap"
         >
           <PlusIcon className="size-3 md:size-3.5 stroke-3" />
-          <p className="text-xs md:text-sm">اعلان جدید</p>
-        </button>
+          اعلان جدید
+        </Link>
       </div>
-
       <div className="flex items-center justify-start gap-3 overflow-x-auto scrollbar-none px-4 py-1 w-full text-nowrap">
         {TYPE_TABS.map((tab) => (
           <button
@@ -113,14 +115,12 @@ function AdminNotificationsLayout() {
           </button>
         ))}
       </div>
-
       <AdminNotificationsFilters
         query={query}
         onFilterChange={setFilter}
         onReset={resetFilters}
         isUpdating={isFetching && !isLoading}
       />
-
       {isError ? (
         <Error onRetry={() => refetch()} />
       ) : isLoading ? (
@@ -132,15 +132,12 @@ function AdminNotificationsLayout() {
             : "اعلانی وجود ندارد!"}
         </NotExisted>
       ) : (
-        <div className="size-full max-lg:px-4">
-          <AdminNotificationsListTable
-            notifications={rows}
-            page={query.page}
-            limit={ADMIN_NOTIFICATION_PAGE_LIMIT}
-          />
-        </div>
+        <AdminNotificationsListTable
+          notifications={rows}
+          page={query.page}
+          limit={ADMIN_NOTIFICATION_PAGE_LIMIT}
+        />
       )}
-
       <PagesNumber
         page={query.page}
         setPage={setPage}

@@ -89,8 +89,8 @@ function Footer() {
             </nav>
           </section>
           <article className="flex max-sm:flex-col max-sm:gap-6 items-center justify-between w-full sm:px-16 text-white">
-            <section className="flex flex-col justify-between gap-4">
-              <div className="flex items-center justify-between">
+            <section className="flex flex-col max-sm:flex-col-reverse justify-between gap-4">
+              <div className="flex items-center justify-between gap-4">
                 <Link href={"tel:+989302125151"} className="flex items-center">
                   <p className="text-3xl text-white ">
                     {toPersianNumbers("5151")}
@@ -114,7 +114,7 @@ function Footer() {
                   </p>
                 </Link>
               </div>
-              <span className="flex max-sm:flex-col max-sm:text-center max-sm:items-center items-start text-sm gap-0.5 max-sm:w-full">
+              <span className="flex max-sm:flex-col max-sm:text-center max-sm:items-center items-start text-sm max-sm:gap-2 gap-0.5 max-sm:w-full">
                 <p className="font-bold text-nowrap">
                   منتظر صدای گرم شما هستیم!!{" "}
                 </p>

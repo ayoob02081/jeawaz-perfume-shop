@@ -4,7 +4,8 @@ import AppImage from "@/components/AppImage";
 import Loading from "@/components/Loading";
 import { useGetAddresses, useRemoveAddress } from "@/hooks/useAddress";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
-import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 function AddressLayout() {
@@ -25,7 +26,7 @@ function AddressLayout() {
           prefetch={false}
           className="flex items-center justify-center gap-2 text-primary hover:text-blue active:text-blue duration-200"
         >
-          <PlusIcon className="size-4" />
+          <PlusIcon className="size-4 stroke-3" />
           <p>افزودن آدرس جدید</p>
         </Link>
       </div>
@@ -116,21 +117,18 @@ function AddressBtn({ id }) {
       <Link
         href={`/profile/me/address/edit/${id}`}
         prefetch={false}
-        className="group flex items-center justify-center gap-1 max-md:h-12 max-md:border max-md:border-stroke-200 text-stroke-800 hover:text-success active:text-success max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold transition-all duration-200"
+        className="group btn gap-2 md:gap-1 max-md:py-2 max-md:border max-md:border-stroke-200 text-stroke-800 hover:text-success active:text-success max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold transition-all duration-200"
       >
-        <div className="flex flex-col items-center justify-center gap-0.5 size-5">
-          <PencilIcon className="rotate-[-8de]" />
-          <span className="border w-4/5 rounded-full group-hover:border-success group-active:border-success transition-all duration-200"></span>
-        </div>
-        <p>ویرایش</p>
+        <PencilSquareIcon className="size-4.5" />
+        <p className="translate-y-px">ویرایش</p>
       </Link>
       <button
         type="button"
         onClick={() => removeAddressHandler(id)}
-        className="flex items-center justify-center gap-1 max-md:h-12 max-md:bg-primary/10 max-md:border max-md:border-primary/10 text-primary hover:text-stroke-800 active:text-stroke-800 max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200"
+        className="btn gap-2 md:gap-1 max-md:py-2 max-md:bg-primary/10 max-md:border max-md:border-primary/10 text-primary hover:text-stroke-800 active:text-stroke-800 max-md:px-6 max-md:rounded-full max-md:w-full max-md:font-bold duration-200"
       >
-        <TrashIcon className="size-5" />
-        <p>حذف</p>
+        <TrashIcon className="size-4.5" />
+        <p className="translate-y-0.5">حذف</p>
       </button>
     </div>
   );

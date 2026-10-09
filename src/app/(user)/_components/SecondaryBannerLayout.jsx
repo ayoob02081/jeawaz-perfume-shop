@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeftIcon, PencilIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
 import AppImage from "@/components/AppImage";
 import { useGetActiveBanners } from "@/hooks/useBanners";
 import {
@@ -72,7 +72,7 @@ function SecondaryBannerLayout() {
                   aria-label="ویرایش بنر"
                   className="flex items-center justify-center aspect-square size-8 md:size-10 rounded-full bg-stroke-0 shadow-md"
                 >
-                  <PencilIcon className="text-primary size-3 md:size-4" />
+                  <PencilSquareIcon className="text-primary size-3 md:size-4" />
                 </button>
               </div>
             )}

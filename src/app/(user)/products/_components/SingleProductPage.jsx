@@ -31,7 +31,7 @@ import {
 import AddedToCartModal from "./AddedToCartModal";
 import { CONCENTRATION_LABELS as concentrationLabels } from "@/utils/productConcentration.mjs";
 import Link from "next/link";
-import { PencilIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "@/contexts/auth/AuthContext";
 
 function SingleProductPage({ product }) {
@@ -82,7 +82,7 @@ function SingleProductPage({ product }) {
               aria-label="ویرایش محصول"
               className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-stroke-0 shadow-md"
             >
-              <PencilIcon className="text-primary size-5 sm:size-6 md:size-5 xl:size-6" />
+              <PencilSquareIcon className="text-primary size-5 sm:size-6 md:size-5 xl:size-6" />
             </Link>
           </div>
         )}

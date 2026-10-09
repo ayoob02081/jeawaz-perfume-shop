@@ -282,7 +282,7 @@ export default function ImageSwiper({ product, images = [] }) {
             role="dialog"
             aria-modal="true"
             aria-label="نمایش بزرگ تصویر محصول"
-            className="fixed inset-0 z-99 flex items-center justify-center bg-black/90 p-4 max-md:hidden"
+            className="fixed inset-0 z-99 flex items-center justify-center bg-black/90 p-4 max-md:hidden backdrop-blur-md"
             onClick={closeLightbox}
           >
             {/* Close */}

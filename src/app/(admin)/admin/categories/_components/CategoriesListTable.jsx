@@ -9,7 +9,7 @@ import { useRemoveBrand, useRemoveCategory } from "@/hooks/useCategories";
 import ConfirmModal from "@/ui/ConfirmModal";
 import Table from "@/ui/Table";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -91,7 +91,7 @@ function CategoriesListTable({ categories, brands, categoryRoute }) {
                         prefetch={false}
                         className="text-stroke-450 hover:text-success duration-200"
                       >
-                        <PencilIcon className="size-5" />
+                        <PencilSquareIcon className="size-5" />
                       </Link>
                       <button
                         disabled={isDeletingCategory || isDeletingBrand}
@@ -159,7 +159,7 @@ function CategoriesListTable({ categories, brands, categoryRoute }) {
                         prefetch={false}
                         className="text-stroke-450 hover:text-success duration-200"
                       >
-                        <PencilIcon className="size-5" />
+                        <PencilSquareIcon className="size-5" />
                       </Link>
 
                       <button

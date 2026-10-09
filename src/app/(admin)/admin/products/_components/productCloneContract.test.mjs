@@ -234,5 +234,6 @@ test("both admin product tables offer «ساخت محصول مشابه» and a g
   const actions = table.match(/href=\{`\/admin\/products\/add\?copyFrom=\$\{product\.id\}`\}\s*prefetch=\{false\}\s*title="ساخت محصول مشابه"\s*aria-label="ساخت محصول مشابه"/g);
   assert.equal(actions?.length, 2);
   assert.equal(table.match(/<DocumentDuplicateIcon className="size-5" \/>/g)?.length, 2);
-  assert.equal(table.match(/<ProductGradeBadge product=\{product\} variant="admin" \/>/g)?.length, 2);
+  // Any JSX formatting of the props.
+  assert.equal(table.match(/<ProductGradeBadge\s+product=\{product\}\s+variant="admin"\s*\/>/g)?.length, 2);
 });

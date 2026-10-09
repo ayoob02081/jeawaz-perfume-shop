@@ -8,7 +8,7 @@ import {
   ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/auth/AuthContext";
-import { PencilIcon } from "lucide-react";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 
 export function PrimaryBannerCard({ banner, priority = false }) {
   const { id, title, imageUrl, mobileImageUrl, link } = banner;
@@ -47,7 +47,7 @@ export function PrimaryBannerCard({ banner, priority = false }) {
             aria-label="ویرایش بنر"
             className="flex items-center justify-center aspect-square size-10 lg:size-12 rounded-full bg-stroke-0 shadow-md"
           >
-            <PencilIcon className="text-primary size-4 lg:size-5" />
+            <PencilSquareIcon className="text-primary size-4 lg:size-5" />
           </Link>
         </div>
       )}

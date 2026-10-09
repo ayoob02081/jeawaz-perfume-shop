@@ -8,7 +8,7 @@ import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
-import { PencilIcon } from "@heroicons/react/24/solid";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 function CampaignsListTable({ campaigns }) {
@@ -89,7 +89,7 @@ function CampaignsListTable({ campaigns }) {
                           prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200 w-fit"
                         >
-                          <PencilIcon className=" size-5" />
+                          <PencilSquareIcon className=" size-5" />
                         </Link>
                       </div>
                     </td>
@@ -171,7 +171,7 @@ function CampaignsListTable({ campaigns }) {
                           prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200 w-fit"
                         >
-                          <PencilIcon className=" size-5" />
+                          <PencilSquareIcon className=" size-5" />
                         </Link>
                       </div>
                     </td>

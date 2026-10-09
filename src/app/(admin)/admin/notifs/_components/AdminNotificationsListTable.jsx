@@ -45,10 +45,14 @@ function ReadStat({ stats }) {
 function SmsStat({ stats }) {
   if (!stats.sms) return <p className="text-stroke-500">—</p>;
   return (
-    <p className="text-nowrap">
-      <span className="text-success">{toPersianNumbers(stats.sms.success)} موفق</span>
+    <p className="flex flex-col text-nowrap">
+      <span className="text-success">
+        {toPersianNumbers(stats.sms.success)} موفق
+      </span>
       {stats.sms.failed > 0 && (
-        <span className="text-error"> / {toPersianNumbers(stats.sms.failed)} ناموفق</span>
+        <span className="text-error">
+          {toPersianNumbers(stats.sms.failed)} ناموفق
+        </span>
       )}
     </p>
   );
@@ -71,11 +75,15 @@ function AdminNotificationsListTable({ notifications, page, limit }) {
             return (
               <Table.Row key={notification.id} className="even:bg-primary/5">
                 <td className="table__td font-bold rounded-r-xl px-2">
-                  {toPersianNumbers(getNotificationRowNumber(page, limit, index))}
+                  {toPersianNumbers(
+                    getNotificationRowNumber(page, limit, index),
+                  )}
                 </td>
                 <td className="table__td px-2 max-w-60 min-w-40 text-wrap">
                   <div className="flex flex-col items-center justify-center gap-1">
-                    <p className="font-bold wrap-break-word">{notification.title}</p>
+                    <p className="font-bold wrap-break-word">
+                      {notification.title}
+                    </p>
                     <p className="text-xs text-stroke-600">
                       {notificationTypeLabel(notification.type)} ·{" "}
                       {notificationChannelLabel(notification.channel)} ·{" "}
@@ -86,13 +94,13 @@ function AdminNotificationsListTable({ notifications, page, limit }) {
                     </p>
                   </div>
                 </td>
-                <td className="table__td px-2 text-xs">
+                <td className="table__td px-0 text-xs">
                   <div className="flex flex-col items-center justify-center gap-1">
                     <ReadStat stats={stats} />
                     <SmsStat stats={stats} />
                   </div>
                 </td>
-                <td className="table__td rounded-l-xl px-3">
+                <td className="table__td rounded-l-xl px-2">
                   <ViewLink notification={notification} />
                 </td>
               </Table.Row>
@@ -114,9 +122,11 @@ function AdminNotificationsListTable({ notifications, page, limit }) {
             return (
               <Table.Row key={notification.id} className="even:bg-primary/5">
                 <td className="table__td font-bold rounded-r-xl px-2">
-                  {toPersianNumbers(getNotificationRowNumber(page, limit, index))}
+                  {toPersianNumbers(
+                    getNotificationRowNumber(page, limit, index),
+                  )}
                 </td>
-                <td className="table__td px-2 max-w-72">
+                <td className="table__td px-2 max-w-64">
                   <p className="font-bold truncate">{notification.title}</p>
                   <p className="text-xs text-stroke-600 truncate">
                     {getContactMessagePreview(notification.message)}
@@ -137,10 +147,10 @@ function AdminNotificationsListTable({ notifications, page, limit }) {
                 <td className="table__td px-2">
                   <ReadStat stats={stats} />
                 </td>
-                <td className="table__td px-2">
+                <td className="table__td px-0">
                   <SmsStat stats={stats} />
                 </td>
-                <td className="table__td rounded-l-xl px-3">
+                <td className="table__td rounded-l-xl px-2">
                   <ViewLink notification={notification} />
                 </td>
               </Table.Row>

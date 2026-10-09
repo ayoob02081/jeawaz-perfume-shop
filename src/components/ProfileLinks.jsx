@@ -10,7 +10,6 @@ import {
   ChatBubbleLeftRightIcon,
   ClipboardDocumentListIcon,
   EnvelopeIcon,
-  PencilSquareIcon,
   PresentationChartLineIcon,
   ReceiptPercentIcon,
   RectangleGroupIcon,
@@ -20,6 +19,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import {
+  PencilSquareIcon,
   UserCircleIcon as UserCircleSolidIcon,
   ChartPieIcon as ChartPieSolidIcon,
   ChatBubbleLeftRightIcon as ChatBubbleLeftRightSolidIcon,
@@ -240,7 +240,9 @@ export function ProfileLink({
             </Link>
             <Link
               onClick={toggleSidebar}
-              href={"/profile/me"}
+              href={"/profile/me/edit"}
+              title="ویرایش اطلاعات کاربری"
+              aria-label="ویرایش اطلاعات کاربری"
               prefetch={false}
               className="flex items-center justify-center lg:opacity-0 lg:w-0 group-hover:lg:opacity-100 2xl:opacity-100 group-hover:lg:w-fit 2xl:w-fit transition-all duration-200"
             >

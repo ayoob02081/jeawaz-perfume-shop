@@ -7,7 +7,11 @@ import ConfirmModal from "@/ui/ConfirmModal";
 import Table from "@/ui/Table";
 import { toLocalDateString } from "@/utils/toLocalDate";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
-import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import {
+  EyeIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from "@heroicons/react/24/solid";
 import Link from "next/link";
 import React, { useState } from "react";
 
@@ -111,7 +115,7 @@ function BannersListTable({ banners }) {
                           prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200"
                         >
-                          <PencilIcon className=" size-5" />
+                          <PencilSquareIcon className=" size-5" />
                         </Link>
                         <button
                           onClick={() => handleModal(banner)}
@@ -202,7 +206,7 @@ function BannersListTable({ banners }) {
                           prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200"
                         >
-                          <PencilIcon className=" size-5" />
+                          <PencilSquareIcon className=" size-5" />
                         </Link>
                         <button
                           onClick={() => handleModal(banner)}

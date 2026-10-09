@@ -105,7 +105,6 @@ function ProductCard({ product, isPending, error }) {
                 {productBrand?.value?.toUpperCase()}
               </p>
               <ProductGradeBadge product={product} />
-
             </div>
 
             {/* Products Name */}

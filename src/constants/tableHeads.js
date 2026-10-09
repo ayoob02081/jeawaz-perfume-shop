@@ -252,7 +252,7 @@ export const productDesktopTHeads = [
   },
   {
     id: 6,
-    label: "موجودی",
+    label: "موجودی و تخفیف",
   },
   {
     id: 7,
@@ -264,10 +264,6 @@ export const productDesktopTHeads = [
   },
   {
     id: 9,
-    label: "تخفیف",
-  },
-  {
-    id: 10,
     label: "عملیات",
   },
 ];
