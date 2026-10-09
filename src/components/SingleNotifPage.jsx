@@ -8,14 +8,16 @@ function SingleNotifPage({
   message,
   isPending,
   error,
+  onRetry,
   children,
 }) {
   if (isPending) {
     return <Loading />;
   }
 
+  // The data belongs to a client query: retry refetches it.
   if (error) {
-    return <Error />;
+    return <Error onRetry={onRetry} />;
   }
 
   return (

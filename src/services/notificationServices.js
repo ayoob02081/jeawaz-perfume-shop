@@ -1,16 +1,18 @@
 import app from "./httpClient";
+import {
+  buildAdminNotificationListParams,
+  buildMyNotificationsParams,
+} from "@/utils/notificationsContract.mjs";
 
 // =========================
 // USER NOTIFICATIONS
 // =========================
 
-export const getMyNotificationsApi = ({ page = 1, limit = 10 } = {}) =>
+// The signed-in user's own recipient rows; `type` filters on the server.
+export const getMyNotificationsApi = ({ page = 1, limit = 10, type } = {}) =>
   app
     .get("/notifications", {
-      params: {
-        page,
-        limit,
-      },
+      params: buildMyNotificationsParams({ page, limit, type }),
     })
     .then(({ data }) => data);
 
@@ -33,28 +35,11 @@ export const markAllNotificationsAsReadApi = () =>
 export const sendNotificationApi = (payload) =>
   app.post("/admin/notifications", payload).then(({ data }) => data);
 
-export const getAdminNotificationsApi = ({
-  page = 1,
-  limit = 20,
-  type,
-  channel,
-  target,
-  search,
-  from,
-  to,
-} = {}) =>
+// Notification entities with recipient/delivery stats (management list).
+export const getAdminNotificationsApi = (query = {}) =>
   app
     .get("/admin/notifications", {
-      params: {
-        page,
-        limit,
-        type,
-        channel,
-        target,
-        search,
-        from,
-        to,
-      },
+      params: buildAdminNotificationListParams(query),
     })
     .then(({ data }) => data);
 

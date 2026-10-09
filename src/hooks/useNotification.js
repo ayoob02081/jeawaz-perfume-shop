@@ -12,8 +12,16 @@ import {
   deleteNotificationApi,
   bulkDeleteNotificationsApi,
 } from "@/services/notificationServices";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import { showApiError } from "@/utils/showApiError";
 import {
+  USER_NOTIFICATION_PAGE_LIMIT,
+  buildAdminNotificationListParams,
+  notificationCreatedMessage,
+  toNotificationTypeFilter,
+} from "@/utils/notificationsContract.mjs";
+import {
+  keepPreviousData,
   useInfiniteQuery,
   useMutation,
   useQuery,
@@ -24,12 +32,20 @@ import toast from "react-hot-toast";
 export const notificationKeys = {
   all: ["notifications"],
   lists: () => [...notificationKeys.all, "list"],
-  list: (page = 1, limit = 10) => [...notificationKeys.lists(), page, limit],
+  // One cache per type tab: ALL and unknown types share the unfiltered list.
+  list: (type, limit = USER_NOTIFICATION_PAGE_LIMIT) => [
+    ...notificationKeys.lists(),
+    toNotificationTypeFilter(type) ?? "ALL",
+    limit,
+  ],
   details: () => [...notificationKeys.all, "detail"],
   detail: (id) => [...notificationKeys.details(), id],
   unreadCount: () => [...notificationKeys.all, "unread-count"],
   adminLists: () => [...notificationKeys.all, "admin-list"],
-  adminList: (params = {}) => [...notificationKeys.adminLists(), params],
+  adminList: (params = {}) => [
+    ...notificationKeys.adminLists(),
+    buildAdminNotificationListParams(params),
+  ],
   adminDetails: () => [...notificationKeys.all, "admin-detail"],
   adminDetail: (id) => [...notificationKeys.adminDetails(), id],
 };
@@ -38,13 +54,15 @@ export const notificationKeys = {
 // USER
 // =========================
 
-export function useGetNotifications(page = 1, limit = 10) {
+// Server-filtered by type: every page holds only that type.
+export function useGetNotifications(type, limit = USER_NOTIFICATION_PAGE_LIMIT) {
   return useInfiniteQuery({
-    queryKey: notificationKeys.list(page, limit),
+    queryKey: notificationKeys.list(type, limit),
     queryFn: ({ pageParam = 1 }) =>
       getMyNotificationsApi({
         page: pageParam,
         limit,
+        type,
       }),
     initialPageParam: 1,
     retry: false,
@@ -64,12 +82,19 @@ export function useGetNotificationById(id) {
   });
 }
 
+// Signed-in users only (a guest request would only answer 401 and trigger a
+// refresh attempt). Refetched on window focus: the cheap fallback for missed
+// socket events, suspended tabs and reads in another tab.
 export function useUnreadNotificationsCount() {
+  const { isAuthenticated } = useAuth();
+
   return useQuery({
     queryKey: notificationKeys.unreadCount(),
     queryFn: getUnreadNotificationsCountApi,
+    enabled: isAuthenticated,
     retry: false,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    staleTime: 10 * 1000,
   });
 }
 
@@ -120,11 +145,12 @@ export function useSendNotification() {
   const queryClient = useQueryClient();
   const { mutate: sendNotification, isPending: isSending } = useMutation({
     mutationFn: sendNotificationApi,
-    onSuccess: () => {
+    onSuccess: (_data, payload) => {
+      // Every admin list (any page or filter) shows the new notification.
       queryClient.invalidateQueries({
         queryKey: notificationKeys.adminLists(),
       });
-      toast.success("اعلان با موفقیت ارسال شد");
+      toast.success(notificationCreatedMessage(payload?.channel));
     },
     onError: (error) => showApiError(error),
   });
@@ -141,6 +167,7 @@ export function useGetAdminNotifications(params = {}) {
     queryFn: () => getAdminNotificationsApi(params),
     retry: false,
     refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
   });
 }
 

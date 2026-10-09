@@ -35,7 +35,8 @@ function AdminSidebar({ className, toggleSidebar }) {
       href: "/admin/notifs/ALL",
       baseHref: "/admin/notifs",
       label: "مدیریت پیام",
-      countUnread: true,
+      // Management, not the admin's own inbox: no personal unread badge.
+      countUnread: false,
     },
     {
       id: 7,

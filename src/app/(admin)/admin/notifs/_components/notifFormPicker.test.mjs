@@ -38,22 +38,24 @@ test("notification submit navigates only after a confirmed success", () => {
   assert.match(sendHook, /onError: \(error\) => showApiError\(error\)/);
   assert.doesNotMatch(sendHook, /router|navigate/);
 
-  const onSubmit = notifForm.slice(
+  // Every send goes through `send`, which navigates only from onSuccess, to
+  // the admin list (a fixed route, not history: the form may have been
+  // opened directly); nothing navigates on error.
+  const send = notifForm.slice(
+    notifForm.indexOf("const send ="),
     notifForm.indexOf("const onSubmit"),
-    notifForm.indexOf("return (", notifForm.indexOf("const onSubmit")),
   );
-  assert.ok(onSubmit.length > 0);
-  assert.doesNotMatch(onSubmit, /await sendNotification/);
+  assert.ok(send.length > 0);
+  assert.doesNotMatch(notifForm, /await sendNotification/);
   assert.match(
-    onSubmit,
-    /sendNotification\(payload, \{ onSuccess: \(\) => router\.back\(\) \}\);\s*\};\s*$/,
+    send,
+    /sendNotification\(payload, \{\s*onSuccess: \(\) => router\.replace\(ADMIN_NOTIFICATIONS_PATH\),/,
   );
-  // The success callback is the submit's only navigation; nothing on error.
-  assert.equal(onSubmit.match(/router\./g)?.length, 1);
-  assert.doesNotMatch(onSubmit, /onError|onSettled/);
-  // Elsewhere only the explicit back button navigates: the shared
-  // ActionButtons, as a non-submitting button.
-  assert.equal(notifForm.match(/router\.back\(\)/g)?.length, 1);
+  assert.equal(notifForm.match(/router\./g)?.length, 1);
+  assert.doesNotMatch(send, /onError/);
+  assert.equal(notifForm.match(/sendNotification\(/g)?.length, 1);
+  // The only "back" is the shared ActionButtons' non-submitting button.
+  assert.doesNotMatch(notifForm, /router\.back\(\)/);
   assert.match(notifForm, /<ActionButtons\b/);
   assert.equal(actionButtons.match(/router\.back\(\)/g)?.length, 1);
   assert.match(

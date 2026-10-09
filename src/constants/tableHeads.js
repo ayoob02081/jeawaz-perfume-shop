@@ -116,6 +116,25 @@ export const userDesktopTHeads = [
   // },
 ];
 
+export const adminNotifMobileTHeads = [
+  { id: 1, label: "#" },
+  { id: 2, label: "اعلان" },
+  { id: 3, label: "آمار" },
+  { id: 4, label: "مشاهده" },
+];
+
+export const adminNotifDesktopTHeads = [
+  { id: 1, label: "#" },
+  { id: 2, label: "عنوان و متن" },
+  { id: 3, label: "نوع" },
+  { id: 4, label: "کانال" },
+  { id: 5, label: "مخاطب" },
+  { id: 6, label: "تاریخ ایجاد" },
+  { id: 7, label: "خوانده‌شده" },
+  { id: 8, label: "پیامک" },
+  { id: 9, label: "مشاهده" },
+];
+
 export const NotifMobileTHeads = [
   {
     id: 1,
