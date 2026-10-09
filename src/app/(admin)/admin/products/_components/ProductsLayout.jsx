@@ -20,11 +20,12 @@ import { toPersianNumbersWithComma } from "@/utils/toPersianNumbers";
 import PagesNumber from "@/components/PagesNumber";
 import CheckBox from "@/ui/CheckBox";
 import { CheckIcon } from "@heroicons/react/24/outline";
+import { PRODUCT_GRADES, gradeLabel } from "@/utils/productGrade.mjs";
 
 const initialFilters = {
   search: "",
   brandId: "",
-  original: "",
+  grade: "",
   gender: "",
   fragranceFamilies: [],
 };
@@ -58,7 +59,7 @@ function ProductsLayout() {
       supportedBulkFilters({
         search: draft.search,
         brandIds: draft.brandId ? [Number(draft.brandId)] : [],
-        original: draft.original === "" ? undefined : draft.original === "true",
+        grades: draft.grade ? [draft.grade] : [],
         gender: draft.gender,
         fragranceFamilies: draft.fragranceFamilies,
       }),
@@ -153,20 +154,23 @@ function ProductsLayout() {
             </div>
             <div className="flex max-sm:flex-none sm:grow flex-col gap-2 sm:w-full">
               <label className="flex flex-col gap-1">
-                <p className="pr-2 sm:text-lg font-bold">اصالت</p>
+                <p className="pr-2 sm:text-lg font-bold">نوع کیفیت</p>
                 <select
                   className="textField__input rounded-xl p-2"
-                  value={draft.original}
+                  value={draft.grade}
                   onChange={(event) =>
                     setDraft((current) => ({
                       ...current,
-                      original: event.target.value,
+                      grade: event.target.value,
                     }))
                   }
                 >
                   <option value="">همه</option>
-                  <option value="true">اصل</option>
-                  <option value="false">غیراصل</option>
+                  {PRODUCT_GRADES.map((grade) => (
+                    <option key={grade} value={grade}>
+                      {gradeLabel(grade)}
+                    </option>
+                  ))}
                 </select>
               </label>
               <label className="flex flex-col gap-1">

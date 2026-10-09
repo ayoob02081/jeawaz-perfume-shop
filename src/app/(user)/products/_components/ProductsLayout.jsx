@@ -60,7 +60,7 @@ function ProductsLayout() {
       minVolume: applied.minVolume,
       maxVolume: applied.maxVolume,
       inStock: applied.inStock,
-      original: applied.original,
+      grades: applied.grades,
       discounted: applied.discounted,
       minPrice: applied.priceRange[0],
       maxPrice: applied.priceRange[1],

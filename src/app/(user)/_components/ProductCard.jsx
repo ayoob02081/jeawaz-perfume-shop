@@ -2,6 +2,7 @@ import AppImage from "@/components/AppImage";
 import Error from "@/components/Error";
 import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
+import ProductGradeBadge from "@/components/ProductGradeBadge";
 import { getProductCardPresentation } from "@/utils/priceCalculator";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -10,7 +11,6 @@ function ProductCard({ product, isPending, error }) {
   const router = useRouter();
   const {
     id,
-    original,
     enTitle,
     perTitle,
     stock,
@@ -104,20 +104,8 @@ function ProductCard({ product, isPending, error }) {
               <p className="text-stroke-600 text-sm md:text-base md:font-bold">
                 {productBrand?.value?.toUpperCase()}
               </p>
-              {original === true ? (
-                <AppImage
-                  src="/images/bg-original.svg"
-                  alt="original-icon"
-                  ratio="aspect-6/1"
-                  className="justify-center"
-                  width="max-md:w-16 h-full md:w-[4.815rem]"
-                  sizes="10vw"
-                />
-              ) : (
-                <span className="inline-flex items-center rounded-full border border-stroke-200 bg-stroke-200 px-2 py-1.5 text-[10px] font-bold text-stroke-500">
-                  سوپر مستر
-                </span>
-              )}
+              <ProductGradeBadge product={product} />
+
             </div>
 
             {/* Products Name */}

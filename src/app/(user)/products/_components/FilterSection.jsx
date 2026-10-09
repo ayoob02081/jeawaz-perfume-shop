@@ -30,6 +30,7 @@ import {
   withoutFilterValue,
 } from "@/utils/productFilterContract.mjs";
 import { concentrationLabel } from "@/utils/productConcentration.mjs";
+import { gradeLabel } from "@/utils/productGrade.mjs";
 import { useForm } from "react-hook-form";
 import Skeleton from "@/ui/Skeleton";
 import { scrollTo } from "@/utils/scrollTo";
@@ -259,13 +260,14 @@ function FilterSection() {
                   error
                 />
               )}
-              {filtersFromUrl?.original && (
+              {filtersFromUrl.grades.map((grade) => (
                 <Badge
-                  title="اورجینال"
-                  onClick={() => resetOneAndSync("original")}
+                  key={`grades-${grade}`}
+                  title={gradeLabel(grade)}
+                  onClick={() => removeValueAndSync("grades", grade)}
                   error
                 />
-              )}
+              ))}
               {filtersFromUrl?.inStock && (
                 <Badge
                   title="موجود"

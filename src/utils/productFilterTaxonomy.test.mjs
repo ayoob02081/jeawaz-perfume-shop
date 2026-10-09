@@ -48,7 +48,7 @@ function listQueryFromUrl(query) {
     characters: applied.characters, occasions: applied.occasions,
     concentrations: applied.concentrations,
     volumes: applied.volumes, minVolume: applied.minVolume, maxVolume: applied.maxVolume,
-    inStock: applied.inStock, original: applied.original, discounted: applied.discounted,
+    inStock: applied.inStock, grades: applied.grades, discounted: applied.discounted,
     minPrice: applied.priceRange[0], maxPrice: applied.priceRange[1],
     type: applied.type, sort: applied.sort || "newest",
     page: searchParams.get("page"), limit: searchParams.get("limit"),
@@ -191,6 +191,9 @@ test("existing filters serialize and normalize exactly as before (no new keys wh
     + "&volumes=100&volumes=50&minPrice=100&maxPrice=900&inStock=true&original=true"
     + "&discounted=true&sort=oldest&search=rose";
   const url = serialize(hydrate(query), query);
+  // The legacy `original=true` link loads as grades=ORIGINAL and is rewritten.
+  assert.equal(url.get("original"), null);
+  assert.deepEqual(url.getAll("grades"), ["ORIGINAL"]);
   assert.deepEqual(url.getAll("brandIds"), ["1", "2"]);
   assert.deepEqual(url.getAll("volumes"), ["50", "100"]);
   assert.equal(url.get("discounted"), "true");

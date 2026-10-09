@@ -4,6 +4,7 @@ import AppImage from "@/components/AppImage";
 import CardEvents from "@/components/CardEvents";
 import RadioButton from "@/ui/RadioButton";
 import PriceSection from "@/components/PriceSection";
+import ProductGradeBadge from "@/components/ProductGradeBadge";
 import Accordion from "@/ui/Accordion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
@@ -241,22 +242,7 @@ function ProductDes({ product }) {
               </div>
             </div>
 
-            {product.original === true ? (
-              <AppImage
-                src="/images/bg-original.svg"
-                alt="original-icon"
-                ratio="aspect-[5/2]"
-                width="w-32"
-                sizes="10vw"
-                className="self-end"
-              />
-            ) : (
-              <div className="h-full py-2">
-                <span className="inline-flex items-center h-full rounded-full border border-stroke-200 bg-stroke-200 px-4 py-2 text-sm font-bold text-stroke-500">
-                  سوپر مستر
-                </span>
-              </div>
-            )}
+            <ProductGradeBadge product={product} variant="detail" />
           </div>
 
           <div className="flex flex-col items-start justify-start gap-3">

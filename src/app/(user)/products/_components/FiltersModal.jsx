@@ -3,6 +3,7 @@
 import { useGetProductVolumeOptions } from "@/hooks/useProducts";
 import {
   CONCENTRATION_FILTER_LABEL,
+  GRADE_FILTER_LABEL,
   TAXONOMY_FILTER_GROUPS,
   activeFilterCount,
   mergeVolumeOptions,
@@ -12,6 +13,7 @@ import {
   PRODUCT_CONCENTRATIONS,
   concentrationLabel,
 } from "@/utils/productConcentration.mjs";
+import { PRODUCT_GRADES, gradeLabel } from "@/utils/productGrade.mjs";
 
 const concentrationOptions = PRODUCT_CONCENTRATIONS.map((value) => ({
   id: value,
@@ -211,33 +213,11 @@ function FiltersModal({
                   hidde
                 />
               </FilterOption>
-              <FilterOption>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    addFilter("SET_ITEM", "original", !state?.draft?.original);
-                  }}
-                  className="flex items-center justify-between size-full gap-3"
-                >
-                  <div>
-                    <p className="flex font-bold text-stroke-800">
-                      فقط کالاهای اورجینال
-                    </p>
-                  </div>
-                  <div
-                    className={`relative flex items-center  gap-2  rounded-full p-0.5 w-11 h-6 
-                    ${state?.draft?.original ? "bg-primary justify-start" : "justify-en bg-stroke-200 dark:bg-stroke-50 transition-all duration-200"}`}
-                  >
-                    <div
-                      className={`absolute flex items-center justify-center h-5 aspect-square rounded-full  ${
-                        state?.draft?.original
-                          ? " bg-stroke-0 "
-                          : "-translate-x-full bg-stroke-150 dark:bg-stroke-0"
-                      } shadow transition-all duration-200`}
-                    />
-                  </div>
-                </button>
+              <FilterOption title={GRADE_FILTER_LABEL}>
+                <GradeFilter
+                  value={state.draft?.grades}
+                  addFilter={addFilter}
+                />
               </FilterOption>
               <FilterOption>
                 <button
@@ -737,6 +717,41 @@ function SingleCategoryFilter({
           {`پاک کردن ${label}`}
         </button>
       )}
+    </div>
+  );
+}
+
+// Product grade: multi-select chips (none = every grade). Toggling uses the
+// shared SET_ITEMS draft action; Apply writes repeated `grades` URL keys.
+function GradeFilter({ value = [], addFilter }) {
+  return (
+    <div className="flex flex-col gap-3 w-full">
+      {/* FilterOption shows its title from md up only. */}
+      <p className="md:hidden font-bold text-stroke-800">{GRADE_FILTER_LABEL}</p>
+      <div
+        className="flex items-center gap-2 w-full"
+        role="group"
+        aria-label={GRADE_FILTER_LABEL}
+      >
+        {PRODUCT_GRADES.map((grade) => {
+          const selected = (value ?? []).includes(grade);
+          return (
+            <button
+              key={grade}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => addFilter("SET_ITEMS", "grades", grade)}
+              className={`rounded-full px-4 py-2 border text-sm w-full ${
+                selected
+                  ? "border-primary text-primary font-bold"
+                  : "bg-stroke-150 border-stroke-200 text-stroke-600"
+              }`}
+            >
+              {gradeLabel(grade)}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -176,3 +176,63 @@ test("printName is not rendered anywhere outside the admin Product form", () => 
     assert.doesNotMatch(source, /printName/, path);
   }
 });
+
+/* ================= grade (replaces the original checkbox) ================= */
+
+test("a new Product's grade starts blank and the payload requires an explicit choice", () => {
+  assert.equal(initialProductFormValues().grade, "");
+  for (const grade of ["", undefined, null, "original", "TESTER", true]) {
+    assert.deepEqual(errorFields(formWith({ grade })), ["grade"]);
+  }
+  assert.match(
+    buildProductFormPayload(formWith({ grade: "" })).errors[0].message,
+    /نوع کیفیت/,
+  );
+});
+
+test("the outgoing create/edit payload sends grade and never the deprecated original", () => {
+  for (const grade of ["ORIGINAL", "SUPER_MASTER"]) {
+    const create = buildProductFormPayload(formWith({ grade }));
+    assert.deepEqual(create.errors, []);
+    assert.equal(create.payload.grade, grade);
+    assert.equal("original" in create.payload, false);
+    const edit = buildProductFormPayload(formWith({ grade }), product.variants);
+    assert.equal(edit.payload.grade, grade);
+    assert.equal("original" in edit.payload, false);
+  }
+});
+
+test("edit data populates grade, with the transitional boolean fallback", () => {
+  assert.equal(initialProductFormValues({ ...product, grade: "SUPER_MASTER" }).grade, "SUPER_MASTER");
+  assert.equal(initialProductFormValues({ ...product, grade: "ORIGINAL", original: false }).grade,
+    "ORIGINAL");
+  assert.equal(initialProductFormValues({ ...product, original: true }).grade, "ORIGINAL");
+  assert.equal(initialProductFormValues({ ...product, original: false }).grade, "SUPER_MASTER");
+  const { original: _legacy, ...gradeless } = product;
+  assert.equal(initialProductFormValues(gradeless).grade, "");
+  assert.equal("original" in initialProductFormValues(product), false);
+});
+
+test("ProductForm replaces the original checkbox with a required «نوع کیفیت» selector", () => {
+  const form = readFileSync(new URL("./ProductForm.jsx", import.meta.url), "utf8");
+  assert.doesNotMatch(form, /name="original"|watch\("original"\)|>اصالت</);
+  assert.match(form, /نوع کیفیت\s*<span className="text-error">\*<\/span>/);
+  assert.match(form, /gradeOptions\.map\(\(grade\) => \{/);
+  assert.match(form, /name="grade"/);
+  assert.match(form, /validationSchema=\{\{ required: "انتخاب نوع کیفیت ضروری است" \}\}/);
+  assert.match(form, /\{gradeLabel\(grade\)\}/);
+  assert.match(form, /<FieldError error=\{errors\.grade\} \/>/);
+});
+
+test("create pending state includes isAdding and a lock blocks a double submit", () => {
+  const form = readFileSync(new URL("./ProductForm.jsx", import.meta.url), "utf8");
+  assert.match(form, /isPending=\{isSubmitting \|\| isAdding \|\| isEditing\}/);
+  assert.match(form, /isSubmitting \|\| isAdding\s*\?\s*"در حال ساخت\.\.\."/);
+  assert.match(form,
+    /if \(submitLock\.current \|\| isAdding \|\| isEditing\) return;\s*submitLock\.current = true;/);
+  assert.match(form, /onSettled: \(\) => \{\s*submitLock\.current = false;\s*\}/);
+  assert.match(form, /productToEdit \? editProduct\(payload, release\) : addProduct\(payload, release\);/);
+  // The lock is taken only after client validation passed.
+  const submit = form.slice(form.indexOf("const onSubmit"), form.indexOf("const removeProductHandler"));
+  assert.ok(submit.indexOf("payloadErrors.length") < submit.indexOf("submitLock.current = true"));
+});

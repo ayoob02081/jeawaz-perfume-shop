@@ -1,4 +1,5 @@
 import { PRODUCT_CONCENTRATIONS } from "./productConcentration.mjs";
+import { gradesFromLegacyOriginal, normalizeGrades } from "./productGrade.mjs";
 
 const decimalInteger = (value, allowZero = false) => {
   if (!/^\d+$/.test(String(value ?? ""))) return null;
@@ -54,7 +55,8 @@ export const emptyFilters = {
   maxVolume: null,
   priceRange: [null, null],
   inStock: null,
-  original: null,
+  // Canonical ProductGrade values (OR within); replaces the old `original` flag.
+  grades: [],
   gender: null,
   // Product V2 taxonomy (Category slugs; OR within a group, AND across).
   seasons: [],
@@ -160,6 +162,8 @@ const ownedParams = [
   "maxPrice",
   "page",
   "inStock",
+  "grades",
+  // Legacy key: read once (see getFiltersFromSearchParams), never written back.
   "original",
   "discounted",
   "seasons",
@@ -187,6 +191,7 @@ export const TAXONOMY_FILTER_GROUPS = [
   { key: "gender", type: "gender", label: "جنسیت", multiple: false },
 ];
 export const CONCENTRATION_FILTER_LABEL = "غلظت";
+export const GRADE_FILTER_LABEL = "نوع کیفیت";
 
 export function buildQueryFromFilters(filters, currentSearchParams) {
   const params = new URLSearchParams(currentSearchParams.toString());
@@ -206,12 +211,14 @@ export function buildQueryFromFilters(filters, currentSearchParams) {
   normalizeConcentrations(filters.concentrations).forEach((value) =>
     params.append("concentrations", value),
   );
+  normalizeGrades(filters.grades).forEach((grade) =>
+    params.append("grades", grade),
+  );
   if (variantType(filters.type)) params.set("type", filters.type);
   if (filters.gender) params.set("gender", filters.gender);
   if (filters.temperature) params.set("temperature", filters.temperature);
   if (filters.sort) params.set("sort", filters.sort);
   if (filters.inStock === true) params.set("inStock", "true");
-  if (filters.original === true) params.set("original", "true");
   if (filters.discounted === true) params.set("discounted", "true");
   const minVolume = decimalInteger(filters.minVolume);
   const maxVolume = decimalInteger(filters.maxVolume);
@@ -226,6 +233,7 @@ export function buildQueryFromFilters(filters, currentSearchParams) {
 
 export function getFiltersFromSearchParams(searchParams) {
   const types = searchParams.getAll("type");
+  const grades = normalizeGrades(searchParams.getAll("grades"));
   return {
     ...structuredClone(emptyFilters),
     brandIds: normalizeIds(searchParams.getAll("brandIds")),
@@ -242,7 +250,10 @@ export function getFiltersFromSearchParams(searchParams) {
     ),
     sort: searchParams.get("sort") || "",
     inStock: searchParams.get("inStock") === "true" ? true : null,
-    original: searchParams.get("original") === "true" ? true : null,
+    // Old links (?original=true|false) still load; `grades` wins when present.
+    grades: grades.length
+      ? grades
+      : gradesFromLegacyOriginal(singleValue(searchParams.getAll("original"))),
     discounted: searchParams.get("discounted") === "true" ? true : null,
     minVolume: decimalInteger(searchParams.get("minVolume")),
     maxVolume: decimalInteger(searchParams.get("maxVolume")),
@@ -296,7 +307,7 @@ export const activeFilterCount = (filters = {}) =>
     filters.type,
     filters.priceRange?.some((price) => price !== null && price !== undefined),
     filters.inStock,
-    filters.original,
+    filters.grades?.length,
     filters.gender,
     filters.discounted,
     ...TAXONOMY_SLUG_FILTERS.map((key) => filters[key]?.length),
@@ -352,7 +363,12 @@ export const productListView = ({ isLoading, data }) => {
 };
 
 export function normalizeProductsQuery(query = {}) {
-  const original = optionalBoolean(query.original);
+  // `grades` only: a legacy `original` input is translated, never sent (the
+  // backend rejects `grades` together with `original`).
+  const requestedGrades = normalizeGrades(query.grades);
+  const grades = requestedGrades.length
+    ? requestedGrades
+    : gradesFromLegacyOriginal(query.original);
   const inStock = optionalBoolean(query.inStock);
   const discounted = optionalBoolean(query.discounted);
   const brandIds = normalizeIds(query.brandIds);
@@ -377,9 +393,9 @@ export function normalizeProductsQuery(query = {}) {
     ...(characters.length ? { characters } : {}),
     ...(occasions.length ? { occasions } : {}),
     ...(concentrations.length ? { concentrations } : {}),
+    ...(grades.length ? { grades } : {}),
     search: query.search || undefined,
     brandIds: brandIds.length ? brandIds : undefined,
-    original,
     inStock,
     discounted,
     gender: query.gender || undefined,

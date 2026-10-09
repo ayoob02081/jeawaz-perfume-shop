@@ -117,7 +117,16 @@ test("normal Product keys and next-page prefetch keys normalize equivalent input
   const next = productListKey({ ...a[2], page: 2 });
   assert.deepEqual(next[2], { ...a[2], page: 2 });
   assert.equal(productListKey({ sort: "best_selling" })[2].sort, "best_selling");
-  assert.equal(productListKey({ original: false })[2].original, false);
+  // `grades` only (canonical order); a legacy `original` input is translated and
+  // never reaches the request, since the backend rejects the two together.
+  assert.deepEqual(productListKey({ grades: ["SUPER_MASTER", "ORIGINAL", "NOPE"] })[2].grades,
+    ["ORIGINAL", "SUPER_MASTER"]);
+  assert.deepEqual(productListKey({ original: false })[2].grades, ["SUPER_MASTER"]);
+  assert.deepEqual(productListKey({ original: "true" })[2].grades, ["ORIGINAL"]);
+  assert.equal("original" in productListKey({ original: true })[2], false);
+  assert.equal("grades" in productListKey({})[2], false);
+  assert.deepEqual(productListKey({ grades: ["SUPER_MASTER"], original: true })[2].grades,
+    ["SUPER_MASTER"]);
   assert.equal(productListKey({})[2].type, undefined);
   assert.equal(normalizeProductsQuery({ maxVolume: "100" }).maxVolume, 100);
 });

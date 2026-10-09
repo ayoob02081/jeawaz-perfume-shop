@@ -1,6 +1,8 @@
 import { PRODUCT_CONCENTRATIONS } from "../../../../../utils/productConcentration.mjs";
+import { PRODUCT_GRADES, productGrade } from "../../../../../utils/productGrade.mjs";
 
 export const concentrationOptions = PRODUCT_CONCENTRATIONS;
+export const gradeOptions = PRODUCT_GRADES;
 
 export const longevityOptions = ["LOW", "MODERATE", "HIGH", "VERY_HIGH"];
 export const projectionOptions = ["WEAK", "MODERATE", "STRONG", "VERY_STRONG"];
@@ -52,7 +54,8 @@ export function initialProductFormValues(product) {
     images: [...images, { url: "" }],
     offValue: product?.offValue ?? "",
     stock: product?.stock ?? 0,
-    original: product?.original ? "original" : false,
+    // Blank for a new Product: the admin must choose (never a silent default).
+    grade: productGrade(product) ?? "",
     notes: {
       top: product?.notes?.top?.length ? product.notes.top : [""],
       middle: product?.notes?.middle?.length ? product.notes.middle : [""],
@@ -129,6 +132,9 @@ export function buildProductFormPayload(data, originalVariants) {
   }
   if (concentration && !concentrationOptions.includes(concentration)) {
     errors.push(invalid("concentration", "غلظت معتبر نیست"));
+  }
+  if (!gradeOptions.includes(data.grade)) {
+    errors.push(invalid("grade", "انتخاب نوع کیفیت ضروری است"));
   }
 
   const variants = (data.variants ?? []).map((row, index) => {
@@ -239,7 +245,8 @@ export function buildProductFormPayload(data, originalVariants) {
       printName,
       stock,
       offValue,
-      original: Boolean(data.original),
+      // `grade` only; the deprecated `original` alias is never sent.
+      grade: data.grade,
       brandId,
       categoryIds,
       images: (data.images ?? [])

@@ -86,7 +86,7 @@ test("PriceSection receives the same representative base, final price and badge 
   assert.doesNotMatch(card, /getRepresentativeVariant|product\.variants\.sort|variants\.(find|filter)\(/);
 });
 
-test("the card brand is upper-cased null-safely and non-original shows «سوپر مستر»", () => {
+test("the card brand is upper-cased null-safely and the grade comes from the shared badge", () => {
   const card = readFileSync(new URL("../app/(user)/_components/ProductCard.jsx", import.meta.url), "utf8");
   assert.match(card, /\{productBrand\?\.value\?\.toUpperCase\(\)\}/);
   assert.doesNotMatch(card, /\(productBrand\?\.value\)\.toUpperCase\(\)/);
@@ -97,7 +97,26 @@ test("the card brand is upper-cased null-safely and non-original shows «سوپ�
     assert.doesNotThrow(() => brandText(missing));
     assert.equal(brandText(missing), undefined);
   }
-  assert.match(card, /original === true \? \([\s\S]*?\) : \([\s\S]*?سوپر مستر/);
+  // Grade is explicit: no `original` fallback to «سوپر مستر» in the card itself.
+  assert.match(card, /<ProductGradeBadge product=\{product\} \/>/);
+  assert.doesNotMatch(card, /original|سوپر مستر|bg-original/);
+});
+
+test("ProductCard and the Product page share one grade badge; unknown grades render nothing", () => {
+  const read = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
+  const badge = read("../components/ProductGradeBadge.jsx");
+  const detail = read("../app/(user)/products/_components/SingleProductPage.jsx");
+
+  assert.match(detail, /<ProductGradeBadge product=\{product\} variant="detail" \/>/);
+  assert.doesNotMatch(detail, /product\.original|سوپر مستر/);
+  // One grade source and one label source; nothing is inferred from a falsy original.
+  assert.match(badge, /const grade = productGrade\(product\);\s*if \(!grade\) return null;/);
+  assert.match(badge, /const label = gradeLabel\(grade\);/);
+  assert.doesNotMatch(badge, /سوپر مستر|اورجینال|original ===|\.original\b/);
+  // ORIGINAL keeps the prominent seal in both sizes; SUPER_MASTER is the neutral chip.
+  assert.match(badge, /if \(grade === "ORIGINAL"\) \{[\s\S]*?bg-original\.svg[\s\S]*?aspect-\[5\/2\][\s\S]*?bg-original\.svg[\s\S]*?aspect-6\/1/);
+  assert.match(badge, /bg-stroke-200 px-4 py-2 text-sm font-bold text-stroke-500">\s*\{label\}/);
+  assert.match(badge, /bg-stroke-200 px-2 py-1\.5 text-\[10px\] font-bold text-stroke-500">\s*\{label\}/);
 });
 
 test("the card icon is a button on cards but a plain element inside the header link", () => {

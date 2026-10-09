@@ -14,7 +14,13 @@ import {
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import { getVariantsByType } from "@/utils/priceCalculator";
-import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import {
+  DocumentDuplicateIcon,
+  EyeIcon,
+  PencilIcon,
+  TrashIcon,
+} from "@heroicons/react/24/solid";
+import ProductGradeBadge from "@/components/ProductGradeBadge";
 import Link from "next/link";
 import { useState } from "react";
 import CheckBox from "@/ui/CheckBox";
@@ -135,9 +141,12 @@ function ProductsListTable({
                           width="w-16"
                           sizes="10vw"
                         />
-                        <p className="font-bold text-start">
-                          {product.perTitle}
-                        </p>
+                        <div className="flex flex-col items-start gap-1">
+                          <p className="font-bold text-start">
+                            {product.perTitle}
+                          </p>
+                          <ProductGradeBadge product={product} variant="admin" />
+                        </div>
                       </CheckBox>
                     </td>
                     <td className="table__td gap-2 p-2 flex flex-col justify-center max-h-full">
@@ -213,6 +222,15 @@ function ProductsListTable({
                           className="text-stroke-450 hover:text-success duration-200"
                         >
                           <PencilIcon className=" size-5" />
+                        </Link>
+                        <Link
+                          href={`/admin/products/add?copyFrom=${product.id}`}
+                          prefetch={false}
+                          title="ساخت محصول مشابه"
+                          aria-label="ساخت محصول مشابه"
+                          className="text-stroke-450 hover:text-stroke-800 duration-200"
+                        >
+                          <DocumentDuplicateIcon className="size-5" />
                         </Link>
                         <button
                           onClick={() => handleModal(product)}
@@ -308,7 +326,10 @@ function ProductsListTable({
                           width="w-16"
                           sizes="10vw"
                           />
-                        <p className="font-bold">{product.perTitle}</p>
+                        <div className="flex flex-col items-start gap-1">
+                          <p className="font-bold">{product.perTitle}</p>
+                          <ProductGradeBadge product={product} variant="admin" />
+                        </div>
                           </CheckBox>
                     </td>
                     <td className="table__td px-2 max-w-70 truncate">
@@ -399,6 +420,15 @@ function ProductsListTable({
                           className="text-stroke-450 hover:text-success duration-200"
                         >
                           <PencilIcon className=" size-5" />
+                        </Link>
+                        <Link
+                          href={`/admin/products/add?copyFrom=${product.id}`}
+                          prefetch={false}
+                          title="ساخت محصول مشابه"
+                          aria-label="ساخت محصول مشابه"
+                          className="text-stroke-450 hover:text-stroke-800 duration-200"
+                        >
+                          <DocumentDuplicateIcon className="size-5" />
                         </Link>
                         <button
                           onClick={() => handleModal(product)}

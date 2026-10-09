@@ -10,6 +10,7 @@ import {
   initialFilters,
   normalizeProductsQuery,
   productListKey,
+  withoutFilterValue,
 } from "./productFilterContract.mjs";
 
 const source = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
@@ -67,7 +68,7 @@ function listQueryFromUrl(query) {
     brandIds: applied.brandIds, gender: applied.gender,
     fragranceFamilies: applied.fragranceFamilies, volumes: applied.volumes,
     minVolume: applied.minVolume, maxVolume: applied.maxVolume,
-    inStock: applied.inStock, original: applied.original,
+    inStock: applied.inStock, grades: applied.grades,
     minPrice: applied.priceRange[0], maxPrice: applied.priceRange[1],
     type: applied.type, sort: applied.sort || "newest",
     page: searchParams.get("page"), limit: searchParams.get("limit"),
@@ -139,7 +140,8 @@ test("each filter type changes the URL, the query key and the request", () => {
     [{ type: "SET_ITEM", key: "type", value: "sealed" }, "type=sealed"],
     [{ type: "SET_ITEMS", key: "volumes", value: 102 }, "volumes=102"],
     [{ type: "SET_ITEM", key: "inStock", value: true }, "inStock=true"],
-    [{ type: "SET_ITEM", key: "original", value: true }, "original=true"],
+    [{ type: "SET_ITEMS", key: "grades", value: "ORIGINAL" }, "grades=ORIGINAL"],
+    [{ type: "SET_ITEMS", key: "grades", value: "SUPER_MASTER" }, "grades=SUPER_MASTER"],
     [{ type: "SET_ITEM", key: "gender", value: "women" }, "gender=women"],
   ];
   for (const [action, expected] of cases) {
@@ -156,20 +158,30 @@ test("each filter type changes the URL, the query key and the request", () => {
 test("combination, reset-one and reset-all reach the request", () => {
   const page = storefront();
   page.openFilters();
-  page.inModal({ type: "SET_ITEM", key: "original", value: true });
+  page.inModal({ type: "SET_ITEMS", key: "grades", value: "SUPER_MASTER" });
+  page.inModal({ type: "SET_ITEMS", key: "grades", value: "ORIGINAL" });
   page.inModal({ type: "SET_ITEM", key: "inStock", value: true });
   page.inModal({ type: "SET_ITEM", key: "type", value: "decant" });
   page.inModal({ type: "SET_ITEMS", key: "volumes", value: 10 });
   const combined = page.apply();
-  assert.equal(combined, "volumes=10&type=decant&inStock=true&original=true");
+  assert.equal(combined,
+    "volumes=10&grades=ORIGINAL&grades=SUPER_MASTER&type=decant&inStock=true");
   assert.equal(requestUrl(combined),
-    "/products?original=true&inStock=true&type=decant&volumes=10&sort=newest&page=1&limit=12");
+    "/products?grades=ORIGINAL&grades=SUPER_MASTER&inStock=true&type=decant&volumes=10&sort=newest&page=1&limit=12");
 
   // Reset one (FilterSection.resetOneAndSync): drop inStock, keep the rest.
   const current = getFiltersFromSearchParams(new URLSearchParams(combined));
   const withoutStock = buildQueryFromFilters({ ...current, inStock: null }, new URLSearchParams(combined));
   assert.equal(requestUrl(withoutStock),
-    "/products?original=true&type=decant&volumes=10&sort=newest&page=1&limit=12");
+    "/products?grades=ORIGINAL&grades=SUPER_MASTER&type=decant&volumes=10&sort=newest&page=1&limit=12");
+
+  // Removing one grade badge (FilterSection.removeValueAndSync) keeps the other.
+  const oneGrade = buildQueryFromFilters(withoutFilterValue(current, "grades", "ORIGINAL"),
+    new URLSearchParams(combined));
+  assert.equal(new URLSearchParams(oneGrade).getAll("grades").join(), "SUPER_MASTER");
+  // Reset-one of the whole grade group clears it.
+  const noGrades = buildQueryFromFilters({ ...current, grades: [] }, new URLSearchParams(combined));
+  assert.equal(new URLSearchParams(noGrades).get("grades"), null);
 
   // Reset all keeps unrelated search while clearing every owned filter.
   const all = buildQueryFromFilters(structuredClone(initialFilters.draft),

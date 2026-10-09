@@ -23,6 +23,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
   buildProductFormPayload,
   concentrationOptions,
+  gradeOptions,
   initialProductFormValues,
   longevityOptions,
   PRINT_NAME_MAX,
@@ -32,6 +33,8 @@ import {
 } from "./productFormContract";
 import { runProductDelete } from "./productDeleteContract.mjs";
 import ActionButtons from "../../_components/ActionButtons";
+import { gradeLabel } from "@/utils/productGrade.mjs";
+import Link from "next/link";
 
 const basicInfoData = [
   { id: 1, label: "عنوان فارسی", name: "perTitle", placeholder: "بلو شنل" },
@@ -70,7 +73,11 @@ const multipleCategoryFields = [
   { type: "occasion", field: "occasionIds", label: "موقعیت استفاده" },
 ];
 
-function ProductForm({ productToEdit }) {
+// Modes: edit (`productToEdit`) PATCHes that Product. Create — blank, or a
+// duplicate prefilled from `cloneDefaults` (form values built by
+// mapProductToCloneDefaults) with `copySource` for the banner — always POSTs a
+// new Product; a duplicate never passes its source as `productToEdit`.
+function ProductForm({ productToEdit, cloneDefaults, copySource }) {
   // Keep the edit baseline from when this Product was opened, even if a query
   // refreshes while the admin is editing. The backend compares it under lock.
   const editBaseline = useRef({
@@ -100,9 +107,15 @@ function ProductForm({ productToEdit }) {
   const temperatureCategories =
     categories?.filter((c) => c.type === "temperature") || [];
   const initialValues = useMemo(
-    () => initialProductFormValues(productToEdit),
-    [productToEdit],
+    () =>
+      productToEdit
+        ? initialProductFormValues(productToEdit)
+        : (cloneDefaults ?? initialProductFormValues()),
+    [productToEdit, cloneDefaults],
   );
+  // One create/update request at a time: the mutation's pending flag reaches
+  // the button only after a re-render, so a fast double click needs this lock.
+  const submitLock = useRef(false);
 
   const {
     register,
@@ -204,7 +217,14 @@ function ProductForm({ productToEdit }) {
       return;
     }
 
-    productToEdit ? editProduct(payload) : addProduct(payload);
+    if (submitLock.current || isAdding || isEditing) return;
+    submitLock.current = true;
+    const release = {
+      onSettled: () => {
+        submitLock.current = false;
+      },
+    };
+    productToEdit ? editProduct(payload, release) : addProduct(payload, release);
   };
 
   const removeProductHandler = async (product) => {
@@ -216,6 +236,39 @@ function ProductForm({ productToEdit }) {
 
   return (
     <div className="max-w-6xl px-4 w-full">
+      {copySource && (
+        <div
+          role="status"
+          className="flex flex-wrap items-center justify-between gap-3 mb-8 p-4 rounded-2xl border border-blue bg-blue/10 text-sm text-stroke-800"
+        >
+          <div className="flex flex-col gap-1">
+            <p className="font-bold">
+              در حال ساخت محصول جدید بر اساس «{copySource.title}»
+            </p>
+            <p className="text-stroke-600">
+              منبع: {gradeLabel(copySource.grade) || "نامشخص"} — محصول منبع
+              تغییر نمی‌کند. نوع کیفیت، قیمت‌ها، موجودی و تخفیف محصول جدید را
+              وارد کنید.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href={`/products/${copySource.id}`}
+              target="_blank"
+              className="btn border py-1.5 px-3"
+            >
+              مشاهده محصول منبع
+            </Link>
+            <Link
+              href="/admin/products/add"
+              prefetch={false}
+              className="btn border py-1.5 px-3"
+            >
+              شروع محصول خالی
+            </Link>
+          </div>
+        </div>
+      )}
       <form onSubmit={handleSubmit(onSubmit)} className="relative space-y-12">
         {/* Basic Info */}
         <div className="flex flex-col items-start justify-center gap-6">
@@ -283,6 +336,12 @@ function ProductForm({ productToEdit }) {
               <p className="text-xs text-stroke-600 mr-2">
                 اختیاری؛ در صورت خالی بودن، نام انگلیسی محصول استفاده می‌شود.
               </p>
+              {copySource && (
+                <p className="text-xs font-bold text-stroke-800 bg-warning/20 rounded-lg px-2 py-1 mr-2 w-fit">
+                  از محصول منبع کپی شده است؛ بازبینی کنید تا در خروجی اکسل و
+                  چاپ با محصول منبع یکسان نباشد.
+                </p>
+              )}
             </div>
           </div>
           <RHFTextAreaField
@@ -414,25 +473,35 @@ function ProductForm({ productToEdit }) {
           )}
         </div>
 
-        {/* Original */}
-        <div className="flex flex-col items-start jussta">
+        {/* Grade: required, no default (a new Product starts unselected) */}
+        <div>
           <h3 className="font-bold mb-4 text-stroke-800 max-md:text-base text-lg">
-            اصالت
+            نوع کیفیت
+            <span className="text-error">*</span>
           </h3>
           <div className="flex max-[29rem]:flex-wrap items-center justify-center sm:justify-start gap-4 w-full">
-            <RHFCheckBox
-              value="original"
-              id="original"
-              name="original"
-              register={register}
-            >
-              <div
-                className={`flex items-center justify-center border-2 ${watch("original") === "original" ? " border-primary bg-stroke-0 font-bold text-primary " : "border-stroke-150 text-stroke-600 opacity-70"} px-2 h-12 w-32 rounded-full duration-200 `}
-              >
-                <p className="text-xl">اورجینال</p>
-              </div>
-            </RHFCheckBox>
+            {gradeOptions.map((grade) => {
+              const isChecked = watch("grade") === grade;
+              return (
+                <RHFRadioButton
+                  key={grade}
+                  id={`grade-${grade}`}
+                  checked={isChecked}
+                  value={grade}
+                  validationSchema={{ required: "انتخاب نوع کیفیت ضروری است" }}
+                  name="grade"
+                  register={register}
+                >
+                  <div
+                    className={`flex items-center justify-center text-lg border-2 duration-200 ${isChecked ? " border-primary text-primary bg-stroke-0 font-bold" : "text-stroke-600 border-stroke-150 opacity-70"} px-2 h-12 w-32 rounded-full `}
+                  >
+                    <p className="duration-200">{gradeLabel(grade)}</p>
+                  </div>
+                </RHFRadioButton>
+              );
+            })}
           </div>
+          <FieldError error={errors.grade} />
         </div>
 
         {multipleCategoryFields.map(({ type, field, label }) => (
@@ -629,14 +698,14 @@ function ProductForm({ productToEdit }) {
         <ActionButtons
           confurmLabel={
             !productToEdit
-              ? isSubmitting
+              ? isSubmitting || isAdding
                 ? "در حال ساخت..."
                 : "ساخت محصول"
               : isEditing
                 ? "در حال ویرایش..."
                 : "ویرایش محصول"
           }
-          isPending={isSubmitting || isEditing}
+          isPending={isSubmitting || isAdding || isEditing}
         />
       </form>
     </div>

@@ -1,3 +1,5 @@
+import { PRODUCT_GRADES } from "../../../../../utils/productGrade.mjs";
+
 export const TARGET = Object.freeze({
   SELECTED: "SELECTED_PRODUCTS",
   FILTERED: "FILTERED_PRODUCTS",
@@ -20,13 +22,15 @@ export function supportedBulkFilters(filters = {}) {
   const search = filters.search?.trim();
   const brandIds = [...new Set((filters.brandIds || []).map(Number))]
     .filter((id) => Number.isInteger(id) && id > 0);
+  // Known grades only, deduplicated, in canonical order; `original` is never sent.
+  const grades = PRODUCT_GRADES.filter((grade) => (filters.grades || []).includes(grade));
   const gender = filters.gender?.trim();
   const fragranceFamilies = [...new Set((filters.fragranceFamilies || [])
     .map((slug) => slug.trim()).filter(Boolean))];
   return {
     ...(search ? { search } : {}),
     ...(brandIds.length ? { brandIds } : {}),
-    ...(typeof filters.original === "boolean" ? { original: filters.original } : {}),
+    ...(grades.length ? { grades } : {}),
     ...(gender ? { gender } : {}),
     ...(fragranceFamilies.length ? { fragranceFamilies } : {}),
   };
