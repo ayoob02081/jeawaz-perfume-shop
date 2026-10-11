@@ -12,8 +12,11 @@ import {
 import { useGetProductVolumeOptions } from "@/hooks/useProducts";
 import {
   CONCENTRATION_FILTER_LABEL,
+  SIDEBAR_PRICE_RANGES,
   TAXONOMY_FILTER_GROUPS,
-  activeFilterCount,
+  canApplySidebarFilters,
+  genderProductsHref,
+  isPriceRangeSelected,
   mergeVolumeOptions,
 } from "@/utils/productFilterContract.mjs";
 import {
@@ -31,37 +34,6 @@ import { toPersianNumbers } from "@/utils/toPersianNumbers";
 const SIDEBAR_TAXONOMY_GROUPS = TAXONOMY_FILTER_GROUPS.filter(
   ({ key }) => key !== "gender",
 );
-
-const priceRanges = [
-  {
-    id: 1,
-    minPrice: 0,
-    maxPrice: 999999,
-    value: "until-one-million",
-    label: "تا یک میلیون",
-  },
-  {
-    id: 2,
-    minPrice: 0,
-    maxPrice: 3000000,
-    value: "until-three-million",
-    label: "تا سه میلیون",
-  },
-  {
-    id: 3,
-    minPrice: 0,
-    maxPrice: 5000000,
-    value: "until-five-million",
-    label: "تا پنج میلیون",
-  },
-  {
-    id: 4,
-    minPrice: 5000001,
-    maxPrice: null,
-    value: "over-five-million",
-    label: "بالای پنج میلیون",
-  },
-];
 
 function CategorySidebar({ isCategoryOpen, closeCategory }) {
   const searchParams = useSearchParams();
@@ -105,11 +77,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
     (gender) => gender.slug === state.draft.gender,
   );
 
-  const isFilter = activeFilterCount(state.draft) > 0;
-
-  const isPriceFilter =
-    state.draft.priceRange?.[0] !== null ||
-    state.draft.priceRange?.[1] !== null;
+  const canApply = canApplySidebarFilters(state);
 
   function addFilter(actionType, itemKey, itemValue) {
     dispatch({
@@ -239,21 +207,21 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
               </div>
             </GenderCategoriesFilter>
 
-            {/* Mobile Gender Link */}
-            {state.draft.gender && (
+            {/* Mobile Gender Link (only for a known, active gender) */}
+            {activeGender && (
               <div className="md:hidden bg-stroke-0 rounded-2xl m-4">
                 <button
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
 
-                    router.replace(`/products?gender=${activeGender?.slug}`);
+                    router.replace(genderProductsHref(activeGender.slug));
 
                     closeCategory();
                   }}
                   className="flex items-center justify-between p-6 text-primary w-full"
                 >
-                  <span>همه ادکلن‌های {activeGender?.title}</span>
+                  <span>همه ادکلن‌های {activeGender.title}</span>
 
                   <ChevronLeftIcon className="text-primary size-4" />
                 </button>
@@ -483,10 +451,11 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                     title="محدوده قیمت"
                     className="md:pl-4"
                   >
-                    {priceRanges.map((price) => {
-                      const checked =
-                        state.draft.priceRange?.[0] === price.minPrice &&
-                        state.draft.priceRange?.[1] === price.maxPrice;
+                    {SIDEBAR_PRICE_RANGES.map((price) => {
+                      const checked = isPriceRangeSelected(
+                        state.draft.priceRange,
+                        price,
+                      );
 
                       return (
                         <FilterRadioBtn
@@ -513,7 +482,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                 <div className="max-sm:fixed max-sm:bottom-4 max-sm:inset-x-0 max-sm:px-4 flex items-center justify-between justify-items-center gap-4 max-[30rem]:w-full w-fit h-8">
                   <button
                     type="button"
-                    disabled={!isFilter && !isPriceFilter}
+                    disabled={!canApply}
                     onClick={() => {
                       submitFilters();
                       closeCategory();

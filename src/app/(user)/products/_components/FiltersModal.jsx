@@ -7,6 +7,7 @@ import {
   TAXONOMY_FILTER_GROUPS,
   activeFilterCount,
   mergeVolumeOptions,
+  validatePriceBound,
   validatePriceRange,
 } from "@/utils/productFilterContract.mjs";
 import {
@@ -210,7 +211,6 @@ function FiltersModal({
                   control={control}
                   watch={watch}
                   errors={errors}
-                  hidde
                 />
               </FilterOption>
               <FilterOption title={GRADE_FILTER_LABEL}>
@@ -543,7 +543,7 @@ export function PriceFilter({ addFilter, control, watch, errors, hidden }) {
       </div>
       <div
         className={`
-          ${hidden && "max-md:hidden"}
+          ${hidden ? "max-md:hidden" : ""}
           flex items-center justify-between gap-2 w-full h-fit min-h-11`}
       >
         <div className="flex max-[30rem]:flex-col items-center justify-between gap-2 w-full">
@@ -553,7 +553,10 @@ export function PriceFilter({ addFilter, control, watch, errors, hidden }) {
             isPrice={true}
             name="minPrice"
             errors={errors}
-            validationSchema={{ deps: ["maxPrice"] }}
+            validationSchema={{
+              deps: ["maxPrice"],
+              validate: validatePriceBound,
+            }}
             className="w-full px-3"
             placeholder="حداقل"
             containerClassName="size-full *:pr-0"
@@ -568,8 +571,11 @@ export function PriceFilter({ addFilter, control, watch, errors, hidden }) {
             name="maxPrice"
             errors={errors}
             validationSchema={{
-              validate: (maxPrice, values) =>
-                validatePriceRange(values.minPrice, maxPrice),
+              validate: {
+                bound: validatePriceBound,
+                range: (maxPrice, values) =>
+                  validatePriceRange(values.minPrice, maxPrice),
+              },
             }}
             className="w-full px-3"
             placeholder="حداکثر"

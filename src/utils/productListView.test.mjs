@@ -23,12 +23,23 @@ test("no empty state before any response exists", () => {
   assert.equal(productListView({ isLoading: false, data: undefined }), "products");
 });
 
+test("a failed request is the error view, ahead of loading, empty and stale products", () => {
+  const error = new Error("Request failed");
+  assert.equal(productListView({ isLoading: false, data: undefined, error }), "error");
+  assert.equal(productListView({ isLoading: true, data: undefined, error }), "error");
+  assert.equal(productListView({ isLoading: false, data: { data: [] }, error }), "error");
+  assert.equal(productListView({ isLoading: false, data: { data: [{ id: 1 }] }, error }), "error");
+  assert.equal(productListView({ isLoading: false, data: { data: [{ id: 1 }] }, error: null }),
+    "products");
+});
+
 test("layout renders the Persian empty state, keeps error first and pagination intact", () => {
   const layout = readFileSync(new URL("../app/(user)/products/_components/ProductsLayout.jsx",
     import.meta.url), "utf8");
-  assert.match(layout, /productListView\(\{ isLoading: isProductsLoading, data \}\)/);
+  assert.match(layout,
+    /productListView\(\{\s*isLoading: isProductsLoading,\s*data,\s*error: isProductsError,\s*\}\)/);
   assert.match(layout, /view === "empty" && \(\s*<NotExisted[^>]*>\s*محصولی با این مشخصات یافت نشد\.\s*<\/NotExisted>/);
-  assert.ok(layout.indexOf("if (isProductsError)") < layout.indexOf('view === "empty"'),
-    "error state returns before the empty state can render");
+  assert.ok(layout.indexOf('view === "error"') < layout.indexOf('view === "empty"'),
+    "the error view is chosen before the empty state can render");
   assert.match(layout, /<PagesNumber[\s\S]*totalPages=\{totalPages\}/);
 });

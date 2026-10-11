@@ -19,14 +19,24 @@ import CompleteUserData from "@/components/CompleteUserData";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { useSidebar } from "@/contexts/Sidebars/SidebarContext";
 import ThemeToggle from "@/ui/ThemeToggle";
+import {
+  productSearchNavigation,
+  syncHeaderSearch,
+} from "@/utils/headerSearch.mjs";
 
 function HeaderLayout() {
   const { isCategoryOpen, toggleSidebar, toggleCategory } = useSidebar();
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [searchValue, setSearchValue] = useState(
-    searchParams.get("search") || "",
-  );
+  const urlSearch = searchParams.get("search") || "";
+  const [search, setSearch] = useState({ value: urlSearch, urlSearch });
+  // Follow the URL's search during render (no effect, no request).
+  const syncedSearch = syncHeaderSearch(search, urlSearch);
+  if (syncedSearch !== search) setSearch(syncedSearch);
+  const searchValue = syncedSearch.value;
+  const setSearchValue = (value) =>
+    setSearch((current) => ({ ...current, value }));
   const { user, isAuthenticated, loading } = useAuth();
   const { data: cartItems, isLoading } = useGetAllCartItems();
   const isProfileCompleted = user?.profileCompleted || false;
@@ -41,21 +51,14 @@ function HeaderLayout() {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
 
-    const value = searchValue.trim();
-    const params = new URLSearchParams(searchParams.toString());
+    const { href, replace } = productSearchNavigation(
+      searchValue,
+      searchParams,
+      pathname,
+    );
 
-    if (value) {
-      params.set("search", value);
-    } else {
-      params.delete("search");
-    }
-
-    params.set("page", "1");
-    params.set("limit", "12");
-
-    const query = params.toString();
-
-    router.replace(`/products${query ? `?${query}` : ""}`);
+    if (replace) router.replace(href);
+    else router.push(href);
   };
 
   return (

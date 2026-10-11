@@ -77,6 +77,7 @@ function ProductsLayout() {
     isLoading: isProductsLoading,
     isFetching: isProductsFetching,
     error: isProductsError,
+    refetch: refetchProducts,
   } = useGetAllProducts(filters);
 
   const products = data?.data || [];
@@ -99,42 +100,51 @@ function ProductsLayout() {
   }, [page, totalPages, filters, queryClient]);
 
   const skeletonCount = filters.limit;
-  const view = productListView({ isLoading: isProductsLoading, data });
-
-  if (isProductsError) {
-    return <Error className="h-dvh" />;
-  }
+  const view = productListView({
+    isLoading: isProductsLoading,
+    data,
+    error: isProductsError,
+  });
 
   return (
     <main className="z-0 container mx-auto xl:max-w-7xl pb-2 px-4 w-full ">
+      {/* Filters stay usable on a failed request, so a bad filter can be removed. */}
       <FilterSection />
-      <section
-        className={`w-auto flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-3 md:gap-6 pb-6 transition-opacity duration-200 ${
-          isProductsFetching ? "opacity-60 pointer-events-none" : "opacity-100"
-        }`}
-      >
-        {view === "loading" &&
-          Array.from({ length: skeletonCount }).map((_, index) => (
-            <ProductCardSkeleton key={index} />
-          ))}
-        {view === "empty" && (
-          <NotExisted className="h-40">
-            محصولی با این مشخصات یافت نشد.
-          </NotExisted>
-        )}
-        {view === "products" &&
-          products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-      </section>
-      <div className="flex items-center justify-center h-20">
-        <PagesNumber
-          page={page}
-          setPage={setPage}
-          totalPages={totalPages}
-          isLoading={isProductsFetching}
-        />
-      </div>
+      {view === "error" ? (
+        <Error className="w-full" onRetry={refetchProducts} />
+      ) : (
+        <>
+          <section
+            className={`w-auto flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-3 md:gap-6 pb-6 transition-opacity duration-200 ${
+              isProductsFetching
+                ? "opacity-60 pointer-events-none"
+                : "opacity-100"
+            }`}
+          >
+            {view === "loading" &&
+              Array.from({ length: skeletonCount }).map((_, index) => (
+                <ProductCardSkeleton key={index} />
+              ))}
+            {view === "empty" && (
+              <NotExisted className="h-40">
+                محصولی با این مشخصات یافت نشد.
+              </NotExisted>
+            )}
+            {view === "products" &&
+              products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+          </section>
+          <div className="flex items-center justify-center h-20">
+            <PagesNumber
+              page={page}
+              setPage={setPage}
+              totalPages={totalPages}
+              isLoading={isProductsFetching}
+            />
+          </div>
+        </>
+      )}
     </main>
   );
 }

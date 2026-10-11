@@ -9,6 +9,31 @@ const decimalInteger = (value, allowZero = false) => {
     : null;
 };
 
+// GET /products bounds (backend QueryProductsDto): integer IRT prices and
+// integer ml volumes. A value outside them, an inverted min/max pair or an
+// unknown sort is a 400, so it is dropped instead of being sent.
+export const PRODUCT_PRICE_MAX = 2_147_483_647;
+export const PRODUCT_VOLUME_MAX = 4_294_967_295;
+export const PRODUCT_SORTS = [
+  "newest",
+  "oldest",
+  "best_selling",
+  "most_discounted",
+  "price_low_to_high",
+  "price_high_to_low",
+];
+
+const boundedInteger = (max) => (value) => {
+  const number = decimalInteger(value);
+  return number !== null && number <= max ? number : null;
+};
+const priceBound = boundedInteger(PRODUCT_PRICE_MAX);
+const volumeBound = boundedInteger(PRODUCT_VOLUME_MAX);
+// An inverted pair is ambiguous: neither bound is applied.
+const orderedRange = (min, max) =>
+  min !== null && max !== null && min > max ? [null, null] : [min, max];
+const productSort = (value) => (PRODUCT_SORTS.includes(value) ? value : null);
+
 const uniqueSorted = (values, parse) =>
   [
     ...new Set(
@@ -19,7 +44,7 @@ const uniqueSorted = (values, parse) =>
   ].sort((a, b) => a - b);
 
 export const normalizeVolumes = (values = []) =>
-  uniqueSorted(values, (value) => decimalInteger(value));
+  uniqueSorted(values, volumeBound);
 const normalizeIds = (values = []) =>
   uniqueSorted(values, (value) => decimalInteger(value));
 const normalizeSlugs = (values = []) =>
@@ -217,13 +242,18 @@ export function buildQueryFromFilters(filters, currentSearchParams) {
   if (variantType(filters.type)) params.set("type", filters.type);
   if (filters.gender) params.set("gender", filters.gender);
   if (filters.temperature) params.set("temperature", filters.temperature);
-  if (filters.sort) params.set("sort", filters.sort);
+  const sort = productSort(filters.sort);
+  if (sort) params.set("sort", sort);
   if (filters.inStock === true) params.set("inStock", "true");
   if (filters.discounted === true) params.set("discounted", "true");
-  const minVolume = decimalInteger(filters.minVolume);
-  const maxVolume = decimalInteger(filters.maxVolume);
-  const minPrice = decimalInteger(filters.priceRange?.[0]);
-  const maxPrice = decimalInteger(filters.priceRange?.[1]);
+  const [minVolume, maxVolume] = orderedRange(
+    volumeBound(filters.minVolume),
+    volumeBound(filters.maxVolume),
+  );
+  const [minPrice, maxPrice] = orderedRange(
+    priceBound(filters.priceRange?.[0]),
+    priceBound(filters.priceRange?.[1]),
+  );
   if (minVolume !== null) params.set("minVolume", String(minVolume));
   if (maxVolume !== null) params.set("maxVolume", String(maxVolume));
   if (minPrice !== null) params.set("minPrice", String(minPrice));
@@ -234,6 +264,14 @@ export function buildQueryFromFilters(filters, currentSearchParams) {
 export function getFiltersFromSearchParams(searchParams) {
   const types = searchParams.getAll("type");
   const grades = normalizeGrades(searchParams.getAll("grades"));
+  const [minVolume, maxVolume] = orderedRange(
+    volumeBound(searchParams.get("minVolume")),
+    volumeBound(searchParams.get("maxVolume")),
+  );
+  const priceRange = orderedRange(
+    priceBound(searchParams.get("minPrice")),
+    priceBound(searchParams.get("maxPrice")),
+  );
   return {
     ...structuredClone(emptyFilters),
     brandIds: normalizeIds(searchParams.getAll("brandIds")),
@@ -248,19 +286,16 @@ export function getFiltersFromSearchParams(searchParams) {
     concentrations: normalizeConcentrations(
       searchParams.getAll("concentrations"),
     ),
-    sort: searchParams.get("sort") || "",
+    sort: productSort(searchParams.get("sort")) ?? "",
     inStock: searchParams.get("inStock") === "true" ? true : null,
     // Old links (?original=true|false) still load; `grades` wins when present.
     grades: grades.length
       ? grades
       : gradesFromLegacyOriginal(singleValue(searchParams.getAll("original"))),
     discounted: searchParams.get("discounted") === "true" ? true : null,
-    minVolume: decimalInteger(searchParams.get("minVolume")),
-    maxVolume: decimalInteger(searchParams.get("maxVolume")),
-    priceRange: [
-      decimalInteger(searchParams.get("minPrice")),
-      decimalInteger(searchParams.get("maxPrice")),
-    ],
+    minVolume,
+    maxVolume,
+    priceRange,
   };
 }
 
@@ -286,6 +321,66 @@ export const validatePriceRange = (minPrice, maxPrice) => {
   const max = decimalInteger(maxPrice);
   return min === null || max === null || min <= max || PRICE_RANGE_ERROR;
 };
+
+export const PRICE_MAX_ERROR = "قیمت وارد شده بیشتر از حد مجاز است";
+
+// The backend rejects a price above its integer bound with 400; block it
+// before Apply instead of dropping the typed value.
+export const validatePriceBound = (value) =>
+  !/^\d+$/.test(String(value ?? "")) ||
+  Number(value) <= PRODUCT_PRICE_MAX ||
+  PRICE_MAX_ERROR;
+
+// CategorySidebar's preset price ranges. "No minimum" is null, as the URL
+// round trip produces it (a zero minimum is never written).
+export const SIDEBAR_PRICE_RANGES = [
+  {
+    id: 1,
+    minPrice: null,
+    maxPrice: 999999,
+    value: "until-one-million",
+    label: "تا یک میلیون",
+  },
+  {
+    id: 2,
+    minPrice: null,
+    maxPrice: 3000000,
+    value: "until-three-million",
+    label: "تا سه میلیون",
+  },
+  {
+    id: 3,
+    minPrice: null,
+    maxPrice: 5000000,
+    value: "until-five-million",
+    label: "تا پنج میلیون",
+  },
+  {
+    id: 4,
+    minPrice: 5000001,
+    maxPrice: null,
+    value: "over-five-million",
+    label: "بالای پنج میلیون",
+  },
+];
+
+// A preset is selected when the price bounds normalize to the same values.
+export const isPriceRangeSelected = (priceRange, range) => {
+  const current = priceFormValues(priceRange);
+  const preset = priceFormValues([range.minPrice, range.maxPrice]);
+  return (
+    current.minPrice === preset.minPrice && current.maxPrice === preset.maxPrice
+  );
+};
+
+// The sidebar's Apply is usable when there is a filter to apply or an applied
+// filter that the draft clears.
+export const canApplySidebarFilters = ({ draft, applied } = {}) =>
+  activeFilterCount(draft) > 0 || activeFilterCount(applied) > 0;
+
+// "All <gender> perfumes": only the gender filter, URL-encoded.
+export const genderProductsHref = (slug) =>
+  slug ? `/products?${new URLSearchParams({ gender: slug })}` : "/products";
 
 // Storefront filter options never offer inactive categories. The shared
 // /categories/type/:type endpoint also serves admin, so this is applied only
@@ -355,8 +450,10 @@ export const normalizeProductListLimit = (value) => {
     : PRODUCT_LIST_DEFAULT_LIMIT;
 };
 
-// Error state is rendered separately; empty only after a successful response.
-export const productListView = ({ isLoading, data }) => {
+// Error first (the filter controls stay usable above it); empty only after a
+// successful response.
+export const productListView = ({ isLoading, data, error }) => {
+  if (error) return "error";
   if (isLoading && !data) return "loading";
   if (data && !data.data?.length) return "empty";
   return "products";
@@ -379,6 +476,14 @@ export function normalizeProductsQuery(query = {}) {
   const characters = normalizeSlugs(query.characters);
   const occasions = normalizeSlugs(query.occasions);
   const concentrations = normalizeConcentrations(query.concentrations);
+  const [minVolume, maxVolume] = orderedRange(
+    volumeBound(query.minVolume),
+    volumeBound(query.maxVolume),
+  );
+  const [minPrice, maxPrice] = orderedRange(
+    priceBound(query.minPrice),
+    priceBound(query.maxPrice),
+  );
   const temperature =
     typeof query.temperature === "string" && query.temperature
       ? query.temperature
@@ -402,11 +507,11 @@ export function normalizeProductsQuery(query = {}) {
     fragranceFamilies: fragranceFamilies.length ? fragranceFamilies : undefined,
     type: variantType(query.type) || undefined,
     volumes: volumes.length ? volumes : undefined,
-    minVolume: decimalInteger(query.minVolume) ?? undefined,
-    maxVolume: decimalInteger(query.maxVolume) ?? undefined,
-    minPrice: decimalInteger(query.minPrice) ?? undefined,
-    maxPrice: decimalInteger(query.maxPrice) ?? undefined,
-    sort: query.sort || "newest",
+    minVolume: minVolume ?? undefined,
+    maxVolume: maxVolume ?? undefined,
+    minPrice: minPrice ?? undefined,
+    maxPrice: maxPrice ?? undefined,
+    sort: productSort(query.sort) ?? "newest",
     page: normalizeProductListPage(query.page),
     limit: normalizeProductListLimit(query.limit),
   };
