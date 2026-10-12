@@ -54,15 +54,23 @@ function loadServices() {
     rewrite("./authServices.js", [
       ['import app from "./httpClient";', ""],
       [
-        "export function requestPhoneChangeApi(",
-        "function requestPhoneChangeApi(",
+        "export function requestCurrentPhoneCodeApi(",
+        "function requestCurrentPhoneCodeApi(",
       ],
       [
-        "export async function verifyPhoneChangeApi(",
-        "async function verifyPhoneChangeApi(",
+        "export async function verifyCurrentPhoneCodeApi(",
+        "async function verifyCurrentPhoneCodeApi(",
+      ],
+      [
+        "export function requestNewPhoneCodeApi(",
+        "function requestNewPhoneCodeApi(",
+      ],
+      [
+        "export async function verifyNewPhoneCodeApi(",
+        "async function verifyNewPhoneCodeApi(",
       ],
     ]).replace(/^export /gm, "") +
-      "\nreturn { requestPhoneChangeApi, verifyPhoneChangeApi };",
+      "\nreturn { requestCurrentPhoneCodeApi, verifyCurrentPhoneCodeApi, requestNewPhoneCodeApi, verifyNewPhoneCodeApi };",
   )(app);
 
   return { app, ...services };
@@ -90,24 +98,29 @@ function fakeServer(app, respond) {
   return calls;
 }
 
-const VERIFY_BODY = {
-  challengeId: "6f1c2b8e-1d2a-4c3b-9e4f-5a6b7c8d9e0f",
-  currentPhoneCode: "11111",
-  newPhoneCode: "22222",
-};
+const CHALLENGE_ID = "6f1c2b8e-1d2a-4c3b-9e4f-5a6b7c8d9e0f";
+const PROOF_ID = "0b1c2d3e-4f5a-4b6c-8d7e-9f0a1b2c3d4e";
+const SENT = { message: "کد تایید ارسال شد", challengeId: CHALLENGE_ID, expiresAt: "x" };
 
-test("request: one POST /auth/phone-change/request with exactly { phoneNumber }, cookies only", async () => {
-  const { app, requestPhoneChangeApi } = loadServices();
-  const calls = fakeServer(app, () => [201, { message: "کد تایید ارسال شد", challengeId: "c", expiresAt: "x" }]);
+// The two code checks share one contract; each runs against its own path.
+const CHECKS = [
+  ["verifyCurrentPhoneCodeApi", "/auth/phone-change/current/verify"],
+  ["verifyNewPhoneCodeApi", "/auth/phone-change/new/verify"],
+];
 
-  const data = await requestPhoneChangeApi("09122222222");
+test("step 1 request: one POST /auth/phone-change/current/request with an empty body, cookies only", async () => {
+  const { app, requestCurrentPhoneCodeApi } = loadServices();
+  const calls = fakeServer(app, () => [201, SENT]);
 
-  assert.deepEqual(data, { message: "کد تایید ارسال شد", challengeId: "c", expiresAt: "x" });
+  const data = await requestCurrentPhoneCodeApi("09122222222");
+
+  assert.deepEqual(data, SENT);
+  // No number ever goes with it: the server sends to the stored number.
   assert.deepEqual(calls, [
     {
       method: "post",
-      url: "/auth/phone-change/request",
-      body: { phoneNumber: "09122222222" },
+      url: "/auth/phone-change/current/request",
+      body: {},
       skipAuthRefresh: false,
       withCredentials: true,
       authorization: undefined,
@@ -115,89 +128,130 @@ test("request: one POST /auth/phone-change/request with exactly { phoneNumber },
   ]);
 });
 
-test("request keeps the normal session refresh: an expired access token is refreshed and the request resent", async () => {
-  const { app, requestPhoneChangeApi } = loadServices();
-  let refreshed = false;
-  const calls = fakeServer(app, (config) => {
-    if (config.url === "/auth/refresh") {
-      refreshed = true;
-      return [200, {}];
-    }
-    return refreshed ? [201, { challengeId: "c" }] : [401, { message: "Unauthorized" }];
-  });
+test("step 2 request: one POST /auth/phone-change/new/request with exactly { proofId, phoneNumber }", async () => {
+  const { app, requestNewPhoneCodeApi } = loadServices();
+  const calls = fakeServer(app, () => [201, SENT]);
 
-  await requestPhoneChangeApi("09122222222");
+  const data = await requestNewPhoneCodeApi({ proofId: PROOF_ID, phoneNumber: "09122222222", extra: "x" });
 
-  assert.deepEqual(calls.map(({ url }) => url), [
-    "/auth/phone-change/request",
-    "/auth/refresh",
-    "/auth/phone-change/request",
+  assert.deepEqual(data, SENT);
+  assert.deepEqual(calls, [
+    {
+      method: "post",
+      url: "/auth/phone-change/new/request",
+      body: { proofId: PROOF_ID, phoneNumber: "09122222222" },
+      skipAuthRefresh: false,
+      withCredentials: true,
+      authorization: undefined,
+    },
   ]);
 });
 
-test("verify: a session read first, then exactly one POST with the three fields and no refresh-and-resend", async () => {
-  const { app, verifyPhoneChangeApi } = loadServices();
-  const calls = fakeServer(app, (config) =>
-    config.url === "/users/me"
-      ? [200, { id: 7 }]
-      : [200, { message: "شماره موبایل با موفقیت تغییر کرد", user: { id: 7, phoneNumber: "989122222222" } }],
-  );
+test("requests keep the normal session refresh: an expired access token is refreshed and the request resent once", async () => {
+  for (const [name, call, url] of [
+    ["requestCurrentPhoneCodeApi", (api) => api(), "/auth/phone-change/current/request"],
+    ["requestNewPhoneCodeApi", (api) => api({ proofId: PROOF_ID, phoneNumber: "09122222222" }), "/auth/phone-change/new/request"],
+  ]) {
+    const services = loadServices();
+    let refreshed = false;
+    const calls = fakeServer(services.app, (config) => {
+      if (config.url === "/auth/refresh") {
+        refreshed = true;
+        return [200, {}];
+      }
+      return refreshed ? [201, SENT] : [401, { message: "Unauthorized" }];
+    });
 
-  const data = await verifyPhoneChangeApi({ ...VERIFY_BODY, extra: "ignored" });
+    await call(services[name]);
 
-  assert.deepEqual(data.user, { id: 7, phoneNumber: "989122222222" });
-  assert.deepEqual(
-    calls.map(({ method, url, body, skipAuthRefresh }) => ({ method, url, body, skipAuthRefresh })),
-    [
-      { method: "get", url: "/users/me", body: undefined, skipAuthRefresh: false },
-      { method: "post", url: "/auth/phone-change/verify", body: VERIFY_BODY, skipAuthRefresh: true },
-    ],
-  );
-  assert.ok(calls.every(({ withCredentials, authorization }) => withCredentials && !authorization));
+    assert.deepEqual(calls.map(({ url: called }) => called), [url, "/auth/refresh", url], name);
+  }
 });
 
-test("verify: a wrong code (401) is sent once, never refreshed and resent (no second failed attempt)", async () => {
-  const { app, verifyPhoneChangeApi } = loadServices();
-  const calls = fakeServer(app, (config) =>
-    config.url === "/users/me" ? [200, {}] : [401, { message: "کد نامعتبر یا منقضی است" }],
-  );
+test("a 403 (proof gone) from the step 2 request is passed through, never refreshed or resent", async () => {
+  const { app, requestNewPhoneCodeApi } = loadServices();
+  const calls = fakeServer(app, () => [403, { message: "تایید شماره فعلی معتبر نیست" }]);
 
-  await assert.rejects(verifyPhoneChangeApi(VERIFY_BODY), (error) => {
-    assert.equal(error.response.status, 401);
-    assert.equal(error.config.url, "/auth/phone-change/verify");
+  await assert.rejects(requestNewPhoneCodeApi({ proofId: PROOF_ID, phoneNumber: "09122222222" }), (error) => {
+    assert.equal(error.response.status, 403);
     return true;
   });
-  assert.deepEqual(calls.map(({ url }) => url), ["/users/me", "/auth/phone-change/verify"]);
+  assert.deepEqual(calls.map(({ url }) => url), ["/auth/phone-change/new/request"]);
 });
 
-test("verify: an expired access token is refreshed by the session read, then the codes are sent once", async () => {
-  const { app, verifyPhoneChangeApi } = loadServices();
-  let refreshed = false;
-  const calls = fakeServer(app, (config) => {
-    if (config.url === "/auth/refresh") {
-      refreshed = true;
-      return [200, {}];
+test("code checks: a session read first, then exactly one POST with { challengeId, code } and no refresh-and-resend", async () => {
+  for (const [name, url] of CHECKS) {
+    const services = loadServices();
+    const calls = fakeServer(services.app, (config) =>
+      config.url === "/users/me" ? [200, { id: 7 }] : [200, { message: "ok", proofId: PROOF_ID }],
+    );
+
+    const data = await services[name]({ challengeId: CHALLENGE_ID, code: "12345", extra: "ignored" });
+
+    assert.equal(data.message, "ok");
+    assert.deepEqual(
+      calls.map(({ method, url: called, body, skipAuthRefresh }) => ({ method, url: called, body, skipAuthRefresh })),
+      [
+        { method: "get", url: "/users/me", body: undefined, skipAuthRefresh: false },
+        { method: "post", url, body: { challengeId: CHALLENGE_ID, code: "12345" }, skipAuthRefresh: true },
+      ],
+      name,
+    );
+    assert.ok(calls.every(({ withCredentials, authorization }) => withCredentials && !authorization));
+  }
+});
+
+test("code checks: a wrong code (401) or a 403 is sent once, never refreshed and resent", async () => {
+  for (const [name, url] of CHECKS) {
+    for (const status of [401, 403]) {
+      const services = loadServices();
+      const calls = fakeServer(services.app, (config) =>
+        config.url === "/users/me" ? [200, {}] : [status, { message: "کد نامعتبر یا منقضی است" }],
+      );
+
+      await assert.rejects(services[name]({ challengeId: CHALLENGE_ID, code: "12345" }), (error) => {
+        assert.equal(error.response.status, status);
+        assert.equal(error.config.url, url);
+        return true;
+      });
+      assert.deepEqual(calls.map(({ url: called }) => called), ["/users/me", url], `${name} ${status}`);
     }
-    if (config.url === "/users/me") return refreshed ? [200, {}] : [401, {}];
-    return [200, { user: { id: 7, phoneNumber: "989122222222" } }];
-  });
-
-  await verifyPhoneChangeApi(VERIFY_BODY);
-
-  assert.deepEqual(calls.map(({ url }) => url), [
-    "/users/me",
-    "/auth/refresh",
-    "/users/me",
-    "/auth/phone-change/verify",
-  ]);
+  }
 });
 
-test("verify: an ended session stops at the session read; the codes are never sent", async () => {
-  const { app, verifyPhoneChangeApi } = loadServices();
-  const calls = fakeServer(app, () => [401, {}]);
+test("code checks: an expired access token is refreshed by the session read, then the code is sent once", async () => {
+  for (const [name, url] of CHECKS) {
+    const services = loadServices();
+    let refreshed = false;
+    const calls = fakeServer(services.app, (config) => {
+      if (config.url === "/auth/refresh") {
+        refreshed = true;
+        return [200, {}];
+      }
+      if (config.url === "/users/me") return refreshed ? [200, {}] : [401, {}];
+      return [200, {}];
+    });
 
-  await assert.rejects(verifyPhoneChangeApi(VERIFY_BODY));
-  assert.ok(!calls.some(({ url }) => url === "/auth/phone-change/verify"));
+    await services[name]({ challengeId: CHALLENGE_ID, code: "12345" });
+
+    assert.deepEqual(calls.map(({ url: called }) => called), ["/users/me", "/auth/refresh", "/users/me", url], name);
+  }
+});
+
+test("code checks: an ended session stops at the session read; the code is never sent", async () => {
+  for (const [name, url] of CHECKS) {
+    const services = loadServices();
+    const calls = fakeServer(services.app, () => [401, {}]);
+
+    await assert.rejects(services[name]({ challengeId: CHALLENGE_ID, code: "12345" }));
+    assert.ok(!calls.some(({ url: called }) => called === url), name);
+  }
+});
+
+test("the legacy two-code calls are gone from the client", () => {
+  const source = readFileSync(new URL("./authServices.js", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /\/auth\/phone-change\/(request|verify)["']/);
+  assert.doesNotMatch(source, /currentPhoneCode|newPhoneCode/);
 });
 
 test("the service touches no token, cookie or browser storage", () => {
