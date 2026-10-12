@@ -18,6 +18,13 @@ import {
   getMatchingVariant,
   getVariantsByType,
 } from "@/utils/priceCalculator";
+import {
+  getDefaultPurchaseVolume,
+  getPreferredPurchaseMode,
+  isStaleAvailabilityRejection,
+  isVariantPurchasable,
+  resolveSelectedVolume,
+} from "@/utils/productAvailability.mjs";
 import SingleProductSkeleton from "../../_components/skeleton/SingleProductSkeleton";
 import { showAddToCartSuccessToast } from "@/hooks/useCart";
 import {
@@ -100,11 +107,8 @@ function ProductDes({ product }) {
 
   const decantVariants = getVariantsByType(product, "decant");
   const sealedVariants = getVariantsByType(product, "sealed");
-  const preferredMode = decantVariants.length
-    ? "decant"
-    : sealedVariants.length
-      ? "sealed"
-      : null;
+  // Decant before sealed, but first a mode with a purchasable Variant.
+  const preferredMode = getPreferredPurchaseMode(product);
   const [volumeMode, setVolumeMode] = useState(preferredMode);
   const activeMode =
     volumeMode === "decant" && decantVariants.length
@@ -118,7 +122,9 @@ function ProductDes({ product }) {
       : activeMode === "sealed"
         ? sealedVariants
         : [];
-  const defaultVolume = Number(variantsForMode[0]?.volume ?? 0);
+  const defaultVolume = getDefaultPurchaseVolume(product, activeMode);
+  // Chosen once: refreshed availability must not move a manual selection.
+  const [initialVolume] = useState(defaultVolume);
 
   // A new cart line: mobile shows the confirmation modal from the returned
   // line; desktop, or a line that cannot be identified, keeps the toast.
@@ -151,15 +157,19 @@ function ProductDes({ product }) {
     selectedVolume,
     setSelectedVolume,
     quantity,
-  } = useQuantityHandler(product, defaultVolume, activeMode, undefined, {
+  } = useQuantityHandler(product, initialVolume, activeMode, undefined, {
     onAdded: handleAdded,
+    // Stock, price or the Variant changed since the page loaded: re-read the
+    // Product. Only on a user's rejected request, never in a loop.
+    onRejected: (error) => {
+      if (isStaleAvailabilityRejection(error)) router.refresh();
+    },
   });
 
   useEffect(() => {
-    if (!getMatchingVariant(product, activeMode, selectedVolume)) {
-      setSelectedVolume(defaultVolume);
-    }
-  }, [product, activeMode, selectedVolume, defaultVolume, setSelectedVolume]);
+    const volume = resolveSelectedVolume(product, activeMode, selectedVolume);
+    if (volume !== Number(selectedVolume)) setSelectedVolume(volume);
+  }, [product, activeMode, selectedVolume, setSelectedVolume]);
 
   const selectedVariant = getMatchingVariant(
     product,
@@ -171,13 +181,11 @@ function ProductDes({ product }) {
     selectedVariant?.type,
     selectedVariant?.volume,
   );
-  const canPurchase =
-    !!selectedVariant &&
-    Number(product.stock) >= Number(selectedVariant.volume);
+  const canPurchase = isVariantPurchasable(product, selectedVariant);
 
   const selectMode = (type) => {
     setVolumeMode(type);
-    setSelectedVolume(Number(getVariantsByType(product, type)[0]?.volume ?? 0));
+    setSelectedVolume(getDefaultPurchaseVolume(product, type));
   };
 
   return (
@@ -251,7 +259,7 @@ function ProductDes({ product }) {
             <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
               {variantsForMode.map((variant) => {
                 const volume = Number(variant.volume);
-                const isDisabled = product.stock < volume;
+                const isDisabled = !isVariantPurchasable(product, variant);
 
                 return (
                   <RadioButton
@@ -332,6 +340,7 @@ function ProductDes({ product }) {
             <CardEvents
               RemoveFromCartHandler={RemoveFromCartHandler}
               AddToCartHandler={AddToCartHandler}
+              addDisabled={!canPurchase}
               quantity={quantity}
               btnStyle="max-lg:size-8 lg:size-12 not-active:bg-stroke-100 dark:not-active:bg-stroke-50"
               quantityStyle="max-lg:size-12 lg:size-12 max-lg:text-lg lg:text-lg"

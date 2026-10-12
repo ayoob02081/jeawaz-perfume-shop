@@ -243,10 +243,15 @@ test("quantity updates and errors keep their existing toasts", () => {
     handler,
     /if \(action\.type === "update"\) \{\s*updateQuantity\(\s*\{ itemId: action\.itemId, quantity: action\.quantity \},\s*\{ onError \},\s*\);\s*\} else \{\s*addToCart\(action\.payload, \{ onError \}\);/,
   );
-  assert.match(handler, /const onError = \(\) => setQuantity\(\(q\) => Math\.max\(0, q - 1\)\);/);
+  // The same rollback; `onRejected` only lets a caller react after it.
+  assert.match(
+    handler,
+    /const onError = \(error\) => \{\s*setQuantity\(\(q\) => Math\.max\(0, q - 1\)\);\s*onRejected\?\.\(error\);\s*\};/,
+  );
   // Cart page callers are unchanged (no onAdded, so the toast path is kept).
   const cartItems = source("../app/(user)/cart/_components/CartItemsLayout.jsx");
   assert.doesNotMatch(cartItems, /onAdded/);
+  assert.doesNotMatch(cartItems, /onRejected|addDisabled/);
 });
 
 function sourceFiles(dir) {

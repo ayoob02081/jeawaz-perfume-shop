@@ -78,7 +78,8 @@ test("Product detail still resolves its independently selected Variant", () => {
 test("PriceSection receives the same representative base, final price and badge inputs", () => {
   const card = readFileSync(new URL("../app/(user)/_components/ProductCard.jsx", import.meta.url), "utf8");
   assert.match(card, /\{ representativeVariant, cardPrice, cardLabel \} =\s*getProductCardPresentation\(product\)/);
-  assert.match(card, /representativeVariant\.volume/);
+  // Availability of that same representative (productAvailability.test.mjs).
+  assert.match(card, /const inStock = isProductAvailable\(product, representativeVariant\);/);
   assert.match(card, /\{cardLabel\}/);
   assert.match(card, /basePrice=\{cardPrice\.basePrice\}/);
   assert.match(card, /unitPrice=\{cardPrice\.finalPrice\}/);

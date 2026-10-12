@@ -4,6 +4,8 @@ import { toPersianNumbers } from "@/utils/toPersianNumbers";
 function CardEvents({
   RemoveFromCartHandler,
   AddToCartHandler,
+  // "+" is disabled while one more unit cannot be bought; "-" never is.
+  addDisabled = false,
   quantity,
   className,
   btnStyle = "max-lg:size-8 lg:size-12",
@@ -16,7 +18,8 @@ function CardEvents({
       >
         <button
           onClick={AddToCartHandler}
-          className={` btn-card-event btn-card-event--success ${btnStyle}`}
+          disabled={addDisabled}
+          className={` btn-card-event btn-card-event--success ${btnStyle} disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none`}
         >
           <PlusIcon className="max-md:size-3.5 size-6" />
         </button>

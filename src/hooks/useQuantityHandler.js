@@ -16,7 +16,7 @@ export function useQuantityHandler(
   defaultVolume,
   volumeMode,
   cartItem,
-  { onAdded } = {},
+  { onAdded, onRejected } = {},
 ) {
   // `onAdded` only covers a new cart line; quantity updates keep their toast.
   const { addToCart } = useAddToCart({ onAdded });
@@ -72,7 +72,12 @@ export function useQuantityHandler(
     if (!selectedVolume || !product?.id) return;
     if (selectedVolume > product?.stock) return;
 
-    const onError = () => setQuantity((q) => Math.max(0, q - 1));
+    // Roll back the optimistic count; the error itself is already shown
+    // (useCart), and `onRejected` lets the page react to it.
+    const onError = (error) => {
+      setQuantity((q) => Math.max(0, q - 1));
+      onRejected?.(error);
+    };
     const action = resolveIncrement({
       line: cartItem || defaultCartItem,
       quantity,

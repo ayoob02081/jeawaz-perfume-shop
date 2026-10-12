@@ -4,6 +4,7 @@ import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
 import ProductGradeBadge from "@/components/ProductGradeBadge";
 import { getProductCardPresentation } from "@/utils/priceCalculator";
+import { isProductAvailable } from "@/utils/productAvailability.mjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -13,7 +14,6 @@ function ProductCard({ product, isPending, error }) {
     id,
     enTitle,
     perTitle,
-    stock,
     images,
     categories,
     brand: productBrand,
@@ -21,9 +21,8 @@ function ProductCard({ product, isPending, error }) {
 
   const { representativeVariant, cardPrice, cardLabel } =
     getProductCardPresentation(product);
-  const inStock =
-    !!representativeVariant &&
-    Number(stock) >= Number(representativeVariant.volume);
+  // The list's `isAvailable` when sent; else stock vs the representative Variant.
+  const inStock = isProductAvailable(product, representativeVariant);
   const productTemperature = categories?.temperature;
   const productCharacters = categories?.characters;
   const productGender = categories?.gender;
