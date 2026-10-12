@@ -204,12 +204,15 @@ test("Product Detail wires every purchase control to the same availability", () 
   assert.doesNotMatch(detailPage, /product\.stock|Number\(product\?\.stock\)/);
 });
 
-test("CardEvents disables only '+', and only when asked", () => {
+test("CardEvents disables '+' when asked, and both only while a change is pending", () => {
   const events = source("../components/CardEvents.jsx");
   assert.match(events, /addDisabled = false,/);
-  assert.match(events, /onClick=\{AddToCartHandler\}\s*disabled=\{addDisabled\}/);
-  assert.equal(events.match(/disabled=/g)?.length, 1);
-  assert.match(events, /onClick=\{RemoveFromCartHandler\}\s*className=/);
+  assert.match(events, /pending = false,/);
+  assert.match(events, /onClick=\{AddToCartHandler\}\s*disabled=\{addDisabled \|\| pending\}/);
+  // "-" never depends on availability: only on the line's change in flight.
+  assert.match(events, /onClick=\{RemoveFromCartHandler\}\s*disabled=\{pending\}/);
+  assert.equal(events.match(/disabled=/g)?.length, 2);
+  assert.match(events, /aria-busy=\{pending\}/);
 });
 
 test("a rejected cart change rolls back, stays visible, and refreshes only Product Detail", () => {
@@ -220,7 +223,10 @@ test("a rejected cart change rolls back, stays visible, and refreshes only Produ
     /onRejected: \(error\) => \{\s*if \(isStaleAvailabilityRejection\(error\)\) router\.refresh\(\);\s*\},/);
   const handler = source("../hooks/useQuantityHandler.js");
   assert.match(handler, /\{ onAdded, onRejected \} = \{\},/);
-  assert.equal(handler.match(/onRejected\?\.\(error\)/g)?.length, 1);
+  assert.match(handler, /createQuantityFlow\(\{[\s\S]*?\s+onRejected,\s/);
+  // Once per rejected request, after the count has taken the server's quantity.
+  const flow = source("./cartQuantityFlow.mjs");
+  assert.equal(flow.match(/onRejected\?\.\(error\)/g)?.length, 1);
   // The rejection stays visible: useCart still toasts every API error.
   const cartHook = source("../hooks/useCart.js");
   assert.equal(cartHook.match(/onError: \(error\) => showApiError\(error\)/g)?.length, 5);

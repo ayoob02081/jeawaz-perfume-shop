@@ -71,7 +71,7 @@ function MobileCartLayout({ cartItem }) {
   const imageSrc = product.images[0];
   const defaultVolume = volume;
   const volumeMode = mode;
-  const { AddToCartHandler, RemoveFromCartHandler } = useQuantityHandler(
+  const { AddToCartHandler, RemoveFromCartHandler, isPending } = useQuantityHandler(
     product,
     defaultVolume,
     volumeMode,
@@ -114,6 +114,7 @@ function MobileCartLayout({ cartItem }) {
               <CardEvents
                 RemoveFromCartHandler={RemoveFromCartHandler}
                 AddToCartHandler={AddToCartHandler}
+                pending={isPending}
                 quantity={quantity}
                 BtnBackgroundColor="bg-stroke-100 dark:bg-stroke-50"
                 className="lg:*:*:size-5 *:*:size-4"
@@ -140,7 +141,7 @@ function DesktopCartLayout({ cartItem }) {
   const imageSrc = product.images[0];
   const defaultVolume = volume;
   const volumeMode = mode;
-  const { AddToCartHandler, RemoveFromCartHandler } = useQuantityHandler(
+  const { AddToCartHandler, RemoveFromCartHandler, isPending } = useQuantityHandler(
     product,
     defaultVolume,
     volumeMode,
@@ -181,6 +182,7 @@ function DesktopCartLayout({ cartItem }) {
         <CardEvents
           RemoveFromCartHandler={RemoveFromCartHandler}
           AddToCartHandler={AddToCartHandler}
+          pending={isPending}
           quantity={quantity}
           BtnBackgroundColor="bg-stroke-100 dark:bg-stroke-50"
         />
@@ -307,7 +309,7 @@ function SummeryCard({ cartItem }) {
   } = cartItem;
   const defaultVolume = volume;
   const volumeMode = mode;
-  const { AddToCartHandler, RemoveFromCartHandler } = useQuantityHandler(
+  const { AddToCartHandler, RemoveFromCartHandler, isPending } = useQuantityHandler(
     product,
     defaultVolume,
     volumeMode,
@@ -348,6 +350,7 @@ function SummeryCard({ cartItem }) {
               <CardEvents
                 RemoveFromCartHandler={RemoveFromCartHandler}
                 AddToCartHandler={AddToCartHandler}
+                pending={isPending}
                 quantity={quantity}
                 BtnBackgroundColor="bg-stroke-0"
                 className="lg:*:*:size-5 *:*:size-4 h-10"

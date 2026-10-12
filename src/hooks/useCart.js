@@ -51,9 +51,18 @@ export function showAddToCartSuccessToast(data) {
   });
 }
 
+// Line changes (add, quantity, remove): the cart is re-read after success and
+// after rejection, and the returned promise keeps the mutation pending until
+// it is, so the caller's own callbacks see the server's cart. `scope` (one
+// cart line) runs that line's changes one at a time.
+const lineChangeOptions = (queryClient, scope) => ({
+  ...(scope ? { scope: { id: scope } } : {}),
+  onSettled: () => queryClient.invalidateQueries({ queryKey: cartKeys.all }),
+});
+
 // With `onAdded`, the caller owns the success feedback and receives the
 // returned cart and the request variables; without it, the toast is shown.
-export function useAddToCart({ onAdded } = {}) {
+export function useAddToCart({ onAdded, scope } = {}) {
   const queryClient = useQueryClient();
   const onAddedRef = useRef(onAdded);
   onAddedRef.current = onAdded;
@@ -67,11 +76,9 @@ export function useAddToCart({ onAdded } = {}) {
       if (cart) queryClient.setQueryData(cartKeys.items(), cart);
       if (onAddedRef.current) onAddedRef.current(data, variables);
       else showAddToCartSuccessToast(data);
-      queryClient.invalidateQueries({
-        queryKey: cartKeys.all,
-      });
     },
     onError: (error) => showApiError(error),
+    ...lineChangeOptions(queryClient, scope),
   });
 
   return {
@@ -80,7 +87,7 @@ export function useAddToCart({ onAdded } = {}) {
   };
 }
 
-export function useUpdateQuantity() {
+export function useUpdateQuantity({ scope } = {}) {
   const queryClient = useQueryClient();
   const { isPending: isUpdating, mutate: updateQuantity } = useMutation({
     mutationFn: updateQuantityApi,
@@ -88,11 +95,9 @@ export function useUpdateQuantity() {
       toast.success(data?.message || "تعداد محصول بروزرسانی شد", {
         id: "update-cart-quantity-success",
       });
-      queryClient.invalidateQueries({
-        queryKey: cartKeys.all,
-      });
     },
     onError: (error) => showApiError(error),
+    ...lineChangeOptions(queryClient, scope),
   });
 
   return {
@@ -120,7 +125,7 @@ export function useUpdateShippingMethod() {
   };
 }
 
-export function useRemoveFromCart() {
+export function useRemoveFromCart({ scope } = {}) {
   const queryClient = useQueryClient();
   const { isPending: isDeleting, mutateAsync: removeFromCart } = useMutation({
     mutationFn: removeFromCartApi,
@@ -128,11 +133,9 @@ export function useRemoveFromCart() {
       toast.success(data?.message || "محصول از سبد خرید حذف شد", {
         id: "remove-cart-success",
       });
-      queryClient.invalidateQueries({
-        queryKey: cartKeys.all,
-      });
     },
     onError: (error) => showApiError(error),
+    ...lineChangeOptions(queryClient, scope),
   });
 
   return {

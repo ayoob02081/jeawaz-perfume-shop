@@ -157,6 +157,7 @@ function ProductDes({ product }) {
     selectedVolume,
     setSelectedVolume,
     quantity,
+    isPending,
   } = useQuantityHandler(product, initialVolume, activeMode, undefined, {
     onAdded: handleAdded,
     // Stock, price or the Variant changed since the page loaded: re-read the
@@ -324,6 +325,7 @@ function ProductDes({ product }) {
         {canPurchase && (
           <button
             ref={addButtonRef}
+            disabled={quantity === 0 && isPending}
             onClick={
               quantity === 0 ? AddToCartHandler : () => router.push("/cart")
             }
@@ -341,6 +343,7 @@ function ProductDes({ product }) {
               RemoveFromCartHandler={RemoveFromCartHandler}
               AddToCartHandler={AddToCartHandler}
               addDisabled={!canPurchase}
+              pending={isPending}
               quantity={quantity}
               btnStyle="max-lg:size-8 lg:size-12 not-active:bg-stroke-100 dark:not-active:bg-stroke-50"
               quantityStyle="max-lg:size-12 lg:size-12 max-lg:text-lg lg:text-lg"

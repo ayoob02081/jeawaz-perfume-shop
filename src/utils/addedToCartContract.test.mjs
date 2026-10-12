@@ -218,7 +218,7 @@ test("useAddToCart hands success to onAdded, otherwise keeps the existing toast"
   );
   assert.match(
     cartHook,
-    /if \(onAddedRef\.current\) onAddedRef\.current\(data, variables\);\s*else showAddToCartSuccessToast\(data\);\s*queryClient\.invalidateQueries/,
+    /if \(onAddedRef\.current\) onAddedRef\.current\(data, variables\);\s*else showAddToCartSuccessToast\(data\);\s*\},\s*onError: \(error\) => showApiError\(error\),\s*\.\.\.lineChangeOptions\(queryClient, scope\),/,
   );
   // The data layer holds no viewport or modal policy.
   assert.doesNotMatch(cartHook, /matchMedia|Modal|48rem|isDesktop/);
@@ -235,18 +235,20 @@ test("quantity updates and errors keep their existing toasts", () => {
   assert.equal(cartHook.match(/onError: \(error\) => showApiError\(error\)/g)?.length, 5);
 
   const handler = source("../hooks/useQuantityHandler.js");
-  // onAdded reaches only the new-line mutation.
-  assert.match(handler, /const \{ addToCart \} = useAddToCart\(\{ onAdded \}\);/);
-  assert.match(handler, /const \{ updateQuantity \} = useUpdateQuantity\(\);/);
-  // "+" on a known line goes through updateQuantity (its toast), with rollback.
+  // onAdded reaches only the new-line mutation; all three share the line's scope.
+  assert.match(handler, /const \{ addToCart \} = useAddToCart\(\{ onAdded, scope \}\);/);
+  assert.match(handler, /const \{ updateQuantity \} = useUpdateQuantity\(\{ scope \}\);/);
+  assert.match(handler, /const \{ removeFromCart \} = useRemoveFromCart\(\{ scope \}\);/);
+  // "+" on a known line goes through updateQuantity (its toast); a rejection
+  // takes the server's quantity, then `onRejected` lets a caller react.
+  const flow = source("./cartQuantityFlow.mjs");
   assert.match(
-    handler,
-    /if \(action\.type === "update"\) \{\s*updateQuantity\(\s*\{ itemId: action\.itemId, quantity: action\.quantity \},\s*\{ onError \},\s*\);\s*\} else \{\s*addToCart\(action\.payload, \{ onError \}\);/,
+    flow,
+    /if \(action\.type === "update"\) \{\s*update\(\{ itemId: action\.itemId, quantity: action\.quantity \}, options\);\s*\} else \{\s*add\(action\.payload, options\);/,
   );
-  // The same rollback; `onRejected` only lets a caller react after it.
   assert.match(
-    handler,
-    /const onError = \(error\) => \{\s*setQuantity\(\(q\) => Math\.max\(0, q - 1\)\);\s*onRejected\?\.\(error\);\s*\};/,
+    flow,
+    /onError: \(error\) => \{\s*settle\(previous\);\s*onRejected\?\.\(error\);\s*\},\s*onSettled: finish,/,
   );
   // Cart page callers are unchanged (no onAdded, so the toast path is kept).
   const cartItems = source("../app/(user)/cart/_components/CartItemsLayout.jsx");
@@ -371,9 +373,14 @@ test("useAddToCart caches the returned cart before feedback, on every viewport",
     addHook,
     /const cart = cartFromAddResponse\(data\);\s*if \(cart\) queryClient\.setQueryData\(cartKeys\.items\(\), cart\);\s*if \(onAddedRef\.current\)/,
   );
-  // The existing invalidation is kept; no extra request or refresh is added.
-  assert.equal(addHook.match(/invalidateQueries/g)?.length, 1);
-  assert.doesNotMatch(addHook, /\.refetch\w*\(|router\.|\.reload\(|setTimeout\(/);
+  // One re-read per change (on success or rejection, through the shared line
+  // options); no extra request or refresh is added.
+  assert.match(addHook, /\.\.\.lineChangeOptions\(queryClient, scope\),/);
+  assert.equal(addHook.match(/invalidateQueries/g), null);
+  const lineOptions = cartHook.match(/const lineChangeOptions = [\s\S]*?\n\}\);/)[0];
+  assert.equal(lineOptions.match(/invalidateQueries/g)?.length, 1);
+  assert.match(lineOptions, /onSettled: \(\) => queryClient\.invalidateQueries\(\{ queryKey: cartKeys\.all \}\),/);
+  assert.doesNotMatch(addHook + lineOptions, /\.refetch\w*\(|router\.|\.reload\(|setTimeout\(/);
   // Same key the product page reads.
   assert.match(cartHook, /queryKey: cartKeys\.items\(\),\s*queryFn: getAllCartItemsApi/);
   const handler = source("../hooks/useQuantityHandler.js");
