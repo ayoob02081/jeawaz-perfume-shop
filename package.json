@@ -4,10 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "next build && node scripts/check-browser-compat.mjs",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check:browser-compat": "node scripts/check-browser-compat.mjs"
   },
+  "browserslist": [
+    "chrome 111",
+    "edge 111",
+    "firefox 111",
+    "safari 15.4",
+    "ios_saf 15.4"
+  ],
   "dependencies": {
     "@base-ui/react": "^1.6.0",
     "@heroicons/react": "^2.2.0",
