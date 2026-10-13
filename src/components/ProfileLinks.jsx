@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
+import { formatFullName } from "@/utils/profileFormContract.mjs";
 import Loading from "./Loading";
 import {
   ArrowRightStartOnRectangleIcon,
@@ -66,9 +67,15 @@ export function ProfileLink({
   const { user, isAuthenticated, logout } = useAuth();
   const { phoneNumber, firstName, lastName, role } = user || {};
   const isPending = isAuthenticated === null;
+  // A user without a name (no longer asked for one after login) is shown by
+  // phone, never as "null null".
+  const accountName = formatFullName(firstName, lastName);
   const fullName =
-    (isAuthenticated === true && firstName + " " + lastName) ||
-    "لطفا وارد شوید";
+    isAuthenticated !== true
+      ? "لطفا وارد شوید"
+      : accountName !== "-"
+        ? accountName
+        : normalizeIranPhone(phoneNumber) || "-";
 
   const pathName = usePathname();
   const isPathName = pathName.startsWith(baseHref);

@@ -64,6 +64,38 @@ import {
   useGetAddresses,
 } from "@/hooks/useAddress";
 import { useCreateOrder } from "@/hooks/useOrders";
+import CheckBox from "@/ui/CheckBox";
+import { PERSIAN_NAME_PATTERN } from "@/utils/profileFormContract.mjs";
+import {
+  BUYER_FIRST_NAME,
+  BUYER_LAST_NAME,
+  accountPhoneForForm,
+  buyerFullName,
+  buyerNamePayload,
+  knownBuyerNameParts,
+  needsBuyerName,
+  receiverDefaultsToApply,
+  receiverDefaultsToClear,
+  withoutBuyerFields,
+} from "@/utils/checkoutBuyerContract.mjs";
+
+// The rules the former post-login profile dialog used for the account name,
+// with the length checked on the trimmed value as the backend does.
+const buyerNameRules = (label) => ({
+  required: `${label} الزامی است`,
+  minLength: { value: 2, message: `${label} باید حداقل ۲ کاراکتر باشد` },
+  validate: (value) =>
+    String(value ?? "").trim().length >= 2 ||
+    `${label} باید حداقل ۲ کاراکتر باشد`,
+  maxLength: {
+    value: 50,
+    message: `${label} نمی‌تواند بیشتر از ۵۰ کاراکتر باشد`,
+  },
+  pattern: {
+    value: PERSIAN_NAME_PATTERN,
+    message: `${label} فقط می‌تواند شامل حروف فارسی باشد`,
+  },
+});
 
 const shippingOptions = [
   {
@@ -538,6 +570,14 @@ function Checkout({
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const router = useRouter();
   const selectedAddress = addresses?.find((a) => a.id === addressId);
+  // A signed-in user without a complete name gives it here instead of in a
+  // dialog after login (checkoutBuyerContract.mjs).
+  const { user, checkAuth } = useAuth();
+  const askBuyerName = needsBuyerName({ isAuthenticated, user });
+  const [isForSelf, setIsForSelf] = useState(true);
+  // Receiver defaults this form filled in last; null when there are none to
+  // follow (e.g. a saved address filled the receiver).
+  const appliedReceiverRef = useRef(null);
 
   const { totalProducts = 0 } = cart;
   const [isSave, setIsSave] = useState(false);
@@ -549,6 +589,8 @@ function Checkout({
     reset,
     control,
     watch,
+    getValues,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -559,6 +601,8 @@ function Checkout({
       shahr: "",
       postalCode: "",
       addressLine: "",
+      [BUYER_FIRST_NAME]: "",
+      [BUYER_LAST_NAME]: "",
     },
   });
   const finalAddress =
@@ -586,6 +630,8 @@ function Checkout({
       return;
     }
     filledAddressIdRef.current = selectedAddress.id;
+    // The saved receiver is kept as is: no buyer default may replace it.
+    appliedReceiverRef.current = null;
 
     reset({
       label: selectedAddress.label ?? "",
@@ -595,8 +641,81 @@ function Checkout({
       shahr: selectedAddress.shahr ?? "",
       postalCode: selectedAddress.postalCode ?? "",
       addressLine: selectedAddress.addressLine ?? "",
+      // The typed buyer name is not part of the address.
+      [BUYER_FIRST_NAME]: getValues(BUYER_FIRST_NAME) ?? "",
+      [BUYER_LAST_NAME]: getValues(BUYER_LAST_NAME) ?? "",
     });
-  }, [selectedAddress, reset]);
+  }, [selectedAddress, reset, getValues]);
+
+  // A partly named account: its present part is shown (read-only) instead of
+  // typed again; the backend keeps it and fills only the missing part.
+  const knownBuyer = knownBuyerNameParts(user);
+  const knownFirstName = knownBuyer[BUYER_FIRST_NAME];
+  const knownLastName = knownBuyer[BUYER_LAST_NAME];
+  useEffect(() => {
+    if (!askBuyerName) return;
+    for (const [field, value] of [
+      [BUYER_FIRST_NAME, knownFirstName],
+      [BUYER_LAST_NAME, knownLastName],
+    ]) {
+      if (value && getValues(field) !== value) setValue(field, value);
+    }
+  }, [askBuyerName, knownFirstName, knownLastName, getValues, setValue]);
+
+  // An order the buyer receives: an empty (or still defaulted) receiver name
+  // follows the buyer name, and an empty receiver phone gets the account
+  // phone. Typed and saved-address receivers are never overwritten.
+  const buyerFirstName = watch(BUYER_FIRST_NAME);
+  const buyerLastName = watch(BUYER_LAST_NAME);
+  const receiverName = watch("fullName");
+  const receiverPhone = watch("phoneNumber");
+  useEffect(() => {
+    if (!askBuyerName || !isForSelf) return;
+
+    const changes = receiverDefaultsToApply({
+      current: { fullName: receiverName, phoneNumber: receiverPhone },
+      applied: appliedReceiverRef.current,
+      desired: {
+        fullName: buyerFullName(buyerFirstName, buyerLastName),
+        phoneNumber: accountPhoneForForm(user?.phoneNumber),
+      },
+    });
+    if (Object.keys(changes).length === 0) return;
+
+    appliedReceiverRef.current = { ...appliedReceiverRef.current, ...changes };
+    for (const [field, value] of Object.entries(changes)) {
+      setValue(field, value, { shouldDirty: true });
+    }
+  }, [
+    askBuyerName,
+    isForSelf,
+    buyerFirstName,
+    buyerLastName,
+    receiverName,
+    receiverPhone,
+    user?.phoneNumber,
+    setValue,
+  ]);
+
+  // "Someone else receives it": only the defaults filled in above are
+  // cleared, so the other person's name and phone are typed in.
+  const toggleForSelf = () => {
+    const next = !isForSelf;
+    setIsForSelf(next);
+    if (next) return;
+
+    const changes = receiverDefaultsToClear({
+      current: {
+        fullName: getValues("fullName"),
+        phoneNumber: getValues("phoneNumber"),
+      },
+      applied: appliedReceiverRef.current,
+    });
+    appliedReceiverRef.current = null;
+    for (const [field, value] of Object.entries(changes)) {
+      setValue(field, value, { shouldDirty: true });
+    }
+  };
 
   const onSubmit = async (data) => {
     // One checkout at a time: a double submit must never create two Orders.
@@ -614,7 +733,7 @@ function Checkout({
       let finalAddressId = addressId;
 
       if (isSave) {
-        const addressData = await createAddress(data);
+        const addressData = await createAddress(withoutBuyerFields(data));
         finalAddressId = addressData.id;
       }
 
@@ -624,6 +743,7 @@ function Checkout({
         addressId: finalAddressId,
         form: data,
         shippingMethod: checkoutShippingMethod(cart),
+        customer: buyerNamePayload(data, askBuyerName),
       });
 
       const result = await checkoutAndPay({
@@ -639,6 +759,8 @@ function Checkout({
       }
 
       if (result.stage === "payment-failed") {
+        // The Order exists, so a sent buyer name may now be the account's.
+        if (orderPayload.customerFirstName) checkAuth();
         // The Order exists; send the user to it to retry payment there.
         toast.error(
           `${paymentErrorMessage(result.error)}. سفارش ثبت شده است؛ از صفحه سفارش دوباره پرداخت کنید.`,
@@ -691,6 +813,60 @@ function Checkout({
             </h2>
             <p className="max-md:text-sm md:text-xl">شما</p>
           </div>
+          {askBuyerName && (
+            <div className="flex flex-col gap-4 w-full">
+              <p className="max-md:text-sm md:text-base font-bold text-stroke-800">
+                اطلاعات خریدار
+              </p>
+              <div className="flex flex-col lg:flex-row gap-4 w-full">
+                <RHFTextField
+                  isPrimary
+                  isRequired
+                  register={register}
+                  errors={errors}
+                  label="نام"
+                  name={BUYER_FIRST_NAME}
+                  readOnly={Boolean(knownFirstName)}
+                  autoComplete="given-name"
+                  className="w-full"
+                  placeholder="مثال : رضا"
+                  validationSchema={buyerNameRules("نام")}
+                />
+                <RHFTextField
+                  isPrimary
+                  isRequired
+                  register={register}
+                  errors={errors}
+                  label="نام خانوادگی"
+                  name={BUYER_LAST_NAME}
+                  readOnly={Boolean(knownLastName)}
+                  autoComplete="family-name"
+                  className="w-full"
+                  placeholder="مثال : جنیدی"
+                  validationSchema={buyerNameRules("نام خانوادگی")}
+                />
+              </div>
+              <p className="text-xs text-stroke-600">
+                این نام پس از ثبت سفارش در حساب کاربری شما ذخیره می‌شود.
+              </p>
+              <CheckBox
+                name="receiverIsBuyer"
+                id="receiverIsBuyer"
+                value="receiverIsBuyer"
+                checked={isForSelf}
+                onChange={toggleForSelf}
+                label="گیرنده سفارش خودم هستم"
+                className="flex flex-row items-center justify-start gap-2 cursor-pointer duration-200 w-full"
+                textClassName="text-sm"
+              >
+                <div
+                  className={`flex items-center justify-center size-4.5 aspect-square rounded-sm border-[1.5px] ${isForSelf ? "bg-primary border-primary" : "border-stroke-600/50"}`}
+                >
+                  <CheckIcon className="size-3 stroke-4 text-stroke-0" />
+                </div>
+              </CheckBox>
+            </div>
+          )}
           <AddressForm
             control={control}
             errors={errors}

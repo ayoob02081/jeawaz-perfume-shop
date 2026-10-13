@@ -15,7 +15,7 @@ import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useGetAllCartItems } from "@/hooks/useCart";
 import { useAuth } from "@/contexts/auth/AuthContext";
-import CompleteUserData from "@/components/CompleteUserData";
+import { formatFullName } from "@/utils/profileFormContract.mjs";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { useSidebar } from "@/contexts/Sidebars/SidebarContext";
 import ThemeToggle from "@/ui/ThemeToggle";
@@ -39,13 +39,15 @@ function HeaderLayout() {
     setSearch((current) => ({ ...current, value }));
   const { user, isAuthenticated, loading } = useAuth();
   const { data: cartItems, isLoading } = useGetAllCartItems();
-  const isProfileCompleted = user?.profileCompleted || false;
+  // No profile is required after login: a user without a name is shown by
+  // phone; the name is asked for at checkout instead.
+  const accountName = formatFullName(user?.firstName, user?.lastName);
 
   const fullName =
     isAuthenticated !== true
       ? "ورود | ثبت نام"
-      : isProfileCompleted && user?.firstName.length > 1
-        ? user?.firstName + " " + user?.lastName
+      : accountName !== "-"
+        ? accountName
         : toPersianNumbers(user?.phoneNumber);
 
   const handleSearchSubmit = (e) => {
@@ -63,7 +65,6 @@ function HeaderLayout() {
 
   return (
     <>
-      {isAuthenticated && !isProfileCompleted && <CompleteUserData />}
       <DesktopHeader
         totalProducts={cartItems?.totalProducts}
         toggleCategory={toggleCategory}
