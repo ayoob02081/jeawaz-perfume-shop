@@ -4,6 +4,7 @@ import {
   addProductApi,
   getAllProductsApi,
   getProductByIdApi,
+  getProductSearchAliasesApi,
   getProductPriceApi,
   getProductSuggestionsApi,
   getProductVolumeOptionsApi,
@@ -115,6 +116,19 @@ export const useGetProductById = (id) =>
     queryKey: productKeys.detail(id),
     queryFn: () => getProductByIdApi(id),
     enabled: Boolean(id),
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+// Admin edit form only. Never served from cache: the form is filled once
+// from it, and a stale copy saved back would undo the last change.
+export const useGetProductSearchAliases = (id) =>
+  useQuery({
+    queryKey: [...productKeys.all, "search-aliases", id],
+    queryFn: () => getProductSearchAliasesApi(id),
+    enabled: Boolean(id),
+    gcTime: 0,
+    staleTime: 0,
     retry: false,
     refetchOnWindowFocus: false,
   });

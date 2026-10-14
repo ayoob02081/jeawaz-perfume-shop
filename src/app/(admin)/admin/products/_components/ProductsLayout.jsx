@@ -42,6 +42,9 @@ function ProductsLayout() {
     page,
     limit: 12,
     availabilityFirst: false,
+    // The search Bulk Price targeting uses: the list shows exactly the
+    // Products a bulk change over these filters would cover.
+    searchMode: "legacy",
   });
   const { data: brands = [] } = useGetAllBrandCategories();
   const { data: categories = [] } = useGetAllCategories();

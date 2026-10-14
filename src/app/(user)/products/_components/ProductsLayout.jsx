@@ -65,7 +65,8 @@ function ProductsLayout() {
       minPrice: applied.priceRange[0],
       maxPrice: applied.priceRange[1],
       type: applied.type,
-      sort: applied.sort || "newest",
+      // Omitted sort lets a search use backend relevance; explicit sorts stay explicit.
+      sort: applied.sort || undefined,
       page: searchParams.get("page"),
       limit: searchParams.get("limit"),
     });

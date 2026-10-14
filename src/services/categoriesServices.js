@@ -19,6 +19,13 @@ export function getBrandByIdApi(id) {
   return app.get(`/brands/${id}`).then(({ data }) => data);
 }
 
+// Admin only: { searchAliases: string | null }.
+export function getBrandSearchAliasesApi(id) {
+  return app
+    .get(`/brands/${encodeURIComponent(id)}/search-aliases`)
+    .then(({ data }) => data);
+}
+
 export function addCategoryApi(data) {
   return app.post("/categories", data).then(({ data }) => data);
 }

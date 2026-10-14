@@ -493,6 +493,9 @@ export function normalizeProductsQuery(query = {}) {
     ...(campaignId ? { campaignId } : {}),
     // Admin management opts out of the backend's availability-first ordering.
     ...(query.availabilityFirst === false ? { availabilityFirst: false } : {}),
+    // Admin management searches like Bulk Price targeting (the previous
+    // search), so its list and a bulk change over its filters always match.
+    ...(query.searchMode === "legacy" && query.search ? { searchMode: "legacy" } : {}),
     ...(seasons.length ? { seasons } : {}),
     ...(temperature ? { temperature } : {}),
     ...(characters.length ? { characters } : {}),
@@ -511,7 +514,10 @@ export function normalizeProductsQuery(query = {}) {
     maxVolume: maxVolume ?? undefined,
     minPrice: minPrice ?? undefined,
     maxPrice: maxPrice ?? undefined,
-    sort: productSort(query.sort) ?? "newest",
+    // Searching without a chosen sort uses backend relevance. Admin legacy
+    // search and ordinary lists retain their existing newest default.
+    sort: productSort(query.sort) ??
+      (typeof query.search === "string" && query.search.trim() && query.searchMode !== "legacy" ? undefined : "newest"),
     page: normalizeProductListPage(query.page),
     limit: normalizeProductListLimit(query.limit),
   };

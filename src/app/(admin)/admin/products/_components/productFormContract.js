@@ -1,5 +1,6 @@
 import { PRODUCT_CONCENTRATIONS } from "../../../../../utils/productConcentration.mjs";
 import { PRODUCT_GRADES, productGrade } from "../../../../../utils/productGrade.mjs";
+import { searchAliasesPayload } from "../../../../../utils/searchAliasesContract.mjs";
 
 export const concentrationOptions = PRODUCT_CONCENTRATIONS;
 export const gradeOptions = PRODUCT_GRADES;
@@ -35,7 +36,8 @@ const optionalText = (value) => {
 
 const invalid = (field, message) => ({ field, message });
 
-export function initialProductFormValues(product) {
+// `searchAliases` comes from the admin alias route (never in `product`).
+export function initialProductFormValues(product, searchAliases) {
   const categories = product?.categories ?? {};
   const images = (product?.images ?? [])
     .filter((image) => typeof image === "string" && image.trim())
@@ -51,6 +53,7 @@ export function initialProductFormValues(product) {
     concentration: product?.concentration ?? "",
     perfumer: product?.perfumer ?? "",
     printName: product?.printName ?? "",
+    searchAliases: searchAliases ?? "",
     images: [...images, { url: "" }],
     offValue: product?.offValue ?? "",
     stock: product?.stock ?? 0,
@@ -90,7 +93,13 @@ export function initialProductFormValues(product) {
   };
 }
 
-export function buildProductFormPayload(data, originalVariants) {
+// `searchAliasesEditable: false` (the stored aliases could not be read) leaves
+// them out of the payload, so they are kept rather than cleared.
+export function buildProductFormPayload(
+  data,
+  originalVariants,
+  { searchAliasesEditable = true } = {},
+) {
   const errors = [];
   const stock = isEmpty(data.stock) ? Number.NaN : Number(data.stock);
   // An empty discount clears it (null), never silently becomes 0.
@@ -104,6 +113,9 @@ export function buildProductFormPayload(data, originalVariants) {
   // Empty clears the override (null); enTitle is never copied in.
   const printName = optionalText(data.printName);
   const concentration = data.concentration || null;
+  const searchAliases = searchAliasesEditable
+    ? searchAliasesPayload(data.searchAliases)
+    : null;
 
   if (!inIntegerRange(stock, 0, PRODUCT_STOCK_MAX)) {
     errors.push(invalid("stock", "موجودی باید عدد صحیح و غیرمنفی باشد"));
@@ -129,6 +141,9 @@ export function buildProductFormPayload(data, originalVariants) {
     errors.push(
       invalid("printName", "نام کوتاه برای چاپ نباید بیش از ۱۰۰ نویسه باشد"),
     );
+  }
+  if (searchAliases?.error) {
+    errors.push(invalid("searchAliases", searchAliases.error));
   }
   if (concentration && !concentrationOptions.includes(concentration)) {
     errors.push(invalid("concentration", "غلظت معتبر نیست"));
@@ -243,6 +258,7 @@ export function buildProductFormPayload(data, originalVariants) {
       concentration,
       perfumer,
       printName,
+      ...(searchAliases ? { searchAliases: searchAliases.value } : {}),
       stock,
       offValue,
       // `grade` only; the deprecated `original` alias is never sent.

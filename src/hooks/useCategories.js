@@ -2,6 +2,7 @@ import {
   getAllBrandsApi,
   getAllCategoriesApi,
   getBrandByIdApi,
+  getBrandSearchAliasesApi,
   getCategoryByIdApi,
   removeBrandApi,
   removeCategoryApi,
@@ -71,6 +72,19 @@ export const useGetBrandbyID = (id) =>
     queryFn: () => getBrandByIdApi(id),
     enabled: !!id,
     staleTime: 1000 * 60 * 5,
+  });
+
+// Admin edit form only. Never served from cache: the form is filled once
+// from it, and a stale copy saved back would undo the last change.
+export const useGetBrandSearchAliases = (id) =>
+  useQuery({
+    queryKey: ["brand-search-aliases", id],
+    queryFn: () => getBrandSearchAliasesApi(id),
+    enabled: !!id,
+    gcTime: 0,
+    staleTime: 0,
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
 export function useAddCategory() {

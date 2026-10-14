@@ -210,8 +210,9 @@ test("duplicate mode is create mode: the source is never productToEdit", () => {
   assert.match(page, /href="\/admin\/products\/add"[\s\S]*?شروع محصول خالی/);
 
   // Edit is chosen only by productToEdit; the Variant baseline and PATCH follow it.
-  assert.match(form, /productToEdit\s*\?\s*initialProductFormValues\(productToEdit\)\s*:\s*\(cloneDefaults \?\? initialProductFormValues\(\)\)/);
-  assert.match(form, /buildProductFormPayload\(\s*data,\s*productToEdit \? editBaseline\.current\.variants : undefined,\s*\)/);
+  // (A duplicate starts without search aliases: they belong to the source.)
+  assert.match(form, /productToEdit\s*\?\s*initialProductFormValues\(productToEdit, searchAliases\)\s*:\s*\(cloneDefaults \?\? initialProductFormValues\(\)\)/);
+  assert.match(form, /buildProductFormPayload\(\s*data,\s*productToEdit \? editBaseline\.current\.variants : undefined,\s*\{ searchAliasesEditable: !searchAliasesUnavailable \},\s*\)/);
   assert.match(form, /productToEdit \? editProduct\(payload, release\) : addProduct\(payload, release\);/);
   assert.match(form, /useEditProduct\(productToEdit\?\.id\)/);
 });

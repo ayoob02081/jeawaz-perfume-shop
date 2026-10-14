@@ -31,6 +31,12 @@ export const getAllProductsApi = (params = {}, { signal } = {}) =>
 export const getProductByIdApi = (id) =>
   app.get(`/products/${encodeURIComponent(id)}`).then(({ data }) => data);
 
+// Admin only: { searchAliases: string | null }.
+export const getProductSearchAliasesApi = (id) =>
+  app
+    .get(`/products/${encodeURIComponent(id)}/search-aliases`)
+    .then(({ data }) => data);
+
 export const addProductApi = (payload) =>
   app.post("/products", payload).then(({ data }) => data);
 

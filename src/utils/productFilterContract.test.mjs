@@ -10,6 +10,31 @@ import {
 const fresh = () => structuredClone(initialFilters);
 const act = (state, type, key, value) => filtersReducer(state, { type, key, value });
 
+test("storefront search omits only its implicit sort through request, key and prefetch", () => {
+  const direct = new URLSearchParams("search=Amouage&page=2");
+  const applied = getFiltersFromSearchParams(direct);
+  const normalized = normalizeProductsQuery({ search: direct.get("search"), sort: applied.sort, page: 2 });
+  const request = new URL(app.getUri({ url: "/products", params: normalized }), "http://localhost");
+  assert.equal(request.searchParams.has("sort"), false);
+  assert.equal(request.searchParams.get("search"), "Amouage");
+  assert.equal(normalizeProductsQuery(normalized).sort, undefined);
+  assert.equal(productListKey(normalized)[2].sort, undefined);
+  assert.equal(productListKey({ ...normalized, page: 3 })[2].sort, undefined);
+  const layout = readFileSync(new URL("../app/(user)/products/_components/ProductsLayout.jsx", import.meta.url), "utf8");
+  assert.match(layout, /sort: applied\.sort \|\| undefined/);
+});
+
+test("explicit sorts, no-search default and admin legacy default stay unchanged", () => {
+  for (const sort of ["newest", "oldest", "best_selling", "most_discounted", "price_low_to_high", "price_high_to_low"]) {
+    const params = normalizeProductsQuery({ search: "Amouage", sort });
+    const request = new URL(app.getUri({ url: "/products", params }), "http://localhost");
+    assert.equal(request.searchParams.get("sort"), sort);
+    assert.notDeepEqual(productListKey(params), productListKey({ search: "Amouage" }));
+  }
+  assert.equal(normalizeProductsQuery({}).sort, "newest");
+  assert.equal(normalizeProductsQuery({ search: "Amouage", searchMode: "legacy" }).sort, "newest");
+});
+
 test("single type stays draft until Apply, can replace and clear", () => {
   let state = fresh();
   assert.equal(state.draft.type, null);

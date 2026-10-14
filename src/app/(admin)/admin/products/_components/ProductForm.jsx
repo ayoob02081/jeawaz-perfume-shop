@@ -35,6 +35,7 @@ import { runProductDelete } from "./productDeleteContract.mjs";
 import ActionButtons from "../../_components/ActionButtons";
 import { gradeLabel } from "@/utils/productGrade.mjs";
 import Link from "next/link";
+import { SEARCH_ALIASES_HELP } from "@/utils/searchAliasesContract.mjs";
 
 const basicInfoData = [
   { id: 1, label: "عنوان فارسی", name: "perTitle", placeholder: "بلو شنل" },
@@ -77,7 +78,16 @@ const multipleCategoryFields = [
 // duplicate prefilled from `cloneDefaults` (form values built by
 // mapProductToCloneDefaults) with `copySource` for the banner — always POSTs a
 // new Product; a duplicate never passes its source as `productToEdit`.
-function ProductForm({ productToEdit, cloneDefaults, copySource }) {
+// `searchAliases` (edit): the stored aliases from the admin route;
+// `searchAliasesUnavailable`: they could not be read, so the field is
+// disabled and left out of the update (the stored aliases are kept).
+function ProductForm({
+  productToEdit,
+  cloneDefaults,
+  copySource,
+  searchAliases,
+  searchAliasesUnavailable = false,
+}) {
   // Keep the edit baseline from when this Product was opened, even if a query
   // refreshes while the admin is editing. The backend compares it under lock.
   const editBaseline = useRef({
@@ -109,9 +119,9 @@ function ProductForm({ productToEdit, cloneDefaults, copySource }) {
   const initialValues = useMemo(
     () =>
       productToEdit
-        ? initialProductFormValues(productToEdit)
+        ? initialProductFormValues(productToEdit, searchAliases)
         : (cloneDefaults ?? initialProductFormValues()),
-    [productToEdit, cloneDefaults],
+    [productToEdit, cloneDefaults, searchAliases],
   );
   // One create/update request at a time: the mutation's pending flag reaches
   // the button only after a re-render, so a fast double click needs this lock.
@@ -209,6 +219,7 @@ function ProductForm({ productToEdit, cloneDefaults, copySource }) {
     const { payload, errors: payloadErrors } = buildProductFormPayload(
       data,
       productToEdit ? editBaseline.current.variants : undefined,
+      { searchAliasesEditable: !searchAliasesUnavailable },
     );
     if (payloadErrors.length) {
       payloadErrors.forEach(({ field, message }) =>
@@ -343,6 +354,27 @@ function ProductForm({ productToEdit, cloneDefaults, copySource }) {
                 </p>
               )}
             </div>
+          </div>
+          {/* Search-only aliases: other spellings or names of this Product
+              (brand spellings belong to the brand). Never shown publicly. */}
+          <div className="flex flex-col gap-1 w-full">
+            <RHFTextAreaField
+              name="searchAliases"
+              textClassName="font-bold"
+              errors={errors}
+              label="نام‌های جایگزین جستجو"
+              register={register}
+              dir="auto"
+              rows={3}
+              disabled={searchAliasesUnavailable}
+              placeholder={"ساواژ\nSauvage EDP"}
+              className="rounded-2xl w-full scrollbar-none"
+            />
+            <p className="text-xs text-stroke-600 mr-2">
+              {searchAliasesUnavailable
+                ? "نام‌های جایگزین فعلی دریافت نشد؛ بدون تغییر باقی می‌مانند."
+                : SEARCH_ALIASES_HELP}
+            </p>
           </div>
           <RHFTextAreaField
             name="description"
