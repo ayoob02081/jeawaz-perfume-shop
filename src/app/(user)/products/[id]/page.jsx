@@ -2,6 +2,7 @@ import { cache } from "react";
 import SingleProductPage from "../_components/SingleProductPage";
 import { notFound } from "next/navigation";
 import http from "@/services/httpServer";
+import { productUrl } from "@/lib/seo.mjs";
 
 const getProduct = cache(async (id) => {
   try {
@@ -24,6 +25,7 @@ export async function generateMetadata({ params }) {
   return {
     title: product.perTitle,
     description: product.description,
+    alternates: { canonical: productUrl(product.id) },
   };
 }
 
