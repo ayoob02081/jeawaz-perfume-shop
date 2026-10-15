@@ -3,6 +3,7 @@ import SingleProductPage from "../_components/SingleProductPage";
 import { notFound } from "next/navigation";
 import http from "@/services/httpServer";
 import { productUrl } from "@/lib/seo.mjs";
+import { buildProductJsonLd, serializeProductJsonLd } from "@/lib/productJsonLd.mjs";
 
 const getProduct = cache(async (id) => {
   try {
@@ -37,5 +38,17 @@ export default async function Page({ params }) {
     notFound();
   }
 
-  return <SingleProductPage product={product} />;
+  const jsonLd = buildProductJsonLd(product, process.env.NEXT_PUBLIC_API_URL);
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeProductJsonLd(jsonLd) }}
+        />
+      )}
+      <SingleProductPage product={product} />
+    </>
+  );
 }

@@ -239,6 +239,28 @@ an isolated synthetic API, not production catalog access; see
 `SEO_SITEMAP_REVIEW.md` for coverage and evidence. Build validation also needs the
 existing Google Fonts download; no font or dependency configuration was changed.
 
+## Product structured data
+
+Product detail pages render one JSON-LD `Product` from the same server response
+used by the visible page. The default type/volume and discounted price reuse the
+existing detail-page helpers. One `Offer` is included only for the displayed
+default variant with `isPurchasable === true` and a positive safe integer price;
+its final IRT price is converted to IRR x10 with another safe-integer check.
+Missing/false availability or invalid prices omit the offer, without guessing
+`OutOfStock` or selecting a different variant. No price/stock cache is added.
+
+Names include the actual type/volume and preserve the SUPER_MASTER grade. Brand
+markup is omitted for non-original/unknown-grade products to avoid asserting
+manufacture. Images resolve through the existing image-source contract; absent
+or invalid optional fields are omitted. No ratings, reviews, GTIN/SKU, condition,
+shipping, returns, ProductGroup or variant URLs are invented. Serialization
+escapes HTML-sensitive text before insertion into the server-rendered script.
+
+Run `node --test --test-isolation=none src/lib/productJsonLd.test.mjs` and the
+production build/Safari gate. See `PRODUCT_JSONLD_REVIEW.md` for HTML verification,
+examples and remaining Google eligibility checks. Missing images/offers can limit
+rich-result eligibility; a valid payload does not guarantee Google display.
+
 ## Deployment Notes
 
 - The frontend and backend are built and deployed separately.
