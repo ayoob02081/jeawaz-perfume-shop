@@ -119,6 +119,6 @@ test("loading, empty and pagination stay in the success branch", () => {
   const success = layout.slice(layout.indexOf('{view === "error" ? ('));
   assert.match(success, /view === "loading" &&/);
   assert.match(success, /view === "empty" && \(/);
-  assert.match(success, /<PagesNumber/);
+  assert.match(success, /<ProductPagination/);
   assert.match(layout, /const totalPages = isProductsLoading \? 0 : \(meta\?\.totalPages \?\? 1\);/);
 });

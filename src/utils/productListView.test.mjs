@@ -41,5 +41,5 @@ test("layout renders the Persian empty state, keeps error first and pagination i
   assert.match(layout, /view === "empty" && \(\s*<NotExisted[^>]*>\s*محصولی با این مشخصات یافت نشد\.\s*<\/NotExisted>/);
   assert.ok(layout.indexOf('view === "error"') < layout.indexOf('view === "empty"'),
     "the error view is chosen before the empty state can render");
-  assert.match(layout, /<PagesNumber[\s\S]*totalPages=\{totalPages\}/);
+  assert.match(layout, /<ProductPagination[\s\S]*totalPages=\{totalPages\}/);
 });

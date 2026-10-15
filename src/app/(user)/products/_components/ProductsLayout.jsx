@@ -1,12 +1,12 @@
 "use client";
 
-import PagesNumber from "@/components/PagesNumber";
+import ProductPagination from "./ProductPagination";
 import { productKeys, useGetAllProducts } from "@/hooks/useProducts";
 import Error from "@/components/Error";
 import FilterSection from "./FilterSection";
 import ProductCard from "../../_components/ProductCard";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getAllProductsApi } from "@/services/productServices";
 import ProductCardSkeleton from "../../_components/skeleton/ProductCardSkeletons";
@@ -22,29 +22,7 @@ import NotExisted from "@/components/NotExisted";
 
 function ProductsLayout({ initialSnapshot }) {
   const queryClient = useQueryClient();
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const search = searchParams.toString();
-  const updateParams = useCallback(
-    (updates) => {
-      const params = new URLSearchParams(search);
-
-      Object.entries(updates).forEach(([key, value]) => {
-        if (value === undefined || value === null) params.delete(key);
-        else params.set(key, String(value));
-      });
-
-      router.replace(`?${params.toString()}`, { scroll: false });
-    },
-    [router, search],
-  );
-
-  const setPage = useCallback(
-    (newPage) => {
-      updateParams({ page: newPage });
-    },
-    [updateParams],
-  );
 
   // One normalized query drives skeletons, request, query key, pagination and prefetch.
   const filters = useMemo(() => productsQueryFromSearchParams(searchParams), [searchParams]);
@@ -118,9 +96,9 @@ function ProductsLayout({ initialSnapshot }) {
               ))}
           </section>
           <div className="flex items-center justify-center h-20">
-            <PagesNumber
+            <ProductPagination
               page={page}
-              setPage={setPage}
+              search={searchParams.toString()}
               totalPages={totalPages}
               isLoading={isProductsFetching}
             />
