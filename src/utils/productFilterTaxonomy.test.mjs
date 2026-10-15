@@ -182,7 +182,8 @@ test("Apply sends all five to GET /products with repeated keys, in the query key
   assert.deepEqual(key[2].concentrations, ["PARFUM", "EAU_DE_PARFUM"]);
 
   for (const key of ["seasons", "temperature", "characters", "occasions", "concentrations"]) {
-    assert.match(productsLayout, new RegExp(`${key}: applied\\.${key},`), key);
+    assert.match(productsLayout, /productsQueryFromSearchParams\(searchParams\)/);
+    assert.match(source("./productFilterContract.mjs"), new RegExp(`${key}: applied\\.${key},`), key);
   }
 });
 
@@ -238,7 +239,7 @@ test("storefront taxonomy options come from the inactive-free hook in both filte
   ]).map((c) => c.slug), ["summer", "spring"]);
   for (const ui of [filtersModal, categorySidebar]) {
     for (const type of ["season", "temperature", "character", "occasion"]) {
-      assert.match(ui, new RegExp(`useGetStorefrontCategoriesByType\\("${type}"\\)`), type);
+      assert.match(ui, new RegExp(`useGetStorefrontCategoriesByType\\("${type}"(?:, sharedCategoryOptions)?\\)`), type);
     }
     assert.doesNotMatch(ui, /useGetCategoriesByType\(/);
   }

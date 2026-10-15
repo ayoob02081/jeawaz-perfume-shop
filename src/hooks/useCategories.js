@@ -47,7 +47,7 @@ export const useGetCategoriesByType = (type) =>
 
 // Storefront filter options: same request and cache as useGetCategoriesByType
 // (admin keeps every category), with inactive categories selected out.
-export const useGetStorefrontCategoriesByType = (type) =>
+export const useGetStorefrontCategoriesByType = (type, options = {}) =>
   useQuery({
     queryKey: ["categories", type],
     queryFn: () => getCategoriesByTypeApi(type),
@@ -55,6 +55,7 @@ export const useGetStorefrontCategoriesByType = (type) =>
     retry: false,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
+    ...options,
     select: storefrontCategoryOptions,
   });
 

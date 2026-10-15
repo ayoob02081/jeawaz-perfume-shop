@@ -528,3 +528,32 @@ export const productListKey = (query = {}) => [
   "list",
   normalizeProductsQuery(query),
 ];
+
+// Shared by the server snapshot and interactive listing; URL filters must seed
+// exactly the same request/key the client will observe, including omitted sort.
+export function productsQueryFromSearchParams(searchParams) {
+  const applied = getFiltersFromSearchParams(searchParams);
+  return normalizeProductsQuery({
+    search: searchParams.get("search") || undefined,
+    brandIds: applied.brandIds,
+    gender: applied.gender,
+    fragranceFamilies: applied.fragranceFamilies,
+    seasons: applied.seasons,
+    temperature: applied.temperature,
+    characters: applied.characters,
+    occasions: applied.occasions,
+    concentrations: applied.concentrations,
+    volumes: applied.volumes,
+    minVolume: applied.minVolume,
+    maxVolume: applied.maxVolume,
+    inStock: applied.inStock,
+    grades: applied.grades,
+    discounted: applied.discounted,
+    minPrice: applied.priceRange[0],
+    maxPrice: applied.priceRange[1],
+    type: applied.type,
+    sort: applied.sort || undefined,
+    page: searchParams.get("page"),
+    limit: searchParams.get("limit"),
+  });
+}

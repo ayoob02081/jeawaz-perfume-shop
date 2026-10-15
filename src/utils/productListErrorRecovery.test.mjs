@@ -102,7 +102,8 @@ test("correcting the filter that failed loads the corrected list", async () => {
 });
 
 test("the filter controls render whatever the request state; Retry is the real refetch", () => {
-  assert.match(layout, /refetch: refetchProducts,\s*\} = useGetAllProducts\(filters\);/);
+  assert.match(layout, /const result = useGetAllProducts\(filters, initialOptions\);/);
+  assert.match(layout, /refetch: refetchProducts,\s*\} = catalogInitialView\(result, initialOptions, useIsHydrated\(\)\);/);
   assert.match(layout, /<Error className="w-full" onRetry=\{refetchProducts\} \/>/);
   // FilterSection comes first and outside the error/success branch.
   const filters = layout.indexOf("<FilterSection />");

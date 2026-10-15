@@ -259,7 +259,8 @@ test("a normal Apply keeps discounted active and it reaches the request", async 
   const applied = getFiltersFromSearchParams(url);
   assert.equal(normalizeProductsQuery({ discounted: applied.discounted }).discounted, true);
   assert.equal(normalizeProductsQuery({ discounted: null }).discounted, undefined);
-  assert.match(productsLayout, /discounted: applied\.discounted,/);
+  assert.match(productsLayout, /productsQueryFromSearchParams\(searchParams\)/);
+  assert.match(source("./productFilterContract.mjs"), /discounted: applied\.discounted,/);
   // Both filter UIs enable reset/apply through the shared count, which
   // includes the URL-only discounted filter.
   assert.equal(activeFilterCount({ ...emptyFilters, discounted: true }), 1);
@@ -286,11 +287,11 @@ test("storefront category options exclude inactive categories and keep order", (
 
 test("only storefront filter UIs use the inactive-free hook; the shared hook is unchanged", () => {
   assert.match(categoryHooks,
-    /export const useGetStorefrontCategoriesByType = \(type\) =>[\s\S]*?queryKey: \["categories", type\][\s\S]*?select: storefrontCategoryOptions,/);
+    /export const useGetStorefrontCategoriesByType = \(type, options = \{\}\) =>[\s\S]*?queryKey: \["categories", type\][\s\S]*?select: storefrontCategoryOptions,/);
   assert.match(categoryHooks,
     /export const useGetCategoriesByType = \(type\) =>\s*useQuery\(\{\s*queryKey: \["categories", type\],\s*queryFn: \(\) => getCategoriesByTypeApi\(type\),\s*enabled: !!type,\s*retry: false,\s*staleTime: 1000 \* 60 \* 5,\s*refetchOnWindowFocus: false,\s*\}\);/);
   for (const ui of [filtersModal, categorySidebar]) {
-    assert.match(ui, /useGetStorefrontCategoriesByType\("gender"\)/);
+    assert.match(ui, /useGetStorefrontCategoriesByType\("gender"(?:, sharedCategoryOptions)?\)/);
     assert.match(ui, /useGetStorefrontCategoriesByType\("fragrance_family"\)/);
     assert.doesNotMatch(ui, /useGetCategoriesByType\(/);
   }
@@ -304,15 +305,17 @@ test("Home category sections render only storefront (active) categories", () => 
     ["AccordCategoriesLayout", "character", "characters"],
   ]) {
     const home = source(`../app/(user)/_components/${name}.jsx`);
+    assert.match(home, new RegExp(`useGetStorefrontCategoriesByType\\("${type}", initialOptions\\)`));
     assert.match(home,
-      new RegExp(`data: ${list},\\s*isPending,\\s*error,\\s*\\} = useGetStorefrontCategoriesByType\\("${type}"\\);`));
+      new RegExp(`data: ${list},\\s*isPending,\\s*error,\\s*\\} = catalogInitialView\\(result, initialOptions, useIsHydrated\\(\\), storefrontCategoryOptions\\);`));
     assert.match(home, /import \{ useGetStorefrontCategoriesByType \} from "@\/hooks\/useCategories";/);
     assert.doesNotMatch(home, /useGetCategoriesByType\(|isActive/);
     assert.match(home, new RegExp(`${list}\\??\\.map\\(`));
   }
   // The Character cards filter the product list by the same taxonomy.
   const accord = source("../app/(user)/_components/AccordCategoriesLayout.jsx");
-  assert.match(accord, /router\.push\(`\/products\?characters=\$\{encodeURIComponent\(slug\)\}`\)/);
+  assert.match(accord, /<Link\s+href=/);
+  assert.match(accord, /new URLSearchParams\(\{ characters: slug \}\)/);
   assert.doesNotMatch(accord, /fragranceFamilies=/);
   const rendered = storefrontCategoryOptions([
     { id: 1, slug: "male", isActive: true },

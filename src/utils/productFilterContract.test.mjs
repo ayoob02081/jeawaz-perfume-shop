@@ -21,7 +21,9 @@ test("storefront search omits only its implicit sort through request, key and pr
   assert.equal(productListKey(normalized)[2].sort, undefined);
   assert.equal(productListKey({ ...normalized, page: 3 })[2].sort, undefined);
   const layout = readFileSync(new URL("../app/(user)/products/_components/ProductsLayout.jsx", import.meta.url), "utf8");
-  assert.match(layout, /sort: applied\.sort \|\| undefined/);
+  assert.match(layout, /productsQueryFromSearchParams\(searchParams\)/);
+  const contract = readFileSync(new URL("./productFilterContract.mjs", import.meta.url), "utf8");
+  assert.match(contract, /sort: applied\.sort \|\| undefined/);
 });
 
 test("explicit sorts, no-search default and admin legacy default stay unchanged", () => {

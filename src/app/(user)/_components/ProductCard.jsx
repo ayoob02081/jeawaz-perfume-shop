@@ -5,11 +5,10 @@ import PriceSection from "@/components/PriceSection";
 import ProductGradeBadge from "@/components/ProductGradeBadge";
 import { getProductCardPresentation } from "@/utils/priceCalculator";
 import { isProductAvailable } from "@/utils/productAvailability.mjs";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 function ProductCard({ product, isPending, error }) {
-  const router = useRouter();
   const {
     id,
     enTitle,
@@ -35,6 +34,10 @@ function ProductCard({ product, isPending, error }) {
     return <Error />;
   }
   if (!product) return null;
+
+  const productHref = `/products/${id}`;
+  // PriceSection's no-price fallback contains its own telephone link.
+  const PriceWrapper = cardPrice.basePrice > 0 ? Link : "div";
 
   return (
     <article
@@ -97,29 +100,34 @@ function ProductCard({ product, isPending, error }) {
           </div>
 
           {/* Product Des */}
-          <button onClick={() => router.push(`/products/${id}`)}>
-            {/* Products Brand */}
-            <div className="flex-none flex items-center justify-between mb-2 md:mt-2 h-6">
-              <p className="text-stroke-600 text-sm md:text-base md:font-bold">
-                {productBrand?.value?.toUpperCase()}
-              </p>
-              <ProductGradeBadge product={product} />
-            </div>
+          <div className="text-center">
+            <Link href={productHref} className="block">
+              {/* Products Brand */}
+              <div className="flex-none flex items-center justify-between mb-2 md:mt-2 h-6">
+                <p className="text-stroke-600 text-sm md:text-base md:font-bold">
+                  {productBrand?.value?.toUpperCase()}
+                </p>
+                <ProductGradeBadge product={product} />
+              </div>
 
-            {/* Products Name */}
-            <div className="flex-none flex items-start justify-start flex-col gap-1 max-md:pb-3 md:pb-6 font-bold border-b border-stroke-250">
-              <span className="flex items-start justify-start flex-col w-full text-lg font-bold text-stroke-800 text-nowrap overflow-hidden *:overflow-x-auto *:scrollbar-none *:py-[0.5px] text-start max-md:max-w-55 md:max-w-68">
-                <p className="w-full max-md:text-base">{enTitle}</p>
-                <p className="w-full max-md:text-sm">{perTitle}</p>
-              </span>
-            </div>
+              {/* Products Name */}
+              <div className="flex-none flex items-start justify-start flex-col gap-1 max-md:pb-3 md:pb-6 font-bold border-b border-stroke-250">
+                <span className="flex items-start justify-start flex-col w-full text-lg font-bold text-stroke-800 text-nowrap overflow-hidden *:overflow-x-auto *:scrollbar-none *:py-[0.5px] text-start max-md:max-w-55 md:max-w-68">
+                  <p className="w-full max-md:text-base">{enTitle}</p>
+                  <p className="w-full max-md:text-sm">{perTitle}</p>
+                </span>
+              </div>
+            </Link>
 
             {/* Products Price */}
             <div
               className={`relative flex flex-none items-center md:items-end gap-4 w-full pt-2 ${inStock ? "justify-between" : "justify-end"}`}
             >
               {representativeVariant && inStock && (
-                <div className="flex flex-col items-start gap-0.5">
+                <PriceWrapper
+                  {...(cardPrice.basePrice > 0 ? { href: productHref } : {})}
+                  className="flex flex-col items-start gap-0.5"
+                >
                   <PriceSection
                     basePrice={cardPrice.basePrice}
                     unitPrice={cardPrice.finalPrice}
@@ -132,11 +140,11 @@ function ProductCard({ product, isPending, error }) {
                   <span className="max-md:absolute -right-18 bottom-0 text-xs md:text-sm text-stroke-600">
                     {cardLabel}
                   </span>
-                </div>
+                </PriceWrapper>
               )}
 
               {/* Products Order Button */}
-              <div>
+              <Link href={productHref}>
                 {inStock ? (
                   <p className="btn border border-primary text-primary bg-stroke-50 backdrop-blur-md active:bg-primary active:text-white md:hover:bg-primary md:hover:text-white rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
                     مشاهده
@@ -146,9 +154,9 @@ function ProductCard({ product, isPending, error }) {
                     ناموجود!
                   </p>
                 )}
-              </div>
+              </Link>
             </div>
-          </button>
+          </div>
         </div>
       </div>
     </article>

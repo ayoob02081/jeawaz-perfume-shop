@@ -10,16 +10,25 @@ import {
 import { useGetAllProducts } from "@/hooks/useProducts";
 import Error from "@/components/Error";
 import { useState } from "react";
+import { catalogInitialQueryOptions, catalogInitialView } from "@/lib/storefrontCatalog.mjs";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
+import { useCatalogSnapshotOptions } from "@/hooks/useCatalogSnapshotOptions";
+import { productListKey } from "@/utils/productFilterContract.mjs";
 
-function RecentProducts() {
+function RecentProducts({ initialSnapshot }) {
   const [gender, setGender] = useState();
-  const { data, isLoading, error } = useGetAllProducts({
+  const query = {
     sort: "newest",
     inStock: true,
     page: 1,
     limit: 8,
     gender: gender || undefined,
-  });
+  };
+  const initialOptions = useCatalogSnapshotOptions(
+    productListKey(query), catalogInitialQueryOptions(query, initialSnapshot),
+  );
+  const result = useGetAllProducts(query, initialOptions);
+  const { data, isLoading, error } = catalogInitialView(result, initialOptions, useIsHydrated());
 
   const getFullHrefParams = () => {
     const params = new URLSearchParams();

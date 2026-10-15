@@ -10,14 +10,17 @@ import { useCallback, useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getAllProductsApi } from "@/services/productServices";
 import ProductCardSkeleton from "../../_components/skeleton/ProductCardSkeletons";
-import { getFiltersFromSearchParams } from "@/utils/queryFilters";
+import { catalogInitialQueryOptions, catalogInitialView } from "@/lib/storefrontCatalog.mjs";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
+import { useCatalogSnapshotOptions } from "@/hooks/useCatalogSnapshotOptions";
 import {
   normalizeProductsQuery,
   productListView,
+  productsQueryFromSearchParams,
 } from "@/utils/productFilterContract.mjs";
 import NotExisted from "@/components/NotExisted";
 
-function ProductsLayout() {
+function ProductsLayout({ initialSnapshot }) {
   const queryClient = useQueryClient();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -44,42 +47,20 @@ function ProductsLayout() {
   );
 
   // One normalized query drives skeletons, request, query key, pagination and prefetch.
-  const filters = useMemo(() => {
-    const applied = getFiltersFromSearchParams(searchParams);
-    return normalizeProductsQuery({
-      search: searchParams.get("search") || undefined,
-      brandIds: applied.brandIds,
-      gender: applied.gender,
-      fragranceFamilies: applied.fragranceFamilies,
-      seasons: applied.seasons,
-      temperature: applied.temperature,
-      characters: applied.characters,
-      occasions: applied.occasions,
-      concentrations: applied.concentrations,
-      volumes: applied.volumes,
-      minVolume: applied.minVolume,
-      maxVolume: applied.maxVolume,
-      inStock: applied.inStock,
-      grades: applied.grades,
-      discounted: applied.discounted,
-      minPrice: applied.priceRange[0],
-      maxPrice: applied.priceRange[1],
-      type: applied.type,
-      // Omitted sort lets a search use backend relevance; explicit sorts stay explicit.
-      sort: applied.sort || undefined,
-      page: searchParams.get("page"),
-      limit: searchParams.get("limit"),
-    });
-  }, [searchParams]);
+  const filters = useMemo(() => productsQueryFromSearchParams(searchParams), [searchParams]);
   const { page } = filters;
 
+  const initialOptions = useCatalogSnapshotOptions(
+    productKeys.list(filters), catalogInitialQueryOptions(filters, initialSnapshot),
+  );
+  const result = useGetAllProducts(filters, initialOptions);
   const {
     data,
     isLoading: isProductsLoading,
     isFetching: isProductsFetching,
     error: isProductsError,
     refetch: refetchProducts,
-  } = useGetAllProducts(filters);
+  } = catalogInitialView(result, initialOptions, useIsHydrated());
 
   const products = data?.data || [];
   const meta = data?.meta;

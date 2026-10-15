@@ -10,14 +10,22 @@ import { AccordCategoryCardSkeletons } from "./skeleton/HomeSectionSkeletons";
 import { useGetStorefrontCategoriesByType } from "@/hooks/useCategories";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { categoryInitialQueryOptions, catalogInitialView } from "@/lib/storefrontCatalog.mjs";
+import { storefrontCategoryOptions } from "@/utils/productFilterContract.mjs";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
+import { useCatalogSnapshotOptions } from "@/hooks/useCatalogSnapshotOptions";
 
-function AccordCategoriesLayout() {
+function AccordCategoriesLayout({ initialSnapshot } = {}) {
+  const initialOptions = useCatalogSnapshotOptions(
+    ["categories", "character"], categoryInitialQueryOptions(initialSnapshot),
+  );
+  const result = useGetStorefrontCategoriesByType("character", initialOptions);
   const {
     data: characters,
     isPending,
     error,
-  } = useGetStorefrontCategoriesByType("character");
+  } = catalogInitialView(result, initialOptions, useIsHydrated(), storefrontCategoryOptions);
 
   const view = homeCategoryView({ isPending, error });
 
@@ -61,14 +69,10 @@ function AccordCategoriesLayout() {
 export default AccordCategoriesLayout;
 
 function FilterCard({ src, alt, slug, label, productsCount }) {
-  const router = useRouter();
-
   return (
     <div className="snap-center">
-      <button
-        onClick={() =>
-          router.push(`/products?characters=${encodeURIComponent(slug)}`)
-        }
+      <Link
+        href={`/products?${new URLSearchParams({ characters: slug })}`}
         className="relative flex h-24 sm:h-30! aspect-9/3 sm:aspect-5/2 justify-between items-center px-3 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 "
       >
         <div className="relative flex items-center justify-center h-full px-4">
@@ -98,7 +102,7 @@ function FilterCard({ src, alt, slug, label, productsCount }) {
         <div className="flex-none justify-self-end self-end px-2 pb-5">
           <ArrowLeftIcon className="size-5 text-stroke-800" />
         </div>
-      </button>
+      </Link>
     </div>
   );
 }

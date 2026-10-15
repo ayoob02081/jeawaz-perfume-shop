@@ -89,6 +89,8 @@ test("the storefront filter UI is a grade chip group with per-grade badges", () 
   assert.match(section, /removeValueAndSync\("grades", grade\)/);
   assert.match(section, /title=\{gradeLabel\(grade\)\}/);
 
-  assert.match(layout, /grades: applied\.grades,/);
+  assert.match(layout, /productsQueryFromSearchParams\(searchParams\)/);
+  const contract = readFileSync(new URL("./productFilterContract.mjs", import.meta.url), "utf8");
+  assert.match(contract, /grades: applied\.grades,/);
   assert.doesNotMatch(layout, /original/);
 });

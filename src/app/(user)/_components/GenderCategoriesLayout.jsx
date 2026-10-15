@@ -9,15 +9,23 @@ import {
 import { GenderCategoryCardSkeletons } from "./skeleton/HomeSectionSkeletons";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { genderProductsHref, storefrontCategoryOptions } from "@/utils/productFilterContract.mjs";
 import { useGetStorefrontCategoriesByType } from "@/hooks/useCategories";
+import { categoryInitialQueryOptions, catalogInitialView } from "@/lib/storefrontCatalog.mjs";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
+import { useCatalogSnapshotOptions } from "@/hooks/useCatalogSnapshotOptions";
 
-function GenderCategoriesLayout() {
+function GenderCategoriesLayout({ initialSnapshot } = {}) {
+  const initialOptions = useCatalogSnapshotOptions(
+    ["categories", "gender"], categoryInitialQueryOptions(initialSnapshot),
+  );
+  const result = useGetStorefrontCategoriesByType("gender", initialOptions);
   const {
     data: genderCategories,
     isPending,
     error,
-  } = useGetStorefrontCategoriesByType("gender");
+  } = catalogInitialView(result, initialOptions, useIsHydrated(), storefrontCategoryOptions);
 
   const view = homeCategoryView({ isPending, error });
 
@@ -62,13 +70,9 @@ function GenderCategoriesLayout() {
 export default GenderCategoriesLayout;
 
 function CategoreyCard({ src, alt, slug, label, productsCount }) {
-  const router = useRouter();
-
   return (
-    <button
-      onClick={() =>
-        router.push(`/products?gender=${encodeURIComponent(slug)}`)
-      }
+    <Link
+      href={genderProductsHref(slug)}
       className="relative flex h-24 md:h-35 max-[365px]:aspect-6/2 aspect-7/2 md:aspect-9/3 justify-center items-center justify-items-center bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 "
     >
       <div className="h-full self-start justify-self-start px-4">
@@ -96,6 +100,6 @@ function CategoreyCard({ src, alt, slug, label, productsCount }) {
       <div className="justify-self-end self-end p-4">
         <ArrowLeftIcon className="size-5 sm:size-6 text-primary" />
       </div>
-    </button>
+    </Link>
   );
 }
