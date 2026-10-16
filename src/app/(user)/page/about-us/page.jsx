@@ -12,7 +12,7 @@ function AboutUsPage() {
     <main className="container mx-auto xl:max-w-7xl mb-8">
       <div className="flex flex-col w-full">
         {/* about us */}
-        <section className="flex flex-col items-center w-full gap-6 px-6 mb-20 md:mb-28 lg:mb-36 xl:mb-48">
+        <section className="flex flex-col items-center w-full gap-6 max-sm:px-4 px-6 mb-20 md:mb-28 lg:mb-36 xl:mb-48">
           <h1 className="text-xs md:text-base text-primary font-bold">
             کمی درباره ما بدانید ...
           </h1>
@@ -30,7 +30,7 @@ function AboutUsPage() {
             ازمون مشورت می‌خواستن !
           </p>
         </section>
-        <div className="relative aspect-3/1 h-1/2 mt-24 md:mt-28 lg:mt-36 w-full px-6 bg-secondary dark:bg-stroke-50/70 sm:rounded-t-xl">
+        <div className="relative aspect-3/1 h-1/2 mt-24 md:mt-28 lg:mt-36 w-full max-sm:px-4 px-6 bg-secondary dark:bg-stroke-50/70 sm:rounded-t-xl">
           <AppImage
             src="/images/caucasian-woman-applying-perfume-her-neck.webp"
             alt="caucasian-woman-applying-perfume-her-neck"
@@ -42,7 +42,7 @@ function AboutUsPage() {
         </div>
         {/* why us */}
         <section className="flex flex-col items-center justify-center gap-16 bg-secondary dark:bg-stroke-50/70 sm:rounded-b-3xl pb-16">
-          <div className="flex flex-col items-center w-full gap-6 px-6 md:mt-8 ">
+          <div className="flex flex-col items-center w-full gap-6 max-sm:px-4 px-6 md:mt-8 ">
             <h2 className="text-center text-xl md:text-2xl font-bold text-stroke-800">
               چرا ما را انتخاب می کنید؟
             </h2>
@@ -59,7 +59,7 @@ function AboutUsPage() {
               width="max-sm:size-6 sm:size-7"
               title="پشتیبانی ۲۴ ساعته"
               discription="پاسخ‌گویی سریع، همیشه آنلاین"
-              direction="flex-col h-full bg-stroke-0 px-6 py-8 rounded-2.5xl"
+              direction="flex-col h-full bg-stroke-0 max-sm:px-4 px-6 py-8 rounded-2.5xl"
               className="dark:invert"
               bg="bg-secondary dark:bg-stroke-50"
               items="items-center"
@@ -70,7 +70,7 @@ function AboutUsPage() {
               width="max-sm:size-6 sm:size-7"
               title="محصولات منحصر به فرد"
               discription="رایحه‌هایی خاص و کمیاب"
-              direction="flex-col h-full bg-stroke-0 px-6 py-8 rounded-2.5xl"
+              direction="flex-col h-full bg-stroke-0 max-sm:px-4 px-6 py-8 rounded-2.5xl"
               className="dark:invert"
               bg="bg-secondary dark:bg-stroke-50"
               items="items-center"
@@ -81,7 +81,7 @@ function AboutUsPage() {
               width="max-sm:size-6 sm:size-7"
               title="تضمین کیفیت"
               discription="اصل بودن با ضمانت"
-              direction="flex-col h-full bg-stroke-0 px-6 py-8 rounded-2.5xl"
+              direction="flex-col h-full bg-stroke-0 max-sm:px-4 px-6 py-8 rounded-2.5xl"
               className="dark:invert"
               bg="bg-secondary dark:bg-stroke-50"
               items="items-center"
@@ -92,7 +92,7 @@ function AboutUsPage() {
               width="max-sm:size-6 sm:size-7"
               title="ارسال به سراسر کشور"
               discription="تحویل سریع، مطمئن، سراسری"
-              direction="flex-col h-full bg-stroke-0 px-6 py-8 rounded-2.5xl"
+              direction="flex-col h-full bg-stroke-0 max-sm:px-4 px-6 py-8 rounded-2.5xl"
               className="dark:invert"
               bg="bg-secondary dark:bg-stroke-50"
               items="items-center"
@@ -100,7 +100,7 @@ function AboutUsPage() {
           </section>
         </section>
         {/* our mission */}
-        <article className="flex flex-col items-center justify-center gap-6 p-6 pt-16">
+        <article className="flex flex-col items-center justify-center gap-6 max-sm:px-4 p-6 pt-16">
           <h3 className="flex justify-center items-center gap-1 w-full px-6 mb-6 text-base sm:text-[28px] font-bold text-stroke-800">
             <p className="">جایی که عطر</p>
             <AppImage
@@ -157,7 +157,7 @@ function AboutUsPage() {
           </article>
         </article>
         {/* Support */}
-        <div className="py-16 px-6">
+        <div className="py-16 max-sm:px-4 px-6">
           <SupportBox />
         </div>
       </div>

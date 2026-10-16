@@ -3,7 +3,7 @@ import AppImage from "./AppImage";
 
 function SupportBox() {
   return (
-    <section className="flex max-md:flex-col max-md:items-start md:items-center justify-between max-md:gap-8 bg-primary p-6 md:px-10 md:py-12 rounded-xl sm:rounded-2xl md:rounded-4xl w-full ">
+    <section className="flex max-md:flex-col max-md:items-start md:items-center justify-between max-md:gap-8 bg-primary max-[30rem]:p-4 p-6 md:px-10 md:py-12 rounded-xl sm:rounded-2xl md:rounded-4xl w-full ">
       <p className="text-white font-bold md:text-xl lg:text-2xl">
         برای انتخاب بهترین عطر و مشاوره رایگان در کنارتان هستیم.
       </p>

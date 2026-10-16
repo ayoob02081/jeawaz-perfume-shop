@@ -15,7 +15,7 @@ function ContactUsPage() {
     <main className="md:mt-5">
       {/* Contact Us */}
       <article className="flex flex-col items-end justify-center container mx-auto size-full xl:max-w-7xl bg-[#FEF8FA] dark:bg-stroke-50/50 sm:px-6 md:pt-6 rounded-t-2.5xl sm:rounded-t-3xl md:rounded-t-5xl">
-        <div className="flex flex-col justify-start gap-6 md:gap-15 w-full px-6 pt-6">
+        <div className="flex flex-col justify-start gap-6 md:gap-15 w-full max-sm:px-4 px-6 pt-6">
           <section className="flex max-md:flex-col md:flex-row items-center max-md:justify-center md:justify-between max-md:gap-8 md:gap-10 w-full">
             <span className="flex flex-col max-md:items-center md:items-start justify-center font-bold max-md:gap-4 md:gap-6">
               <h1 className="text-xs md:text-base text-primary ">تماس با ما</h1>
@@ -192,11 +192,11 @@ function ContactUsPage() {
         </div>
       </div>
       {/* Support */}
-      <div className="h-fit flex flex-col items-center justify-center container mx-auto w-full xl:max-w-7xl p-6 mt-6">
+      <div className="h-fit flex flex-col items-center justify-center container mx-auto w-full xl:max-w-7xl max-sm:px-4 p-6 mt-6">
         <SupportBox />
       </div>
       {/* FAQ */}
-      <article className="p-6 container mx-auto xl:max-w-7xl max-md:mt-8">
+      <article className="max-sm:p-4 p-6 container mx-auto xl:max-w-7xl max-md:mt-8">
         <div className="flex items-start justify-between gap-4 w-full mb-6">
           <span className="flex flex-col items-start justify-start gap-4">
             <h2 className="text-stroke-800 font-bold text-xl md:text-2xl">
@@ -216,7 +216,7 @@ function ContactUsPage() {
             sizes="10vw"
           />
         </div>
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col max-sm:gap-4 gap-6">
           <Accordion
             titleStyle="text-sm md:text-lg font-bold text-stroke-800"
             label="۱- آیا همه مدل‌ها اورجینال هستند؟"
@@ -224,11 +224,11 @@ function ContactUsPage() {
           >
             <p className="leading-7 text-stroke-600 border-t-[1.5px] border-stroke-250 pt-6">
               در فروشگاه جیاواز دو نوع محصول — اورجینال و سوپر مستر — ارائه
-              می‌شود. تمامی کالاها با ذکر دقیق نوع کیفیت ( اورجینال یا سوپر
-              مستر ) در صفحه محصول مشخص شده‌اند تا مشتری با آگاهی کامل انتخاب
-              کند. هدف ما ارائه گزینه‌های متنوع با سطح کیفیت و قیمت متفاوت است
-              تا هر مشتری بتواند مطابق نیاز و بودجه خود خریدی مطمئن و رضایت‌بخش
-              داشته باشد.
+              می‌شود. تمامی کالاها با ذکر دقیق نوع کیفیت ( اورجینال یا سوپر مستر
+              ) در صفحه محصول مشخص شده‌اند تا مشتری با آگاهی کامل انتخاب کند.
+              هدف ما ارائه گزینه‌های متنوع با سطح کیفیت و قیمت متفاوت است تا هر
+              مشتری بتواند مطابق نیاز و بودجه خود خریدی مطمئن و رضایت‌بخش داشته
+              باشد.
             </p>
           </Accordion>
           <Accordion
