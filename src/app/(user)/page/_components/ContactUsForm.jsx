@@ -53,7 +53,7 @@ export default function ContactUsForm() {
         method="post"
         noValidate
         onSubmit={handleSubmit(submitContactForm)}
-        className="flex flex-col items-start justify-between gap-6 p-6 border border-stroke-250 rounded-2xl size-full"
+        className="flex flex-col items-start justify-between gap-6 max-sm:pt-4 sm:p-6 max-sm:border-t sm:border border-stroke-250 sm:rounded-2xl size-full"
       >
         <h3 className="font-bold text-stroke-800 text-xl">
           ارسال پیام یا سوال

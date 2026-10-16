@@ -140,3 +140,42 @@ test("the mobile CSS breakpoint includes exactly 480px, matching the controller"
   assert(!header.includes("max-[480px]") && !header.includes("max-[30rem]"));
   assert.match(header, /prefetch=\{false\}\s+onNavigate=/);
 });
+
+test("the actual shared suggestion renderer uses the card badge without inferring legacy Original", async () => {
+  const grades = await import("./productGrade.mjs");
+  const Image = ({ src, alt }) => React.createElement("img", { src, alt });
+  const Badge = load("../components/ProductGradeBadge.jsx", {
+    "@/components/AppImage": Image, "@/utils/productGrade.mjs": grades,
+  }).default;
+  const header = readFileSync(new URL("../components/HeaderLayout.jsx", import.meta.url), "utf8");
+  // Execute the actual shared row JSX without mounting unrelated header/auth hooks.
+  const start = header.indexOf("  const renderResult = ");
+  const end = header.indexOf("  const searchProps = ", start);
+  assert(start > 0 && end > start);
+  const source = `const Link = require("link"); const AppImage = require("image");
+    const ProductGradeBadge = require("badge"); const closeSearch = () => {};
+    ${header.slice(start, end)} module.exports = renderResult;`;
+  const mod = new Module(import.meta.filename);
+  const Link = ({ children, onNavigate, prefetch, ...props }) => React.createElement("a", props, children);
+  const mocks = { link: Link, image: Image, badge: Badge };
+  mod.require = (name) => Object.hasOwn(mocks, name) ? mocks[name] : require(name);
+  mod._compile(transformSync(source, { jsc: { parser: { syntax: "ecmascript", jsx: true },
+    transform: { react: { runtime: "automatic" } } }, module: { type: "commonjs" } }).code, import.meta.filename);
+  const render = (item) => renderToStaticMarkup(mod.exports({ id: 105, perTitle: "Rose", image: "/rose.jpg", ...item }, () => {}));
+  const original = render({ grade: "ORIGINAL" });
+  assert.match(original, /bg-original\.svg/);
+  assert.match(original, /href="\/products\/105"/);
+  const superMaster = render({ grade: "SUPER_MASTER" });
+  assert(superMaster.includes(grades.GRADE_LABELS.SUPER_MASTER));
+  assert.match(superMaster, /border-stroke-200 bg-stroke-200/);
+  for (const grade of [undefined, null, "UNKNOWN"]) {
+    const html = render({ grade, original: true });
+    assert(!html.includes("bg-original.svg"));
+    assert(!html.includes(grades.GRADE_LABELS.SUPER_MASTER));
+    assert.match(html, /href="\/products\/105"/);
+  }
+  let dismissed = 0;
+  const row = mod.exports({ id: 105, grade: "ORIGINAL" }, () => dismissed++);
+  assert.equal(row.props.prefetch, false);
+  row.props.onNavigate(); assert.equal(dismissed, 1);
+});

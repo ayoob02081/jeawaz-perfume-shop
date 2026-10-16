@@ -10,6 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import AppImage from "./AppImage";
+import ProductGradeBadge from "./ProductGradeBadge";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import MobileSearchOverlay from "./MobileSearchOverlay";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -99,12 +100,15 @@ function HeaderLayout() {
       className="flex items-center gap-3 p-3 text-stroke-800 hover:bg-stroke-100 focus-visible:bg-stroke-100"
     >
       <AppImage src={item.image} alt="" width="size-12 shrink-0" sizes="48px" />
-      <span className="min-w-0">
+      <span className="min-w-0 flex-1 break-words">
         <span className="block text-sm">{item.perTitle}</span>
         {item.enTitle && (
           <span className="block text-xs text-stroke-500">{item.enTitle}</span>
         )}
       </span>
+      <div className="flex h-6 shrink-0 items-center">
+        <ProductGradeBadge product={{ grade: item.grade }} />
+      </div>
     </Link>
   );
   const searchProps = (surface) => ({
