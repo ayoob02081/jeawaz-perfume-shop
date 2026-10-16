@@ -95,7 +95,7 @@ function ProductsLayout({ initialSnapshot }) {
                 <ProductCard key={product.id} product={product} />
               ))}
           </section>
-          <div className="flex items-center justify-center h-20">
+          <div className="flex min-h-20 items-center justify-center py-5 sm:py-0">
             <ProductPagination
               page={page}
               search={searchParams.toString()}

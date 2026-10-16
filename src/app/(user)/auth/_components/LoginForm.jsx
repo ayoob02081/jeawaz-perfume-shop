@@ -45,7 +45,7 @@ function LoginForm({
       {closeBtn && (
         <div className="absolute md:left-6 max-md:top-3 md:top-6 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl max-md:bg-stroke-200">
           <button
-            className="btn max-md:border-0 md:border-[1.5px] border-stroke-200 md:size-10 aspect-square rounded-full md:p-0"
+            className="btn max-md:border-0 md:border border-stroke-200 md:size-10 aspect-square rounded-full md:p-0 backdrop-blur-md"
             onClick={onClose}
             type="button"
           >

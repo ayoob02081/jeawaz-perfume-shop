@@ -519,7 +519,7 @@ function ProductDetails({ product }) {
   const { notes } = product;
 
   return (
-    <div className="grow flex flex-col items-center justify-between gap-6 size-full md:px-4 max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl py-6 border-stroke-250  ">
+    <div className="grow flex flex-col items-center justify-between max-md:gap-12 gap-6 size-full md:px-4 max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl py-6 border-stroke-250  ">
       <div className="flex flex-col items-start justify-between gap-2 w-full">
         <span className="flex items-center justify-start gap-2">
           <AppImage
@@ -534,41 +534,43 @@ function ProductDetails({ product }) {
           {product?.notesDescription}
         </p>
       </div>
-      <div className="flex flex-col items-center justify-end gap-2 size-full max-md:min-h-[28vh] md:max-h-80">
-        <Notes type={notes?.base} base />
-        <Notes type={notes?.middle} middle />
+      <div className="flex flex-col items-center justify-end max-md:gap-4 size-full max-md:min-h-64 md:max-h-80">
         <Notes type={notes?.top} top />
+        <Notes type={notes?.middle} middle />
+        <Notes type={notes?.base} base />
       </div>
     </div>
   );
 }
 
-function Notes({ type, top, middle, base }) {
+function Notes({ type, top, middle }) {
   return (
     <div
-      className={`relative flex flex-col items-center justify-start gap-2 text-nowrap whitespace-nowrap w-full ${base ? "h-1/5" : middle ? "h-1/4" : "h-1/2"}`}
+      className={`relative flex flex-col items-center justify-start gap-2 text-nowrap whitespace-nowrap w-full ${top ? "h-1/5" : middle ? "h-1/4" : "h-1/2"}`}
     >
       <AppImage
-        src={`/images/scent-background-${base ? "1" : middle ? "2" : "3"}.svg`}
+        src={`/images/scent-background-${top ? "1" : middle ? "2" : "3"}.svg`}
         alt="shape-background"
         className="dark:mix-blend-overlay"
         width={`max-md:h-full ${
-          base ? "md:h-[53.3px]" : middle ? "md:h-[66.02px]" : "md:h-[134.23px]"
+          top ? "md:h-[53.3px]" : middle ? "md:h-[66.02px]" : "md:h-[134.23px]"
         }`}
-        ratio={base ? "aspect-4/3" : middle ? "aspect-4/2" : "aspect-4/1"}
+        ratio={top ? "aspect-4/3" : middle ? "aspect-4/2" : "aspect-4/1"}
       />
-      <span className="absolute flex flex-col items-center justify-center gap-1 z-20 w-4/5">
+      <span className="absolute flex flex-col items-center justify-center gap-1 z-20 w-full -translate-y-3">
         <p className="text-xs text-stroke-800 font-bold">
-          {base ? "نت‌های آغازین" : middle ? "نت‌های میانی" : "نت‌های پایانی"}
+          {top ? "نت‌های آغازین" : middle ? "نت‌های میانی" : "نت‌های پایانی"}
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-1 w-full text-wrap text-center leading-px">
+        <div className="flex flex-wrap items-center justify-center gap-0.5 w-full text-wrap text-center leading-0">
           {type?.map((s, index) => (
             <span
-              className="flex items-center justify-start gap-1 text-wrap"
+              className="flex items-center justify-start gap-0.5 text-wrap"
               key={index}
             >
-              {index > 0 && " - "}
-              <p className="text-xs text-stroke-600 text-nowrap">{s}</p>
+              {index > 0 && <p className="text-[10px]">-</p>}
+              <p className="text-xs text-stroke-600 text-nowrap -translate-y-px">
+                {s}
+              </p>
             </span>
           ))}
         </div>

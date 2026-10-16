@@ -55,10 +55,11 @@ export const getProductPriceApi = ({ id, mode, volume }) =>
     })
     .then(({ data }) => data);
 
-export const getProductSuggestionsApi = (params) =>
+export const getProductSuggestionsApi = (params, { signal } = {}) =>
   app
     .get("/products/search/suggestions", {
       params: cleanParams(params),
+      signal,
     })
     .then(({ data }) => data);
 

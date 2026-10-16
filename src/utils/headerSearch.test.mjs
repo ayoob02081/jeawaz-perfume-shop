@@ -83,12 +83,12 @@ test("an empty search removes it; values are encoded", () => {
   assert.equal(new URL(persian, "http://localhost").searchParams.get("search"), "عطر مردانه");
 });
 
-test("HeaderLayout follows the URL search during render, without effects or requests", () => {
+test("HeaderLayout follows the URL search during render, with one shared suggestion controller", () => {
   assert.match(header, /const urlSearch = searchParams\.get\("search"\) \|\| "";/);
   assert.match(header, /const syncedSearch = syncHeaderSearch\(search, urlSearch\);/);
   assert.match(header, /if \(syncedSearch !== search\) setSearch\(syncedSearch\);/);
   assert.doesNotMatch(header, /useEffect\([\s\S]{0,300}?setSearch/);
-  assert.doesNotMatch(header, /useGetProductSuggestions|useQuery\(/);
+  assert.equal((header.match(/useGetProductSuggestions\(suggestionQuery\)/g) || []).length, 1);
   assert.match(header,
-    /productSearchNavigation\(\s*searchValue,\s*searchParams,\s*pathname,\s*\);\s*if \(replace\) router\.replace\(href\);\s*else router\.push\(href\);/);
+    /productSearchNavigation\(\s*searchValue,\s*searchParams,\s*pathname,\s*\);\s*closeSearch\("navigation"\);\s*if \(replace\) router\.replace\(href\);\s*else router\.push\(href\);/);
 });

@@ -94,17 +94,17 @@ export const useGetProductVolumeOptions = (enabled = true) => useQuery({
   staleTime: 5 * 60 * 1000,
 });
 
-export const useGetProductSuggestions = ({ search, limit = 5 } = {}) => {
+export const useGetProductSuggestions = ({ search, limit = 5, enabled = true } = {}) => {
   const normalizedSearch = search?.trim() || "";
 
   return useQuery({
     queryKey: productKeys.suggestions(normalizedSearch, limit),
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       getProductSuggestionsApi({
         search: normalizedSearch,
         limit,
-      }),
-    enabled: normalizedSearch.length >= 3,
+      }, { signal }),
+    enabled: enabled && normalizedSearch.length >= 3,
     retry: false,
     refetchOnWindowFocus: false,
     staleTime: 60 * 1000,

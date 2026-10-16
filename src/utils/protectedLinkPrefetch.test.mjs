@@ -132,15 +132,21 @@ test("the dashboard, invoice and order-link wrappers only reach protected routes
   for (const href of orderLinks) assert.match(href, /^\/profile\//);
 });
 
-test("public links keep Next.js default prefetching", () => {
-  const publicLinks = allLinks.filter(({ href }) => href && PUBLIC_HREF.test(href));
+const isSuggestionLink = ({ file, href }) => file === "components/HeaderLayout.jsx" && href === '{`/products/${item.id}`}';
+
+test("existing public links keep default prefetch; transient suggestions do not fetch detail pages", () => {
+  const publicLinks = allLinks.filter((link) => link.href && PUBLIC_HREF.test(link.href) && !isSuggestionLink(link));
   assert.ok(publicLinks.length >= 30, `found ${publicLinks.length}`);
   assert.deepEqual(publicLinks.filter(({ tag }) => /\bprefetch=/.test(tag)).map(({ where }) => where), []);
 
-  // Only protected links (literal or known wrapper) opt out.
+  // The new transient result rows must not prefetch details on each search.
+  const suggestions = allLinks.filter(isSuggestionLink);
+  assert.equal(suggestions.length, 1);
+  assert.ok(noPrefetch(suggestions[0].tag));
+  // Other opt-outs remain restricted to protected links.
   const optedOut = allLinks.filter(({ tag }) => /\bprefetch=/.test(tag));
   assert.deepEqual(
-    optedOut.filter((link) => !PROTECTED_HREF.test(link.href ?? "") && !isProtectedWrapper(link)).map(({ where, href }) => `${where} ${href}`),
+    optedOut.filter((link) => !PROTECTED_HREF.test(link.href ?? "") && !isProtectedWrapper(link) && !isSuggestionLink(link)).map(({ where, href }) => `${where} ${href}`),
     [],
   );
 });

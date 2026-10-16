@@ -4,11 +4,16 @@ import {
   ArrowLeftIcon,
   ChevronDownIcon,
   Squares2X2Icon,
+  MagnifyingGlassIcon,
   UserIcon,
+  Bars3Icon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import AppImage from "./AppImage";
-import { useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import MobileSearchOverlay from "./MobileSearchOverlay";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useGetProductSuggestions } from "@/hooks/useProducts";
 import SearchSection from "./SearchSection";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
@@ -16,12 +21,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useGetAllCartItems } from "@/hooks/useCart";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { formatFullName } from "@/utils/profileFormContract.mjs";
-import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { useSidebar } from "@/contexts/Sidebars/SidebarContext";
 import ThemeToggle from "@/ui/ThemeToggle";
 import {
   productSearchNavigation,
   syncHeaderSearch,
+  headerSuggestionQuery,
+  headerSearchSurface,
 } from "@/utils/headerSearch.mjs";
 
 function HeaderLayout() {
@@ -37,6 +43,95 @@ function HeaderLayout() {
   const searchValue = syncedSearch.value;
   const setSearchValue = (value) =>
     setSearch((current) => ({ ...current, value }));
+  const [activeSurface, setActiveSurface] = useState(null);
+  const searchTriggerRef = useRef(null);
+  const inlineInputs = useRef({});
+  const closeReason = useRef("dismiss");
+  const dialogId = useId();
+  const closeSearch = useCallback((reason = "dismiss") => {
+    closeReason.current = reason;
+    setActiveSurface(null);
+  }, []);
+  const activateSearch = (surface, active) => {
+    if (active) {
+      if (headerSearchSurface(window.innerWidth) !== surface) return;
+      if (surface === "spotlight") closeReason.current = "dismiss";
+      setActiveSurface(surface);
+    } else
+      setActiveSurface((current) => (current === surface ? null : current));
+  };
+  const queryString = searchParams.toString();
+  useEffect(() => {
+    closeSearch("navigation");
+  }, [pathname, queryString, closeSearch]);
+  useEffect(() => {
+    const media = [
+      "(max-width: 480px)",
+      "(min-width: 640px)",
+      "(min-width: 1024px)",
+    ].map((query) => window.matchMedia(query));
+    const onResize = () => {
+      if (
+        activeSurface &&
+        headerSearchSurface(window.innerWidth) !== activeSurface
+      )
+        closeSearch("resize");
+    };
+    media.forEach((query) => query.addEventListener("change", onResize));
+    return () =>
+      media.forEach((query) => query.removeEventListener("change", onResize));
+  }, [activeSurface, closeSearch]);
+  const debouncedSearch = useDebounce(searchValue.trim(), 300);
+  const suggestionQuery = headerSuggestionQuery(
+    searchValue,
+    debouncedSearch,
+    Boolean(activeSurface),
+  );
+  const suggestions = useGetProductSuggestions(suggestionQuery);
+  const renderResult = (item, dismiss) => (
+    <Link
+      href={`/products/${item.id}`}
+      prefetch={false}
+      onNavigate={() => {
+        dismiss();
+        closeSearch("navigation");
+      }}
+      className="flex items-center gap-3 p-3 text-stroke-800 hover:bg-stroke-100 focus-visible:bg-stroke-100"
+    >
+      <AppImage src={item.image} alt="" width="size-12 shrink-0" sizes="48px" />
+      <span className="min-w-0">
+        <span className="block text-sm">{item.perTitle}</span>
+        {item.enTitle && (
+          <span className="block text-xs text-stroke-500">{item.enTitle}</span>
+        )}
+      </span>
+    </Link>
+  );
+  const searchProps = (surface) => ({
+    active: activeSurface === surface,
+    onActiveChange: (active) => activateSearch(surface, active),
+    results:
+      suggestionQuery.enabled && Array.isArray(suggestions.data)
+        ? suggestions.data
+        : [],
+    isFetching:
+      suggestionQuery.waiting ||
+      (suggestionQuery.enabled && suggestions.isFetching),
+    isError: suggestionQuery.enabled && suggestions.isError,
+    errorStatus: suggestions.error?.response?.status,
+    renderResult,
+    inputRef: (element) => {
+      inlineInputs.current[surface] = element;
+    },
+  });
+  const restoreSearchFocus = () => {
+    if (closeReason.current === "navigation") return false;
+    const visible = (element) =>
+      element?.isConnected && element.getClientRects().length > 0;
+    if (closeReason.current === "resize")
+      return Object.values(inlineInputs.current).find(visible) || false;
+    return visible(searchTriggerRef.current) ? searchTriggerRef.current : false;
+  };
   const { user, isAuthenticated, loading } = useAuth();
   const { data: cartItems, isLoading } = useGetAllCartItems();
   // No profile is required after login: a user without a name is shown by
@@ -59,6 +154,7 @@ function HeaderLayout() {
       pathname,
     );
 
+    closeSearch("navigation");
     if (replace) router.replace(href);
     else router.push(href);
   };
@@ -66,6 +162,7 @@ function HeaderLayout() {
   return (
     <>
       <DesktopHeader
+        searchProps={searchProps("desktop")}
         totalProducts={cartItems?.totalProducts}
         toggleCategory={toggleCategory}
         isCategoryOpen={isCategoryOpen}
@@ -78,11 +175,29 @@ function HeaderLayout() {
       />
 
       <MobileHeader
+        searchProps={searchProps}
+        activeSurface={activeSurface}
+        searchTriggerRef={searchTriggerRef}
+        dialogId={dialogId}
+        onOpenSearch={() => activateSearch("spotlight", true)}
         totalProducts={cartItems?.totalProducts}
         toggleSidebar={toggleSidebar}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         handleSearchSubmit={handleSearchSubmit}
+        pathname={pathname}
+      />
+      <MobileSearchOverlay
+        open={activeSurface === "spotlight"}
+        onClose={() => closeSearch()}
+        dialogId={dialogId}
+        finalFocus={restoreSearchFocus}
+        searchProps={{
+          ...searchProps("spotlight"),
+          value: searchValue,
+          onChange: (event) => setSearchValue(event.target.value),
+          onSubmit: handleSearchSubmit,
+        }}
       />
     </>
   );
@@ -91,6 +206,7 @@ function HeaderLayout() {
 export default HeaderLayout;
 
 function DesktopHeader({
+  searchProps,
   toggleCategory,
   fullName,
   isAuthenticated,
@@ -123,6 +239,7 @@ function DesktopHeader({
               </li>
               <li className="flex relative grow col-span-3 ">
                 <SearchSection
+                  {...searchProps}
                   placeholder="نام ادکلن ، دسته بندی ، برند و ..."
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
@@ -332,45 +449,88 @@ function DesktopHeader({
   );
 }
 function MobileHeader({
+  searchProps,
+  activeSurface,
+  searchTriggerRef,
+  dialogId,
+  onOpenSearch,
   toggleSidebar,
   totalProducts,
   searchValue,
   setSearchValue,
   handleSearchSubmit,
+  pathname,
 }) {
   const router = useRouter();
-  const showElement = useHideOnScroll();
 
   return (
     <nav className="lg:hidden max-lg:fixed max-lg:top-0 inset-x-0 h-fit w-full z-50">
-      <ul className="flex items-center justify-between sm:gap-4 max-sm:flex-wrap w-full relative p-4 rounded-b-4xl bg-stroke-0/0 duration-200">
+      <ul className="flex items-center justify-between gap-2 sm:gap-4 w-full relative p-4 rounded-b-4xl bg-stroke-0/0 duration-200">
         <li className="flex-none">
           <button
             type="button"
             className="text-2xl aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 bg-stroke-800/5 backdrop-blur-md active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-primary active:text-primary/80 dark:text-stroke-800 dark:active:text-stroke-800/70 duration-200"
             onClick={toggleSidebar}
           >
-            <AppImage
-              src="/images/category.svg"
-              alt="shopping-bag-icon"
-              width="size-8"
-              sizes="10vw"
-            />
+            {pathname.startsWith("/admin") ||
+            pathname.startsWith("/profile") ? (
+              <Bars3Icon className="size-8 stroke-2 " />
+            ) : (
+              <AppImage
+                src="/images/category.svg"
+                alt="shopping-bag-icon"
+                width="size-8"
+                sizes="10vw"
+              />
+            )}
           </button>
         </li>
-        <li className="px-2 flex-none bg-stroke-800/ backdrop-blur-md rounded-full">
-          <Link className="block p-2" href="/">
-            <AppImage
-              src="/images/jeawaz-logo-v6.0-r.webp"
-              alt="jeawaz-brand-icon"
-              width="h-10.5 w-20.75"
-              sizes="20vw"
-            />
-          </Link>
+        <li className="px-2 flex-1 [@media(max-width:480px)]:pl-0 [@media(max-width:480px)]:w-full backdrop-blur-md bg-stroke-800/5 rounded-full">
+          <div className="[@media(max-width:480px)]:flex items-center justify-between gap-1">
+            <Link
+              className="block min-[481px]:p-2 [@media(max-width:480px)]:hidden [@media(max-width:480px)]:pr-1"
+              href="/"
+            >
+              <AppImage
+                src="/images/jeawaz-logo-v6.0-r.webp"
+                alt="jeawaz-brand-icon"
+                width="[@media(max-width:480px)]:h-7 h-8.5"
+                ratio="aspect-3/2"
+                sizes="20vw"
+              />
+            </Link>
+            <button
+              ref={searchTriggerRef}
+              type="button"
+              onClick={onOpenSearch}
+              aria-label="جستجوی محصولات"
+              aria-haspopup="dialog"
+              aria-expanded={activeSurface === "spotlight"}
+              aria-controls={dialogId}
+              className="relative [@media(max-width:480px)]:flex flex-1 h-14 shrink-0 items-center justify-center rounded-full text-stroke-500 hidden"
+            >
+              <div className="flex items-center justify-start size-full gap-1">
+                <p className="flex items-center text-nowrap text-stroke-400 font-bold -translate-y-">
+                  جستجو در
+                </p>
+                <AppImage
+                  src="/images/jeawaz-logo-v6.0-r.webp"
+                  alt="jeawaz-brand-icon"
+                  width="[@media(max-width:480px)]:h-8 h-8.5"
+                  ratio="aspect-3/2"
+                  sizes="20vw"
+                />
+              </div>
+              <div className="flex items-center justify-center h-full aspect-square p-2.5 rounded-full backdrop-blur-md ">
+                <MagnifyingGlassIcon className="size-6 stroke-2" />
+              </div>
+            </button>
+          </div>
         </li>
-        <li className="max-sm:hidden w-full">
+        <li className="[@media(max-width:480px)]:hidden w-full">
           <div className=" w-full h-12">
             <SearchSection
+              {...searchProps("tablet")}
               placeholder="نام ادکلن ، دسته بندی ، برند و ..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
@@ -398,20 +558,6 @@ function MobileHeader({
               </div>
             )}
           </button>
-        </li>
-        <li
-          className={`max-sm:flex sm:hidden items-center justify-center relative grow transition-all duration-200 ease-in-out overflow-hidden w-full ${
-            showElement ? "max-h-16 opacity-100 mt-5" : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className=" w-full h-12">
-            <SearchSection
-              placeholder="نام ادکلن ، دسته بندی ، برند و ..."
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onSubmit={handleSearchSubmit}
-            />
-          </div>
         </li>
       </ul>
     </nav>

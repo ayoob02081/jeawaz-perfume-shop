@@ -25,3 +25,15 @@ export function productSearchNavigation(value, currentSearchParams, pathname) {
     replace: pathname === "/products",
   };
 }
+
+// Only the active, fully debounced term owns a query. Moving to the disabled
+// empty key also detaches/aborts the previous request when its signal is consumed.
+export function headerSuggestionQuery(value, debounced, active) {
+  const term = value.trim();
+  const enabled = Boolean(active && term.length >= 3 && term === debounced);
+  return { search: enabled ? term : "", enabled, waiting: Boolean(active && term.length >= 3 && !enabled) };
+}
+
+export function headerSearchSurface(width) {
+  return width <= 480 ? "spotlight" : width < 1024 ? "tablet" : "desktop";
+}

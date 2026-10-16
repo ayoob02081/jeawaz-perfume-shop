@@ -11,15 +11,16 @@ export function productPageHref(search, page) {
   return query ? `/products?${query}` : "/products";
 }
 
-export function productPaginationState(page, totalPages) {
+export function productPaginationState(page, totalPages, compact = false) {
   const current = normalizeProductListPage(page);
   const total = Number.isSafeInteger(totalPages) && totalPages > 0 ? totalPages : 0;
   if (!total || (total === 1 && current === 1)) return { items: [], previous: null, next: null };
   // An empty out-of-range page stays empty; offer real in-range recovery links
   // without changing the requested page, API response or cache key.
   const center = Math.min(current, total);
-  const start = Math.max(1, center - 2);
-  const end = Math.min(total, center + 2);
+  const siblings = compact && total > 5 ? 1 : 2;
+  const start = Math.max(1, center - siblings);
+  const end = Math.min(total, center + siblings);
   const items = [];
   if (start > 1) {
     items.push(1);

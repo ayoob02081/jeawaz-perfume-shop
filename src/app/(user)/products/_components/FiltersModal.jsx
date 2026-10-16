@@ -501,9 +501,8 @@ function BrandsFilter({ state, brands, addFilter }) {
         const isChecked = state?.includes(brand.id);
 
         return (
-          <div className="flex flex-col w-full">
+          <div key={brand.id} className="flex flex-col w-full">
             <FilterCheckBox
-              key={brand.id}
               checkId={brand.value + index}
               label={brand.title}
               imageSrc={brand.iconUrl}
@@ -733,7 +732,9 @@ function GradeFilter({ value = [], addFilter }) {
   return (
     <div className="flex flex-col gap-3 w-full">
       {/* FilterOption shows its title from md up only. */}
-      <p className="md:hidden font-bold text-stroke-800">{GRADE_FILTER_LABEL}</p>
+      <p className="md:hidden font-bold text-stroke-800">
+        {GRADE_FILTER_LABEL}
+      </p>
       <div
         className="flex items-center gap-2 w-full"
         role="group"

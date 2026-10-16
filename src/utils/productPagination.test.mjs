@@ -133,7 +133,7 @@ test("URL-driven Back/Forward renders preserve filters and reflect each current 
     const url = new URL(productPageHref("gender=female&sort=oldest&limit=2", page), "https://jeawaz.com");
     const query = productsQueryFromSearchParams(url.searchParams);
     const html = render({ page: query.page, search: url.searchParams.toString() });
-    assert.match(html, new RegExp('aria-current="page"[^>]*>' + toPersianNumbers(page) + '</span>'));
+    assert.match(html, new RegExp('aria-current="page"[^>]*><span[^>]*>' + toPersianNumbers(page) + '</span></span>'));
     assert(html.includes(toPersianNumbers(page)));
     for (const href of hrefs(html)) { const params = new URL(href, url).searchParams; assert.equal(params.get("gender"), "female"); assert.equal(params.get("sort"), "oldest"); assert.equal(params.get("limit"), "2"); }
   }
@@ -162,4 +162,90 @@ test("page href, SSR snapshot and observer share one exact key through navigatio
     }
     assert.equal(requests, 0);
   } finally { stop?.(); client.clear(); }
+});
+
+
+test("compact pagination bounds large catalogs without changing arrow destinations", () => {
+  for (const total of [5, 10, 100, 1000, 100000, Number.MAX_SAFE_INTEGER]) {
+    for (const page of [1, 2, 3, Math.floor(total / 2), total - 1, total, Number.MAX_SAFE_INTEGER]) {
+      const compact = productPaginationState(page, total, true);
+      const desktop = productPaginationState(page, total);
+      assert(compact.items.length <= 7);
+      const numbers = compact.items.filter((item) => typeof item === "number");
+      assert(numbers.length <= 5);
+      assert(numbers.includes(1));
+      assert(numbers.includes(total));
+      assert(numbers.includes(Math.min(page, total)));
+      assert(numbers.every((item) => item >= 1 && item <= total));
+      assert.equal(compact.previous, desktop.previous);
+      assert.equal(compact.next, desktop.next);
+    }
+  }
+  assert.deepEqual(productPaginationState(500, 1000, true).items, [1, "dots-start", 499, 500, 501, "dots-end", 1000]);
+  for (const total of [2, 3, 4]) for (let page = 1; page <= total; page++) {
+    assert.deepEqual(productPaginationState(page, total, true).items, Array.from({ length: total }, (_, i) => i + 1));
+  }
+});
+
+test("responsive SSR has one current item, real filtered links and CSS-only compact visibility", () => {
+  for (const totalPages of [3, 4, 1000, Number.MAX_SAFE_INTEGER]) {
+    for (const page of [1, 3, Math.floor(totalPages / 2), totalPages]) {
+      const search = "search=oud&brandIds=1&brandIds=2&sort=oldest&limit=24";
+      const html = render({ page, totalPages, search });
+      assert.equal((html.match(/aria-current="page"/g) || []).length, 1);
+      assert.match(html, /justify-between gap-2 flex-row-reverse sm:w-auto sm:justify-center/);
+      assert.match(html, /flex-1 flex-wrap.*sm:flex-none sm:flex-nowrap/);
+      assert.match(html, /aria-current="page"[^>]*class="[^"]*pages--btn shrink-0[^"]*"/);
+      assert(!/aria-current="page"[^>]*class="[^"]*hidden/.test(html));
+      assert(!/<a\b[^>]*>(?:(?!<\/a>)[\s\S])*<(a|button)\b/.test(html));
+      for (const href of hrefs(html)) {
+        const params = new URL(href, "https://jeawaz.com").searchParams;
+        assert.deepEqual(params.getAll("brandIds"), ["1", "2"]);
+        assert.equal(params.get("search"), "oud");
+        assert.equal(params.get("sort"), "oldest");
+        assert.equal(params.get("limit"), "24");
+      }
+      for (const link of links) assert.match(link.className, link.rel ? /size-10 shrink-0.*sm:size-5/ : /pages--btn shrink-0/);
+    }
+  }
+  const middle = render({ page: 500, totalPages: 1000 });
+  assert.equal((middle.match(/hidden min-\[375px\]:flex/g) || []).length, 2);
+  const nearBoundary = render({ page: 4, totalPages: 1000 });
+  assert.match(nearBoundary, /min-\[375px\]:hidden/);
+});
+
+test("large page labels remain fully accessible while their visible text is width-bounded", () => {
+  const page = Number.MAX_SAFE_INTEGER;
+  const html = render({ page, totalPages: page });
+  assert(html.includes('aria-label="صفحه ' + toPersianNumbers(page) + '"'));
+  assert.match(html, /class="max-w-full truncate px-1 text-inherit"/);
+  render({ page: 500, totalPages: 1000, isLoading: true });
+  for (const link of links) {
+    assert.equal(link["aria-disabled"], true);
+    assert.equal(link.tabIndex, -1);
+    let prevented = 0;
+    link.onClick({ preventDefault: () => prevented++ });
+    link.onNavigate({ preventDefault: () => prevented++ });
+    assert.equal(prevented, 2);
+  }
+});
+
+
+test("one, five, ten, twenty and one hundred pages retain bounded nearby navigation", () => {
+  for (const total of [1, 5, 10, 20, 100]) for (const page of new Set([1, Math.ceil(total / 2), total])) {
+    const compact = productPaginationState(page, total, true);
+    const desktop = productPaginationState(page, total);
+    if (total === 1) { assert.equal(render({ page, totalPages: total }), ""); continue; }
+    assert(compact.items.length <= 7);
+    assert(desktop.items.length <= 9);
+    const numbers = compact.items.filter((item) => typeof item === "number");
+    for (const expected of [1, total, page, Math.max(1, page - 1), Math.min(total, page + 1)]) assert(numbers.includes(expected));
+    assert(numbers.every((item) => desktop.items.includes(item)));
+    assert.equal(compact.previous, page > 1 ? page - 1 : null);
+    assert.equal(compact.next, page < total ? page + 1 : null);
+    const html = render({ page, totalPages: total, search: "gender=female&sort=oldest" });
+    assert.match(html, /<nav[^>]*><(?:a|span)[\s\S]*?<\/(?:a|span)><div class="flex min-w-0 flex-1 flex-wrap/);
+    assert.match(html, /<\/div><(?:a|span)/);
+    assert(!html.includes("<button"));
+  }
 });

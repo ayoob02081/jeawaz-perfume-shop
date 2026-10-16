@@ -23,7 +23,7 @@ function HomePageSortProductsLayout({
       className={`flex flex-col items-center py-2 container mx-auto xl:max-w-7xl gap-6 snap-x ${bgColor}`}
     >
       {/* Info */}
-      <section className="flex justify-between items-center gap-2 w-full px-4">
+      <section className="flex justify-between items-center gap-2 w-full px-4 z-10">
         {/* Title */}
         <div className="flex flex-col items-start justify-center md:items-start gap-2 w-full text-nowrap">
           <div className="flex items-center gap-1">
@@ -48,7 +48,7 @@ function HomePageSortProductsLayout({
           )}
           <Link
             href={`/products?${params.toString()}`}
-            className="hidden md:flex items-center justify-between gap-4 pr-3 border-r-[1.5px] border-stroke-200 text-primary hover:text-primary/70 active:text-primary/70 duration-200"
+            className="hidden md:flex items-center justify-between gap-4 pr-3 border-r-[1.5px] border-stroke-200 text-primary hover:text-primary/70 active:text-primary/70 duration-200 z-10"
           >
             <p className="text-lg text-nowrap">مشاهده همه</p>
             <ArrowLeftIcon className=" max-md:size-[1.1rem] size-6" />
@@ -64,8 +64,8 @@ function HomePageSortProductsLayout({
       </section>
 
       <Link
-        href="/products"
-        className="flex items-center justify-between gap-4 p-6 text-primary md:hidden hover:text-primary/70 active:text-primary/70 duration-200"
+        href={`/products?${params.toString()}`}
+        className="flex items-center justify-between gap-4 p-6 text-primary md:hidden hover:text-primary/70 active:text-primary/70 duration-200 z-10"
       >
         <p>مشاهده همه</p>
         <ArrowLeftIcon className="max-md:size-[1.1rem] size-6" />

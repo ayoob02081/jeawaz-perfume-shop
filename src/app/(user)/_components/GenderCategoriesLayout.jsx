@@ -34,7 +34,7 @@ function GenderCategoriesLayout({ initialSnapshot } = {}) {
   }
 
   return (
-    <section className="flex flex-col justify-between items-center py-4 container mx-auto xl:max-w-7xl ">
+    <section className="flex flex-col justify-between items-center py-4 container mx-auto xl:max-w-7xl z-10">
       <div className="flex justify-center items-center gap-1 w-full px-6 mb-6 text-base sm:text-[28px] font-bold">
         <h2 className="text-primary">دسته‌بندی</h2>
         <AppImage

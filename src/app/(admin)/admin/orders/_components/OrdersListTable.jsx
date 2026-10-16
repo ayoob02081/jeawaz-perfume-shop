@@ -182,22 +182,20 @@ function OrdersListTable({
               <p>انتخاب همه</p>
             </button>
           )}
-          {!isLoading &&
-            orders?.length >= 1 &&
-            status === "READY_TO_PRINT" && (
-              <button
-                type="submit"
-                onClick={() => handleExportPrintFile(true)}
-                disabled={!canPrintAll}
-                title={
-                  printAllBlockedByFilters ? PRINT_ALL_FILTERED_HINT : undefined
-                }
-                className={` btn btn--primary border  rounded-lg h-full w-fit py-1 px-3 gap-1 disabled:opacity-40 opacity-100 duration-200`}
-              >
-                <PrinterIcon className=" size-5 duration-200" />
-                چاپ همه
-              </button>
-            )}
+          {!isLoading && orders?.length >= 1 && status === "READY_TO_PRINT" && (
+            <button
+              type="submit"
+              onClick={() => handleExportPrintFile(true)}
+              disabled={!canPrintAll}
+              title={
+                printAllBlockedByFilters ? PRINT_ALL_FILTERED_HINT : undefined
+              }
+              className={` btn btn--primary border  rounded-lg h-full w-fit py-1 px-3 gap-1 disabled:opacity-40 opacity-100 duration-200`}
+            >
+              <PrinterIcon className=" size-5 duration-200" />
+              چاپ همه
+            </button>
+          )}
         </div>
       )}
       {!isLoading &&
@@ -250,7 +248,7 @@ function OrdersListTable({
                           <Link
                             href={
                               order?.shipping?.phone
-                                ? `tel:+${order?.shipping?.phone}`
+                                ? `tel:${order?.shipping?.phone}`
                                 : ""
                             }
                             className="flex items-center gap-2 justify-end hover:text-primary duration-200"
@@ -333,7 +331,7 @@ function OrdersListTable({
                         <Link
                           href={
                             order?.shipping?.phone
-                              ? `tel:+${order?.shipping?.phone}`
+                              ? `tel:${order?.shipping?.phone}`
                               : ""
                           }
                           className="flex items-center gap-2 justify-end hover:text-primary duration-200"
