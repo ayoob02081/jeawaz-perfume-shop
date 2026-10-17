@@ -1,4 +1,5 @@
 import { cache, Suspense } from "react";
+import { notFound } from "next/navigation";
 import ProductsLayout from "./_components/ProductsLayout";
 import { catalogSearchParams } from "@/lib/storefrontCatalog.mjs";
 import { fetchCatalogSnapshot } from "@/lib/storefrontCatalog.server.mjs";
@@ -18,7 +19,11 @@ const getSnapshot = cache((queryJson) => fetchCatalogSnapshot({
 
 async function loadListing(searchParams) {
   const query = productsQueryFromSearchParams(catalogSearchParams(await searchParams));
-  return { query, snapshot: await getSnapshot(JSON.stringify(query)) };
+  const snapshot = await getSnapshot(JSON.stringify(query));
+  // Only a validated successful response establishes the pagination boundary.
+  // An empty first page remains a valid searchable/filterable collection.
+  if (query.page > 1 && query.page > snapshot.products.data.meta.totalPages) notFound();
+  return { query, snapshot };
 }
 
 export async function generateMetadata({ searchParams }) {

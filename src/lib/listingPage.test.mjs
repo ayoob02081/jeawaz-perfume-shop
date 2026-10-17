@@ -7,6 +7,7 @@ import * as filters from "../utils/productFilterContract.mjs";
 import * as seo from "./listingSeo.mjs";
 import { fetchCatalogSnapshot } from "./storefrontCatalog.server.mjs";
 
+const missing = new Error("NEXT_HTTP_ERROR_FALLBACK;404");
 const require = createRequire(import.meta.url);
 const { transformSync } = require("next/dist/build/swc");
 const { code } = transformSync(readFileSync(new URL("../app/(user)/products/page.jsx", import.meta.url), "utf8"), {
@@ -23,6 +24,7 @@ function route(fetchImpl) {
       return (key) => { if (!memo.has(key)) memo.set(key, fn(key)); return memo.get(key); };
     } },
     "./_components/ProductsLayout": () => null,
+    "next/navigation": { notFound: () => { throw missing; } },
     "@/lib/storefrontCatalog.mjs": catalog,
     "@/utils/productFilterContract.mjs": filters,
     "@/lib/listingSeo.mjs": seo,
@@ -77,11 +79,11 @@ test("metadata and rendering propagate upstream failure without a fabricated emp
   assert(results.every(({ status, reason }) => status === "rejected" && reason.message === "Public API request failed"));
 });
 
-test("a successful empty response retains the existing client snapshot with noindex metadata", async () => {
-  const empty = { data: [], meta: { page: 999, limit: 12, total: 36, totalPages: 3 } };
+test("an empty first page retains the existing client snapshot and noindex metadata", async () => {
+  const empty = { data: [], meta: { page: 1, limit: 12, total: 0, totalPages: 0 } };
   const page = route(async () => ({ ok: true, json: async () => empty }));
-  const metadata = await page.generateMetadata(props({ page: "999" }));
-  const element = await page.default(props({ page: "999" }));
+  const metadata = await page.generateMetadata(props({ page: "1" }));
+  const element = await page.default(props({ page: "1" }));
   assert.deepEqual(element.props.children.props.initialSnapshot.data, empty);
   assert.deepEqual(metadata.robots, { index: false, follow: true });
   assert.equal(metadata.alternates, undefined);
@@ -100,3 +102,70 @@ test("approved brand metadata and rendering use one snapshot without changing fi
   assert.deepEqual(metadata.robots, { index: true, follow: true });
   assert.equal(element.props.children.props.initialSnapshot.data.data[0].brand, brand);
 });
+
+// A successful public response establishes totalPages before either route entry
+// point can choose metadata or render. Synchronize callers, not timers.
+const catalogWithTotal = (total) => async (url) => {
+  const q = new URL(url).searchParams, page = Number(q.get("page")), limit = Number(q.get("limit"));
+  const data = Array.from({ length: Math.min(limit, Math.max(0, total - (page - 1) * limit)) }, (_, i) => ({
+    id: i + 105, brand: { id: 22, title: "کایالی" }, categories: { gender: { slug: "women", type: "gender", isActive: true } },
+  }));
+  return { ok: true, json: async () => ({ data, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } }) };
+};
+for (const [params, total] of [
+  [{ page: "4" }, 36], [{ page: "999" }, 36],
+  [{ brandIds: "22", page: "3" }, 18], [{ gender: "women", page: "3" }, 24],
+  [{ brandIds: "22", gender: "women", page: "3" }, 18],
+  [{ search: "filtered", page: "2" }, 6], [{ volumes: "5", page: "2" }, 6],
+  [{ limit: "24", page: "3" }, 36], [{ page: "2" }, 0], [{ page: "999" }, 0],
+]) {
+  test("metadata and rendering both reject out-of-range pagination: " + JSON.stringify(params) + " total=" + total, async () => {
+    const page = route(catalogWithTotal(total));
+    const results = await Promise.allSettled([page.generateMetadata(props(params)), page.default(props({ ...params }))]);
+    assert(results.every(({ status, reason }) => status === "rejected" && reason === missing));
+    assert.equal(page.calls.length, 1);
+    assert.equal(page.calls[0].query.page, Number(params.page));
+  });
+}
+for (const [params, total, canonical] of [
+  [{ page: "3" }, 36, "https://jeawaz.com/products?page=3"],
+  [{ brandIds: "22", page: "2" }, 18, "https://jeawaz.com/products?brandIds=22&page=2"],
+  [{ gender: "women", page: "2" }, 24, "https://jeawaz.com/products?gender=women&page=2"],
+  [{ search: "filtered" }, 6, undefined], [{ volumes: "5" }, 6, undefined],
+  [{ limit: "24", page: "2" }, 36, undefined],
+]) {
+  test("last valid page keeps its snapshot and SEO policy: " + JSON.stringify(params), async () => {
+    const page = route(catalogWithTotal(total));
+    const [metadata, element] = await Promise.all([page.generateMetadata(props(params)), page.default(props({ ...params }))]);
+    assert.equal(metadata.alternates?.canonical, canonical);
+    assert.deepEqual(metadata.robots, { index: Boolean(canonical), follow: true });
+    assert(element.props.children.props.initialSnapshot.data.data.length > 0);
+    assert.equal(page.calls.length, 1);
+  });
+}
+for (const params of [{}, { page: "1" }, { page: "0" }, { page: "-1" }, { page: "abc" }, { page: "1.5" }, { page: "9007199254740992" }, { brandIds: "20" }, { search: "empty" }]) {
+  test("empty first page and existing malformed-page normalization stay successful: " + JSON.stringify(params), async () => {
+    const page = route(catalogWithTotal(0));
+    const [metadata, element] = await Promise.all([page.generateMetadata(props(params)), page.default(props({ ...params }))]);
+    assert.deepEqual(metadata.robots, { index: false, follow: true });
+    assert.equal(metadata.alternates, undefined);
+    assert.equal(element.props.children.props.initialSnapshot.query.page, 1);
+    assert.equal(page.calls.length, 1);
+  });
+}
+for (const [name, fetchImpl] of [
+  ["upstream 400", async () => ({ ok: false, status: 400 })],
+  ["upstream 500", async () => ({ ok: false, status: 500 })],
+  ["upstream 503", async () => ({ ok: false, status: 503 })],
+  ["network failure", async () => { throw new Error("offline fixture"); }],
+  ["missing response", async () => ({ ok: true, json: async () => ({}) })],
+  ["missing totals", async () => ({ ok: true, json: async () => ({ data: [], meta: { page: 999, limit: 12 } }) })],
+  ["invalid totals", async () => ({ ok: true, json: async () => ({ data: [], meta: { page: 999, limit: 12, total: 36, totalPages: 0 } }) })],
+]) {
+  test(name + " is never mistaken for a nonexistent pagination page", async () => {
+    const page = route(fetchImpl);
+    const results = await Promise.allSettled([page.generateMetadata(props({ page: "999" })), page.default(props({ page: "999" }))]);
+    assert(results.every(({ status, reason }) => status === "rejected" && reason !== missing));
+    assert.equal(page.calls.length, 1);
+  });
+}
