@@ -5,7 +5,7 @@ export const PUBLIC_PATHS = [
 ];
 const PAGE_SIZE = 100;
 const MAX_URLS = 50_000;
-const CATEGORY_TYPES = {
+export const CATEGORY_TYPES = {
   gender: "gender",
   fragranceFamilies: "fragrance_family",
   seasons: "season",

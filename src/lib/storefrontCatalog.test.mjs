@@ -630,3 +630,30 @@ test("preparing an uncommitted navigation neither cancels nor changes the active
   assert.equal(signal.aborted, false);
   client.clear();
 });
+
+test("strict listing snapshots propagate HTTP, network and malformed-payload failures", async () => {
+  const offline = new Error("synthetic network failure");
+  for (const fetchImpl of [
+    async () => ({ ok: false, status: 400 }),
+    async () => ({ ok: false, status: 503 }),
+    async () => { throw offline; },
+    async () => reply({ data: [], meta: {} }),
+    async () => ({ ok: true, json: async () => { throw new SyntaxError("bad JSON"); } }),
+  ]) {
+    await assert.rejects(fetchCatalogSnapshot({ apiUrl, query: {}, throwOnError: true, fetchImpl }));
+  }
+});
+
+test("strict success preserves no-store, anonymous requests and genuine empty result snapshots", async () => {
+  let requests = 0;
+  const empty = { data: [], meta: { page: 1, limit: 12, total: 0, totalPages: 0 } };
+  const snapshot = await fetchCatalogSnapshot({ apiUrl, query: {}, throwOnError: true, fetchImpl: async (_url, options) => {
+    requests++;
+    assert.equal(options.cache, "no-store");
+    assert.equal(options.credentials, "omit");
+    assert.equal(options.headers.Cookie, undefined);
+    return reply(empty);
+  } });
+  assert.equal(requests, 1);
+  assert.deepEqual(snapshot.products.data, empty);
+});

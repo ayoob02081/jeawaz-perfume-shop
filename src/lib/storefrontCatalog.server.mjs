@@ -4,7 +4,7 @@ export const CATALOG_SNAPSHOT_TIMEOUT_MS = 5_000;
 
 // Anonymous public reads only. No cookies, auth refresh, persistent cache,
 // pagination crawl or per-product detail requests belong in this loader.
-export async function fetchCatalogSnapshot({ apiUrl, query, includeCategories = false, fetchImpl = fetch }) {
+export async function fetchCatalogSnapshot({ apiUrl, query, includeCategories = false, throwOnError = false, fetchImpl = fetch }) {
   const normalized = normalizeProductsQuery(query);
   async function read(path, params, validate) {
     try {
@@ -28,7 +28,8 @@ export async function fetchCatalogSnapshot({ apiUrl, query, includeCategories = 
       const data = await response.json();
       if (!validate(data)) throw new Error("Invalid public API response");
       return { data, updatedAt: Date.now() };
-    } catch {
+    } catch (error) {
+      if (throwOnError) throw error;
       // Do not turn outages into cached empty successes. Existing client queries
       // retain their loading/error/retry behaviour when no snapshot is available.
       console.warn(`Storefront snapshot unavailable (${path})`);
