@@ -148,12 +148,12 @@ test("the login modal belongs to the mounted CartLayout and resumes through a ca
   const layout = section(cartLayout, "function CartLayout() {", "export default CartLayout;");
   assert.match(
     layout,
-    /<Modal\s+isOpen=\{!!authPrompt\}\s+onClose=\{closeAuthPrompt\}[\s\S]*?<Login\s+closeBtn=\{true\}\s+onAuthenticated=\{handleAuthenticated\}\s+onClose=\{closeAuthPrompt\}\s*\/>/,
+    /<Modal\s+isOpen=\{!!authPrompt\}\s+accessibleLabel="[^"]+"\s+onClose=\{closeAuthPrompt\}[\s\S]*?<Login\s+closeBtn=\{true\}\s+onAuthenticated=\{handleAuthenticated\}\s+onClose=\{closeAuthPrompt\}\s*\/>/,
   );
   assert.doesNotMatch(layout, /router\.(push|replace|back)\(/);
   assert.doesNotMatch(layout, /\/auth\/login/);
   assert.match(login, /if \(onAuthenticated\) return onAuthenticated\(\);/);
-  assert.match(login, /const close = onClose \?\? \(\(\) => router\.back\(\)\);/);
+  assert.match(login, /const close = \(\) => \{[\s\S]*?mountedRef\.current = false;\s*if \(modalDismissal\) modalDismissal\.dismiss\(\);\s*else if \(onClose\) onClose\(\);\s*else router\.back\(\);/);
 });
 
 test("step 1's continue goes through the auth gate", () => {

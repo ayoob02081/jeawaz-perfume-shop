@@ -413,7 +413,7 @@ test("closing leaves no active overlay, scroll lock or focusable content", () =>
   // Modal/Backdrop follow `open`: outside-click listener off, body unlocked.
   assert.match(modal, /<Modal isOpen=\{open\} onClose=\{dismiss\}/);
   assert.match(modal, /inert=\{!open\}/);
-  assert.match(source("../components/Modal.jsx"), /useOutsideClick\(onClose, true, isOpen\)/);
+  assert.match(source("../components/Modal.jsx"), /useOutsideClick\(onClose, true, isOpen && !accessibleLabel\)/);
   // Backdrop holds the shared page lock only while open; closing or
   // unmounting releases it (bodyScrollLock.test.mjs covers the release).
   assert.match(source("../ui/Backdrop.jsx"), /useBodyScrollLock\(isOpen\);/);

@@ -364,6 +364,7 @@ function CartLayout() {
           mounted behind it; nothing navigates. */}
       <Modal
         isOpen={!!authPrompt}
+        accessibleLabel="ورود یا ثبت‌نام در جیاواز"
         onClose={closeAuthPrompt}
         className="h-fit justify-end"
       >

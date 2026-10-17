@@ -6,6 +6,7 @@ import {
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
+import { useModalDismissal } from "@/components/Modal";
 
 // Code-step heading around the phone button, per code screen status.
 const OTP_HEADINGS = {
@@ -23,6 +24,7 @@ function AuthLayout({
   togglePasswordType,
   phoneNumber,
   otpScreen,
+  sessionAccepted = false,
   requestError,
   onEditPhone,
   onResend,
@@ -33,13 +35,16 @@ function AuthLayout({
   actionsDisabled = false,
 }) {
   const router = useRouter();
+  const modalDismissal = useModalDismissal();
   const canResend = resendRemaining === 0 && !actionsDisabled;
   // The code is claimed as sent only once the backend confirmed it.
   const [otpHeadingStart, otpHeadingEnd] =
     OTP_HEADINGS[otpScreen] ?? OTP_HEADINGS.ready;
 
   const RouteToTerms = () => {
-    router.back();
+    if (modalDismissal?.isDismissed()) return;
+    if (modalDismissal) modalDismissal.dismiss();
+    else router.back();
     setTimeout(() => {
       router.push("/page/terms");
     }, 0);
@@ -65,7 +70,9 @@ function AuthLayout({
           </span>
         )}
         {login &&
-          (step === "otp" ? (
+          (sessionAccepted ? (
+            <p className="text-xs sm:text-sm text-stroke-600">کد ورود تأیید شد</p>
+          ) : step === "otp" ? (
             <span
               aria-live="polite"
               className="flex items-center justify-center gap-1 text-xs sm:text-sm text-stroke-600"
@@ -121,7 +128,7 @@ function AuthLayout({
             </div>
           </div>
         )}
-        {step === "otp" &&
+        {step === "otp" && !sessionAccepted &&
           (otpScreen === "ready" || otpScreen === "resending") && (
             <div className="flex items-center justify-center gap-1 text-stroke-800">
               {resendRemaining > 0 && (

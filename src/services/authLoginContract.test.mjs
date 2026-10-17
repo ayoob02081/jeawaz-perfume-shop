@@ -42,7 +42,7 @@ test("AuthContext.login ignores the login body and loads the user from /users/me
   assert.match(login, /^\s*await loginApi\(data\);$/m);
   assert.doesNotMatch(login, /=\s*await loginApi/);
   // … then the session is confirmed through the cookies.
-  assert.match(login, /await checkAuth\(\);/);
+  assert.match(login, /await checkAuth\(\{ requireUser \}\);/);
   assert.match(source, /const me = await getUserApi\(\);/);
   assert.match(
     read("services/usersServices.js"),

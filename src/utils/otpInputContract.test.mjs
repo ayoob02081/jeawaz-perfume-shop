@@ -234,7 +234,7 @@ test("WebOTP verifies the received code, not the previous OTP state", () => {
   assert.match(loginSource, /requestKey: flow\.attempt/);
   assert.match(
     loginSource,
-    /if \(!isCurrentAttempt\(flowRef\.current, requestKey\)\) return;\s*setOtp\(code\);\s*verifyOtp\(code\);/,
+    /if \(!isCurrent\(requestKey\)\) return;\s*setOtp\(code\);\s*verifyOtp\(code\);/,
   );
   assert.match(loginSource, /getVerifyRequest\(flowRef\.current, code\)/);
   assert.match(loginSource, /verifyOtpApi\(\{ phoneNumber: otpPhone, code \}\)/);

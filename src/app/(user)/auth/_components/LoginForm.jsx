@@ -20,16 +20,18 @@ function LoginForm({
   closeBtn,
   resendRemaining,
   requestPending = false,
+  sessionAccepted = false,
   verifyPending = false,
 }) {
   const passLength = isPasswordType ? password.length >= 6 : otp?.length === 5;
   // Disabled only while a request or verification is in flight, and on the
   // code step until a code was confirmed.
   const busy = requestPending || verifyPending;
-  const submitDisabled = busy || (step === "otp" && otpScreen !== "ready");
+  const submitDisabled = busy || (step === "otp" && !sessionAccepted && otpScreen !== "ready");
 
-  let submitLabel =
-    isPasswordType === false && step === "phone" ? "دریافت کد ورود" : "ورود";
+  let submitLabel = sessionAccepted
+    ? (verifyPending ? "در حال بررسی وضعیت ورود..." : "بررسی مجدد وضعیت ورود")
+    : isPasswordType === false && step === "phone" ? "دریافت کد ورود" : "ورود";
   if (step === "otp" && (otpScreen === "sending" || otpScreen === "resending")) {
     submitLabel = "در حال ارسال کد...";
   }
@@ -45,7 +47,8 @@ function LoginForm({
       {closeBtn && (
         <div className="absolute md:left-6 max-md:top-3 md:top-6 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl max-md:bg-stroke-200">
           <button
-            className="btn max-md:border-0 md:border border-stroke-200 md:size-10 aspect-square rounded-full md:p-0 backdrop-blur-md"
+            className="btn max-md:min-h-11 max-md:min-w-11 max-md:border-0 md:border border-stroke-200 md:size-10 aspect-square rounded-full md:p-0 backdrop-blur-md"
+            aria-label="بستن پنجره ورود"
             onClick={onClose}
             type="button"
           >
@@ -53,10 +56,11 @@ function LoginForm({
           </button>
         </div>
       )}
-      {step === "otp" && (
+      {step === "otp" && !sessionAccepted && (
         <button
           type="button"
           className="absolute max-md:right-0 md:right-6 max-md:top-4 md:top-6 btn max-md:border-0 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl md:border-[1.5px] border-stroke-200 md:size-10 md:rounded-full md:p-0  duration-200"
+          aria-label="بازگشت و ویرایش شماره موبایل"
           onClick={onEditPhone}
           disabled={editDisabled}
         >
@@ -71,6 +75,7 @@ function LoginForm({
         phoneNumber={phoneNumber}
         login
         otpScreen={otpScreen}
+        sessionAccepted={sessionAccepted}
         requestError={requestError}
         onEditPhone={onEditPhone}
         onResend={onResend}

@@ -11,6 +11,7 @@ function page() {
   return (
     <Modal
       isOpen={true}
+      accessibleLabel="ورود یا ثبت‌نام در جیاواز"
       onClose={() => router.back()}
       className="h-fit justify-end"
     >

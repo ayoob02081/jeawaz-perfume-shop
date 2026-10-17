@@ -1,20 +1,37 @@
 "use client";
 
-import { useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
-export function useDragToClose({ onClose, threshold = 120 }) {
+export function useDragToClose({ onClose, onDismissStart, enabled = true, threshold = 120 }) {
   const dragging = useRef(false);
   const startY = useRef(0);
   const lastTranslate = useRef(0);
+  const closeTimer = useRef(null);
+  const transitionTimer = useRef(null);
+  const generation = useRef(0);
+  const cancel = useCallback(() => {
+    generation.current += 1;
+    clearTimeout(closeTimer.current);
+    clearTimeout(transitionTimer.current);
+    closeTimer.current = null;
+    transitionTimer.current = null;
+    dragging.current = false;
+    lastTranslate.current = 0;
+  }, []);
+  useEffect(() => {
+    if (!enabled) cancel();
+    return cancel;
+  }, [enabled, cancel]);
 
   const onPointerDown = (e) => {
-    if (e.pointerType !== "touch") return;
+    if (!enabled || e.pointerType !== "touch" || closeTimer.current !== null) return;
 
     const el = e.currentTarget;
 
     const scrollContainer = el.querySelector("[data-scroll]");
     if (scrollContainer && scrollContainer.scrollTop > 0) return;
 
+    cancel();
     dragging.current = true;
     startY.current = e.clientY;
 
@@ -47,10 +64,19 @@ export function useDragToClose({ onClose, threshold = 120 }) {
 
     if (lastTranslate.current > threshold) {
       el.style.transform = "translateY(100dvh)";
-      setTimeout(onClose, 300);
+      onDismissStart?.();
+      const captured = generation.current;
+      closeTimer.current = setTimeout(() => {
+        if (captured !== generation.current) return;
+        closeTimer.current = null;
+        onClose();
+      }, 300);
     } else {
       el.style.transform = "translateY(0)";
-      setTimeout(() => {
+      const captured = generation.current;
+      transitionTimer.current = setTimeout(() => {
+        if (captured !== generation.current) return;
+        transitionTimer.current = null;
         el.style.transition = "";
       }, 400);
     }
@@ -59,6 +85,7 @@ export function useDragToClose({ onClose, threshold = 120 }) {
   };
 
   return {
+    cancel,
     onPointerDown,
     onPointerMove,
     onPointerUp,

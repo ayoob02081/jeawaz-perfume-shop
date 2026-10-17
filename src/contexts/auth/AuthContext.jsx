@@ -34,16 +34,23 @@ export function AuthProvider({ children }) {
     setInitialized(true);
   }, []);
 
-  const checkAuth = useCallback(async () => {
+  const checkAuth = useCallback(async ({ requireUser = false } = {}) => {
     const generation = ++authGeneration.current;
     setLoading(true);
 
     try {
       const me = await getUserApi();
 
-      if (generation !== authGeneration.current) return;
+      if (generation !== authGeneration.current) {
+        if (requireUser) throw new Error("Session confirmation superseded");
+        return;
+      }
+      if (requireUser && !me?.id) {
+        throw new Error("Authenticated user was not confirmed");
+      }
 
       setUser(me);
+      if (requireUser) return me;
     } catch (error) {
       if (
         generation === authGeneration.current &&
@@ -51,6 +58,9 @@ export function AuthProvider({ children }) {
       ) {
         setUser(null);
       }
+      // Bootstrap/background checks retain their existing best-effort behavior.
+      // Login explicitly requires confirmation before announcing success.
+      if (requireUser) throw error;
     } finally {
       if (generation === authGeneration.current) {
         settle();
@@ -79,7 +89,7 @@ export function AuthProvider({ children }) {
   );
 
   const login = useCallback(
-    async (data) => {
+    async (data, { requireUser = false } = {}) => {
       const generation = ++authGeneration.current;
       setLoading(true);
 
@@ -94,7 +104,9 @@ export function AuthProvider({ children }) {
       }
 
       if (generation === authGeneration.current) {
-        await checkAuth();
+        await checkAuth({ requireUser });
+      } else if (requireUser) {
+        throw new Error("Session confirmation superseded");
       }
     },
     [checkAuth, settle],

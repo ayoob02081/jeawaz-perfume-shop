@@ -96,7 +96,7 @@ test("a closed Modal's outside-click listener never fires; an open one fires onl
 
 test("Modal only listens for outside clicks while open", () => {
   const modal = source("../components/Modal.jsx");
-  assert.match(modal, /useOutsideClick\(onClose, true, isOpen\)/);
+  assert.match(modal, /useOutsideClick\(onClose, true, isOpen && !accessibleLabel\)/);
   const hook = source("../hooks/useOutsideClick.js");
   assert.match(hook, /if \(!enabled\) return undefined;/);
   // Both always-mounted Modals on the storefront reset the shared draft on close.
