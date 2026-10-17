@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildSitemap, productUrl, robotsMetadata, PUBLIC_PATHS, SITE_ORIGIN } from "./seo.mjs";
+import { buildSitemap, isValidProductId, productUrl, robotsMetadata, PUBLIC_PATHS, SITE_ORIGIN } from "./seo.mjs";
 
 function fixture(count = 1, transform = (value) => value) {
   const calls = [];
@@ -99,8 +99,12 @@ test("large catalogs stop explicitly instead of emitting an invalid oversized si
 });
 
 test("invalid product IDs cannot inject nonexistent or external product URLs", () => {
-  for (const value of [0, -1, 1.5, "missing", "../admin", "https://evil.test", Number.MAX_SAFE_INTEGER + 1]) {
+  for (const value of [0, -1, 1.5, "missing", "105.0", "0x69", "1e3", "000", "../admin", "https://evil.test", Number.MAX_SAFE_INTEGER + 1]) {
+    assert.equal(isValidProductId(value), false);
     assert.throws(() => productUrl(value), /Invalid public product ID/);
+  }
+  for (const value of [1, "007", "105", String(Number.MAX_SAFE_INTEGER)]) {
+    assert.equal(isValidProductId(value), true);
   }
   assert.equal(productUrl("007"), `${SITE_ORIGIN}/products/7`);
 });

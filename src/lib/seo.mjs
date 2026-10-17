@@ -14,8 +14,12 @@ const CATEGORY_TYPES = {
   occasions: "occasion",
 };
 
+export function isValidProductId(id) {
+  return /^\d+$/.test(String(id)) && Number.isSafeInteger(Number(id)) && Number(id) > 0;
+}
+
 export function productUrl(id) {
-  if (!/^\d+$/.test(String(id)) || !Number.isSafeInteger(Number(id)) || Number(id) <= 0) {
+  if (!isValidProductId(id)) {
     throw new Error("Invalid public product ID in sitemap data");
   }
   return `${SITE_ORIGIN}/products/${Number(id)}`;

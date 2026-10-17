@@ -2,10 +2,12 @@ import { cache } from "react";
 import SingleProductPage from "../_components/SingleProductPage";
 import { notFound } from "next/navigation";
 import http from "@/services/httpServer";
-import { productUrl } from "@/lib/seo.mjs";
+import { isValidProductId, productUrl } from "@/lib/seo.mjs";
 import { buildProductJsonLd, serializeProductJsonLd } from "@/lib/productJsonLd.mjs";
 
 const getProduct = cache(async (id) => {
+  if (!isValidProductId(id)) return null;
+
   try {
     const { data } = await http.get(`/products/${id}`, {
       headers: { "Cache-Control": "no-store" },
