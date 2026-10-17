@@ -87,3 +87,16 @@ test("a successful empty response retains the existing client snapshot with noin
   assert.equal(metadata.alternates, undefined);
   assert.equal(page.calls.length, 1);
 });
+
+test("approved brand metadata and rendering use one snapshot without changing filters or product data", async () => {
+  const brand = { id: 22, title: "کایالی" };
+  const page = route(async (url) => { const result = await response(url).json(); result.data[0].brand = brand; return { ok: true, json: async () => result }; });
+  const before = { brandIds: ["022", "22"], page: "02", limit: "12", sort: "newest", utm_source: "x" };
+  const [metadata, element] = await Promise.all([page.generateMetadata(props(before)), page.default(props({ brandIds: "22", page: "2" }))]);
+  assert.equal(page.calls.length, 1);
+  assert.deepEqual(page.calls[0].query.brandIds, [22]);
+  assert.equal(metadata.title, "عطر و ادکلن کایالی");
+  assert.equal(metadata.alternates.canonical, "https://jeawaz.com/products?brandIds=22&page=2");
+  assert.deepEqual(metadata.robots, { index: true, follow: true });
+  assert.equal(element.props.children.props.initialSnapshot.data.data[0].brand, brand);
+});

@@ -1,3 +1,5 @@
+import { brandLandingFromProducts } from "./brandSeo.mjs";
+
 export const SITE_ORIGIN = "https://jeawaz.com";
 export const SITEMAP_REVALIDATE_SECONDS = 3600;
 export const PUBLIC_PATHS = [
@@ -52,6 +54,7 @@ export async function buildSitemap(apiUrl, fetchImpl = fetch) {
   }
   const products = new Map();
   const categories = new Map();
+  const brandProducts = new Map();
   let total;
   let totalPages = 1;
 
@@ -82,6 +85,16 @@ export async function buildSitemap(apiUrl, fetchImpl = fetch) {
       const url = productUrl(product?.id);
       const modified = lastModified(product.updatedAt) ?? lastModified(product.createdAt);
       products.set(url, { url, ...(modified ? { lastModified: modified } : {}), changeFrequency: "weekly", priority: 0.8 });
+      // Reuse the existing traversal; no brand API or per-brand product reads.
+      if (product.brand?.id != null) {
+        const id = Number(product.brand.id);
+        if (!brandProducts.has(id)) brandProducts.set(id, []);
+        // Keep only identity/timestamps, not each product's variants and images.
+        brandProducts.get(id).push({
+          brand: { id: product.brand.id, title: product.brand.title, updatedAt: product.brand.updatedAt },
+          updatedAt: product.updatedAt, createdAt: product.createdAt,
+        });
+      }
       for (const [key, type] of Object.entries(CATEGORY_TYPES)) {
         const value = product.categories?.[key];
         for (const category of Array.isArray(value) ? value : value ? [value] : []) {
@@ -101,9 +114,16 @@ export async function buildSitemap(apiUrl, fetchImpl = fetch) {
     }
   }
   if (products.size !== total) throw new Error("Catalog pagination repeated products; retry required");
+  const brands = [];
+  for (const [id, rows] of brandProducts) {
+    const brand = brandLandingFromProducts(id, rows);
+    if (!brand) continue;
+    const dates = rows.flatMap((product) => [lastModified(product.updatedAt) ?? lastModified(product.createdAt), lastModified(product.brand.updatedAt)]).filter(Boolean).sort();
+    brands.push({ url: SITE_ORIGIN + brand.href, ...(dates.length ? { lastModified: dates.at(-1) } : {}), changeFrequency: "weekly", priority: 0.6 });
+  }
   const entries = [
     ...PUBLIC_PATHS.map((path) => ({ url: `${SITE_ORIGIN}${path}`, priority: path === "/" ? 1 : 0.7 })),
-    ...products.values(), ...[...categories.values()].sort((a, b) => a.url.localeCompare(b.url)),
+    ...products.values(), ...[...categories.values(), ...brands].sort((a, b) => a.url.localeCompare(b.url)),
   ];
   if (entries.length > MAX_URLS) throw new Error("Catalog needs split sitemaps before exceeding 50,000 URLs");
   return entries;

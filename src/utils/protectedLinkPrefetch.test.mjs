@@ -134,6 +134,8 @@ test("the dashboard, invoice and order-link wrappers only reach protected routes
 
 const isSuggestionLink = ({ file, href }) => file === "components/HeaderLayout.jsx" && href === '{`/products/${item.id}`}';
 
+const isBrandLandingLink = ({ file, href }) => file === "components/BrandLandingLink.jsx" && href === "{landing.href}";
+
 test("existing public links keep default prefetch; transient suggestions do not fetch detail pages", () => {
   const publicLinks = allLinks.filter((link) => link.href && PUBLIC_HREF.test(link.href) && !isSuggestionLink(link));
   assert.ok(publicLinks.length >= 30, `found ${publicLinks.length}`);
@@ -143,10 +145,15 @@ test("existing public links keep default prefetch; transient suggestions do not 
   const suggestions = allLinks.filter(isSuggestionLink);
   assert.equal(suggestions.length, 1);
   assert.ok(noPrefetch(suggestions[0].tag));
-  // Other opt-outs remain restricted to protected links.
+  // The two responsive brand logos share one destination and do not eagerly
+  // request a second catalog snapshot merely because a product page is viewed.
+  const brands = allLinks.filter(isBrandLandingLink);
+  assert.equal(brands.length, 1);
+  assert.ok(noPrefetch(brands[0].tag));
+  // Other opt-outs remain restricted to these reviewed wrappers.
   const optedOut = allLinks.filter(({ tag }) => /\bprefetch=/.test(tag));
   assert.deepEqual(
-    optedOut.filter((link) => !PROTECTED_HREF.test(link.href ?? "") && !isProtectedWrapper(link) && !isSuggestionLink(link)).map(({ where, href }) => `${where} ${href}`),
+    optedOut.filter((link) => !PROTECTED_HREF.test(link.href ?? "") && !isProtectedWrapper(link) && !isSuggestionLink(link) && !isBrandLandingLink(link)).map(({ where, href }) => `${where} ${href}`),
     [],
   );
 });

@@ -1,5 +1,6 @@
 import { CATEGORY_TYPES, SITE_ORIGIN } from "./seo.mjs";
 import { normalizeProductsQuery, PRODUCT_LIST_DEFAULT_LIMIT } from "../utils/productFilterContract.mjs";
+import { APPROVED_BRAND_IDS, brandLandingFromProducts } from "./brandSeo.mjs";
 
 const excluded = () => ({ robots: { index: false, follow: true } });
 const values = (value) => value == null ? [] : Array.isArray(value) ? value : [value];
@@ -22,9 +23,21 @@ export function listingSeoMetadata(query, payload) {
   const categories = Object.entries(CATEGORY_TYPES).flatMap(([key, type]) =>
     values(normalized[key]).map((slug) => ({ key, type, slug })));
   const brands = normalized.brandIds?.length ?? 0;
-  // Single-brand-only pages retain their existing indexing/canonical behavior.
-  // No brand landing-page or sitemap policy is introduced in this phase.
-  if (brands === 1 && !categories.length) return {};
+  if (brands === 1 && !categories.length) {
+    const id = normalized.brandIds[0];
+    // Future/unapproved brands retain Phase 1 behavior.
+    if (!APPROVED_BRAND_IDS.includes(id)) return {};
+    const brand = brandLandingFromProducts(id, payload.data);
+    if (!brand) return excluded();
+    const params = new URLSearchParams({ brandIds: String(id) });
+    if (normalized.page > 1) params.set("page", String(normalized.page));
+    return {
+      title: "عطر و ادکلن " + brand.title,
+      description: "مشاهده عطر و ادکلن " + brand.title + " در جیاواز پرفیوم؛ بررسی قیمت، حجم و وضعیت موجودی محصولات.",
+      robots: { index: true, follow: true },
+      alternates: { canonical: SITE_ORIGIN + "/products?" + params },
+    };
+  }
   if (brands || categories.length > 1) return excluded();
 
   const params = new URLSearchParams();

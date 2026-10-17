@@ -46,8 +46,8 @@ for (const search of ["search=rose", "search=rose&sort=newest", "search=rose&sor
     assert.deepEqual(classify(search), noindex);
   });
 }
-for (const search of ["brandIds=1", "brandIds=01&page=2&sort=newest&utm_source=x", "brandIds=1&brandIds=1"]) {
-  test(`single-brand policy remains deferred: ${search}`, () => assert.deepEqual(classify(search), {}));
+for (const search of ["brandIds=20", "brandIds=023&page=2&sort=newest&utm_source=x", "brandIds=23&brandIds=23"]) {
+  test(`unapproved single-brand policy remains unchanged: ${search}`, () => assert.deepEqual(classify(search), {}));
 }
 for (const search of ["", "page=4", "page=999", "search=missing", "brandIds=1", "gender=fixture"]) {
   test(`successful empty/out-of-range state ${search || "base"} is noindex`, () => {

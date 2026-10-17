@@ -4,6 +4,7 @@ import AppImage from "@/components/AppImage";
 import CardEvents from "@/components/CardEvents";
 import RadioButton from "@/ui/RadioButton";
 import PriceSection from "@/components/PriceSection";
+import BrandLandingLink from "@/components/BrandLandingLink";
 import ProductGradeBadge from "@/components/ProductGradeBadge";
 import Accordion from "@/ui/Accordion";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -198,7 +199,7 @@ function ProductDes({ product }) {
             {product.perTitle}
           </p>
 
-          <div className="md:hidden p-2">
+          <BrandLandingLink brand={productBrand} className="md:hidden p-2">
             <AppImage
               src={productBrand?.iconUrl}
               alt={productBrand?.value + "-icon"}
@@ -207,7 +208,7 @@ function ProductDes({ product }) {
               ratio="aspect-[6/2]"
               sizes="20vw"
             />
-          </div>
+          </BrandLandingLink>
         </span>
 
         <p className="text-base text-wrap text-stroke-600 w-full">
@@ -308,7 +309,7 @@ function ProductDes({ product }) {
           </p>
         )}
 
-        <div className="max-md:hidden p-2">
+        <BrandLandingLink brand={productBrand} className="max-md:hidden p-2">
           <AppImage
             src={productBrand?.iconUrl}
             alt={productBrand?.value + "-icon"}
@@ -317,7 +318,7 @@ function ProductDes({ product }) {
             ratio="aspect-[4/1]"
             sizes="20vw"
           />
-        </div>
+        </BrandLandingLink>
       </div>
 
       {/* Buttons */}
