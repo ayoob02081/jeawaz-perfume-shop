@@ -33,7 +33,11 @@ test('production browser OTP confirmation and accessible login dialog', {skip:!c
   assert.equal(await value(`document.querySelector('[role="dialog"]').getAttribute('aria-label')`),'ورود یا ثبت‌نام در جیاواز');
   assert.equal(await value('document.documentElement.scrollWidth<=innerWidth'),true);
   const closeSize=await value(`(()=>{const r=document.querySelector('[role="dialog"] button[aria-label]').getBoundingClientRect();return{width:r.width,height:r.height}})()`);
-  if(width<768){assert(closeSize.width>=44);assert(closeSize.height>=44);}
+  if(width<768){assert(closeSize.width<=1);assert(closeSize.height<=1);assert.equal(await value(`document.querySelector('[role="dialog"] button[aria-label]').getAttribute('aria-label')`),"بستن پنجره ورود");}
+  else {assert(closeSize.width>=40);assert(closeSize.height>=40);}
+  const ax=await send('Accessibility.getFullAXTree');
+  assert(ax.nodes.some(n=>!n.ignored&&n.role?.value==='button'&&n.name?.value==='بستن پنجره ورود'),'close remains exposed to assistive technology');
+  if(width<768)assert.equal(await value(`(()=>{const button=document.querySelector('[role="dialog"] [aria-label="بستن پنجره ورود"]'),r=button.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return hit===button||button.contains(hit);})()`),false,'no mobile pointer hit area');
   assert.equal(await value('document.body.style.overflow'),'hidden');
  }
  async function enterOtp(){
@@ -42,7 +46,7 @@ test('production browser OTP confirmation and accessible login dialog', {skip:!c
   assert.equal(await value(`document.activeElement.getAttribute('aria-label')`),'کد ورود، رقم ۱');
   await send('Input.insertText',{text:'12345'});await press('Enter',13);
  }
- for(const width of [320,375,390,430,480,481,1024]){
+ for(const width of [320,375,390,430,480,481,767,768,1024]){
   await open(width);
   for(let i=0;i<12;i++){await press('Tab',9);await wait(`document.querySelector('[role="dialog"]').contains(document.activeElement)`,'focus contained after Tab');}
   for(let i=0;i<12;i++){await press('Tab',9,8);await wait(`document.querySelector('[role="dialog"]').contains(document.activeElement)`,'focus contained after Tab');}
@@ -51,6 +55,7 @@ test('production browser OTP confirmation and accessible login dialog', {skip:!c
   assert.notEqual(await value('document.body.style.overflow'),'hidden');
   results.push({width,initialFocus:true,tabTrap:true,shiftTabTrap:true,escape:true,focusRestored:true,noOverflow:true});
  }
+ await open(1024);await click('[role="dialog"] [aria-label="بستن پنجره ورود"]');await wait(`!document.querySelector('[role="dialog"]')`,'desktop X dismissal');await wait(`document.activeElement.hasAttribute('data-otp-trigger')`,'desktop X focus restoration');results.push({desktopXDismissal:true,focusRestored:true});
  await open(390);await send('Input.dispatchMouseEvent',{type:'mousePressed',x:2,y:2,button:'left',clickCount:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:2,y:2,button:'left',clickCount:1});await wait(`!document.querySelector('[role="dialog"]')`,'outside dismissal');assert.notEqual(await value('document.body.style.overflow'),'hidden');results.push({outsideDismissal:true});
  for(const mode of ['500','401','network']){
   await open(390,mode);await enterOtp();
@@ -65,7 +70,7 @@ test('production browser OTP confirmation and accessible login dialog', {skip:!c
  }
  await open(390,'hold');await enterOtp();
  await wait(`!!document.querySelector('[role="dialog"] [role="status"]')`,'pending confirmation');
- await press('Enter',13);await click('[role="dialog"] [aria-label="بستن پنجره ورود"]');await wait(`!document.querySelector('[role="dialog"]')`,'close while confirming');
+ await press('Enter',13);await value(`document.querySelector('[role="dialog"] [aria-label="بستن پنجره ورود"]').focus()`);await press('Enter',13);await wait(`!document.querySelector('[role="dialog"]')`,'close while confirming');
  await fetch(api+'/__auth/release');await wait(`[...document.querySelectorAll('button')].some(e=>e.textContent.trim()==='\u067e\u0631\u0648\u0641\u0627\u06cc\u0644')`,'closed flow confirmation settled');assert.equal(await value('location.pathname'),'/products');
  assert.equal((await stats()).filter(e=>e.path==='/auth/verify-otp').length,1);
  assert.equal(await value(`document.body.innerText.includes('به جیاواز خوش آمدید!')`),false);results.push({closeWhileConfirming:true,noLateSuccess:true});

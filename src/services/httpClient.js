@@ -18,8 +18,10 @@ const app = axios.create({
 
 let refreshPromise = null;
 const sessionScoped = (config) => /^\/(cart|users|addresses|orders|notifications|auth)(\/|\?|$)/.test(config?.url || "");
+// Only this verified public GET is independent of browser identity.
+const publicBannerRead = (config) => config?.method === "get" && config.url === "/banners/active";
 app.interceptors.request.use((config) => {
-  sessionLifecycle.assertCurrent(config._sessionGeneration);
+  if (!publicBannerRead(config)) sessionLifecycle.assertCurrent(config._sessionGeneration);
   if (/^\/cart(\/|\?|$)/.test(config.url || "")) {
     const controller = new AbortController();
     const callerSignal = config._sessionCallerSignal ?? config.signal;
@@ -56,7 +58,7 @@ app.interceptors.response.use(
     const originalConfig = err.config;
     originalConfig?._sessionAbortCleanup?.();
     const url = originalConfig?.url || "";
-    if (originalConfig && !sessionLifecycle.current(originalConfig._sessionGeneration) &&
+    if (originalConfig && !publicBannerRead(originalConfig) && !sessionLifecycle.current(originalConfig._sessionGeneration) &&
         (sessionScoped(originalConfig) || err.response?.status === 401)) {
       throw new SessionSupersededError();
     }
@@ -66,6 +68,7 @@ app.interceptors.response.use(
     // a second time.
     if (
       err.response?.status === 401 &&
+      !publicBannerRead(originalConfig) &&
       !originalConfig._retry &&
       !originalConfig.skipAuthRefresh &&
       !url.includes("/auth/refresh")

@@ -361,3 +361,44 @@ test("capture precedes asynchronous interceptors for callable, request and metho
     assert.equal((await result).code,"ERR_SESSION_SUPERSEDED");assert.equal(dispatched,0);
   }
 });
+
+for (const type of ["primary", "secondary"]) test(type + " public banners survive a same-turn session transition before dispatch", async () => {
+  const lifecycle=createSessionLifecycle(),app=loadHttpClient({lifecycle}),gate=deferredSession(),calls=[];
+  app.interceptors.request.use(async config=>{await gate.promise;return config;});
+  app.defaults.adapter=async config=>{calls.push(config);return{...responseFor(config),data:[{id:1,imageUrl:"/uploads/banner.png"}]};};
+  const request=app.get("/banners/active",{params:{type}});
+  lifecycle.invalidate("external-initialization");gate.resolve();
+  assert.deepEqual((await request).data,[{id:1,imageUrl:"/uploads/banner.png"}]);assert.equal(calls.length,1);assert.equal(calls[0].params.type,type);
+});
+for (const status of [401,403,503]) test("public banner "+status+" stays an API error and never refreshes/replays",async()=>{
+  for(const changed of [false,true]){
+    const lifecycle=createSessionLifecycle(),app=loadHttpClient({lifecycle}),held=deferredSession(),entered=deferredSession(),calls=[];
+    app.defaults.adapter=async config=>{calls.push(config.url);if(config.url==="/banners/active"){entered.resolve();await held.promise;}return responseFor(config,status);};
+    const request=app.get("/banners/active",{params:{type:"primary"}}).catch(error=>error);
+    await entered.promise;if(changed)lifecycle.invalidate("expired-session");held.resolve();
+    const error=await request;assert.equal(error.response?.status,status);assert.deepEqual(calls,["/banners/active"]);
+  }
+});
+test("banner exemption never permits a stale mutation, non-allowlisted path or cross-account cart request",async()=>{
+  for(const config of [{url:"/banners/active",method:"post"},{url:"/banners/active/1",method:"get"},{url:"/banners",method:"get"},{url:"/cart/item",method:"post"},{url:"/auth/verify-otp",method:"post"}]){
+    const lifecycle=createSessionLifecycle(),app=loadHttpClient({lifecycle});let calls=0;
+    app.defaults.adapter=async c=>{calls++;return responseFor(c);};
+    const request=app.request(config).catch(e=>e);lifecycle.invalidate("B");
+    assert.equal((await request).code,"ERR_SESSION_SUPERSEDED");assert.equal(calls,0);
+  }
+});
+
+for(const status of [401,500])test("guest bootstrap with stored transition and /users/me "+status+" cannot cancel public banners",async()=>{
+  const lifecycle=createSessionLifecycle(),app=loadHttpClient({lifecycle}),gate=deferredSession(),calls=[];
+  lifecycle.confirm(lifecycle.generation(),null);lifecycle.pause();
+  app.interceptors.request.use(async config=>{if(config.url==="/banners/active")await gate.promise;return config;});
+  app.defaults.adapter=async config=>{calls.push(config.url);if(config.url==="/banners/active")return{...responseFor(config),data:[{id:2}]};return responseFor(config,status);};
+  const banners=app.get("/banners/active",{params:{type:"primary"}});
+  const target=new EventTarget();target.localStorage={getItem:()=>JSON.stringify({version:1,phase:"settled",id:"previous-login"})};
+  const disconnect=lifecycle.connect(target);
+  try{
+    const error=await app.get("/users/me").catch(e=>e);assert.equal(error.response.status,status);
+    if(status===401)lifecycle.confirm(lifecycle.generation(),null);else lifecycle.unconfirmed();
+    gate.resolve();assert.deepEqual((await banners).data,[{id:2}]);assert.equal(calls.filter(x=>x==="/banners/active").length,1);
+  }finally{gate.resolve();disconnect();}
+});

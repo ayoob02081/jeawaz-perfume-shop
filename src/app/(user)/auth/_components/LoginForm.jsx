@@ -47,7 +47,7 @@ function LoginForm({
       {closeBtn && (
         <div className="absolute md:left-6 max-md:top-3 md:top-6 max-md:h-1.5 max-md:w-10 max-md:rounded-4xl max-md:bg-stroke-200">
           <button
-            className="btn max-md:min-h-11 max-md:min-w-11 max-md:border-0 md:border border-stroke-200 md:size-10 aspect-square rounded-full md:p-0 backdrop-blur-md"
+            className="sr-only md:not-sr-only btn md:border border-stroke-200 md:size-10 aspect-square rounded-full md:p-0 md:backdrop-blur-md"
             aria-label="بستن پنجره ورود"
             onClick={onClose}
             type="button"

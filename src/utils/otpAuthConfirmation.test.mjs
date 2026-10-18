@@ -294,3 +294,12 @@ test('WebOTP arriving after dismissal cannot fill the old form or verify a code'
   const input=l.form().props.children.props.children;assert.equal(input.props.value,'');
   assert.equal(l.calls.verify,0);assert.equal(l.calls.confirm,0);assert.equal(closes,1);m.unmount();
 });
+
+test("mobile login close stays screen-reader accessible without a visible control or 44px hit area",()=>{
+  const {default:LoginForm}=load("app/(user)/auth/_components/LoginForm.jsx",{"./AuthLayout":{default:()=>null}});
+  const form=LoginForm({closeBtn:true,step:"phone",onClose:()=>{},isPasswordType:false});
+  const close=form.props.children[0].props.children;
+  assert.equal(close.props["aria-label"],"بستن پنجره ورود");assert.equal(close.props.type,"button");
+  assert.match(close.props.className,/\bsr-only\b/);assert.match(close.props.className,/md:not-sr-only/);
+  assert.doesNotMatch(close.props.className,/max-md:min-[hw]-11/);assert.match(close.props.className,/md:size-10/);
+});
