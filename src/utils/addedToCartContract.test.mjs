@@ -382,7 +382,7 @@ test("useAddToCart caches the returned cart before feedback, on every viewport",
   assert.match(lineOptions, /onSettled: \(\) => queryClient\.invalidateQueries\(\{ queryKey: cartKeys\.all \}\),/);
   assert.doesNotMatch(addHook + lineOptions, /\.refetch\w*\(|router\.|\.reload\(|setTimeout\(/);
   // Same key the product page reads.
-  assert.match(cartHook, /queryKey: cartKeys\.items\(\),\s*queryFn: getAllCartItemsApi/);
+  assert.match(cartHook, /queryKey: cartKeys\.items\(\),\s*queryFn: getSessionCart/);
   const handler = source("../hooks/useQuantityHandler.js");
   assert.match(handler, /const defaultCartItem = findCartLine\(cart, \{\s*productId: product\?\.id,\s*mode: volumeMode,\s*volume: selectedVolume,\s*\}\);/);
 });

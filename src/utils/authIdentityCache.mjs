@@ -1,3 +1,5 @@
+import { sessionLifecycle } from "./sessionLifecycle.mjs";
+
 // React Query keys do not encode who is signed in, so data fetched for one
 // identity must not survive into the next (guest → user, user → guest,
 // user A → user B). Applied by the AuthQueryCacheBridge in Providers.jsx.
@@ -53,15 +55,25 @@ export function planIdentityChange(previous, next) {
   };
 }
 
-export function applyIdentityChange(queryClient, plan) {
+export async function applyIdentityChange(queryClient, plan, { refetch = true } = {}) {
   if (!plan) return;
-
+  // Capture/cancel now, before awaiting anything. A newer generation's fetch
+  // must never be cancelled by an older transition resuming later.
+  const generation = sessionLifecycle.generation();
+  const cancellation = queryClient.cancelQueries({ queryKey: [CART_QUERY_ROOT], exact: true });
   for (const root of plan.reset) {
-    queryClient.resetQueries({ queryKey: [root] });
+    for (const query of queryClient.getQueryCache().findAll({ queryKey: [root] })) query.reset();
   }
   if (plan.cart === "reset") {
-    queryClient.resetQueries({ queryKey: [CART_QUERY_ROOT] });
+    const query = queryClient.getQueryCache().find({ queryKey: [CART_QUERY_ROOT], exact: true });
+    query?.reset();
   } else {
-    queryClient.invalidateQueries({ queryKey: [CART_QUERY_ROOT] });
+    void queryClient.invalidateQueries({ queryKey: [CART_QUERY_ROOT], refetchType: "none" });
+  }
+  await cancellation;
+  if (refetch && sessionLifecycle.current(generation)) {
+    for (const root of [...plan.reset, CART_QUERY_ROOT]) {
+      void queryClient.invalidateQueries({ queryKey: [root] });
+    }
   }
 }

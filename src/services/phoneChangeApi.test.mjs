@@ -3,6 +3,7 @@
 // not loadable by plain Node, so their exact sources are evaluated with the
 // import replaced; every rewrite must match exactly once.
 
+import { createSessionLifecycle, SessionSupersededError } from "../utils/sessionLifecycle.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
@@ -25,14 +26,18 @@ function rewrite(file, replacements) {
 }
 
 function loadServices() {
+  const lifecycle = createSessionLifecycle();
+  lifecycle.confirm(0, 7);
   const app = new Function(
     "axios",
     "process",
     "isDefinitiveRefreshFailure",
     "notifySessionExpired",
+    "sessionLifecycle", "SessionSupersededError",
     rewrite("./httpClient.js", [
       ['"use client";', ""],
       ['import axios from "axios";', ""],
+      ['import { sessionLifecycle, SessionSupersededError } from "../utils/sessionLifecycle.mjs";', ""],
       [
         `import {
   isDefinitiveRefreshFailure,
@@ -46,13 +51,14 @@ function loadServices() {
     axios,
     { env: { NEXT_PUBLIC_API_URL: "http://api.test" } },
     (error) => error?.response?.status === 401,
-    () => {},
+    () => {}, lifecycle, SessionSupersededError,
   );
 
   const services = new Function(
-    "app",
+    "app", "sessionLifecycle",
     rewrite("./authServices.js", [
       ['import app from "./httpClient";', ""],
+      ['import { sessionLifecycle } from "../utils/sessionLifecycle.mjs";', ""],
       [
         "export function requestCurrentPhoneCodeApi(",
         "function requestCurrentPhoneCodeApi(",
@@ -71,7 +77,7 @@ function loadServices() {
       ],
     ]).replace(/^export /gm, "") +
       "\nreturn { requestCurrentPhoneCodeApi, verifyCurrentPhoneCodeApi, requestNewPhoneCodeApi, verifyNewPhoneCodeApi };",
-  )(app);
+  )(app, lifecycle);
 
   return { app, ...services };
 }

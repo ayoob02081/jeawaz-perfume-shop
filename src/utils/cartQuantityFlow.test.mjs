@@ -619,7 +619,7 @@ test("the hook and pages are wired to the flow, the line scope and the pending s
   guard.end();
   assert.equal(lineScopeFor(guard, D10), "cart-line:7:decant:10");
   assert.match(handler, /readCart: \(\) => queryClient\.getQueryData\(cartKeys\.items\(\)\),/);
-  assert.match(handler, /onPendingChange: setIsPending,/);
+  assert.match(handler, /onPendingChange: \(pending\) => \{ if \(sessionLifecycle\.current\(generation\)\) setIsPending\(pending\); \},/);
   assert.match(handler, /if \(selectedVolume > product\?\.stock\) return;\s*flow\.increment\(\);/);
   const detail = source("../app/(user)/products/_components/SingleProductPage.jsx");
   assert.match(detail, /addDisabled=\{!canPurchase\}\s*pending=\{isPending\}/);

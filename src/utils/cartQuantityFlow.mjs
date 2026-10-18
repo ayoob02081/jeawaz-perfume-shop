@@ -6,6 +6,7 @@
 // overlapping absolute quantities could reach the server in any order. A line
 // therefore changes one request at a time, and after a rejection its count is
 // taken from the re-read cart (useCart re-reads it before the change settles).
+import { isSessionSuperseded } from "./sessionLifecycle.mjs";
 import { findCartLine, resolveDecrement, resolveIncrement } from "./addedToCartContract.mjs";
 
 // Mutations of one line run one at a time across every control showing it
@@ -72,7 +73,8 @@ export function createQuantityFlow({
     onPendingChange?.(true);
     return true;
   };
-  const finish = () => {
+  const finish = (_data, error) => {
+    if (isSessionSuperseded(error)) settle(0);
     guard.end();
     onPendingChange?.(false);
   };
@@ -116,8 +118,8 @@ export function createQuantityFlow({
       try {
         await remove(action.itemId);
         setQuantity((q) => Math.max(0, q - 1));
-      } catch {
-        settle(previous);
+      } catch (error) {
+        if (!isSessionSuperseded(error)) settle(previous);
       } finally {
         finish();
       }

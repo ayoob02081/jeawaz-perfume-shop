@@ -1,4 +1,5 @@
-﻿import test from "node:test";
+﻿import { createSessionLifecycle, SessionSupersededError } from "./sessionLifecycle.mjs";
+import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
@@ -36,13 +37,14 @@ function hooks() {
 }
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return{promise,resolve,reject};};
 function context(getUserApi) {
-  const h=hooks();
+  const h=hooks(), lifecycle=createSessionLifecycle();
   const {AuthProvider}=load("contexts/auth/AuthContext.jsx",{
     react:h.react,"@/services/authServices":{loginApi:async()=>{},logoutApi:async()=>{}},
     "@/services/usersServices":{getUserApi,updateUserApi:async()=>{}},
     "@/utils/authSessionEvents.mjs":{onSessionExpired:()=>()=>{}},
+    "@/utils/sessionLifecycle.mjs":{sessionLifecycle:lifecycle,SessionSupersededError},
   });
-  return {value:()=>h.render(AuthProvider,{children:null},false).props.value};
+  return {lifecycle,value:()=>h.render(AuthProvider,{children:null},false).props.value};
 }
 for(const status of [401,500,"network"]){
   test(`strict confirmation rejects ${status}; default background check still resolves`,async()=>{
@@ -61,8 +63,9 @@ test("strict confirmation requires a real user and returns it",async()=>{
 test("superseded confirmation cannot claim success or replace a newer user",async()=>{
   const old=deferred();let calls=0;const c=context(()=>++calls===1?old.promise:Promise.resolve({id:8}));
   const first=c.value().checkAuth({requireUser:true});
+  c.lifecycle.invalidate("account-change");
   await c.value().checkAuth({requireUser:true});old.resolve({id:7});
-  await assert.rejects(first,/superseded/);assert.equal(c.value().user.id,8);
+  await assert.rejects(first,SessionSupersededError);assert.equal(c.value().user.id,8);
 });
 function login({verify=async()=>{},confirm=async()=>({id:7}),checkout=false,dismissal=null}={}) {
   const h=hooks(),calls={request:0,verify:0,confirm:0,success:[],errors:[],navigation:0,authenticated:0};

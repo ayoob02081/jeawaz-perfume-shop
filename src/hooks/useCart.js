@@ -14,6 +14,25 @@ import { useAuth } from "@/contexts/auth/AuthContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
 import toast from "react-hot-toast";
+import { sessionLifecycle } from "@/utils/sessionLifecycle.mjs";
+import { captureCartMutation, sessionCartOptions, cartMutationCallbacks } from "@/utils/sessionCartMutation.mjs";
+
+function useCartMutation(options) {
+  const mutation = useMutation(sessionCartOptions(options));
+  const wrap = (run) => (variables, callbacks) => {
+    const request = captureCartMutation(variables);
+    return run(request, cartMutationCallbacks(callbacks, request));
+  };
+  return { ...mutation, mutate: wrap(mutation.mutate), mutateAsync: wrap(mutation.mutateAsync) };
+}
+
+async function getSessionCart({ signal } = {}) {
+  const generation = sessionLifecycle.generation();
+  sessionLifecycle.assertCurrent(generation, true);
+  const cart = await getAllCartItemsApi({ signal });
+  await sessionLifecycle.waitUntilReady(generation);
+  return cart;
+}
 
 export const cartKeys = {
   all: ["cart-items"],
@@ -21,12 +40,12 @@ export const cartKeys = {
 };
 
 export const useGetAllCartItems = () => {
-  const { loading } = useAuth();
+  const { loading, sessionReady } = useAuth();
 
   return useQuery({
     queryKey: cartKeys.items(),
-    queryFn: getAllCartItemsApi,
-    enabled: !loading,
+    queryFn: getSessionCart,
+    enabled: !loading && sessionReady,
     retry: 1,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
@@ -37,10 +56,13 @@ export const useGetAllCartItems = () => {
 // guest cart: a fetch that may have started under the previous session is
 // cancelled, then a new one runs and its result is cached.
 export async function fetchFreshCart(queryClient) {
+  const generation = sessionLifecycle.generation();
+  sessionLifecycle.assertCurrent(generation, true);
   await queryClient.cancelQueries({ queryKey: cartKeys.all });
+  sessionLifecycle.assertCurrent(generation, true);
   return queryClient.fetchQuery({
     queryKey: cartKeys.items(),
-    queryFn: getAllCartItemsApi,
+    queryFn: getSessionCart,
     staleTime: 0,
   });
 }
@@ -67,7 +89,7 @@ export function useAddToCart({ onAdded, scope } = {}) {
   const onAddedRef = useRef(onAdded);
   onAddedRef.current = onAdded;
 
-  const { isPending: isAdding, mutate: addToCart } = useMutation({
+  const { isPending: isAdding, mutate: addToCart } = useCartMutation({
     mutationFn: addToCartApi,
     onSuccess: (data, variables) => {
       // The response is the full cart: cache it now so the new line is
@@ -89,7 +111,7 @@ export function useAddToCart({ onAdded, scope } = {}) {
 
 export function useUpdateQuantity({ scope } = {}) {
   const queryClient = useQueryClient();
-  const { isPending: isUpdating, mutate: updateQuantity } = useMutation({
+  const { isPending: isUpdating, mutate: updateQuantity } = useCartMutation({
     mutationFn: updateQuantityApi,
     onSuccess: (data) => {
       toast.success(data?.message || "تعداد محصول بروزرسانی شد", {
@@ -109,7 +131,7 @@ export function useUpdateQuantity({ scope } = {}) {
 export function useUpdateShippingMethod() {
   const queryClient = useQueryClient();
   const { isPending: isUpdatingShipping, mutate: updateShippingMethod } =
-    useMutation({
+    useCartMutation({
       mutationFn: updateShippingMethodApi,
       onSuccess: () => {
         queryClient.invalidateQueries({
@@ -127,7 +149,7 @@ export function useUpdateShippingMethod() {
 
 export function useRemoveFromCart({ scope } = {}) {
   const queryClient = useQueryClient();
-  const { isPending: isDeleting, mutateAsync: removeFromCart } = useMutation({
+  const { isPending: isDeleting, mutateAsync: removeFromCart } = useCartMutation({
     mutationFn: removeFromCartApi,
     onSuccess: (data) => {
       toast.success(data?.message || "محصول از سبد خرید حذف شد", {
@@ -147,7 +169,7 @@ export function useRemoveFromCart({ scope } = {}) {
 export function useApplyCoupon() {
   const queryClient = useQueryClient();
 
-  const { isPending: isApplyingCoupon, mutateAsync: applyCoupon } = useMutation(
+  const { isPending: isApplyingCoupon, mutateAsync: applyCoupon } = useCartMutation(
     {
       mutationFn: applyCouponApi,
       onSuccess: (data) => {

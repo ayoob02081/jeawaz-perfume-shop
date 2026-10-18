@@ -1,5 +1,6 @@
 "use client";
 
+import { sessionLifecycle } from "@/utils/sessionLifecycle.mjs";
 import ThemeProvider from "@/components/providers/ThemeProvider";
 import { AuthProvider, useAuth } from "@/contexts/auth/AuthContext";
 import { FiltersContext } from "@/contexts/filters/context";
@@ -9,15 +10,15 @@ import { SidebarProvider } from "@/contexts/Sidebars/SidebarContext";
 import { useNotificationSocket } from "@/hooks/useNotificationSocket";
 import {
   applyIdentityChange,
-  identityOf,
-  planIdentityChange,
+  USER_SCOPED_QUERY_ROOTS,
+  PRIVILEGED_QUERY_ROOTS,
 } from "@/utils/authIdentityCache.mjs";
 import {
   QueryClient,
   QueryClientProvider,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 
 function NotificationSocketBridge() {
   const { isAuthenticated, loading } = useAuth();
@@ -31,18 +32,21 @@ function NotificationSocketBridge() {
 // logout, session loss, another account), cached data of the previous one is
 // reset and the cart is refetched for the new one.
 function AuthQueryCacheBridge() {
-  const { user, initializing } = useAuth();
   const queryClient = useQueryClient();
-  const identity = identityOf({ initializing, user });
-  const previousIdentity = useRef(undefined);
-
-  useEffect(() => {
-    if (identity === undefined) return;
-    const plan = planIdentityChange(previousIdentity.current, identity);
-    previousIdentity.current = identity;
-    applyIdentityChange(queryClient, plan);
-  }, [identity, queryClient]);
-
+  useEffect(() => sessionLifecycle.subscribe((event) => {
+    if (event.type === "invalidate") {
+      const previous = sessionLifecycle.identity();
+      return applyIdentityChange(queryClient, {
+        reset: [...USER_SCOPED_QUERY_ROOTS, ...PRIVILEGED_QUERY_ROOTS],
+        cart: previous == null ? "invalidate" : "reset",
+      }, { refetch: false });
+    }
+    if (event.type === "ready" && event.changed) {
+      for (const root of [...USER_SCOPED_QUERY_ROOTS, ...PRIVILEGED_QUERY_ROOTS, "cart-items"]) {
+        void queryClient.invalidateQueries({ queryKey: [root] });
+      }
+    }
+  }), [queryClient]);
   return null;
 }
 

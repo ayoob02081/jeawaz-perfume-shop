@@ -136,12 +136,17 @@ function CartLayout() {
   const [reviewNotice, setReviewNotice] = useState(null);
   const resumingRef = useRef(false);
 
-  const { initializing, isAuthenticated, sessionExpiredAt } = useAuth();
+  const { user, initializing, isAuthenticated, sessionExpiredAt } = useAuth();
   const {
     data: liveCart,
     isLoading,
     isError,
   } = useGetAllCartItems();
+  // Session cleanup is synchronous now. Retain the last confirmed view for
+  // checkout re-login, but never carry another account's view into a new one.
+  const lastCartRef = useRef(null);
+  if (user?.id && lastCartRef.current?.userId !== user.id) lastCartRef.current = null;
+  if (liveCart) lastCartRef.current = { userId: user?.id ?? null, cart: liveCart };
   const cart = heldCart ?? liveCart;
   // Addresses belong to the account and are only needed on step 2.
   const { data: addresses, isLoading: addressesLoading } = useGetAddresses({
@@ -162,17 +167,17 @@ function CartLayout() {
   }
 
   // Session lost while on step 2 (AuthContext: refresh rejected). Adjusted
-  // during render, before the identity bridge's effect resets the cart
-  // query, so `liveCart` is still the signed-in cart and the checkout form
-  // is never unmounted in between.
+  // during render using the retained view even if the query was already
+  // cleared. The checkout form is never unmounted in between.
   const [seenSessionExpiry, setSeenSessionExpiry] = useState(sessionExpiredAt);
   if (sessionExpiredAt !== seenSessionExpiry) {
     setSeenSessionExpiry(sessionExpiredAt);
-    if (step === 2 && liveCart && !heldCart && !authPrompt) {
-      setHeldCart(liveCart);
+    const previousCart = lastCartRef.current?.cart;
+    if (step === 2 && previousCart && !heldCart && !authPrompt) {
+      setHeldCart(previousCart);
       setAuthPrompt({
         reason: CHECKOUT_AUTH_REASON.SESSION_EXPIRED,
-        before: cartSnapshot(liveCart),
+        before: cartSnapshot(previousCart),
       });
     }
   }

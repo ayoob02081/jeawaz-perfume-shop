@@ -1,7 +1,7 @@
 import app from "./httpClient";
 
-export function getAllCartItemsApi() {
-  return app.get("/cart").then(({ data }) => data);
+export function getAllCartItemsApi({ signal } = {}) {
+  return app.get("/cart", { signal }).then(({ data }) => data);
 }
 
 export function addToCartApi(data) {

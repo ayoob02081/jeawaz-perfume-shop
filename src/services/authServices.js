@@ -1,16 +1,17 @@
 import app from "./httpClient";
+import { sessionLifecycle } from "../utils/sessionLifecycle.mjs";
 
 // Credential checks: their own 401 (wrong password, wrong or expired code) is
 // the answer, not an expired session, so they opt out of the client's
 // refresh-and-resend; resending would submit the credential a second time.
 export function loginApi(data) {
-  return app
+  return sessionLifecycle.change("login", () => app
     .post("/auth/login", data, { skipAuthRefresh: true })
-    .then(({ data }) => data);
+    .then(({ data }) => data));
 }
 
 export function logoutApi() {
-  return app.post("/auth/logout").then(({ data }) => data);
+  return sessionLifecycle.change("logout", () => app.post("/auth/logout").then(({ data }) => data));
 }
 
 export function requestOtpApi(data) {
@@ -18,9 +19,9 @@ export function requestOtpApi(data) {
 }
 
 export function verifyOtpApi(data) {
-  return app
+  return sessionLifecycle.change("otp-login", () => app
     .post("/auth/verify-otp", data, { skipAuthRefresh: true })
-    .then(({ data }) => data);
+    .then(({ data }) => data));
 }
 
 export function refreshApi() {
@@ -65,10 +66,10 @@ export function requestNewPhoneCodeApi({ proofId, phoneNumber }) {
 // cookies; the body holds no tokens.
 export async function verifyNewPhoneCodeApi({ challengeId, code }) {
   await app.get("/users/me");
-  const { data } = await app.post(
+  const { data } = await sessionLifecycle.change("phone-change", () => app.post(
     "/auth/phone-change/new/verify",
     { challengeId, code },
     { skipAuthRefresh: true },
-  );
+  ));
   return data;
 }

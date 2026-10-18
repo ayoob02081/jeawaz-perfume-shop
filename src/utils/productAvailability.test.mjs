@@ -223,7 +223,7 @@ test("a rejected cart change rolls back, stays visible, and refreshes only Produ
     /onRejected: \(error\) => \{\s*if \(isStaleAvailabilityRejection\(error\)\) router\.refresh\(\);\s*\},/);
   const handler = source("../hooks/useQuantityHandler.js");
   assert.match(handler, /\{ onAdded, onRejected \} = \{\},/);
-  assert.match(handler, /createQuantityFlow\(\{[\s\S]*?\s+onRejected,\s/);
+  assert.match(handler, /createQuantityFlow\(\{[\s\S]*?onRejected: \(error\) => \{ if \(sessionLifecycle\.current\(generation\)\) onRejected\?\.\(error\); \},/);
   // Once per rejected request, after the count has taken the server's quantity.
   const flow = source("./cartQuantityFlow.mjs");
   assert.equal(flow.match(/onRejected\?\.\(error\)/g)?.length, 1);

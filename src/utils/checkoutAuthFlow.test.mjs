@@ -141,7 +141,7 @@ test("the review notice is the agreed Persian text", () => {
 test("an auth re-check never replaces the checkout: only the first check or an unloaded cart shows the loader", () => {
   assert.match(cartLayout, /if \(initializing \|\| \(isLoading && !cart\)\) \{\s*return <Loading \/>;/);
   assert.doesNotMatch(cartLayout, /if \(loading \|\| isLoading\)/);
-  assert.match(cartLayout, /const \{ initializing, isAuthenticated, sessionExpiredAt \} = useAuth\(\);/);
+  assert.match(cartLayout, /const \{ user, initializing, isAuthenticated, sessionExpiredAt \} = useAuth\(\);/);
 });
 
 test("the login modal belongs to the mounted CartLayout and resumes through a callback, not the router", () => {
@@ -200,7 +200,7 @@ test("a lapsed session on step 2 holds the signed-in cart and opens the prompt d
   assert.match(cartLayout, /const cart = heldCart \?\? liveCart;/);
   assert.match(
     cartLayout,
-    /if \(sessionExpiredAt !== seenSessionExpiry\) \{\s*setSeenSessionExpiry\(sessionExpiredAt\);\s*if \(step === 2 && liveCart && !heldCart && !authPrompt\) \{\s*setHeldCart\(liveCart\);/,
+    /if \(sessionExpiredAt !== seenSessionExpiry\) \{\s*setSeenSessionExpiry\(sessionExpiredAt\);\s*const previousCart = lastCartRef\.current\?\.cart;\s*if \(step === 2 && previousCart && !heldCart && !authPrompt\) \{\s*setHeldCart\(previousCart\);/,
   );
 });
 
@@ -214,4 +214,12 @@ test("refetched addresses do not overwrite typed checkout fields", () => {
     cartLayout,
     /if \(!selectedAddress \|\| filledAddressIdRef\.current === selectedAddress\.id\) \{\s*return;\s*\}\s*filledAddressIdRef\.current = selectedAddress\.id;/,
   );
+});
+
+test("checkout re-login retains the last cart after synchronous cleanup and drops a different account's snapshot", () => {
+  const retain = section(cartLayout, "  const lastCartRef = useRef(null);", "  const cart = heldCart");
+  const update = new Function("useRef", "user", "liveCart", retain + ";return lastCartRef.current;");
+  const saved = { current: { userId: 7, cart: { items: ["owned-by-A"] } } };
+  assert.deepEqual(update(() => saved, null, undefined).cart.items, ["owned-by-A"]);
+  assert.equal(update(() => saved, { id: 8 }, undefined), null);
 });

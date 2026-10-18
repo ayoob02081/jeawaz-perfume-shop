@@ -1,3 +1,4 @@
+import { sessionLifecycle } from "@/utils/sessionLifecycle.mjs";
 import { useState, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -22,6 +23,7 @@ export function useQuantityHandler(
   { onAdded, onRejected } = {},
 ) {
   const queryClient = useQueryClient();
+  const generation = sessionLifecycle.generation();
   const [selectedVolume, setSelectedVolume] = useState(defaultVolume);
   const [quantity, setQuantity] = useState(0);
   // One change of this line at a time; "+" and "-" wait for it.
@@ -57,25 +59,31 @@ export function useQuantityHandler(
     } else {
       setQuantity(0);
     }
-  }, [cartItem, defaultCartItem]);
+  }, [cartItem, defaultCartItem, cart, generation]);
+
+  useEffect(() => { setIsPending(false); }, [generation]);
 
   const flow = createQuantityFlow({
     guard: guardRef.current,
     quantity,
-    setQuantity,
+    setQuantity: (value) => { if (sessionLifecycle.current(generation)) setQuantity(value); },
     line: cartItem || defaultCartItem,
     request,
     readCart: () => queryClient.getQueryData(cartKeys.items()),
     add: addToCart,
     update: updateQuantity,
     remove: removeFromCart,
-    onRejected,
-    onPendingChange: setIsPending,
+    onRejected: (error) => { if (sessionLifecycle.current(generation)) onRejected?.(error); },
+    onPendingChange: (pending) => { if (sessionLifecycle.current(generation)) setIsPending(pending); },
   });
 
-  const RemoveFromCartHandler = () => flow.decrement();
+  const RemoveFromCartHandler = () => {
+    if (!sessionLifecycle.ready()) return;
+    return flow.decrement();
+  };
 
   const AddToCartHandler = () => {
+    if (!sessionLifecycle.ready()) return;
     if (!selectedVolume || !product?.id) return;
     if (selectedVolume > product?.stock) return;
     flow.increment();
@@ -89,6 +97,6 @@ export function useQuantityHandler(
     quantity,
     setQuantity,
     defaultCartItem,
-    isPending,
+    isPending: isPending || !sessionLifecycle.ready(),
   };
 }

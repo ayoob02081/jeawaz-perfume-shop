@@ -1,3 +1,4 @@
+import { isSessionSuperseded } from "@/utils/sessionLifecycle.mjs";
 import AppImage from "@/components/AppImage";
 import {
   toPersianNumbers,
@@ -22,7 +23,11 @@ export function OrderSummaryCard({ cart, onContinue }) {
     Number(discountAmount) + Number(cart?.coupon?.discount || 0);
 
   const CouponHandler = async () => {
-    await applyCoupon(coupon);
+    try {
+      await applyCoupon(coupon);
+    } catch (error) {
+      if (!isSessionSuperseded(error)) throw error;
+    }
   };
 
   return (
