@@ -133,7 +133,9 @@ export const useGetProductSearchAliases = (id) =>
     refetchOnWindowFocus: false,
   });
 
-export function useAddProduct() {
+// `returnHref`: the admin list to go back to after creating (by default the
+// plain list).
+export function useAddProduct(returnHref = "/admin/products") {
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -147,7 +149,7 @@ export function useAddProduct() {
 
       queryClient.invalidateQueries({ queryKey: productKeys.all });
       queryClient.invalidateQueries({ queryKey: priceHistoryKeys.all });
-      router.push("/admin/products");
+      router.push(returnHref);
     },
 
     onError: showApiError,

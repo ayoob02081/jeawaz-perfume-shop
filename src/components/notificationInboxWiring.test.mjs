@@ -12,6 +12,7 @@ const typePage = read("./NotifTypePage.jsx");
 const notifLayout = read("./NotifLayout.jsx");
 const singlePage = read("./SingleNotifPage.jsx");
 const profileDetail = read("../app/(profile)/profile/notifs/[type]/[id]/page.jsx");
+const adminDetail = read("../app/(admin)/admin/notifs/[type]/[id]/page.jsx");
 const hooks = read("../hooks/useNotification.js");
 const socketHook = read("../hooks/useNotificationSocket.js");
 const services = read("../services/notificationServices.js");
@@ -73,4 +74,53 @@ test("the socket hook delegates to the sync controller and cleans up", () => {
 test("the runner-less Jest socket test is replaced by runnable node tests", () => {
   assert.equal(existsSync(path("../hooks/useNotificationSocket.test.js")), false);
   assert.equal(existsSync(path("../utils/notificationSocketSync.test.mjs")), true);
+});
+
+test("detail messages render escaped text with trusted order links; the list stays plain", () => {
+  const messageView = read("./NotificationMessage.jsx");
+  // Text nodes only: no HTML injection anywhere a notification is shown.
+  for (const source of [messageView, singlePage, typePage]) {
+    assert.doesNotMatch(source, /dangerouslySetInnerHTML|innerHTML/);
+  }
+  assert.match(messageView, /import \{ parseNotificationMessage \} from "@\/utils\/notificationMessage\.mjs";/);
+  assert.match(messageView, /parseNotificationMessage\(message, \{ audience \}\)\.map\(/);
+  // Each detail page names its reader; the shared page only forwards it.
+  assert.match(singlePage, /audience=\{audience\}/);
+  assert.match(profileDetail, /audience="customer"/);
+  assert.match(adminDetail, /audience="admin"/);
+  // The href is the parser's relative order path, never the message text.
+  assert.match(messageView, /<Link\s+key=\{index\}\s+href=\{segment\.href\}\s+prefetch=\{false\}/);
+  // The link shows the parser's label (the URL for customers, the admin
+  // destination for admins) as a text node; only a URL is forced LTR.
+  assert.match(messageView, /dir=\{segment\.label === segment\.text \? "ltr" : undefined\}/);
+  assert.match(messageView, />\s*\{segment\.label\}\s*<\/Link>/);
+  assert.doesNotMatch(messageView, /href=\{segment\.text\}|target=|<a\s/);
+  // Line breaks kept, long URLs wrap.
+  assert.match(messageView, /whitespace-pre-line wrap-anywhere/);
+  assert.match(singlePage, /<NotificationMessage\s+message=\{message\}/);
+  assert.doesNotMatch(singlePage, />\s*\{message\}/);
+  // The inbox card is one button to the detail page: no nested link inside.
+  const card = typePage.slice(typePage.indexOf("function NotifTypeCard"));
+  assert.doesNotMatch(card, /<Link|<a\s|NotificationMessage/);
+  assert.match(card, /whitespace-pre-line wrap-anywhere[^`]*`\}\s*>\s*\{message\}/);
+});
+
+test("the customer detail is read once identity has settled, not before and again after", () => {
+  const detail = hooks.slice(
+    hooks.indexOf("export function useGetNotificationById"),
+    hooks.indexOf("export function useUnreadNotificationsCount"),
+  );
+  // `initializing` flips once; `loading`/`sessionReady` also change on every
+  // later identity check and would refetch the detail each time.
+  const adminDetail = hooks.slice(
+    hooks.indexOf("export function useGetAdminNotificationById"),
+    hooks.indexOf("export function useDeleteNotification"),
+  );
+  for (const source of [detail, adminDetail]) {
+    assert.match(source, /const \{ initializing \} = useAuth\(\);/);
+    assert.match(source, /enabled: Boolean\(id\) && !initializing,/);
+    assert.doesNotMatch(source, /sessionReady|loading/);
+  }
+  // Opening still marks it read once, after the data is there.
+  assert.match(profileDetail, /if \(!data\) return;\s*[\s\S]*?if \(!data\.isRead\) \{\s*openNotification\(data\.id\)/);
 });

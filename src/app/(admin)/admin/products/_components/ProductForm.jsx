@@ -36,6 +36,10 @@ import ActionButtons from "../../_components/ActionButtons";
 import { gradeLabel } from "@/utils/productGrade.mjs";
 import Link from "next/link";
 import { SEARCH_ALIASES_HELP } from "@/utils/searchAliasesContract.mjs";
+import {
+  adminProductCreateHref,
+  adminProductsReturnHref,
+} from "@/utils/adminProductsListContract.mjs";
 
 const basicInfoData = [
   { id: 1, label: "عنوان فارسی", name: "perTitle", placeholder: "بلو شنل" },
@@ -81,12 +85,14 @@ const multipleCategoryFields = [
 // `searchAliases` (edit): the stored aliases from the admin route;
 // `searchAliasesUnavailable`: they could not be read, so the field is
 // disabled and left out of the update (the stored aliases are kept).
+// `returnQuery` (create): the list query to return to after saving.
 function ProductForm({
   productToEdit,
   cloneDefaults,
   copySource,
   searchAliases,
   searchAliasesUnavailable = false,
+  returnQuery = "",
 }) {
   // Keep the edit baseline from when this Product was opened, even if a query
   // refreshes while the admin is editing. The backend compares it under lock.
@@ -110,7 +116,9 @@ function ProductForm({
   } = useGetAllCategories();
 
   const { isDeleting, removeProduct } = useRemoveProduct();
-  const { addProduct, isAdding } = useAddProduct();
+  const { addProduct, isAdding } = useAddProduct(
+    adminProductsReturnHref(returnQuery),
+  );
   const { editProduct, isEditing } = useEditProduct(productToEdit?.id);
 
   const genderCategories = categories?.filter((c) => c.type === "gender") || [];
@@ -271,7 +279,7 @@ function ProductForm({
               مشاهده محصول منبع
             </Link>
             <Link
-              href="/admin/products/add"
+              href={adminProductCreateHref(returnQuery)}
               prefetch={false}
               className="btn border py-1.5 px-3"
             >

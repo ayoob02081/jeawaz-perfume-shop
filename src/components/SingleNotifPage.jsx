@@ -1,11 +1,13 @@
 import { toLocalDateString } from "@/utils/toLocalDate";
 import Loading from "./Loading";
 import Error from "./Error";
+import NotificationMessage from "./NotificationMessage";
 
 function SingleNotifPage({
   title,
   createdAt,
   message,
+  audience,
   isPending,
   error,
   onRetry,
@@ -31,9 +33,11 @@ function SingleNotifPage({
         <p className="text-stroke-400 text-sm">
           {toLocalDateString(createdAt)}
         </p>
-        <p className="flex items-center justify-start text-md text-stroke-600">
-          {message}
-        </p>
+        <NotificationMessage
+          message={message}
+          audience={audience}
+          className="text-md text-stroke-600"
+        />
       </span>
       {children}
     </div>

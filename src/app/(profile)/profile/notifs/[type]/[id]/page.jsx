@@ -27,6 +27,7 @@ function UserNotifPage() {
       title={data?.notification?.title}
       createdAt={data?.notification?.createdAt}
       message={data?.notification?.message}
+      audience="customer"
       isPending={isPending}
       error={error}
       onRetry={() => refetch()}

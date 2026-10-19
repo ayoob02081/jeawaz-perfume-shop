@@ -9,6 +9,8 @@ import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { getInvoiceHref } from "./orderInvoice.mjs";
+import { parseNotificationMessage } from "./notificationMessage.mjs";
+import { adminProductCreateHref, adminProductsReturnHref } from "./adminProductsListContract.mjs";
 
 const srcDir = fileURLToPath(new URL("..", import.meta.url));
 const read = (path) => readFileSync(join(srcDir, path), "utf8");
@@ -77,6 +79,13 @@ const PROTECTED_WRAPPERS = [
   ["app/(profile)/profile/orders/[id]/invoice/page.jsx", "{href}"],
   ["app/(user)/payment/result/_components/PaymentResult.jsx", "{actions.orderLink.href}"],
   ["components/SingleOrderPage.jsx", "{getInvoiceHref(order.id)}"],
+  ["components/NotificationMessage.jsx", "{segment.href}"],
+  // Admin Products create/copy links and their return to the list.
+  ["app/(admin)/admin/products/_components/ProductsLayout.jsx", "{adminProductCreateHref(search)}"],
+  ["app/(admin)/admin/products/_components/ProductsListTable.jsx", "{adminProductCreateHref(listSearch, product.id)}", 2],
+  ["app/(admin)/admin/products/_components/AddProductPage.jsx", "{adminProductCreateHref(returnQuery)}"],
+  ["app/(admin)/admin/products/_components/AddProductPage.jsx", "{adminProductsReturnHref(returnQuery)}"],
+  ["app/(admin)/admin/products/_components/ProductForm.jsx", "{adminProductCreateHref(returnQuery)}"],
 ];
 const isProtectedWrapper = ({ file, href }) =>
   PROTECTED_WRAPPERS.some(([wrapperFile, wrapperHref]) => file === wrapperFile && href === wrapperHref);
@@ -132,6 +141,25 @@ test("the dashboard, invoice and order-link wrappers only reach protected routes
   const orderLinks = [...read("utils/paymentResultView.mjs").matchAll(/href: [`"]([^`"]+)/g)].map((m) => m[1]);
   assert.ok(orderLinks.length >= 2);
   for (const href of orderLinks) assert.match(href, /^\/profile\//);
+
+  // Notification order links: /profile/orders/{id} for customers,
+  // /admin/orders/{id} for admins, and no link for anyone else.
+  for (const [audience, prefix] of [["customer", "/profile/orders/"], ["admin", "/admin/orders/"]]) {
+    const [notificationLink] = parseNotificationMessage("https://jeawaz.com/profile/orders/7", { audience })
+      .filter((segment) => segment.type === "orderLink");
+    assert.equal(notificationLink.href, `${prefix}7`);
+  }
+  assert.deepEqual(
+    parseNotificationMessage("https://jeawaz.com/profile/orders/7").filter((segment) => segment.type === "orderLink"),
+    [],
+  );
+
+  // Admin Products create/copy and return hrefs, whatever the list query.
+  for (const query of ["", "brandId=2&page=3", "limit=48&search=x", "returnTo=%2Fevil", "//evil.com", "https://evil.com"]) {
+    assert.match(adminProductCreateHref(query), /^\/admin\/products\/add(\?|$)/);
+    assert.match(adminProductCreateHref(query, 9), /^\/admin\/products\/add\?copyFrom=9(&|$)/);
+    assert.match(adminProductsReturnHref(query), /^\/admin\/products(\?|$)/);
+  }
 });
 
 const isSuggestionLink = ({ file, href }) => file === "components/HeaderLayout.jsx" && href === '{`/products/${item.id}`}';

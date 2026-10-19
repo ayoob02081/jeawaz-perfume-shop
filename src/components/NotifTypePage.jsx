@@ -119,8 +119,10 @@ function NotifTypeCard({ id, type, date, title, message, isRead }) {
               {toLocalDateString(date)}
             </div>
           </div>
+          {/* Plain text: the whole card is already a button to the detail
+              page, where order links are clickable. */}
           <div
-            className={`flex items-center justify-start max-md:text-xs md:text-sm text-stroke-600 ${!isRead ? "font-bold" : ""}`}
+            className={`flex items-center justify-start whitespace-pre-line wrap-anywhere max-md:text-xs md:text-sm text-stroke-600 ${!isRead ? "font-bold" : ""}`}
           >
             {message}
           </div>

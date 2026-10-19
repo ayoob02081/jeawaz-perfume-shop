@@ -2,6 +2,11 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   ADMIN_PRODUCTS_DEFAULT_LIMIT,
+  ADMIN_PRODUCTS_LIMITS,
+  ADMIN_PRODUCTS_RETURN_PARAM,
+  adminProductCreateHref,
+  adminProductsReturnHref,
+  adminProductsReturnQuery,
   adminProductRowNumber,
   adminProductRowNumbers,
   adminProductsApiFilters,
@@ -18,6 +23,7 @@ import {
   parseAdminProductsQuery,
 } from "./adminProductsListContract.mjs";
 import { productListKey } from "./productFilterContract.mjs";
+import { COPY_FROM_PARAM } from "../app/(admin)/admin/products/_components/productCloneContract.mjs";
 
 const parse = (search) => parseAdminProductsQuery(new URLSearchParams(search));
 const numbers = (total, page, limit, rows) =>
@@ -212,4 +218,62 @@ test("a page past the end moves to the last existing page; valid pages stay", ()
   assert.equal(correctedAdminProductsPage({ page: 2, totalPages: undefined }), null);
   // The correction keeps the filters.
   assert.equal(nextAdminProductsSearch("search=dior&page=5", { page: 4 }), "search=dior&page=4");
+});
+
+test("page size: each allowed size, back to page 1, filters and other parameters kept", () => {
+  for (const limit of ADMIN_PRODUCTS_LIMITS) {
+    // Always from another size, so the change is real.
+    const from = limit === 96 ? "" : "&limit=96";
+    const current = `search=dior&brandId=2&fragranceFamilies=woody&tab=x${from}&page=5`;
+    const next = new URLSearchParams(nextAdminProductsSearch(current, { limit }));
+    assert.equal(next.get("page"), null, `${limit}: page 1 is not written`);
+    assert.equal(next.get("limit"), limit === ADMIN_PRODUCTS_DEFAULT_LIMIT ? null : String(limit));
+    assert.equal(next.get("search"), "dior");
+    assert.equal(next.get("brandId"), "2");
+    assert.deepEqual(next.getAll("fragranceFamilies"), ["woody"]);
+    assert.equal(next.get("tab"), "x", "unrelated parameters are preserved");
+    assert.equal(parseAdminProductsQuery(next).limit, limit, "the URL restores the size");
+  }
+  // The same size is no change: the page stays.
+  assert.equal(nextAdminProductsSearch("limit=48&page=3", { limit: 48 }), "limit=48&page=3");
+  // Sizes the list does not offer fall back to the default.
+  assert.equal(parseAdminProductsQuery(new URLSearchParams("limit=7")).limit, ADMIN_PRODUCTS_DEFAULT_LIMIT);
+  assert.deepEqual([...ADMIN_PRODUCTS_LIMITS], [12, 24, 48, 96]);
+});
+
+test("create/copy links carry the originating list query and return to it", () => {
+  assert.equal(adminProductCreateHref(""), "/admin/products/add");
+  assert.equal(adminProductCreateHref("", 9), "/admin/products/add?copyFrom=9");
+  const list = "brandId=2&limit=48&page=3";
+  const blank = adminProductCreateHref(list);
+  const copy = adminProductCreateHref(list, 41);
+  assert.equal(blank, `/admin/products/add?returnTo=${encodeURIComponent(list)}`);
+  assert.equal(copy, `/admin/products/add?copyFrom=41&returnTo=${encodeURIComponent(list)}`);
+  // The add page reads `returnTo` and goes back to exactly that list.
+  for (const href of [blank, copy]) {
+    const returnTo = new URL(href, "http://x").searchParams.get(ADMIN_PRODUCTS_RETURN_PARAM);
+    assert.equal(adminProductsReturnHref(returnTo), `/admin/products?${list}`);
+  }
+  // Same as copyFrom's own contract.
+  assert.equal(COPY_FROM_PARAM, "copyFrom");
+  // A non-canonical list is canonicalised once; a default list returns plain.
+  assert.equal(adminProductsReturnQuery("page=1&limit=12&search=%20dior%20"), "search=dior");
+  assert.equal(adminProductCreateHref("page=1"), "/admin/products/add");
+  // Invalid copy sources are dropped, the return is kept.
+  assert.equal(adminProductCreateHref("page=2", "abc"), "/admin/products/add?returnTo=page%3D2");
+  assert.equal(adminProductCreateHref("page=2", 0), "/admin/products/add?returnTo=page%3D2");
+});
+
+test("the return is always the admin Products list, never another path or origin", () => {
+  for (const value of [
+    undefined, null, 42, {}, "", "?", "/", "//evil.com", "https://evil.com/admin/products",
+    "/admin/users", "javascript:alert(1)", "%2F%2Fevil.com", "x".repeat(2001),
+  ]) {
+    assert.match(adminProductsReturnHref(value), /^\/admin\/products(\?|$)/, String(value).slice(0, 40));
+    assert.doesNotMatch(adminProductsReturnHref(value), /^\/admin\/products\/|^\/\/|:\/\//);
+  }
+  assert.equal(adminProductsReturnHref("x".repeat(2001)), "/admin/products");
+  assert.equal(adminProductsReturnHref(undefined), "/admin/products");
+  // Nested create parameters never ride along back to the list.
+  assert.equal(adminProductsReturnQuery("page=2&copyFrom=5&returnTo=page%3D9"), "page=2");
 });

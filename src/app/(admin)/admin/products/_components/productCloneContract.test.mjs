@@ -200,14 +200,15 @@ test("duplicate mode is create mode: the source is never productToEdit", () => {
   const page = read("./AddProductPage.jsx");
   const form = read("./ProductForm.jsx");
 
-  assert.match(page, /useSearchParams\(\)\.get\(COPY_FROM_PARAM\)/);
-  assert.match(page, /<ProductForm\s+key=\{`copy-\$\{id\}`\}\s+cloneDefaults=\{cloneDefaults\}\s+copySource=\{cloneSourceSummary\(source\)\}\s+\/>/);
+  assert.match(page, /const searchParams = useSearchParams\(\);\s*const copyFrom = searchParams\.get\(COPY_FROM_PARAM\);/);
+  assert.match(page, /<ProductForm\s+key=\{`copy-\$\{id\}`\}\s+cloneDefaults=\{cloneDefaults\}\s+copySource=\{cloneSourceSummary\(source\)\}\s+returnQuery=\{returnQuery\}\s+\/>/);
   assert.doesNotMatch(page, /productToEdit=/);
   assert.match(page, /mapProductToCloneDefaults\(source\)/);
   // A failed copy never silently becomes a blank form.
-  assert.match(page, /if \(view === "error"\) return <CopySourceError message=\{message\} \/>;/);
+  assert.match(page, /if \(view === "error"\) \{\s*return <CopySourceError message=\{message\} returnQuery=\{returnQuery\} \/>;\s*\}/);
   assert.match(page, /if \(view === "loading"\) return <Loading \/>;/);
-  assert.match(page, /href="\/admin\/products\/add"[\s\S]*?شروع محصول خالی/);
+  // Starting blank keeps the list to return to.
+  assert.match(page, /href=\{adminProductCreateHref\(returnQuery\)\}[\s\S]*?شروع محصول خالی/);
 
   // Edit is chosen only by productToEdit; the Variant baseline and PATCH follow it.
   // (A duplicate starts without search aliases: they belong to the source.)
@@ -232,7 +233,7 @@ test("the duplicate banner makes the new-Product context and printName review ex
 
 test("both admin product tables offer «ساخت محصول مشابه» and a grade badge", () => {
   const table = read("./ProductsListTable.jsx");
-  const actions = table.match(/href=\{`\/admin\/products\/add\?copyFrom=\$\{product\.id\}`\}\s*prefetch=\{false\}\s*title="ساخت محصول مشابه"\s*aria-label="ساخت محصول مشابه"/g);
+  const actions = table.match(/href=\{adminProductCreateHref\(listSearch, product\.id\)\}\s*prefetch=\{false\}\s*title="ساخت محصول مشابه"\s*aria-label="ساخت محصول مشابه"/g);
   assert.equal(actions?.length, 2);
   assert.equal(table.match(/<DocumentDuplicateIcon className="size-5" \/>/g)?.length, 2);
   // Any JSX formatting of the props.

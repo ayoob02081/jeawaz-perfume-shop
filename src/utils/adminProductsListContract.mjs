@@ -214,6 +214,42 @@ export function canonicalAdminProductsSearch(currentSearch) {
   return next === new URLSearchParams(currentSearch).toString() ? null : next;
 }
 
+/* ================= CREATE / COPY RETURN ================= */
+
+// Create and copy links carry the list they were opened from in `returnTo`,
+// as its list query only (never a path or origin), so a successful save
+// returns to that filtered page. Editing returns through history instead.
+export const ADMIN_PRODUCTS_RETURN_PARAM = "returnTo";
+const RETURN_QUERY_MAX = 2000;
+
+// The canonical list query to return to, or "" for the plain list. Anything
+// malformed, oversized or non-string is the plain list.
+export function adminProductsReturnQuery(value) {
+  if (typeof value !== "string" || !value || value.length > RETURN_QUERY_MAX) return "";
+  const params = new URLSearchParams(value);
+  params.delete(ADMIN_PRODUCTS_RETURN_PARAM);
+  params.delete("copyFrom");
+  return nextAdminProductsSearch(params.toString(), {});
+}
+
+// Always the admin Products list.
+export const adminProductsReturnHref = (returnQuery) => {
+  const query = adminProductsReturnQuery(returnQuery);
+  return query ? `/admin/products?${query}` : "/admin/products";
+};
+
+// The create page (blank, or copying Product `copyFrom`) opened from the
+// list whose query is `listSearch`.
+export function adminProductCreateHref(listSearch, copyFrom) {
+  const params = new URLSearchParams();
+  const sourceId = positiveInteger(copyFrom);
+  if (sourceId) params.set("copyFrom", String(sourceId));
+  const returnQuery = adminProductsReturnQuery(listSearch);
+  if (returnQuery) params.set(ADMIN_PRODUCTS_RETURN_PARAM, returnQuery);
+  const query = params.toString();
+  return query ? `/admin/products/add?${query}` : "/admin/products/add";
+}
+
 /* ================= ROWS AND PAGES ================= */
 
 // Global, descending row number of a row on a page, from the backend total:

@@ -16,7 +16,9 @@ import BulkPriceDialog from "./BulkPriceDialog";
 import { setVisibleSelection, toggleSelectedId } from "./bulkPriceContract.mjs";
 import { toPersianNumbersWithComma } from "@/utils/toPersianNumbers";
 import PagesNumber from "@/components/PagesNumber";
+import ProductsPageSize from "./ProductsPageSize";
 import {
+  adminProductCreateHref,
   adminProductRowNumbers,
   adminProductsApiFilters,
   adminProductsListParams,
@@ -81,6 +83,11 @@ function ProductsLayout() {
     (page) => navigate(nextAdminProductsSearch(searchRef.current, { page })),
     [navigate],
   );
+  // A new page size returns to page 1 and keeps every filter.
+  const setLimit = useCallback(
+    (limit) => navigate(nextAdminProductsSearch(searchRef.current, { limit })),
+    [navigate],
+  );
 
   const { data, isPending, isFetching, isPlaceholderData, error } =
     useGetAllProducts(adminProductsListParams(query));
@@ -130,7 +137,7 @@ function ProductsLayout() {
             مدیریت گروهی قیمت
           </button>
           <Link
-            href="/admin/products/add"
+            href={adminProductCreateHref(search)}
             prefetch={false}
             className="btn btn--primary gap-2 border py-1.5 px-3 max-[33rem]:w-full"
           >
@@ -164,6 +171,7 @@ function ProductsLayout() {
           محصولات انتخاب‌شده: {toPersianNumbersWithComma(selectedIds.length)}
         </span>
         {isFetching && !isPending && <span>در حال به‌روزرسانی…</span>}
+        <ProductsPageSize limit={query.limit} onChange={setLimit} />
       </div>
 
       {lastApplied && (
@@ -185,6 +193,7 @@ function ProductsLayout() {
       ) : (
         <ProductsListTable
           products={products}
+          listSearch={search}
           rowNumbers={rowNumbers}
           selectionDisabled={isFetching}
           selectedIds={selectedIds}

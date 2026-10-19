@@ -8,6 +8,7 @@ import {
 import { useRemoveProduct } from "@/hooks/useProducts";
 import ConfirmModal from "@/ui/ConfirmModal";
 import { runProductDelete } from "./productDeleteContract.mjs";
+import { adminProductCreateHref } from "@/utils/adminProductsListContract.mjs";
 import Table from "@/ui/Table";
 import {
   toPersianNumbers,
@@ -22,7 +23,7 @@ import {
 } from "@heroicons/react/24/solid";
 import ProductGradeBadge from "@/components/ProductGradeBadge";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import CheckBox from "@/ui/CheckBox";
 import { CheckIcon } from "@heroicons/react/24/outline";
 
@@ -35,6 +36,8 @@ const rowLabel = (rowNumbers, index) => {
 
 function ProductsListTable({
   products,
+  // The list query, carried by the copy links for the return after saving.
+  listSearch = "",
   rowNumbers = [],
   selectedIds = [],
   onToggleSelected,
@@ -44,16 +47,24 @@ function ProductsListTable({
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [product, setProduct] = useState(false);
   const { isDeleting, removeProduct } = useRemoveProduct();
+  // `isDeleting` only changes on the next render: a second click a few ms
+  // later still saw false and sent a second DELETE.
+  const deletingRef = useRef(false);
 
   const removeProductHandler = async () => {
-    if (isDeleting) return;
+    if (isDeleting || deletingRef.current) return;
+    deletingRef.current = true;
 
-    await runProductDelete({
-      id: product.id,
-      removeProduct,
-      onDeleted,
-      close: () => setConfirmModalOpen(false),
-    });
+    try {
+      await runProductDelete({
+        id: product.id,
+        removeProduct,
+        onDeleted,
+        close: () => setConfirmModalOpen(false),
+      });
+    } finally {
+      deletingRef.current = false;
+    }
   };
 
   const handleModal = (data) => {
@@ -241,7 +252,7 @@ function ProductsListTable({
                           <PencilSquareIcon className=" size-5" />
                         </Link>
                         <Link
-                          href={`/admin/products/add?copyFrom=${product.id}`}
+                          href={adminProductCreateHref(listSearch, product.id)}
                           prefetch={false}
                           title="ساخت محصول مشابه"
                           aria-label="ساخت محصول مشابه"
@@ -449,7 +460,7 @@ function ProductsListTable({
                           <PencilSquareIcon className=" size-5" />
                         </Link>
                         <Link
-                          href={`/admin/products/add?copyFrom=${product.id}`}
+                          href={adminProductCreateHref(listSearch, product.id)}
                           prefetch={false}
                           title="ساخت محصول مشابه"
                           aria-label="ساخت محصول مشابه"

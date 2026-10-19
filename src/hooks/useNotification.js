@@ -72,11 +72,17 @@ export function useGetNotifications(type, limit = USER_NOTIFICATION_PAGE_LIMIT) 
   });
 }
 
+// Waits for the first settled identity: the first confirmation invalidates
+// every user-scoped query (Providers' AuthQueryCacheBridge), so a read sent
+// before it was discarded and repeated. `initializing` flips only once, so
+// later identity checks never toggle the query.
 export function useGetNotificationById(id) {
+  const { initializing } = useAuth();
+
   return useQuery({
     queryKey: notificationKeys.detail(id),
     queryFn: () => getNotificationByIdApi(id),
-    enabled: Boolean(id),
+    enabled: Boolean(id) && !initializing,
     retry: false,
     refetchOnWindowFocus: false,
   });
@@ -171,11 +177,14 @@ export function useGetAdminNotifications(params = {}) {
   });
 }
 
+// Same first-identity wait as useGetNotificationById.
 export function useGetAdminNotificationById(id) {
+  const { initializing } = useAuth();
+
   return useQuery({
     queryKey: notificationKeys.adminDetail(id),
     queryFn: () => getAdminNotificationByIdApi(id),
-    enabled: Boolean(id),
+    enabled: Boolean(id) && !initializing,
     retry: false,
     refetchOnWindowFocus: false,
   });

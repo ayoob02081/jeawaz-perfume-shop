@@ -14,17 +14,36 @@ import {
   mapProductToCloneDefaults,
   parseCopyFromId,
 } from "./productCloneContract.mjs";
+import {
+  ADMIN_PRODUCTS_RETURN_PARAM,
+  adminProductCreateHref,
+  adminProductsReturnHref,
+  adminProductsReturnQuery,
+} from "@/utils/adminProductsListContract.mjs";
 
 // /admin/products/add — a blank create form, or with ?copyFrom=<id> a create
 // form prefilled from that Product ("ساخت محصول مشابه"). Both POST a new Product.
+// `returnTo` holds the list query it was opened from (none: the plain list).
 function AddProductPage() {
-  const copyFrom = useSearchParams().get(COPY_FROM_PARAM);
+  const searchParams = useSearchParams();
+  const copyFrom = searchParams.get(COPY_FROM_PARAM);
+  const returnQuery = adminProductsReturnQuery(
+    searchParams.get(ADMIN_PRODUCTS_RETURN_PARAM),
+  );
 
-  if (!isCopyRequested(copyFrom)) return <ProductForm key="blank" />;
-  return <DuplicateProductForm key={copyFrom} copyFrom={copyFrom} />;
+  if (!isCopyRequested(copyFrom)) {
+    return <ProductForm key="blank" returnQuery={returnQuery} />;
+  }
+  return (
+    <DuplicateProductForm
+      key={copyFrom}
+      copyFrom={copyFrom}
+      returnQuery={returnQuery}
+    />
+  );
 }
 
-function DuplicateProductForm({ copyFrom }) {
+function DuplicateProductForm({ copyFrom, returnQuery }) {
   const id = parseCopyFromId(copyFrom);
   const { data: source, isLoading, error } = useGetProductById(id ?? undefined);
   const cloneDefaults = useMemo(
@@ -34,7 +53,9 @@ function DuplicateProductForm({ copyFrom }) {
   const { view, message } = duplicateView({ copyFrom, isLoading, error, source });
 
   if (view === "loading") return <Loading />;
-  if (view === "error") return <CopySourceError message={message} />;
+  if (view === "error") {
+    return <CopySourceError message={message} returnQuery={returnQuery} />;
+  }
 
   // Create mode: the source is never `productToEdit`. Defaults are read once at
   // mount, so a background refetch of the source never overwrites edits.
@@ -43,11 +64,12 @@ function DuplicateProductForm({ copyFrom }) {
       key={`copy-${id}`}
       cloneDefaults={cloneDefaults}
       copySource={cloneSourceSummary(source)}
+      returnQuery={returnQuery}
     />
   );
 }
 
-function CopySourceError({ message }) {
+function CopySourceError({ message, returnQuery }) {
   return (
     <div className="max-w-6xl px-4 w-full">
       <div
@@ -60,14 +82,14 @@ function CopySourceError({ message }) {
         </p>
         <div className="flex flex-wrap gap-2">
           <Link
-            href="/admin/products/add"
+            href={adminProductCreateHref(returnQuery)}
             prefetch={false}
             className="btn btn--primary border py-1.5 px-3"
           >
             شروع محصول خالی
           </Link>
           <Link
-            href="/admin/products"
+            href={adminProductsReturnHref(returnQuery)}
             prefetch={false}
             className="btn border py-1.5 px-3"
           >

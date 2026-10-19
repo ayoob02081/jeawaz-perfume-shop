@@ -85,3 +85,31 @@ test("both layouts reuse one set of filter controls", () => {
   }
   assert.doesNotMatch(layout, /<select|<input/);
 });
+
+test("page size is URL state: one select, written through the list contract", () => {
+  const pageSize = read("./ProductsPageSize.jsx");
+  assert.match(layout, /<ProductsPageSize limit=\{query\.limit\} onChange=\{setLimit\} \/>/);
+  assert.match(layout, /const setLimit = useCallback\(\s*\(limit\) => navigate\(nextAdminProductsSearch\(searchRef\.current, \{ limit \}\)\),/);
+  // Labelled, offers only the contract's sizes, and keeps no state of its own.
+  assert.match(pageSize, /<label[^>]*>\s*<span[^>]*>تعداد در صفحه<\/span>\s*<select\s+name="limit"/);
+  assert.match(pageSize, /value=\{String\(limit\)\}/);
+  assert.match(pageSize, /ADMIN_PRODUCTS_LIMITS\.map\(/);
+  assert.doesNotMatch(pageSize, /useState|useEffect|useRouter|useSearchParams/);
+});
+
+test("create and copy start from the current list and return to it; edit is unchanged", () => {
+  const addPage = read("./AddProductPage.jsx");
+  const form = read("./ProductForm.jsx");
+  assert.match(layout, /href=\{adminProductCreateHref\(search\)\}/);
+  assert.match(layout, /listSearch=\{search\}/);
+  assert.match(table, /listSearch = "",/);
+  assert.match(addPage, /adminProductsReturnQuery\(\s*searchParams\.get\(ADMIN_PRODUCTS_RETURN_PARAM\),\s*\)/);
+  assert.match(addPage, /<ProductForm key="blank" returnQuery=\{returnQuery\} \/>/);
+  assert.match(addPage, /href=\{adminProductsReturnHref\(returnQuery\)\}/);
+  assert.match(form, /useAddProduct\(\s*adminProductsReturnHref\(returnQuery\),\s*\)/);
+  assert.match(hooks, /export function useAddProduct\(returnHref = "\/admin\/products"\)/);
+  assert.match(hooks, /router\.push\(returnHref\);/);
+  // Edit still returns through history to the exact list it came from.
+  const edit = hooks.slice(hooks.indexOf("export function useEditProduct"), hooks.indexOf("export function useRemoveProduct"));
+  assert.match(edit, /router\.refresh\(\);\s*router\.back\(\);/);
+});

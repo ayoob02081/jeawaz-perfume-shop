@@ -4,6 +4,7 @@ import { useGetAllUsers } from "@/hooks/useUsers";
 import UsersListTable from "./UsersListTable";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
+import NotExisted from "@/components/NotExisted";
 
 function UsersLayout() {
   const { data: users, isPending, error } = useGetAllUsers();

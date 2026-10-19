@@ -20,6 +20,7 @@ function AdminNotifPage() {
       title={data?.title}
       createdAt={data?.createdAt}
       message={data?.message}
+      audience="admin"
       isPending={isPending}
       error={error}
       onRetry={() => refetch()}
