@@ -26,8 +26,16 @@ import { useState } from "react";
 import CheckBox from "@/ui/CheckBox";
 import { CheckIcon } from "@heroicons/react/24/outline";
 
+// The row's position in the whole filtered list (from the backend total), not
+// its index on the page and not the Product id.
+const rowLabel = (rowNumbers, index) => {
+  const number = rowNumbers?.[index];
+  return number ? toPersianNumbers(number) : "—";
+};
+
 function ProductsListTable({
   products,
+  rowNumbers = [],
   selectedIds = [],
   onToggleSelected,
   onSelectVisible,
@@ -120,7 +128,7 @@ function ProductsListTable({
                         className="flex flex-row! items-center justify-center font-bold size-full"
                         onChange={() => onToggleSelected?.(product.id)}
                       >
-                        <p>{toPersianNumbers(index + 1)}</p>
+                        <p>{rowLabel(rowNumbers, index)}</p>
                       </CheckBox>
                     </td>
                     <td className="table__td p-0 max-w-70 text-wrap">
@@ -315,7 +323,7 @@ function ProductsListTable({
                         className="flex flex-row! items-center justify-center font-bold size-full"
                         onChange={() => onToggleSelected?.(product.id)}
                       >
-                        <p>{toPersianNumbers(index + 1)}</p>
+                        <p>{rowLabel(rowNumbers, index)}</p>
                       </CheckBox>
                     </td>
                     <td className="table__td p-0">

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useGetAllProducts } from "@/hooks/useProducts";
 import {
   useGetAllBrandCategories,
@@ -10,84 +11,108 @@ import {
 import NotExisted from "@/components/NotExisted";
 import Loading from "@/components/Loading";
 import ProductsListTable from "./ProductsListTable";
+import ProductsFilters from "./ProductsFilters";
 import BulkPriceDialog from "./BulkPriceDialog";
-import {
-  setVisibleSelection,
-  supportedBulkFilters,
-  toggleSelectedId,
-} from "./bulkPriceContract.mjs";
+import { setVisibleSelection, toggleSelectedId } from "./bulkPriceContract.mjs";
 import { toPersianNumbersWithComma } from "@/utils/toPersianNumbers";
 import PagesNumber from "@/components/PagesNumber";
-import CheckBox from "@/ui/CheckBox";
-import { CheckIcon } from "@heroicons/react/24/outline";
-import { PRODUCT_GRADES, gradeLabel } from "@/utils/productGrade.mjs";
-
-const initialFilters = {
-  search: "",
-  brandId: "",
-  grade: "",
-  gender: "",
-  fragranceFamilies: [],
-};
+import {
+  adminProductRowNumbers,
+  adminProductsApiFilters,
+  adminProductsListParams,
+  canonicalAdminProductsSearch,
+  clearAdminProductFilters,
+  correctedAdminProductsPage,
+  filterUpdatesFromDraft,
+  nextAdminProductsSearch,
+  parseAdminProductsQuery,
+} from "@/utils/adminProductsListContract.mjs";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 function ProductsLayout() {
-  const [draft, setDraft] = useState(initialFilters);
-  const [filters, setFilters] = useState({});
-  const [page, setPage] = useState(1);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
+  // The URL is the list state: refresh, links, Back/Forward and the return
+  // from the edit page restore it.
+  const query = useMemo(() => parseAdminProductsQuery(searchParams), [searchParams]);
+  const filters = useMemo(() => adminProductsApiFilters(query), [query]);
+
   const [selectedIds, setSelectedIds] = useState([]);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [lastApplied, setLastApplied] = useState(null);
-  const { data, isPending, isFetching, error } = useGetAllProducts({
-    ...filters,
-    page,
-    limit: 12,
-    availabilityFirst: false,
-    // The search Bulk Price targeting uses: the list shows exactly the
-    // Products a bulk change over these filters would cover.
-    searchMode: "legacy",
-  });
+
+  // Latest URL query, so successive updates compose before the router commits.
+  const searchRef = useRef(search);
+  useEffect(() => {
+    searchRef.current = search;
+  }, [search]);
+
+  // User actions add a history entry (Back/Forward step through table
+  // states); automatic corrections replace the current one.
+  const navigate = useCallback(
+    (next, { replace = false } = {}) => {
+      if (next === searchRef.current) return;
+      searchRef.current = next;
+      const href = next ? `${pathname}?${next}` : pathname;
+      if (replace) router.replace(href, { scroll: false });
+      else router.push(href, { scroll: false });
+    },
+    [router, pathname],
+  );
+
+  // Invalid or default values in a link are rewritten once.
+  useEffect(() => {
+    const canonical = canonicalAdminProductsSearch(search);
+    if (canonical !== null) navigate(canonical, { replace: true });
+  }, [search, navigate]);
+
+  const applyFilters = useCallback(
+    (draft) =>
+      navigate(nextAdminProductsSearch(searchRef.current, filterUpdatesFromDraft(draft))),
+    [navigate],
+  );
+  const resetFilters = useCallback(
+    () => navigate(clearAdminProductFilters(searchRef.current)),
+    [navigate],
+  );
+  const setPage = useCallback(
+    (page) => navigate(nextAdminProductsSearch(searchRef.current, { page })),
+    [navigate],
+  );
+
+  const { data, isPending, isFetching, isPlaceholderData, error } =
+    useGetAllProducts(adminProductsListParams(query));
   const { data: brands = [] } = useGetAllBrandCategories();
   const { data: categories = [] } = useGetAllCategories();
   const products = data?.data || [];
   const meta = data?.meta;
+  const rowNumbers = adminProductRowNumbers(data);
   const visibleIds = products.map((product) => product.id);
   const genders = categories.filter((category) => category.type === "gender");
   const families = categories.filter(
     (category) => category.type === "fragrance_family",
   );
 
-  const applyFilters = (event) => {
-    event.preventDefault();
-    setFilters(
-      supportedBulkFilters({
-        search: draft.search,
-        brandIds: draft.brandId ? [Number(draft.brandId)] : [],
-        grades: draft.grade ? [draft.grade] : [],
-        gender: draft.gender,
-        fragranceFamilies: draft.fragranceFamilies,
-      }),
-    );
-    setPage(1);
-  };
-
-  const resetFilters = () => {
-    setDraft(initialFilters);
-    setFilters({});
-    setPage(1);
-  };
-
-  const toggleFamily = (slug) => {
-    setDraft((current) => ({
-      ...current,
-      fragranceFamilies: current.fragranceFamilies.includes(slug)
-        ? current.fragranceFamilies.filter((value) => value !== slug)
-        : [...current.fragranceFamilies, slug],
-    }));
-  };
+  // A page past the last one (after a deletion, or an old link) moves to the
+  // last existing page with the same filters, once its own answer is in.
+  useEffect(() => {
+    if (isFetching || isPlaceholderData || !meta || meta.page !== query.page) return;
+    const target = correctedAdminProductsPage({
+      page: query.page,
+      totalPages: meta.totalPages,
+    });
+    if (target) {
+      navigate(nextAdminProductsSearch(searchRef.current, { page: target }), {
+        replace: true,
+      });
+    }
+  }, [isFetching, isPlaceholderData, meta, query.page, navigate]);
 
   return (
-    <div className="space-y-4 w-full max-lg:py-4 px-4 pb-10 overflow-hidden">
-      <div className="flex flex-wrap items-center gap-3 max-[33rem]:justify-center justify-between">
+    <div className="space-y-4 w-full max-lg:py- px-4 pb-10 overflow-hidden">
+      <div className="flex flex-wrap items-center gap-3 max-[37rem]:justify-center justify-between">
         <h1 className="font-bold text-stroke-800 text-xl">محصولات</h1>
         <div className="flex flex-wrap gap-2">
           <Link
@@ -99,7 +124,7 @@ function ProductsLayout() {
           </Link>
           <button
             type="button"
-            className="btn btn--primary border py-1.5 px-3 max-[33rem]:w-full"
+            className="btn btn--primary--2 border py-1.5 px-3 max-[33rem]:w-full"
             onClick={() => setBulkOpen(true)}
           >
             مدیریت گروهی قیمت
@@ -107,138 +132,22 @@ function ProductsLayout() {
           <Link
             href="/admin/products/add"
             prefetch={false}
-            className="btn btn--primary border py-1.5 px-3 max-[33rem]:w-full"
+            className="btn btn--primary gap-2 border py-1.5 px-3 max-[33rem]:w-full"
           >
-            اضافه کردن محصول
+            <PlusIcon className="size-5 stroke-3"/>
+            <p>اضافه کردن محصول</p>
           </Link>
         </div>
       </div>
 
-      <form
-        onSubmit={applyFilters}
-        className="flex flex-col items-cente justify-stretch gap-3 rounded-xl border border-stroke-200 shadow p-3 text-sm w-full"
-      >
-        <div className="flex max-md:flex-wrap gap-3 size-full">
-          <div className="flex items-center gap-4 w-full">
-            <div className="flex grow flex-col gap-2 sm:w-full">
-              <label className="flex flex-col gap-1">
-                <p className="pr-2 sm:text-lg font-bold">جستجو</p>
-                <input
-                  className="textField__input rounded-xl p-2"
-                  value={draft.search}
-                  onChange={(event) =>
-                    setDraft((current) => ({
-                      ...current,
-                      search: event.target.value,
-                    }))
-                  }
-                />
-              </label>
-              <label className="flex flex-col gap-1">
-                <p className="pr-2 sm:text-lg font-bold">برند</p>
-                <select
-                  className="textField__input rounded-xl p-2"
-                  value={draft.brandId}
-                  onChange={(event) =>
-                    setDraft((current) => ({
-                      ...current,
-                      brandId: event.target.value,
-                    }))
-                  }
-                >
-                  <option value="">همه</option>
-                  {brands.map((brand) => (
-                    <option key={brand.id} value={brand.id}>
-                      {brand.title || brand.value}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <div className="flex max-sm:flex-none sm:grow flex-col gap-2 sm:w-full">
-              <label className="flex flex-col gap-1">
-                <p className="pr-2 sm:text-lg font-bold">نوع کیفیت</p>
-                <select
-                  className="textField__input rounded-xl p-2"
-                  value={draft.grade}
-                  onChange={(event) =>
-                    setDraft((current) => ({
-                      ...current,
-                      grade: event.target.value,
-                    }))
-                  }
-                >
-                  <option value="">همه</option>
-                  {PRODUCT_GRADES.map((grade) => (
-                    <option key={grade} value={grade}>
-                      {gradeLabel(grade)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="flex flex-col gap-1">
-                <p className="pr-2 sm:text-lg font-bold">جنسیت</p>
-                <select
-                  className="textField__input rounded-xl p-2"
-                  value={draft.gender}
-                  onChange={(event) =>
-                    setDraft((current) => ({
-                      ...current,
-                      gender: event.target.value,
-                    }))
-                  }
-                >
-                  <option value="">همه</option>
-                  {genders.map((category) => (
-                    <option key={category.id} value={category.slug}>
-                      {category.title}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-          </div>
-          <details className="relative btn w-full flex-col items-start justify-start rounded-md border border-stroke-200 p-2 transition-all duration-200">
-            <summary className="cursor-pointer sm:text-lg font-bold">
-              خانواده‌های بویایی (
-              {toPersianNumbersWithComma(draft.fragranceFamilies.length)})
-            </summary>
-            <div className="flex grow items-start flex-wrap justify-center gap-4 max-h-44 overflow-auto p-2 max-w-full transition-all duration-200">
-              {families.map((category) => (
-                <CheckBox
-                  key={category.id}
-                  checked={draft.fragranceFamilies.includes(category.slug)}
-                  className=" flex-row whitespace-nowrap"
-                  label={category.title}
-                  onChange={() => toggleFamily(category.slug)}
-                  textClassName="text-base"
-                >
-                  <div
-                    className={`flex items-center justify-center size-4 border rounded-sm  ${draft.fragranceFamilies.includes(category.slug) ? "border-primary bg-primary text-white" : "border-stroke-600 text-transparent "} transition-all duration-200`}
-                  >
-                    <CheckIcon className=" size-2.5 stroke-4 " />
-                  </div>
-                </CheckBox>
-              ))}
-            </div>
-          </details>
-        </div>
-        <div className="flex items-center justify-between gap-2 max-sm:w-full w-full h-full">
-          <button
-            type="submit"
-            className="btn btn--primary px-3 py-2 text-nowrap max-sm:w-full"
-          >
-            اعمال فیلتر
-          </button>
-          <button
-            type="button"
-            className="btn btn--secondary--2 px-3 py-2 text-nowrap max-sm:w-full"
-            onClick={resetFilters}
-          >
-            پاک کردن فیلتر
-          </button>
-        </div>
-      </form>
+      <ProductsFilters
+        query={query}
+        onApply={applyFilters}
+        onReset={resetFilters}
+        brands={brands}
+        genders={genders}
+        families={families}
+      />
 
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <button
@@ -276,6 +185,7 @@ function ProductsLayout() {
       ) : (
         <ProductsListTable
           products={products}
+          rowNumbers={rowNumbers}
           selectionDisabled={isFetching}
           selectedIds={selectedIds}
           onToggleSelected={(id) =>
@@ -295,7 +205,7 @@ function ProductsLayout() {
         <NotExisted className="h-40">محصولی یافت نشد.</NotExisted>
       )}
       <PagesNumber
-        page={page}
+        page={query.page}
         setPage={setPage}
         totalPages={meta?.totalPages}
         isLoading={isFetching}

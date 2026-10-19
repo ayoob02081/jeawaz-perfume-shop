@@ -11,6 +11,7 @@ import {
   searchAliasesPayload,
 } from "./searchAliasesContract.mjs";
 import { normalizeProductsQuery } from "./productFilterContract.mjs";
+import { adminProductsListParams } from "./adminProductsListContract.mjs";
 import {
   buildProductFormPayload,
   initialProductFormValues,
@@ -95,7 +96,11 @@ test("searchMode=legacy is sent only by the admin list, and only with a search",
   assert.equal("searchMode" in normalizeProductsQuery({ search: "دیور", searchMode: "other" }), false);
 
   const layout = read("../app/(admin)/admin/products/_components/ProductsLayout.jsx");
-  assert.match(layout, /availabilityFirst: false,[\s\S]*?searchMode: "legacy",/);
+  assert.match(layout, /useGetAllProducts\(adminProductsListParams\(query\)\)/);
+  // The admin list sends the legacy mode with a search, and only then.
+  assert.equal(normalizeProductsQuery(adminProductsListParams({ search: "دیور" })).searchMode, "legacy");
+  assert.equal("searchMode" in normalizeProductsQuery(adminProductsListParams({})), false);
+  assert.equal(normalizeProductsQuery(adminProductsListParams({ search: "دیور" })).availabilityFirst, false);
 });
 
 test("Bulk Price targeting never receives the list's search mode", () => {

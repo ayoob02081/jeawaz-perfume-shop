@@ -61,11 +61,18 @@ test("grade filters keep canonical order and an empty selection sends nothing", 
   assert.equal(hasBulkFilters({ grades: ["ORIGINAL"] }), true);
 });
 
-test("the admin list filter is grade-aware and never builds an original filter", () => {
-  const layout = readFileSync(new URL("./ProductsLayout.jsx", import.meta.url), "utf8");
-  assert.match(layout, /grades: draft\.grade \? \[draft\.grade\] : \[\]/);
-  assert.match(layout, /PRODUCT_GRADES\.map\(\(grade\) => \(/);
-  assert.doesNotMatch(layout, /original|غیراصل|"اصل"/);
+test("the admin list filter is grade-aware and never builds an original filter", async () => {
+  const { adminProductsApiFilters, parseAdminProductsQuery } = await import(
+    "../../../../../utils/adminProductsListContract.mjs"
+  );
+  // The list's URL grade becomes the `grades` filter Bulk Price targets.
+  assert.deepEqual(adminProductsApiFilters({ grade: "ORIGINAL" }), { grades: ["ORIGINAL"] });
+  assert.deepEqual(adminProductsApiFilters(parseAdminProductsQuery(new URLSearchParams("original=true"))), {});
+  const source = ["./ProductsLayout.jsx", "./ProductsFilters.jsx", "./ProductFilterFields.jsx",
+    "../../../../../utils/adminProductsListContract.mjs"]
+    .map((file) => readFileSync(new URL(file, import.meta.url), "utf8")).join("\n");
+  assert.match(source, /PRODUCT_GRADES\.map\(\(grade\) => \(/);
+  assert.doesNotMatch(source, /original|غیراصل|"اصل"/);
 });
 
 test("all target never serializes Product IDs or filters", () => {

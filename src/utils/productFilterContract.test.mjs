@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import app from "../services/httpClient.js";
+import { adminProductsListParams } from "./adminProductsListContract.mjs";
 import {
   buildQueryFromFilters, emptyFilters, filtersReducer, getFiltersFromSearchParams,
   initialFilters, mergeVolumeOptions, normalizeProductsQuery, productListKey,
@@ -199,5 +200,6 @@ test("only an explicit admin opt-out reaches the API; storefront keys keep their
   assert.equal(params.get("availabilityFirst"), "false");
   const adminLayout = readFileSync(new URL(
     "../app/(admin)/admin/products/_components/ProductsLayout.jsx", import.meta.url), "utf8");
-  assert.match(adminLayout, /useGetAllProducts\(\{[\s\S]*?availabilityFirst: false,[\s\S]*?\}\)/);
+  assert.match(adminLayout, /useGetAllProducts\(adminProductsListParams\(query\)\)/);
+  assert.equal(normalizeProductsQuery(adminProductsListParams({})).availabilityFirst, false);
 });
