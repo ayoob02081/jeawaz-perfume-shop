@@ -51,7 +51,7 @@ function AuthLayout({
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-4 max-md:w-fit w-full">
       <img
         src="/images/flower.svg"
         alt="flower-icon"
@@ -71,7 +71,9 @@ function AuthLayout({
         )}
         {login &&
           (sessionAccepted ? (
-            <p className="text-xs sm:text-sm text-stroke-600">کد ورود تأیید شد</p>
+            <p className="text-xs sm:text-sm text-stroke-600">
+              کد ورود تأیید شد
+            </p>
           ) : step === "otp" ? (
             <span
               aria-live="polite"
@@ -128,7 +130,8 @@ function AuthLayout({
             </div>
           </div>
         )}
-        {step === "otp" && !sessionAccepted &&
+        {step === "otp" &&
+          !sessionAccepted &&
           (otpScreen === "ready" || otpScreen === "resending") && (
             <div className="flex items-center justify-center gap-1 text-stroke-800">
               {resendRemaining > 0 && (

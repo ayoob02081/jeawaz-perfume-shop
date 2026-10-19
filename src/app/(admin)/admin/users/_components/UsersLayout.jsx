@@ -12,7 +12,7 @@ function UsersLayout() {
 
   return (
     <div className="space-y-2 w-full px-4 pb-10">
-      <h1 className="font-bold text-secndary-900 text-xl pb-6 text-stroke-800">
+      <h1 className="font-bold max-sm:text-center text-secndary-900 text-xl max-sm:pb-4 pb-6 text-stroke-800">
         اطلاعات کاربران
       </h1>
       {isPending ? <Loading /> : <UsersListTable users={users} />}

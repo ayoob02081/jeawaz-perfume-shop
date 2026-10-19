@@ -68,10 +68,12 @@ const allLinks = sourceFiles(srcDir)
   );
 
 // Links whose href is a variable that always resolves to a protected route
-// (the wrappers are checked against their callers below).
+// (the wrappers are checked against their callers below). An optional third
+// value is the wrapper's exact Link count (default 1).
 const PROTECTED_WRAPPERS = [
   ["components/ProfileLinks.jsx", "{href}"],
-  ["app/(admin)/admin/dashboard/_components/AdminDashboardLayout.jsx", "{href}"],
+  // DashboardCard's arrow and the whole DataDashboardBox card.
+  ["app/(admin)/admin/dashboard/_components/AdminDashboardLayout.jsx", "{href}", 2],
   ["app/(profile)/profile/orders/[id]/invoice/page.jsx", "{href}"],
   ["app/(user)/payment/result/_components/PaymentResult.jsx", "{actions.orderLink.href}"],
   ["components/SingleOrderPage.jsx", "{getInvoiceHref(order.id)}"],
@@ -91,10 +93,10 @@ test("every Link to /admin or /profile disables prefetch", () => {
 });
 
 test("links through always-protected wrappers disable prefetch", () => {
-  for (const [file, href] of PROTECTED_WRAPPERS) {
+  for (const [file, href, count = 1] of PROTECTED_WRAPPERS) {
     const links = allLinks.filter((link) => link.file === file && link.href === href);
-    assert.equal(links.length, 1, `${file} ${href}`);
-    assert.ok(noPrefetch(links[0].tag), `${file} ${href}`);
+    assert.equal(links.length, count, `${file} ${href}`);
+    for (const link of links) assert.ok(noPrefetch(link.tag), link.where);
   }
 });
 

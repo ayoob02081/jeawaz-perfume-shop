@@ -249,7 +249,7 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
                   </Link>
                 ))}
               </div>
-              <div className="flex items-center flex-wrap justify-start p-6 mt-6 bg-warning/20 dark:bg-stroke-900 rounded-xl text-start text-stroke-800">
+              <div className="flex items-center flex-wrap justify-start p-4 max-sm:py-3 max-sm:mt-4 mt-6 bg-warning/20 dark:bg-stroke-900 rounded-xl text-start text-stroke-800">
                 <div>
                   در صورت عدم دریافت پیامک کد رهگیری مرسوله، لطفا{" "}
                   <span>

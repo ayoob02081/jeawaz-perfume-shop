@@ -10,6 +10,7 @@ import {
 } from "@/hooks/useCategories";
 import RadioButton from "@/ui/RadioButton";
 import { useState } from "react";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 const categoriesMode = [
   {
@@ -86,7 +87,8 @@ function CategoriesLayout() {
               prefetch={false}
               className="btn btn--primary border py-1.5 px-3"
             >
-              اضافه کردن برند
+              <PlusIcon className="size-5 stroke-3" />
+              <p>اضافه کردن برند</p>
             </Link>
           </div>
           {isBrandsPending ? (
@@ -111,9 +113,10 @@ function CategoriesLayout() {
             <Link
               href={`/admin/categories/${mode}/add`}
               prefetch={false}
-              className="btn btn--primary border py-1.5 px-3"
+              className="btn btn--primary gap-1 border py-1.5 px-3"
             >
-              افزودن دسته‌بندی
+              <PlusIcon className="size-5 stroke-3" />
+              <p>افزودن دسته‌بندی</p>
             </Link>
           </div>
           {isAllCategoriesPending ? (

@@ -73,7 +73,7 @@ function ContactMessagesLayout() {
 
   return (
     <div className="flex flex-col justify-between gap-4 lg:gap-6 max-lg:w-full lg:w-[calc(100%-88px)] 2xl:w-[calc(100%-270px)] lg:px-4 2xl:px-0 pt-0 pb-10">
-      <h1 className="font-bold text-xl text-stroke-800 px-4">
+      <h1 className="font-bold text-xl max-sm:text-center text-stroke-800 px-4">
         پیام‌های تماس با ما
       </h1>
       <div className="flex flex-col gap-2 w-full overflow-hidden">

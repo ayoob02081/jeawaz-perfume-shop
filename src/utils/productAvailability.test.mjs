@@ -68,7 +68,7 @@ test("card: availability, price and label use the same backend representative", 
   assert.equal(cardPrice.basePrice, 8_000_000); // pricing is untouched by availability
   assert.equal(cardLabel, "پلمپ ۱۰۰ میل");
   assert.match(card(), /const inStock = isProductAvailable\(product, representativeVariant\);/);
-  assert.match(card(), /\{representativeVariant && inStock && \(/);
+  assert.match(card(), /\{inStock \? \(\s*representativeVariant && \(/);
   assert.match(card(), /\{inStock \? \(/);
   assert.match(card(), /ناموجود!/);
   assert.doesNotMatch(card(), /Number\(stock\)|\bstock,/);

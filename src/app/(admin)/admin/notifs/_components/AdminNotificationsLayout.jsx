@@ -94,7 +94,7 @@ function AdminNotificationsLayout() {
           prefetch={false}
           className="btn btn--primary gap-1 border py-1.5 px-3 max-[30rem]:flex-1 text-nowrap"
         >
-          <PlusIcon className="size-3 md:size-3.5 stroke-3" />
+          <PlusIcon className="size-5 stroke-3" />
           اعلان جدید
         </Link>
       </div>

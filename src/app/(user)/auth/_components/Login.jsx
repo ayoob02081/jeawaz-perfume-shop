@@ -416,7 +416,7 @@ function Login({ closeBtn, afterLoginHref, onAuthenticated, onClose }) {
   };
 
   return (
-    <div className="relative size-full max-[30rem]:px-4 sm:py-10 p-6 md:px-14">
+    <div className="relative size-full max-[30rem]:px-4 sm:py-10 p-6 sm:px-14">
       {renderSteps()}
     </div>
   );

@@ -100,7 +100,7 @@ function HeaderLayout() {
       className="flex items-center gap-3 p-3 text-stroke-800 hover:bg-stroke-100 focus-visible:bg-stroke-100"
     >
       <AppImage src={item.image} alt="" width="size-12 shrink-0" sizes="48px" />
-      <span className="min-w-0 flex-1 break-words">
+      <span className="min-w-0 flex-1 wrap-break-word">
         <span className="block text-sm">{item.perTitle}</span>
         {item.enTitle && (
           <span className="block text-xs text-stroke-500">{item.enTitle}</span>

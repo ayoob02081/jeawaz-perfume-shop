@@ -40,19 +40,20 @@ function ProductCard({ product, isPending, error }) {
   const PriceWrapper = cardPrice.basePrice > 0 ? Link : "div";
 
   return (
-    <article
-      className={`relative hover:*:*:last:*:first:*:last:scale-105 *:*:last:*:first:*:last:duration-300 flex items-center justify-center max-md:p-3 p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${inStock ? "" : "opacity-80 dark:opacity-60"} snap-center duration-200`}
-    >
+    <article className="relative hover:*:*:last:*:first:*:last:scale-105 *:*:last:*:first:*:last:duration-300 flex items-center justify-center max-md:p-3 p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 snap-center duration-200">
       {/* Mobile Mode Base Image */}
       <div className="flex items-start justify-between size-full">
-        <div className="flex flex-none md:hidden items-center justify-center p-2 h-25 aspect-4/5">
+        <Link
+          href={productHref}
+          className="flex flex-none md:hidden items-center justify-center p-2 h-25 aspect-4/5"
+        >
           <AppImage
             src={images?.[0]}
             alt={"-عکس" + perTitle}
             priority={true}
             ratio="aspect-4/5"
           />
-        </div>
+        </Link>
         <div className="flex grow flex-col justify-between size-full">
           <div className="flex flex-col justify-start size-full">
             {/* Categories Icon */}
@@ -89,14 +90,17 @@ function ProductCard({ product, isPending, error }) {
             </div>
 
             {/* Desktop Mode Base Picture */}
-            <div className="grow max-md:hidden md:flex items-center justify-center pt-11 pb-5">
+            <Link
+              href={productHref}
+              className="grow max-md:hidden md:flex items-center justify-center pt-11 pb-5"
+            >
               <AppImage
                 src={images?.[0]}
                 alt={"-عکس" + perTitle}
                 priority={true}
                 className="w-auto! h-full"
               />
-            </div>
+            </Link>
           </div>
 
           {/* Product Des */}
@@ -123,37 +127,37 @@ function ProductCard({ product, isPending, error }) {
             <div
               className={`relative flex flex-none items-center md:items-end gap-4 w-full pt-2 ${inStock ? "justify-between" : "justify-end"}`}
             >
-              {representativeVariant && inStock && (
-                <PriceWrapper
-                  {...(cardPrice.basePrice > 0 ? { href: productHref } : {})}
-                  className="flex flex-col items-start gap-0.5"
-                >
-                  <PriceSection
-                    basePrice={cardPrice.basePrice}
-                    unitPrice={cardPrice.finalPrice}
-                    offValue={cardPrice.offValue}
-                    OldPricevisibility="block"
-                    pricesRow="flex-col-reverse max-md:gap-0"
-                    priceClassName="max-md:text-lg md:text-xl lg:text-[32px]"
-                    justify="justify-start"
-                  />
-                  <span className="max-md:absolute -right-18 bottom-0 text-xs md:text-sm text-stroke-600">
-                    {cardLabel}
-                  </span>
-                </PriceWrapper>
+              {inStock ? (
+                representativeVariant && (
+                  <PriceWrapper
+                    {...(cardPrice.basePrice > 0 ? { href: productHref } : {})}
+                    className="flex flex-col items-start gap-0.5"
+                  >
+                    <PriceSection
+                      basePrice={cardPrice.basePrice}
+                      unitPrice={cardPrice.finalPrice}
+                      offValue={cardPrice.offValue}
+                      OldPricevisibility="block"
+                      pricesRow="flex-col-reverse max-md:gap-0"
+                      priceClassName="max-md:text-lg md:text-xl lg:text-[32px]"
+                      justify="justify-start"
+                    />
+                    <span className="max-md:absolute -right-18 bottom-0 text-xs md:text-sm text-stroke-600">
+                      {cardLabel}
+                    </span>
+                  </PriceWrapper>
+                )
+              ) : (
+                <div className="flex items-center justify-start text-wrap size-full text-primary text-2xl font-bold  py-1 px-2 md:p-2 md:h-20">
+                  <p>ناموجود!</p>
+                </div>
               )}
 
               {/* Products Order Button */}
               <Link href={productHref}>
-                {inStock ? (
-                  <p className="btn border border-primary text-primary bg-stroke-50 backdrop-blur-md active:bg-primary active:text-white md:hover:bg-primary md:hover:text-white rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
-                    مشاهده
-                  </p>
-                ) : (
-                  <p className="text-wrap w-full text-primary text-xl font-bold  py-1 px-2 md:p-2 md:h-20">
-                    ناموجود!
-                  </p>
-                )}
+                <p className="btn border border-primary text-primary bg-stroke-50 backdrop-blur-md active:bg-primary active:text-white md:hover:bg-primary md:hover:text-white rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
+                  مشاهده
+                </p>
               </Link>
             </div>
           </div>

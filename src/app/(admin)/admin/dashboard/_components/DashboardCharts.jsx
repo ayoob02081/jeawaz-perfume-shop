@@ -14,6 +14,7 @@ import {
   RadialBarChart,
   YAxis,
   AreaChart,
+  LabelList,
 } from "recharts";
 
 export function RevenueChart({ chartData }) {
@@ -37,9 +38,9 @@ export function RevenueChart({ chartData }) {
               accessibilityLayer
               data={chartData}
               margin={{
-                top: 10,
-                right: 10,
-                left: 10,
+                top: 0,
+                right: 0,
+                left: 0,
                 bottom: 0,
               }}
             >
@@ -51,7 +52,7 @@ export function RevenueChart({ chartData }) {
 
               <XAxis
                 dataKey="date"
-                tickLine={false}
+                tickLine={true}
                 axisLine={false}
                 tickMargin={8}
                 interval={6}
@@ -61,6 +62,7 @@ export function RevenueChart({ chartData }) {
                     day: "numeric",
                   })
                 }
+                tick={{ fill: "var(--color-stroke-700)", fontSize: 12 }}
               />
 
               <ChartTooltip
@@ -134,6 +136,8 @@ export function GenderSalesPieChart({ genderSales }) {
   const chartData =
     genderSales?.map((item) => ({
       ...item,
+      percent: Number(item.percent),
+      label: `%${toPersianNumbers(item.percent)} ${item.gender}`,
       fill: `var(--color-${genderKey[item.gender]})`,
     })) ?? [];
 
@@ -151,27 +155,19 @@ export function GenderSalesPieChart({ genderSales }) {
                 data={chartData}
                 dataKey="percent"
                 nameKey="gender"
-                outerRadius="75%"
+                innerRadius="1%"
                 paddingAngle={4}
                 cornerRadius={8}
-                label={({ name, percent }) =>
-                  `${name} ${toPersianNumbers(percent)}٪`
-                }
-              />
-
-              <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    indicator="dot"
-                    hideLabel={false}
-                    className="rounded-xl border bg-background shadow-xl"
-                    formatter={(value) => [
-                      `${toPersianNumbers(value)}٪ `,
-                      "فروش",
-                    ]}
-                  />
-                }
-              />
+                stroke="var(--background)"
+                strokeWidth={3}
+              >
+                <LabelList
+                  dataKey="label"
+                  offset={12}
+                  stroke="none"
+                  className="fill-stroke-0 text-xs font-bold"
+                />
+              </Pie>
             </PieChart>
           </ChartContainer>
         </CardContent>
@@ -201,16 +197,16 @@ export function BrandSalesBarChart({ brandSales }) {
           <CardTitle>پرفروش‌ترین برندها 👤</CardTitle>
         </CardHeader>
 
-        <CardContent dir="ltr">
+        <CardContent dir="ltr" className="pl-0">
           <ChartContainer config={chartConfig} className="min-h-80 w-full">
             <BarChart
               accessibilityLayer
               data={brandChartData}
               margin={{
-                top: 10,
-                right: 10,
-                left: 10,
-                bottom: 10,
+                top: 0,
+                right: 0,
+                left: 0,
+                bottom: 0,
               }}
             >
               <CartesianGrid
@@ -222,14 +218,14 @@ export function BrandSalesBarChart({ brandSales }) {
               <XAxis
                 dataKey="brand"
                 type="category"
-                tickLine={false}
+                tickLine={true}
                 axisLine={false}
                 tickMargin={8}
               />
 
               <YAxis
                 type="number"
-                tickLine={false}
+                tickLine={true}
                 axisLine={false}
                 tickMargin={8}
                 tickFormatter={(value) => toPersianNumbers(value)}
@@ -305,7 +301,6 @@ export function PurchaseModeStats({ purchaseModeStats }) {
                 dataKey="percent"
                 nameKey="modeLabel"
                 innerRadius="55%"
-                outerRadius="75%"
                 paddingAngle={4}
                 cornerRadius={8}
               />
@@ -405,7 +400,7 @@ export function OrderStatusPercentages({ orderStatusPercentages }) {
               innerRadius="25%"
               outerRadius="85%"
               startAngle={90}
-              endAngle={-270}
+              endAngle={-269}
               isAnimationActive
               animationDuration={1000}
             >
@@ -517,13 +512,13 @@ export function AccordSales({ accordSales }) {
     })) ?? [];
 
   return (
-    <div className="lg:col-span-2 w-full px-2 py-3 via-violet-700">
+    <div className="lg:col-span-2 w-full pr-2 py-3 via-violet-700">
       <Card className="w-full rounded-2xl border shadow-sm transition-shadow duration-300 hover:shadow-md">
         <CardHeader>
           <CardTitle>پرفروش‌ترین رایحه‌ها 🌿</CardTitle>
         </CardHeader>
 
-        <CardContent dir="ltr">
+        <CardContent dir="ltr" className="pl-0 pr-">
           <ChartContainer
             config={accordChartConfig}
             className="min-h-80 w-full"
@@ -533,10 +528,10 @@ export function AccordSales({ accordSales }) {
               data={chartData}
               layout="horizontal"
               margin={{
-                top: 10,
-                right: 10,
-                left: 10,
-                bottom: 10,
+                top: 0,
+                right: 0,
+                left: 0,
+                bottom: 0,
               }}
             >
               <CartesianGrid
@@ -548,14 +543,14 @@ export function AccordSales({ accordSales }) {
               <XAxis
                 type="category"
                 dataKey="title"
-                tickLine={false}
+                tickLine={true}
                 axisLine={false}
                 tickMargin={8}
               />
 
               <YAxis
                 type="number"
-                tickLine={false}
+                tickLine={true}
                 axisLine={false}
                 tickMargin={8}
                 tickFormatter={(value) => toPersianNumbers(value)}

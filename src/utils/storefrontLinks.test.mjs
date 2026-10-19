@@ -93,7 +93,8 @@ function inspect(html) {
 test("product name, purchasable price and view control render real numeric destination hrefs", () => {
   const html = renderCard(product());
   const { anchors, buttons } = inspect(html);
-  assert.equal(anchors.filter((href) => href === "/products/105").length, 3);
+  // Mobile image, desktop image, name, purchasable price and view control.
+  assert.equal(anchors.filter((href) => href === "/products/105").length, 5);
   assert(html.includes("Product name") && html.includes("Product name EN"));
   assert.equal(buttons.length, 3); // Character, gender and temperature tooltip controls remain buttons.
   assert(!html.includes("href=\"/categories"));
@@ -153,7 +154,7 @@ test("destination links preserve normal/modified-click behavior and the public-l
     renderCategory(load(resolve(root, `app/(user)/_components/${name}.jsx`)).default,
       name === "GenderCategoriesLayout" ? "gender" : "character");
   }
-  assert.equal(renderedLinks.length, 5);
+  assert.equal(renderedLinks.length, 7);
   for (const props of renderedLinks) {
     assert.equal(props.onClick, undefined);
     assert.equal(props.onNavigate, undefined);
