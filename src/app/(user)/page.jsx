@@ -8,6 +8,10 @@ import SecondaryBannerLayout from "./_components/SecondaryBannerLayout";
 import { connection } from "next/server";
 import { HOME_CATALOG_QUERY } from "@/lib/storefrontCatalog.mjs";
 import { fetchCatalogSnapshot } from "@/lib/storefrontCatalog.server.mjs";
+import { publicPageMetadata, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo.mjs";
+
+// Title and description are the root defaults.
+export const metadata = publicPageMetadata({ description: SITE_DESCRIPTION, path: "/" });
 
 export default async function Home() {
   await connection();
@@ -18,6 +22,9 @@ export default async function Home() {
   });
   return (
     <div className="relative flex flex-col justify-between gap-14 scrollbar--primary scrollbar-w-2 md:pb-10 max-sm:p-0">
+      {/* No visible page title: the store name as the main heading for
+          assistive technology and document structure (out of the flex flow). */}
+      <h1 className="sr-only">{SITE_NAME}</h1>
       <img
         src="/images/flower.svg"
         alt="flower-icon"

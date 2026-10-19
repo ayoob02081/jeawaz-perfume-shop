@@ -1,10 +1,15 @@
+import { publicPageMetadata } from "@/lib/seo.mjs";
 import AppImage from "@/components/AppImage";
 import Accordion from "@/ui/Accordion";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 
-export const metadata = {
+const metadataFields = {
   title: "قوانین و مقررات",
   description: "درباره قوانین و مقررات ما بدانید",
+};
+export const metadata = {
+  ...metadataFields,
+  ...publicPageMetadata({ ...metadataFields, path: "/page/terms" }),
 };
 
 function TermsPage() {

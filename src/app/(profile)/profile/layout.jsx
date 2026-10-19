@@ -1,9 +1,11 @@
 import "../../globals.css";
 import UserSidebar from "./_components/UserSidebar";
+import { privateRobots } from "@/lib/seo.mjs";
 
 export const metadata = {
   title: "Jeawaz",
   description: "Profile",
+  robots: privateRobots(),
 };
 
 export default function RootLayout({ children }) {

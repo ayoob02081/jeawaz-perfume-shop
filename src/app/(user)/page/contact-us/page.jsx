@@ -1,3 +1,4 @@
+import { publicPageMetadata } from "@/lib/seo.mjs";
 import AppImage from "@/components/AppImage";
 import SupportBox from "@/components/SupportBox";
 import Accordion from "@/ui/Accordion";
@@ -5,9 +6,13 @@ import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import Link from "next/link";
 import ContactUsForm from "../_components/ContactUsForm";
 
-export const metadata = {
+const metadataFields = {
   title: "تماس با ما",
   description: "برای مشاوره و نظرات خود با ما تماس بگیرید",
+};
+export const metadata = {
+  ...metadataFields,
+  ...publicPageMetadata({ ...metadataFields, path: "/page/contact-us" }),
 };
 
 function ContactUsPage() {

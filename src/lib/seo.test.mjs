@@ -119,6 +119,7 @@ test("robots allows public rendering and points to the exact production sitemap"
   const robots = robotsMetadata();
   assert.equal(robots.sitemap, "https://jeawaz.com/sitemap.xml");
   assert.equal(robots.rules.allow, "/");
-  assert.deepEqual(robots.rules.disallow, ["/admin", "/profile", "/auth", "/cart", "/payment"]);
+  // /auth and /cart are crawlable so their noindex can be seen (F5).
+  assert.deepEqual(robots.rules.disallow, ["/admin", "/profile", "/payment"]);
   assert(!robots.rules.disallow.includes("/_next"));
 });

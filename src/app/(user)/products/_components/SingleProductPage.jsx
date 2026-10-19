@@ -195,9 +195,9 @@ function ProductDes({ product }) {
       {/* Product Name */}
       <section className="flex flex-col gap-2 items-start justify-start w-full">
         <span className="flex items-center max-md:justify-between gap-2 md:justify-start w-full">
-          <p className="font-bold text-wrap text-[28px] w-full text-stroke-800">
+          <h1 className="font-bold text-wrap text-[28px] w-full text-stroke-800">
             {product.perTitle}
-          </p>
+          </h1>
 
           <BrandLandingLink brand={productBrand} className="md:hidden p-2">
             <AppImage

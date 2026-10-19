@@ -1,10 +1,15 @@
+import { publicPageMetadata } from "@/lib/seo.mjs";
 import FooterDetail from "@/components/FooterDetail";
 import AppImage from "@/components/AppImage";
 import SupportBox from "@/components/SupportBox";
 
-export const metadata = {
+const metadataFields = {
   title: "درباره ما",
   description: "کمی درباره ما بدانید",
+};
+export const metadata = {
+  ...metadataFields,
+  ...publicPageMetadata({ ...metadataFields, path: "/page/about-us" }),
 };
 
 function AboutUsPage() {

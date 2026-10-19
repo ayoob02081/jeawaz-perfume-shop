@@ -6,14 +6,15 @@ import { Toaster } from "react-hot-toast";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import Sidebars from "./Sidebars";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_ORIGIN } from "@/lib/seo.mjs";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
+// No openGraph here: Next would pass it unmerged to every page without its own.
 export const metadata = {
-  metadataBase: new URL("https://jeawaz.com"),
-  title: { default: "جیاواز پرفیوم", template: "جیاواز پرفیوم | %s" },
-  description:
-    "خرید آنلاین ادکلن و دکانت با بهترین قیمت و ارسال به سراسر ایران",
+  metadataBase: new URL(SITE_ORIGIN),
+  title: { default: SITE_NAME, template: `${SITE_NAME} | %s` },
+  description: SITE_DESCRIPTION,
 };
 
 export default function RootLayout({ children, modal }) {

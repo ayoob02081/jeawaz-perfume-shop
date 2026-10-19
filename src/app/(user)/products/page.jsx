@@ -5,6 +5,7 @@ import { catalogSearchParams } from "@/lib/storefrontCatalog.mjs";
 import { fetchCatalogSnapshot } from "@/lib/storefrontCatalog.server.mjs";
 import { productsQueryFromSearchParams } from "@/utils/productFilterContract.mjs";
 import { listingSeoMetadata } from "@/lib/listingSeo.mjs";
+import { socialMetadata } from "@/lib/seo.mjs";
 
 const metadataFields = {
   title: "محصولات",
@@ -26,17 +27,32 @@ async function loadListing(searchParams) {
   return { query, snapshot };
 }
 
+const listingMetadata = (query, snapshot) =>
+  ({ ...metadataFields, ...listingSeoMetadata(query, snapshot.products.data) });
+
 export async function generateMetadata({ searchParams }) {
   const { query, snapshot } = await loadListing(searchParams);
-  return { ...metadataFields, ...listingSeoMetadata(query, snapshot.products.data) };
+  const metadata = listingMetadata(query, snapshot);
+  const canonical = metadata.alternates?.canonical;
+  // Share previews only for the indexable states, with their own canonical.
+  if (!canonical) return metadata;
+  return {
+    ...metadata,
+    ...socialMetadata({ title: metadata.title, description: metadata.description, url: canonical }),
+  };
 }
 
 async function ProductPage({ searchParams }) {
-  const { snapshot } = await loadListing(searchParams);
+  const { query, snapshot } = await loadListing(searchParams);
   return (
-    <Suspense fallback={null}>
-      <ProductsLayout initialSnapshot={snapshot.products} />
-    </Suspense>
+    <>
+      {/* The listing has no visible title: the page's own title as its main
+          heading, for assistive technology and document structure. */}
+      <h1 className="sr-only">{listingMetadata(query, snapshot).title}</h1>
+      <Suspense fallback={null}>
+        <ProductsLayout initialSnapshot={snapshot.products} />
+      </Suspense>
+    </>
   );
 }
 

@@ -59,6 +59,16 @@ for (const id of ["105", "00105"]) {
     assert.deepEqual(metadata, {
       title: product.perTitle, description: product.description,
       alternates: { canonical: "https://jeawaz.com/products/105" },
+      // Share previews: the real name/description, canonical and JSON-LD image.
+      openGraph: {
+        type: "website", siteName: "جیاواز پرفیوم", locale: "fa_IR",
+        title: "جیاواز پرفیوم | Fixture product", url: "https://jeawaz.com/products/105",
+        description: product.description, images: [{ url: "https://images.example.test/product.jpg" }],
+      },
+      twitter: {
+        card: "summary_large_image", title: "جیاواز پرفیوم | Fixture product",
+        description: product.description, images: ["https://images.example.test/product.jpg"],
+      },
     });
     assert.equal(calls.length, 2);
     for (const [url, options] of calls) {

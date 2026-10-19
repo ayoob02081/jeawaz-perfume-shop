@@ -5,6 +5,7 @@ import { createRequire } from "node:module";
 import * as catalog from "./storefrontCatalog.mjs";
 import * as filters from "../utils/productFilterContract.mjs";
 import * as seo from "./listingSeo.mjs";
+import * as siteSeo from "./seo.mjs";
 import { fetchCatalogSnapshot } from "./storefrontCatalog.server.mjs";
 
 const missing = new Error("NEXT_HTTP_ERROR_FALLBACK;404");
@@ -28,6 +29,7 @@ function route(fetchImpl) {
     "@/lib/storefrontCatalog.mjs": catalog,
     "@/utils/productFilterContract.mjs": filters,
     "@/lib/listingSeo.mjs": seo,
+    "@/lib/seo.mjs": siteSeo,
     "@/lib/storefrontCatalog.server.mjs": { fetchCatalogSnapshot: (options) => {
       calls.push(options);
       return fetchCatalogSnapshot({ ...options, fetchImpl });
@@ -40,6 +42,8 @@ function route(fetchImpl) {
   return { ...exports, calls };
 }
 const props = (params = {}) => ({ searchParams: Promise.resolve(params) });
+// The route renders [sr-only h1, Suspense > ProductsLayout].
+const layoutOf = (element) => element.props.children.find((child) => child?.props?.children?.props?.initialSnapshot).props.children;
 const response = (url) => {
   const q = new URL(url).searchParams, page = Number(q.get("page")), limit = Number(q.get("limit"));
   return { ok: true, json: async () => ({ data: [{ id: 105, perTitle: "Fixture", representativeVariant: { price: 100_000 } }],
@@ -55,7 +59,7 @@ test("metadata and rendering share one normalized request despite different para
   assert.equal(page.calls.length, 1);
   assert.equal(page.calls[0].throwOnError, true);
   assert.equal(metadata.alternates.canonical, "https://jeawaz.com/products?page=2");
-  const snapshot = element.props.children.props.initialSnapshot;
+  const snapshot = layoutOf(element).props.initialSnapshot;
   assert.deepEqual(snapshot.query, filters.productsQueryFromSearchParams(new URLSearchParams("page=2")));
   assert.equal(snapshot.data.data[0].representativeVariant.price, 100_000);
 });
@@ -84,7 +88,7 @@ test("an empty first page retains the existing client snapshot and noindex metad
   const page = route(async () => ({ ok: true, json: async () => empty }));
   const metadata = await page.generateMetadata(props({ page: "1" }));
   const element = await page.default(props({ page: "1" }));
-  assert.deepEqual(element.props.children.props.initialSnapshot.data, empty);
+  assert.deepEqual(layoutOf(element).props.initialSnapshot.data, empty);
   assert.deepEqual(metadata.robots, { index: false, follow: true });
   assert.equal(metadata.alternates, undefined);
   assert.equal(page.calls.length, 1);
@@ -100,7 +104,11 @@ test("approved brand metadata and rendering use one snapshot without changing fi
   assert.equal(metadata.title, "عطر و ادکلن کایالی");
   assert.equal(metadata.alternates.canonical, "https://jeawaz.com/products?brandIds=22&page=2");
   assert.deepEqual(metadata.robots, { index: true, follow: true });
-  assert.equal(element.props.children.props.initialSnapshot.data.data[0].brand, brand);
+  // The brand landing's share preview uses its own title and canonical.
+  assert.equal(metadata.openGraph.url, metadata.alternates.canonical);
+  assert.equal(metadata.openGraph.title, "جیاواز پرفیوم | عطر و ادکلن کایالی");
+  assert.equal(metadata.openGraph.images, undefined);
+  assert.equal(layoutOf(element).props.initialSnapshot.data.data[0].brand, brand);
 });
 
 // A successful public response establishes totalPages before either route entry
@@ -139,7 +147,7 @@ for (const [params, total, canonical] of [
     const [metadata, element] = await Promise.all([page.generateMetadata(props(params)), page.default(props({ ...params }))]);
     assert.equal(metadata.alternates?.canonical, canonical);
     assert.deepEqual(metadata.robots, { index: Boolean(canonical), follow: true });
-    assert(element.props.children.props.initialSnapshot.data.data.length > 0);
+    assert(layoutOf(element).props.initialSnapshot.data.data.length > 0);
     assert.equal(page.calls.length, 1);
   });
 }
@@ -149,7 +157,7 @@ for (const params of [{}, { page: "1" }, { page: "0" }, { page: "-1" }, { page: 
     const [metadata, element] = await Promise.all([page.generateMetadata(props(params)), page.default(props({ ...params }))]);
     assert.deepEqual(metadata.robots, { index: false, follow: true });
     assert.equal(metadata.alternates, undefined);
-    assert.equal(element.props.children.props.initialSnapshot.query.page, 1);
+    assert.equal(layoutOf(element).props.initialSnapshot.query.page, 1);
     assert.equal(page.calls.length, 1);
   });
 }

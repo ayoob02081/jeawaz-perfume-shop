@@ -2,7 +2,7 @@ import { cache } from "react";
 import SingleProductPage from "../_components/SingleProductPage";
 import { notFound } from "next/navigation";
 import http from "@/services/httpServer";
-import { isValidProductId, productUrl } from "@/lib/seo.mjs";
+import { isValidProductId, productUrl, socialMetadata } from "@/lib/seo.mjs";
 import { buildProductJsonLd, serializeProductJsonLd } from "@/lib/productJsonLd.mjs";
 
 const getProduct = cache(async (id) => {
@@ -25,10 +25,14 @@ export async function generateMetadata({ params }) {
 
   if (!product) return { title: "محصولی یافت نشد" };
 
+  const canonical = productUrl(product.id);
+  // The same vetted public image URLs as the Product JSON-LD.
+  const images = buildProductJsonLd(product, process.env.NEXT_PUBLIC_API_URL)?.image ?? [];
   return {
     title: product.perTitle,
     description: product.description,
-    alternates: { canonical: productUrl(product.id) },
+    alternates: { canonical },
+    ...socialMetadata({ title: product.perTitle, description: product.description, url: canonical, images }),
   };
 }
 

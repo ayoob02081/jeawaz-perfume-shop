@@ -1,4 +1,11 @@
 import Login from "../_components/Login";
+import { utilityRobots } from "@/lib/seo.mjs";
+
+// The layout is a client component, so the route metadata lives here.
+export const metadata = {
+  title: "ورود | ثبت نام",
+  robots: utilityRobots(),
+};
 
 function page() {
   return (
