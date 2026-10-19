@@ -17,11 +17,22 @@ import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
-import { CheckIcon, PrinterIcon } from "@heroicons/react/24/outline";
+import {
+  CheckIcon,
+  ExclamationTriangleIcon,
+  PrinterIcon,
+} from "@heroicons/react/24/outline";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PRINT_ALL_FILTERED_HINT } from "@/utils/adminOrdersListContract.mjs";
+import {
+  getAdminPaymentAttention,
+  getOrdersNeedingPaymentAttention,
+  getPaymentAttentionCancelHeading,
+  PAYMENT_ATTENTION_CANCEL_WARNING,
+} from "@/utils/adminPaymentAttention.mjs";
+import { PaymentAttentionBadges } from "@/components/AdminPaymentAttention";
 
 const ORDER_STATUS_FLOW = {
   PENDING: ["PAID", "CANCELLED"],
@@ -157,6 +168,15 @@ function OrdersListTable({
     setOrderId([]);
   }, [selectionKey]);
 
+  // Warning only; the cancel action itself is unchanged and never refunds.
+  const unresolvedCancelTargets =
+    statusModalOpen && nextStatus?.value === "CANCELLED"
+      ? getOrdersNeedingPaymentAttention(
+          orders,
+          orderIds.length > 0 ? orderIds : orderId,
+        )
+      : [];
+
   return (
     <div className="flex flex-col gap-4 rounded-2xl p-4 pt-0 overflow-hidden w-full">
       {status !== undefined && (
@@ -268,6 +288,9 @@ function OrdersListTable({
                           >
                             {currentStatus?.title}
                           </p>
+                          <PaymentAttentionBadges
+                            attention={getAdminPaymentAttention(order?.payments)}
+                          />
                         </div>
                       </td>
                       <td className="table__td px-2">
@@ -346,11 +369,16 @@ function OrdersListTable({
                         </p>
                       </td>
                       <td className="table__td px-2">
-                        <p
-                          className={`badge border font-bold ${currentStatus?.textColor} ${currentStatus?.color}`}
-                        >
-                          {currentStatus?.title}
-                        </p>
+                        <div className="flex flex-col items-center justify-center gap-1">
+                          <p
+                            className={`badge border font-bold ${currentStatus?.textColor} ${currentStatus?.color}`}
+                          >
+                            {currentStatus?.title}
+                          </p>
+                          <PaymentAttentionBadges
+                            attention={getAdminPaymentAttention(order?.payments)}
+                          />
+                        </div>
                       </td>
                       <td className="table__td px-2">
                         <div className="flex flex-col items-center justify-center gap-y-2 badge badge--primary">
@@ -400,6 +428,27 @@ function OrdersListTable({
             </p>
             <p>تغییر داده شود؟</p>
           </span>
+          {unresolvedCancelTargets.length > 0 && (
+            <div
+              role="alert"
+              className="flex items-start gap-2 max-w-md p-3 rounded-xl border border-warning bg-warning/15 text-stroke-800 text-sm"
+            >
+              <ExclamationTriangleIcon
+                className="size-5 shrink-0 stroke-2"
+                aria-hidden="true"
+              />
+              <div className="flex flex-col gap-1">
+                <p className="font-bold">
+                  {getPaymentAttentionCancelHeading(
+                    unresolvedCancelTargets.map((order) =>
+                      toPersianNumbers(order.orderNumber),
+                    ),
+                  )}
+                </p>
+                <p>{PAYMENT_ATTENTION_CANCEL_WARNING}</p>
+              </div>
+            </div>
+          )}
         </ConfirmModal>
       )}
       <div className="flex items-center justify-center max-md:gap-4 md:gap-6 w-full md: *:even:w-2/3">

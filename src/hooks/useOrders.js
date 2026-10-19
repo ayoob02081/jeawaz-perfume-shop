@@ -15,6 +15,7 @@ import {
 } from "@/services/orderServices";
 
 import {
+  adminOrderDetailKey,
   adminOrderKeys,
   buildAdminOrdersListParams,
   shouldRetryAdminOrdersQuery,
@@ -60,7 +61,7 @@ export const useGetOrderById = (id) =>
 
 export const useGetAdminOrderById = (id) =>
   useQuery({
-    queryKey: ["admin-order", id],
+    queryKey: adminOrderDetailKey(id),
     queryFn: () => getAdminOrderByIdApi(id),
     enabled: !!id,
     retry: false,
@@ -168,7 +169,7 @@ export function useUpdateOrderStatus() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
       queryClient.invalidateQueries({
-        queryKey: ["admin-order", variables.id],
+        queryKey: adminOrderDetailKey(variables.id),
       });
 
       queryClient.invalidateQueries({
@@ -217,7 +218,7 @@ export function useConfirmPayment() {
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
       queryClient.invalidateQueries({ queryKey: ["order", id] });
-      queryClient.invalidateQueries({ queryKey: ["admin-order", id] });
+      queryClient.invalidateQueries({ queryKey: adminOrderDetailKey(id) });
       queryClient.invalidateQueries({ queryKey: ["order-timeline", id] });
       toast.success("پرداخت تایید شد");
     },

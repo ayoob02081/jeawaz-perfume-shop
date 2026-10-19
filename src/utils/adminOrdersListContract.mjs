@@ -203,6 +203,17 @@ export const adminOrderKeys = Object.freeze({
   ],
 });
 
+// One admin order detail. Route params are strings ("21") while list rows and
+// mutation variables carry numbers (21); both must name the same cache entry.
+export const adminOrderDetailKey = (id) => {
+  const text = typeof id === "number" ? String(id) : id;
+  const canonical =
+    typeof text === "string" && /^\d+$/.test(text) && Number.isSafeInteger(Number(text))
+      ? String(Number(text))
+      : id;
+  return ["admin-order", canonical];
+};
+
 export const hasSearchOrDateFilters = (query = {}) => {
   const params = buildAdminOrdersListParams(query);
   return Boolean(params.search || params.dateFrom || params.dateTo);

@@ -1,5 +1,6 @@
 "use client";
 
+import { PaymentAttentionPanel } from "@/components/AdminPaymentAttention";
 import AppImage from "@/components/AppImage";
 import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
@@ -10,6 +11,7 @@ import {
 } from "@/constants/orderStatus";
 import GoBack from "@/ui/GoBack";
 import { canPrintInvoice, getInvoiceHref } from "@/utils/orderInvoice.mjs";
+import { getOrderPaymentAttention } from "@/utils/adminPaymentAttention.mjs";
 import { getOrderItemType } from "@/utils/orderItemDisplay.mjs";
 import { getOrderPaymentDisplay } from "@/utils/orderPaymentDisplay.mjs";
 import { toLocalDateString, toLocalTimeString } from "@/utils/toLocalDate";
@@ -21,6 +23,7 @@ import {
 import {
   CheckCircleIcon,
   ClockIcon,
+  ExclamationTriangleIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
@@ -38,6 +41,11 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
     order || {};
   // Admin data carries `payments` (all attempts), customer data `payment`.
   const payment = getOrderPaymentDisplay(order, { admin });
+  // Admin only: an attempt needing reconciliation or manual review makes an
+  // unpaid Order's payment result unknown, never failed or pending. A paid
+  // Order stays paid; the panel still flags the unresolved attempt.
+  const paymentAttention = getOrderPaymentAttention(order, { admin });
+  const paymentUnresolved = !!paymentAttention && payment.state !== "success";
   const { title, value, textColor, icon: Icon, des } = currentStatus || {};
 
   return (
@@ -55,6 +63,7 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
 
         {/* Order Details */}
         <div className="flex flex-col justify-center items-start w-full max-lg:rounded-2.5xl">
+          <PaymentAttentionPanel attention={paymentAttention} />
           <div className="flex flex-wrap w-full max-md:gap-4 md:gap-6 max-lg:pb-4 lg:py-4">
             <OrderDetail
               label="تاریخ ثبت سفارش :"
@@ -105,7 +114,13 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
               title={toPersianNumbersWithComma(pricing?.grandTotal) + " تومان"}
             />
             <OrderDetail label="وضعیت پرداخت :">
-              {payment.state === "failed" && (
+              {paymentUnresolved && (
+                <div className="flex items-center justify-center gap-0.5 text-stroke-800">
+                  <ExclamationTriangleIcon className="size-6 stroke-2" />
+                  <p className="font-bold">نامشخص؛ نیازمند بررسی</p>
+                </div>
+              )}
+              {!paymentUnresolved && payment.state === "failed" && (
                 <div className="flex items-center justify-center gap-0.5 text-primary">
                   <XCircleIcon className="size-6 stroke-2" />
                   <p className="font-bold text-stroke-800">ناموفق</p>
@@ -117,7 +132,7 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
                   <p className="font-bold text-stroke-800">موفق</p>
                 </div>
               )}
-              {payment.state === "pending" && (
+              {!paymentUnresolved && payment.state === "pending" && (
                 <div className="flex items-center justify-center gap-0.5 text-blue">
                   <ClockIcon className="size-6 stroke-2" />
                   <p className="font-bold text-stroke-800">در انتظار پرداخت</p>
