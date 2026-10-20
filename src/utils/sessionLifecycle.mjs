@@ -13,6 +13,15 @@ export function createSessionLifecycle({ setTimer = setTimeout, clearTimer = cle
   let changing = 0, barrier = Promise.resolve(), publish = () => {};
   const listeners = new Set();
   const remoteTransitions = new Map();
+  // Settled transitions this page has already applied, across connections. A
+  // reconnect (Strict Mode re-running the mount effect, a reappearing subtree)
+  // replays the stored marker; applying it again would supersede requests
+  // started since the first replay.
+  const appliedSettled = new Set();
+  const markApplied = (id) => {
+    appliedSettled.add(id);
+    if (appliedSettled.size > 64) appliedSettled.delete(appliedSettled.values().next().value);
+  };
   const emit = (event) => [...listeners].map((listener) => listener(event));
   const lifecycle = {
     generation: () => generation,
@@ -89,6 +98,7 @@ export function createSessionLifecycle({ setTimer = setTimeout, clearTimer = cle
         const key = message.phase + ":" + message.id;
         if (seen.has(key) || (message.phase === "started" && seen.has("settled:" + message.id))) return;
         remember(key);
+        if (message.phase === "settled" && appliedSettled.has(message.id) && !remoteTransitions.has(message.id)) return;
         if (message.phase === "started") {
           // A disappeared tab must not suspend this tab forever. Expiry only
           // permits a fresh identity read; it never assumes a login succeeded.
@@ -102,6 +112,7 @@ export function createSessionLifecycle({ setTimer = setTimeout, clearTimer = cle
         } else {
           if (remoteTransitions.has(message.id)) clearTimer(remoteTransitions.get(message.id));
           remoteTransitions.delete(message.id);
+          markApplied(message.id);
         }
         lifecycle.invalidate("external");
         if (message.phase === "settled") reconcileIfSettled();
@@ -121,6 +132,7 @@ export function createSessionLifecycle({ setTimer = setTimeout, clearTimer = cle
         // The same credential-free id correlates this transition's two phases.
         const message = { version: 1, phase, id };
         remember(phase + ":" + id);
+        if (phase === "settled") markApplied(id);
         try { target.localStorage?.setItem(SESSION_CHANGE_KEY, JSON.stringify(message)); } catch { /* private browsing */ }
         try { channel?.postMessage(message); } catch { /* channel unavailable */ }
         return id;

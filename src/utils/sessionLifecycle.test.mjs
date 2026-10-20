@@ -29,6 +29,7 @@ function mountAuth(lifecycle, getUserApi, target = new EventTarget()) {
     useCallback(fn,deps){const n=index++,old=cells[n];if(!old||deps.some((v,i)=>v!==old.deps[i]))cells[n]={deps,value:fn};return cells[n].value;},
     useMemo(fn,deps){return hooks.useCallback(fn,deps)();},
     useEffect(fn,deps){const n=index++,old=cells[n];if(!old||deps.some((v,i)=>v!==old.deps[i])){old?.cleanup?.();cells[n]={deps};effects.push(()=>{cells[n].cleanup=fn();});}},
+    useLayoutEffect(fn,deps){return hooks.useEffect(fn,deps);},
   };
   let expired;
   const {AuthProvider}=compile("contexts/auth/AuthContext.jsx",{
@@ -331,4 +332,64 @@ for(const cleanup of ["settlement","unmount"])test("a dequeued remote recovery c
   if(cleanup==="settlement"){tab.deliver("settled","queued-recovery");await tick();}else auth.unmount();
   const generation=session.generation();callback();await tick();
   try{assert.equal(session.generation(),generation);assert.equal(tab.timers.size,0);}finally{if(cleanup==="settlement")auth.unmount();}
+});
+
+// Hard-load order: every layout effect runs before any passive effect, so the
+// stored marker is replayed before descendant queries capture a generation.
+test("AuthProvider replays the stored session marker in its layout mount effect",async()=>{
+  const source=readFileSync(new URL("../contexts/auth/AuthContext.jsx",import.meta.url),"utf8");
+  const connect=source.indexOf("sessionLifecycle.connect(window)");
+  assert.notEqual(connect,-1);assert.equal(source.indexOf("sessionLifecycle.connect(",connect+1),-1);
+  const before=source.slice(0,connect),layout=before.lastIndexOf("useLayoutEffect(() => {"),passive=before.lastIndexOf("useEffect(() => {");
+  assert.ok(layout>passive,"connect must run inside useLayoutEffect");
+  assert.match(source.slice(connect),/void checkAuth\(\);\s*return \(\) => \{ mountedRef\.current = false; unsubscribe\(\); disconnect\(\); sessionLifecycle\.unconfirmed\(\); \};\s*\}, \[checkAuth, settle\]\);/);
+  assert.match(source,/useEffect\(\(\) => onSessionExpired\(/,"session-expiry subscription stays a passive effect");
+  const session=createSessionLifecycle(),target=new EventTarget(),calls=[];
+  target.localStorage={getItem:()=>JSON.stringify({version:1,phase:"settled",id:"previous-login"}),setItem(){}};
+  const auth=mountAuth(session,async()=>{calls.push("me");return{id:7};},target);
+  try{
+    assert.equal(session.generation(),1);await tick();
+    assert.equal(calls.length,1);assert.equal(session.ready(),true);assert.equal(session.identity(),7);assert.equal(auth.value().user.id,7);
+  }finally{auth.unmount();}
+});
+
+// A reconnect (Strict Mode re-running AuthProvider's mount effect, or a
+// reappearing subtree) replays the stored marker; an already applied settled
+// transition must not advance the generation again.
+const storedTarget=(phase="settled",id="previous-login")=>{const target=new EventTarget();let marker=JSON.stringify({version:1,phase,id});
+  target.localStorage={getItem:()=>marker,setItem:(key,value)=>{marker=value;}};return target;};
+test("reconnecting replays an already applied settled marker without a new generation",()=>{
+  const session=createSessionLifecycle(),target=storedTarget();
+  session.connect(target)();assert.equal(session.generation(),1);
+  const disconnect=session.connect(target);
+  try{assert.equal(session.generation(),1);assert.equal(session.canConfirm(),true);}finally{disconnect();}
+});
+test("after a reconnect, a new settled transition from another tab still invalidates",()=>{
+  const session=createSessionLifecycle(),target=storedTarget();
+  session.connect(target)();const disconnect=session.connect(target);
+  try{
+    const event=new Event("storage");Object.assign(event,{key:SESSION_CHANGE_KEY,newValue:JSON.stringify({version:1,phase:"settled",id:"next-login"})});
+    target.dispatchEvent(event);assert.equal(session.generation(),2);
+  }finally{disconnect();}
+});
+test("a stored in-progress transition still suspends confirmation after a reconnect",()=>{
+  const timers=new Set(),session=createSessionLifecycle({setTimer:(fn)=>{const t={fn};timers.add(t);return t;},clearTimer:(t)=>timers.delete(t)});
+  const target=storedTarget("started","other-tab");
+  session.connect(target)();assert.equal(timers.size,0);assert.equal(session.canConfirm(),true);
+  const disconnect=session.connect(target);
+  try{assert.equal(session.canConfirm(),false);assert.equal(timers.size,1);}finally{disconnect();assert.equal(timers.size,0);}
+});
+test("this tab's own published settled marker is not re-applied by a reconnect",async()=>{
+  const session=createSessionLifecycle(),target=storedTarget("settled","old");
+  let disconnect=session.connect(target);const before=session.generation();
+  await session.change("login",async()=>{});const after=session.generation();assert.ok(after>before);
+  disconnect();disconnect=session.connect(target);
+  try{assert.equal(session.generation(),after);}finally{disconnect();}
+});
+test("AuthProvider remounted on the same page (Strict Mode) advances the generation once for a stored marker",async()=>{
+  const session=createSessionLifecycle(),target=storedTarget(),reads=[];
+  const getUser=async()=>{reads.push("me");return{id:7};};
+  mountAuth(session,getUser,target).unmount();assert.equal(session.generation(),1);
+  const auth=mountAuth(session,getUser,target);
+  try{assert.equal(session.generation(),1);await tick();assert.equal(session.ready(),true);assert.equal(auth.value().user.id,7);}finally{auth.unmount();}
 });

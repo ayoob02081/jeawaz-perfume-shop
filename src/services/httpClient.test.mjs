@@ -402,3 +402,72 @@ for(const status of [401,500])test("guest bootstrap with stored transition and /
     gate.resolve();assert.deepEqual((await banners).data,[{id:2}]);assert.equal(calls.filter(x=>x==="/banners/active").length,1);
   }finally{gate.resolve();disconnect();}
 });
+
+// Hard-load startup order. AuthProvider replays the stored transition marker
+// (connect → invalidate) once; a read dispatched before that replay belongs to
+// the superseded generation. AuthProvider therefore connects in a layout effect,
+// before any descendant passive effect can start a query.
+const storedMarker = (phase = "settled") => {
+  const target = new EventTarget();
+  target.localStorage = { getItem: () => JSON.stringify({ version: 1, phase, id: "previous-login" }), setItem() {} };
+  return target;
+};
+const HOME_PUBLIC_READS = [
+  ["/categories/type/gender"],
+  ["/products", { params: { sort: "best_selling", inStock: true, page: 1, limit: 8 } }],
+  ["/campaigns/active"],
+];
+test("a public home read started before the stored marker is replayed is superseded before dispatch", async () => {
+  for (const [url, config] of HOME_PUBLIC_READS) {
+    const lifecycle = createSessionLifecycle(), app = loadHttpClient({ lifecycle }), calls = [];
+    app.defaults.adapter = async (c) => { calls.push(c.url); return responseFor(c); };
+    const request = app.get(url, config).catch((error) => error);
+    const disconnect = lifecycle.connect(storedMarker());
+    try {
+      assert.equal((await request).code, "ERR_SESSION_SUPERSEDED", url);
+      assert.deepEqual(calls, [], url);
+    } finally { disconnect(); }
+  }
+});
+test("after the stored marker is replayed, the same public home read reaches the adapter once", async () => {
+  for (const [url, config] of HOME_PUBLIC_READS) {
+    const lifecycle = createSessionLifecycle(), app = loadHttpClient({ lifecycle }), calls = [];
+    app.defaults.adapter = async (c) => { calls.push(c.url); return responseFor(c); };
+    const disconnect = lifecycle.connect(storedMarker());
+    try {
+      assert.equal(lifecycle.ready(), false);
+      assert.equal((await app.get(url, config)).status, 200, url);
+      assert.deepEqual(calls, [url]);
+    } finally { disconnect(); }
+  }
+});
+test("a stored in-progress transition still suspends confirmation and later supersedes old private requests", async () => {
+  const lifecycle = createSessionLifecycle(), app = loadHttpClient({ lifecycle }), calls = [];
+  app.defaults.adapter = async (c) => { calls.push(c.url); return responseFor(c); };
+  const target = storedMarker("started"), disconnect = lifecycle.connect(target);
+  try {
+    assert.equal(lifecycle.canConfirm(), false);
+    assert.equal((await app.get("/categories/type/gender")).status, 200);
+    const privateRead = app.get("/orders").catch((error) => error);
+    const settled = new Event("storage");
+    Object.assign(settled, { key: "jeawaz:session-change", newValue: JSON.stringify({ version: 1, phase: "settled", id: "previous-login" }) });
+    target.dispatchEvent(settled);
+    assert.equal(lifecycle.canConfirm(), true);
+    assert.equal((await privateRead).code, "ERR_SESSION_SUPERSEDED");
+    assert.deepEqual(calls, ["/categories/type/gender"]);
+  } finally { disconnect(); }
+});
+test("a public home read started after the first replay survives a Strict Mode reconnect", async () => {
+  for (const [url, config] of HOME_PUBLIC_READS) {
+    const lifecycle = createSessionLifecycle(), app = loadHttpClient({ lifecycle }), calls = [];
+    app.defaults.adapter = async (c) => { calls.push(c.url); return responseFor(c); };
+    const target = storedMarker();
+    lifecycle.connect(target)();
+    const request = app.get(url, config);
+    const disconnect = lifecycle.connect(target);
+    try {
+      assert.equal((await request).status, 200, url);
+      assert.deepEqual(calls, [url]);
+    } finally { disconnect(); }
+  }
+});

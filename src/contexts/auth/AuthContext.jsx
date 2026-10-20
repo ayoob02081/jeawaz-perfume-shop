@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -95,7 +96,10 @@ export function AuthProvider({ children }) {
     }, (error) => { if (requireUser) throw error; });
   }, [settle]);
 
-  useEffect(() => {
+  // A layout effect: every layout effect runs before any passive effect, so the
+  // stored session marker is replayed before descendant queries dispatch. As a
+  // passive parent effect it ran after them and superseded their requests.
+  useLayoutEffect(() => {
     mountedRef.current = true;
     const unsubscribe = sessionLifecycle.subscribe((event) => {
       if (event.type === "invalidate") {

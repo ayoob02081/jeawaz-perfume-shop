@@ -32,6 +32,7 @@ function hooks() {
     useCallback(fn,deps){const i=index++,old=cells[i];if(!old||deps.some((v,j)=>v!==old.deps[j]))cells[i]={deps,value:fn};return cells[i].value;},
     useMemo(fn,deps){const i=index++,old=cells[i];if(!old||deps.some((v,j)=>v!==old.deps[j]))cells[i]={deps,value:fn()};return cells[i].value;},
     useEffect(fn,deps){const i=index++,old=cells[i];if(!old||deps.some((v,j)=>v!==old.deps[j])){old?.cleanup?.();cells[i]={deps};effects.push(()=>{cells[i].cleanup=fn();});}},
+    useLayoutEffect(fn,deps){return react.useEffect(fn,deps);},
   };
   return {react,render(fn,props,runEffects=true){index=0;const tree=fn(props);if(runEffects)while(effects.length)effects.shift()();return tree;},unmount(){for(const cell of cells)cell?.cleanup?.();}};
 }
