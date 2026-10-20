@@ -3,24 +3,32 @@
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
-import { useGetActiveBanners } from "@/hooks/useBanners";
+import { bannerKeys, useGetActiveBanners } from "@/hooks/useBanners";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useRef } from "react";
 import PrimaryBannerCard from "@/components/PrimaryBannerCard";
 import { homeBannerView } from "@/utils/homeSectionView.mjs";
+import { bannerInitialQueryOptions, catalogInitialView } from "@/lib/storefrontCatalog.mjs";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
+import { useCatalogSnapshotOptions } from "@/hooks/useCatalogSnapshotOptions";
 import { PrimaryBannerSkeleton } from "./skeleton/HomeSectionSkeletons";
 
-function PrimaryBannerLayout() {
+const PRIMARY = { type: "primary" };
+
+function PrimaryBannerLayout({ initialSnapshot } = {}) {
   const swiperRef = useRef(null);
 
-  const {
-    data: banners,
-    isPending,
-    isError,
-  } = useGetActiveBanners({
-    type: "primary",
-  });
+  // With the server snapshot the first slide is in the HTML; without it the
+  // client read shows the skeleton first, as before.
+  const initialOptions = useCatalogSnapshotOptions(
+    bannerKeys.activeList(PRIMARY), bannerInitialQueryOptions(initialSnapshot),
+  );
+  const result = useGetActiveBanners(PRIMARY, initialOptions);
+  const query = catalogInitialView(result, initialOptions, useIsHydrated());
+  const { data: banners, isPending } = query;
+  // The hydration render clears `error` (not `isError`) to match the server.
+  const isError = Boolean(query.error);
 
   const view = homeBannerView({ isPending, isError, banners });
 

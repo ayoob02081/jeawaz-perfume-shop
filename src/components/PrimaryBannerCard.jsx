@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import AppImage from "./AppImage";
+import BannerPicture from "./BannerPicture";
 import Link from "next/link";
 import {
   ArrowLeftIcon,
@@ -16,26 +16,14 @@ export function PrimaryBannerCard({ banner, priority = false }) {
 
   return (
     <div className="relative flex w-full items-center justify-center overflow-hidden rounded-xl md:rounded-3xl banner--primary ">
-      {/* Desktop */}
-      <AppImage
+      {/* Desktop art from 30rem, mobile art below it */}
+      <BannerPicture
         src={imageUrl}
+        mobileSrc={mobileImageUrl || imageUrl}
         alt={title || "بنر"}
-        className="max-[30rem]:hidden block"
-        objectFit="cover"
-        width="size-full"
-        loading={priority ? "eager" : "lazy"}
         sizes="(max-width: 640px) 100vw, 90vw"
-      />
-
-      {/* Mobile */}
-      <AppImage
-        src={mobileImageUrl || imageUrl}
-        alt={title || "بنر"}
-        className="max-[30rem]:block hidden"
-        objectFit="cover"
-        width="size-full"
-        loading={priority ? "eager" : "lazy"}
-        sizes="100vw"
+        mobileSizes="100vw"
+        priority={priority}
       />
 
       {/* Edit Button */}

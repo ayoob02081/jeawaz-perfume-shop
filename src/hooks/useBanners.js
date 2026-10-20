@@ -33,7 +33,7 @@ export const useGetAllBanners = (params = {}) => {
   });
 };
 
-export const useGetActiveBanners = (params = {}) => {
+export const useGetActiveBanners = (params = {}, options = {}) => {
   return useQuery({
     queryKey: bannerKeys.activeList(params),
     queryFn: () => getActiveBannersApi(params),
@@ -42,6 +42,7 @@ export const useGetActiveBanners = (params = {}) => {
       (!error?.response || error.response.status >= 500),
     // Recover a failed section on return without refetching healthy banners.
     refetchOnWindowFocus: (query) => query.state.status === "error",
+    ...options,
   });
 };
 

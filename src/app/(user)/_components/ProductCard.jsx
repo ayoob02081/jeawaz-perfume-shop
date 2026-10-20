@@ -9,7 +9,8 @@ import { productCardImageAlt } from "@/utils/productImageAlt.mjs";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-function ProductCard({ product, isPending, error }) {
+// `imagePriority` preloads the image; pass false where the card is not in the first view.
+function ProductCard({ product, isPending, error, imagePriority = true }) {
   const {
     id,
     enTitle,
@@ -51,7 +52,7 @@ function ProductCard({ product, isPending, error }) {
           <AppImage
             src={images?.[0]}
             alt={productCardImageAlt(product)}
-            priority={true}
+            priority={imagePriority}
             ratio="aspect-4/5"
           />
         </Link>
@@ -98,7 +99,7 @@ function ProductCard({ product, isPending, error }) {
               <AppImage
                 src={images?.[0]}
                 alt={productCardImageAlt(product)}
-                priority={true}
+                priority={imagePriority}
                 className="w-auto! h-full"
               />
             </Link>

@@ -26,3 +26,14 @@ export function nextImageSrcAfterError(failedSrc, fallbackSrc, baseUrl) {
   const fallback = resolveImageSrc(fallbackSrc, baseUrl);
   return fallback && fallback !== failedSrc ? fallback : null;
 }
+
+// Desktop and mobile sources of one art-directed <picture>. Each viewport keeps
+// the rules above without a fallback: a missing, unloadable or already-failed
+// source (`failed` holds resolved URLs) leaves that viewport only the sized box.
+export function artDirectedImageSources(src, mobileSrc, baseUrl, failed = new Set()) {
+  const usable = (path) => {
+    const url = resolveImageSrc(path, baseUrl);
+    return url && !failed.has(url) ? url : null;
+  };
+  return { desktop: usable(src), mobile: usable(mobileSrc) };
+}

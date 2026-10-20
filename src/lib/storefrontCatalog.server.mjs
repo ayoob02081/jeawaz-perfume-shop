@@ -4,7 +4,7 @@ export const CATALOG_SNAPSHOT_TIMEOUT_MS = 5_000;
 
 // Anonymous public reads only. No cookies, auth refresh, persistent cache,
 // pagination crawl or per-product detail requests belong in this loader.
-export async function fetchCatalogSnapshot({ apiUrl, query, includeCategories = false, throwOnError = false, fetchImpl = fetch }) {
+export async function fetchCatalogSnapshot({ apiUrl, query, includeCategories = false, includePrimaryBanners = false, throwOnError = false, fetchImpl = fetch }) {
   const normalized = normalizeProductsQuery(query);
   async function read(path, params, validate) {
     try {
@@ -36,20 +36,22 @@ export async function fetchCatalogSnapshot({ apiUrl, query, includeCategories = 
       return undefined;
     }
   }
-  const [products, gender, character] = await Promise.all([
+  const [products, gender, character, primaryBanners] = await Promise.all([
     read("/products", normalized, (data) =>
       Array.isArray(data?.data) && data.data.length <= normalized.limit &&
       data.meta?.page === normalized.page && data.meta?.limit === normalized.limit &&
       Number.isSafeInteger(data.meta?.total) && data.meta.total >= 0 &&
       data.meta.totalPages === Math.ceil(data.meta.total / normalized.limit)),
-    ...(includeCategories ? [
-      read("/categories/type/gender", null, Array.isArray),
-      read("/categories/type/character", null, Array.isArray),
-    ] : []),
+    includeCategories ? read("/categories/type/gender", null, Array.isArray) : undefined,
+    includeCategories ? read("/categories/type/character", null, Array.isArray) : undefined,
+    // The home hero: its first image must be in the server HTML to be found early.
+    includePrimaryBanners ? read("/banners/active", { type: "primary" }, (data) =>
+      Array.isArray(data) && data.every((banner) => banner !== null && typeof banner === "object")) : undefined,
   ]);
   return {
     ...(products ? { products: { ...products, query: normalized } } : {}),
     ...(gender ? { gender } : {}),
     ...(character ? { character } : {}),
+    ...(primaryBanners ? { primaryBanners } : {}),
   };
 }

@@ -64,7 +64,7 @@ function RecentProducts({ initialSnapshot }) {
         <ProductCardSkeletons count={HOME_SECTION_SKELETON_COUNT} />
       ) : (
         products?.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} imagePriority={false} />
         ))
       )}
     </HomePageSortProductsLayout>

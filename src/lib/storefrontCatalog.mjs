@@ -21,6 +21,12 @@ export function categoryInitialQueryOptions(snapshot) {
   return snapshot ? { initialData: snapshot.data, initialDataUpdatedAt: snapshot.updatedAt } : {};
 }
 
+// The no-store server read was just made, so hydration does not repeat it.
+// Without a snapshot the client query keeps its own read, retry and recovery.
+export function bannerInitialQueryOptions(snapshot) {
+  return snapshot ? { staleTime: STOREFRONT_CATALOG_STALE_TIME, ...categoryInitialQueryOptions(snapshot) } : {};
+}
+
 // A sibling can populate the shared cache before this subtree hydrates. Its
 // first render must still match its own server snapshot (or server skeleton).
 // Once hydrated, query results, errors and background refreshes take over.
