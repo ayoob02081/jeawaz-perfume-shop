@@ -47,13 +47,13 @@ a seven-entry bounded window therefore fits within two rows. At 375px, the
 window fits within two rows. Ellipses are narrower; long labels stay bounded.
 There is no clipping, line clamp, max-height or hidden third row.
 
-| Catalog / active page | 320px | 375px | 390px | 430px |
-| --- | --- | --- | --- | --- |
-| 1 page | Pager hidden | Pager hidden | Pager hidden | Pager hidden |
-| 5 pages: first / middle / last | 2 rows | 1 row | 1 row | 1 row |
-| 100 pages: first | 1 row | 1 row | 1 row | 1 row |
-| 100 pages: middle | 2 rows | 2 rows | 2 rows | 2 rows |
-| 100 pages: last | 1 row | 1 row | 1 row | 1 row |
+| Catalog / active page          | 320px        | 375px        | 390px        | 430px        |
+| ------------------------------ | ------------ | ------------ | ------------ | ------------ |
+| 1 page                         | Pager hidden | Pager hidden | Pager hidden | Pager hidden |
+| 5 pages: first / middle / last | 2 rows       | 1 row        | 1 row        | 1 row        |
+| 100 pages: first               | 1 row        | 1 row        | 1 row        | 1 row        |
+| 100 pages: middle              | 2 rows       | 2 rows       | 2 rows       | 2 rows       |
+| 100 pages: last                | 1 row        | 1 row        | 1 row        | 1 row        |
 
 152 isolated headless-Chrome cases passed using the actual ReactDOM-server
 rendered component, real Next Link and final production-compiled CSS. Widths:
@@ -96,8 +96,8 @@ were inspected, including the two-row 320px and one-row 375px examples.
 
 ## Exact changed files and preservation
 
-1. src/app/(user)/products/_components/ProductPagination.jsx
-2. src/app/(user)/products/_components/ProductsLayout.jsx (pager wrapper class only)
+1. src/app/(user)/products/\_components/ProductPagination.jsx
+2. src/app/(user)/products/\_components/ProductsLayout.jsx (pager wrapper class only)
 3. src/utils/productPagination.mjs
 4. src/utils/productPagination.test.mjs
 5. MOBILE_PAGINATION_REVIEW.md (current report)
@@ -115,7 +115,7 @@ C:/Users/Ayoob Mahmoudian/AppData/Local/Temp/jeawaz-mobile-pagination-two-row-20
 
 Includes initial-manifest.json, ProductPagination.before.jsx, responsive.json,
 production-responsive.json, original/after desktop screenshots, mobile screenshots,
-raw-total-*-page-*.html, full-tests.log, build.log, safari.log, preservation.json,
+`raw-total-*-page-*.html`, full-tests.log, build.log, safari.log, preservation.json,
 validation-manifest.json and local-only fixture/validation scripts. The prior
 review is preserved as MOBILE_PAGINATION_REVIEW.before.md in that directory.
 Earlier first-correction evidence remains in jeawaz-mobile-pagination-20261015.

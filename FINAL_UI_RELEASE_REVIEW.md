@@ -25,13 +25,15 @@ request after typing. The owner's new visual layout remains intact.
 ## Exact approved commit scope (24 files)
 
 Pagination:
-- src/app/(user)/products/_components/ProductPagination.jsx
-- src/app/(user)/products/_components/ProductsLayout.jsx
+
+- src/app/(user)/products/\_components/ProductPagination.jsx
+- src/app/(user)/products/\_components/ProductsLayout.jsx
 - src/utils/productPagination.mjs
 - src/utils/productPagination.test.mjs
 - MOBILE_PAGINATION_REVIEW.md
 
 Search/header:
+
 - src/components/HeaderLayout.jsx
 - src/components/SearchSection.jsx
 - src/components/MobileSearchOverlay.jsx
@@ -45,15 +47,17 @@ Search/header:
 - MOBILE_SEARCH_REVIEW.md
 
 Seven explicitly approved owner files:
+
 - public/images/flower.svg
-- src/app/(admin)/admin/orders/_components/OrdersListTable.jsx
-- src/app/(user)/_components/GenderCategoriesLayout.jsx
-- src/app/(user)/_components/HomePageSortProductsLayout.jsx
-- src/app/(user)/auth/_components/LoginForm.jsx
-- src/app/(user)/products/_components/FiltersModal.jsx
-- src/app/(user)/products/_components/SingleProductPage.jsx
+- src/app/(admin)/admin/orders/\_components/OrdersListTable.jsx
+- src/app/(user)/\_components/GenderCategoriesLayout.jsx
+- src/app/(user)/\_components/HomePageSortProductsLayout.jsx
+- src/app/(user)/auth/\_components/LoginForm.jsx
+- src/app/(user)/products/\_components/FiltersModal.jsx
+- src/app/(user)/products/\_components/SingleProductPage.jsx
 
 This report:
+
 - FINAL_UI_RELEASE_REVIEW.md
 
 ## Owner diff review

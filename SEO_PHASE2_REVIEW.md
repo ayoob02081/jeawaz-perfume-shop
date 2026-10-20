@@ -47,15 +47,15 @@ shared PagesNumber and every admin/profile caller remain byte-identical.
 Local next start against an in-memory 36-product catalog; scripts/Flight JSON
 were excluded before inspecting hrefs. These are not production catalog claims.
 
-| Request | Products before and after | Before pager | After pager destinations |
-| --- | --- | --- | --- |
-| /products | IDs 105-116 | buttons, zero hrefs | /products?page=2 and page=3 |
-| /products?page=2 | IDs 117-128 | buttons, zero hrefs | /products and /products?page=3 |
-| /products?page=3 | IDs 129-140 | buttons, zero hrefs | /products and /products?page=2 |
+| Request          | Products before and after | Before pager        | After pager destinations       |
+| ---------------- | ------------------------- | ------------------- | ------------------------------ |
+| /products        | IDs 105-116               | buttons, zero hrefs | /products?page=2 and page=3    |
+| /products?page=2 | IDs 117-128               | buttons, zero hrefs | /products and /products?page=3 |
+| /products?page=3 | IDs 129-140               | buttons, zero hrefs | /products and /products?page=2 |
 
 Abbreviated actual page-2 HTML, attributes/text omitted:
 
-~~~html
+```html
 <nav aria-label="...">
   <a href="/products" rel="prev">...</a>
   <a href="/products">...</a>
@@ -63,7 +63,7 @@ Abbreviated actual page-2 HTML, attributes/text omitted:
   <a href="/products?page=3">...</a>
   <a href="/products?page=3" rel="next">...</a>
 </nav>
-~~~
+```
 
 A combined search/gender/character/repeated season/repeated brand/oldest/limit=2
 request on page 2 returned IDs 138 and 137. Related combined-filter pages 1 and 3
@@ -100,7 +100,7 @@ prevents duplicate indexing.
 ## Validation
 
 - Focused regression group: 64 passed, zero failed/skipped/cancelled.
-- Full configured node --test --test-isolation=none src/**/*.test.mjs:
+- Full configured `node --test --test-isolation=none src/**/*.test.mjs`:
   876 passed, zero failed/skipped/cancelled (866 existing plus 10 new).
 - New tests execute actual JSX with the installed Next SWC and real Next Link.
   They cover query preservation, implicit/explicit sort, page-1 URL consistency,
@@ -133,19 +133,19 @@ samples per sequential row. Milliseconds are complete response timings; the
 reported p95 is the largest of seven samples. Two after runs are retained rather
 than selecting a favorable sample. No production/Core Web Vitals claim is made.
 
-| Route | Before median, immediate API | After run 1 / run 2 median | Before median, 50 ms API | After run 1 / run 2 median, 50 ms API |
-| --- | --- | --- | --- | --- |
-| page 1 | 43.5 | 63.6 / 64.3 | 98.3 | 112.6 / 102.4 |
-| page 2 | 44.6 | 58.8 / 50.0 | 102.5 | 105.1 / 99.5 |
-| page 3 | 35.9 | 45.9 / 51.0 | 104.7 | 100.8 / 105.3 |
+| Route  | Before median, immediate API | After run 1 / run 2 median | Before median, 50 ms API | After run 1 / run 2 median, 50 ms API |
+| ------ | ---------------------------- | -------------------------- | ------------------------ | ------------------------------------- |
+| page 1 | 43.5                         | 63.6 / 64.3                | 98.3                     | 112.6 / 102.4                         |
+| page 2 | 44.6                         | 58.8 / 50.0                | 102.5                    | 105.1 / 99.5                          |
+| page 3 | 35.9                         | 45.9 / 51.0                | 104.7                    | 100.8 / 105.3                         |
 
 Five workers, 15 requests (pages 1-3 per worker), 50 ms API delay:
 
-| | Before | After run 1 | After run 2 |
-| --- | --- | --- | --- |
-| p95 ms | 173.4 | 242.0 | 267.3 |
-| responses/second | 39.2 | 25.1 | 24.5 |
-| API reads | 15 | 15 | 15 |
+|                  | Before | After run 1 | After run 2 |
+| ---------------- | ------ | ----------- | ----------- |
+| p95 ms           | 173.4  | 242.0       | 267.3       |
+| responses/second | 39.2   | 25.1        | 24.5        |
+| API reads        | 15     | 15          | 15          |
 
 The samples show higher immediate/concurrent response cost, not a demonstrated
 performance improvement. They do not isolate code cost from host/run variation.
@@ -164,8 +164,8 @@ API fan-out.
 
 ## Exact Phase 2 files
 
-1. src/app/(user)/products/_components/ProductsLayout.jsx
-2. src/app/(user)/products/_components/ProductPagination.jsx (new)
+1. src/app/(user)/products/\_components/ProductsLayout.jsx
+2. src/app/(user)/products/\_components/ProductPagination.jsx (new)
 3. src/utils/productPagination.mjs (new)
 4. src/utils/productPagination.test.mjs (new)
 5. src/utils/productListErrorRecovery.test.mjs (one component-name assertion)

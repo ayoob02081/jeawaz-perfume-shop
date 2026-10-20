@@ -178,13 +178,13 @@ These are local `next build` + `next start` checks against an in-memory HTTP API
 not production catalog observations. Script blocks were removed before counting
 anchors, so Flight JSON containing URL strings cannot satisfy the assertions.
 
-| Complete response | Before | After, 30-product fixture |
-| --- | --- | --- |
-| `/` | 0 product anchors | 8 distinct real product destinations; both category destinations |
-| `/products` | 0 product anchors | 12 distinct product destinations |
-| gender + character + repeated season/brand filters, oldest, page 2, limit 2 | no product cards | exact fixture products 132 and 131; one API call with those normalized parameters |
-| unmatched gender / out-of-range page | no product cards | successful empty state; no invented product anchors |
-| text search without sort / explicit oldest | no product cards | omitted API sort / explicit oldest preserved, with expected fixture products |
+| Complete response                                                           | Before            | After, 30-product fixture                                                         |
+| --------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------- |
+| `/`                                                                         | 0 product anchors | 8 distinct real product destinations; both category destinations                  |
+| `/products`                                                                 | 0 product anchors | 12 distinct product destinations                                                  |
+| gender + character + repeated season/brand filters, oldest, page 2, limit 2 | no product cards  | exact fixture products 132 and 131; one API call with those normalized parameters |
+| unmatched gender / out-of-range page                                        | no product cards  | successful empty state; no invented product anchors                               |
+| text search without sort / explicit oldest                                  | no product cards  | omitted API sort / explicit oldest preserved, with expected fixture products      |
 
 Abbreviated anchor tags from complete responses (other attributes omitted):
 
@@ -217,11 +217,11 @@ three-product fixture. P95 below is the largest of these ten samples. These are
 small synthetic measurements, not Googlebot, database capacity, mobile LCP or
 production p95 measurements.
 
-| Route | Before median / p95 ms | Final, immediate API median / p95 ms | Final, 50 ms API delay median / p95 ms |
-| --- | --- | --- | --- |
-| `/` | 14.9 / 25.6 | 44.9 / 58.7 | 98.8 / 107.8 |
-| `/products` | 16.5 / 25.6 | 36.3 / 50.9 | 103.7 / 107.9 |
-| filtered listing | 14.3 / 17.8 | 38.5 / 46.9 | 102.5 / 109.5 |
+| Route            | Before median / p95 ms | Final, immediate API median / p95 ms | Final, 50 ms API delay median / p95 ms |
+| ---------------- | ---------------------- | ------------------------------------ | -------------------------------------- |
+| `/`              | 14.9 / 25.6            | 44.9 / 58.7                          | 98.8 / 107.8                           |
+| `/products`      | 16.5 / 25.6            | 36.3 / 50.9                          | 103.7 / 107.9                          |
+| filtered listing | 14.3 / 17.8            | 38.5 / 46.9                          | 102.5 / 109.5                          |
 
 Home's three API calls run concurrently; latency follows the slowest call,
 rather than the sum of three sequential delays. The added latency buys actual

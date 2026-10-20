@@ -60,8 +60,14 @@ Abbreviated actual component-rendering output for synthetic data:
 <button>...Gender category...</button>
 
 <!-- After: existing query-filter routes, not invented category pages -->
-<a href="/products?gender=%D8%B2%D9%86%D8%A7%D9%86%D9%87+%26+%D9%85%D8%B1%D8%AF%D8%A7%D9%86%D9%87%2F%D8%AE%D8%A7%D8%B5">...Gender category...</a>
-<a href="/products?characters=%D8%B2%D9%86%D8%A7%D9%86%D9%87+%26+%D9%85%D8%B1%D8%AF%D8%A7%D9%86%D9%87%2F%D8%AE%D8%A7%D8%B5">...Character category...</a>
+<a
+  href="/products?gender=%D8%B2%D9%86%D8%A7%D9%86%D9%87+%26+%D9%85%D8%B1%D8%AF%D8%A7%D9%86%D9%87%2F%D8%AE%D8%A7%D8%B5"
+  >...Gender category...</a
+>
+<a
+  href="/products?characters=%D8%B2%D9%86%D8%A7%D9%86%D9%87+%26+%D9%85%D8%B1%D8%AF%D8%A7%D9%86%D9%87%2F%D8%AE%D8%A7%D8%B5"
+  >...Character category...</a
+>
 ```
 
 The HTML parser in the tests checks every generated anchor/button ancestry,
