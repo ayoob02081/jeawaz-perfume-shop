@@ -57,7 +57,7 @@ function SingleProductPage({ product }) {
   }
 
   return (
-    <main className=" md:container md:mx-auto xl:max-w-7xl h-full">
+    <main className=" md:container md:mx-auto xl:max-w-7xl h-fit">
       <article className="max-md:hidden">
         <BreadCrumbBase>
           <BreadCrumb href={"/"} label={"فروشگاه"} />
@@ -396,7 +396,9 @@ function ProductOptions({ product }) {
     : null;
   // Category names, each linked to its listing landing when active.
   const categoryValue = (key, category) =>
-    category?.title ? <CategoryName taxonomy={key} category={category} /> : null;
+    category?.title ? (
+      <CategoryName taxonomy={key} category={category} />
+    ) : null;
   const categoryValues = (key) =>
     (categories[key] ?? [])
       .filter((category) => category?.title)
@@ -471,10 +473,7 @@ function ProductOptions({ product }) {
             title="گروه‌‌بندی رایحه"
             data={categoryValues("fragranceFamilies")}
           />
-          <ProductOption
-            title="فصل استفاده"
-            data={categoryValues("seasons")}
-          />
+          <ProductOption title="فصل استفاده" data={categoryValues("seasons")} />
           <ProductOption
             title="طبع"
             value={categoryValue("temperature", categories.temperature)}
@@ -518,7 +517,10 @@ function CategoryName({ taxonomy, category }) {
   const href = categoryLandingPath(taxonomy, category);
   if (!href) return category.title;
   return (
-    <CategoryLandingLink href={href} className="hover:text-primary duration-200">
+    <CategoryLandingLink
+      href={href}
+      className="hover:text-primary duration-200"
+    >
       {category.title}
     </CategoryLandingLink>
   );

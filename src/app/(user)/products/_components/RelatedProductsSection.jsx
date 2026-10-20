@@ -50,12 +50,12 @@ export default function RelatedProductsSection({ products, more }) {
   return (
     <section
       aria-labelledby={headingId}
-      className="md:container md:mx-auto xl:max-w-7xl flex flex-col gap-6 pt-6 pb-2 md:px-6"
+      className="md:container md:mx-auto xl:max-w-7xl flex flex-col max-sm:gap-4 gap-6 bg-stroke-50 dark:bg-stroke-50/50 rounded-2xl pb-2 max-sm:py-4 sm:p-6 max-sm:mb-20 mt-6"
     >
       <div className="flex items-center justify-between gap-4 w-full">
         <h2
           id={headingId}
-          className="text-lg sm:text-xl md:text-[28px] font-bold text-stroke-800 text-nowrap"
+          className="text-lg sm:text-xl md:text-[28px] font-bold text-stroke-800 text-nowrap max-sm:text-center w-full"
         >
           <span className="text-primary">عطرهایی که</span> شاید بپسندی
         </h2>
@@ -99,7 +99,7 @@ export default function RelatedProductsSection({ products, more }) {
 
       <div
         ref={rowRef}
-        className="flex items-center w-full overflow-x-auto scrollbar-none snap-x gap-4 md:gap-6 rounded-2xl"
+        className="flex items-center w-full overflow-x-auto scrollbar-none snap-x gap-4 md:gap-6 max-sm:px-4"
       >
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />
