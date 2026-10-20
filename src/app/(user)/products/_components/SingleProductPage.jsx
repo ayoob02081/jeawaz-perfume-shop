@@ -41,6 +41,7 @@ import { CONCENTRATION_LABELS as concentrationLabels } from "@/utils/productConc
 import Link from "next/link";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "@/contexts/auth/AuthContext";
+import { brandLogoAlt } from "@/utils/productImageAlt.mjs";
 
 function SingleProductPage({ product }) {
   const { user } = useAuth();
@@ -76,6 +77,7 @@ function SingleProductPage({ product }) {
           titleStyle="font-bold text-stroke-800"
           className="max-md:flex md:hidden"
           label="توضیحات تکمیلی"
+          keepMounted
         >
           <p className="text-stroke-600 text-sm pt-4 border-t border-stroke-200 leading-8">
             {product?.description}
@@ -202,7 +204,7 @@ function ProductDes({ product }) {
           <BrandLandingLink brand={productBrand} className="md:hidden p-2">
             <AppImage
               src={productBrand?.iconUrl}
-              alt={productBrand?.value + "-icon"}
+              alt={brandLogoAlt(productBrand)}
               className="justify-center h-full dark:invert"
               width="max-md:w-20 md:w-[4.815rem]"
               ratio="aspect-[6/2]"
@@ -312,7 +314,7 @@ function ProductDes({ product }) {
         <BrandLandingLink brand={productBrand} className="max-md:hidden p-2">
           <AppImage
             src={productBrand?.iconUrl}
-            alt={productBrand?.value + "-icon"}
+            alt={brandLogoAlt(productBrand)}
             className="justify-center h-full dark:invert"
             width="max-md:w-16 md:w-20 xl:w-28"
             ratio="aspect-[4/1]"
@@ -358,6 +360,7 @@ function ProductDes({ product }) {
         titleStyle="font-bold text-stroke-800"
         className="max-md:hidden md:flex"
         label="توضیحات تکمیلی"
+        keepMounted
       >
         <p className="text-stroke-600 text-sm pt-4 border-t border-stroke-200 leading-8">
           {product?.description}

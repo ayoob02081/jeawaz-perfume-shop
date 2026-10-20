@@ -31,6 +31,7 @@ import {
 } from "@/utils/productFilterContract.mjs";
 import { concentrationLabel } from "@/utils/productConcentration.mjs";
 import { gradeLabel } from "@/utils/productGrade.mjs";
+import { brandLogoAlt } from "@/utils/productImageAlt.mjs";
 import { useForm } from "react-hook-form";
 import Skeleton from "@/ui/Skeleton";
 import { scrollTo } from "@/utils/scrollTo";
@@ -403,6 +404,8 @@ function BrandsFilter({
                   key={brand.id}
                   checkId={brand.id}
                   imageSrc={brand.iconUrl}
+                  // The logo is the checkbox's only content: it names the brand.
+                  imageAlt={brandLogoAlt(brand) || undefined}
                   name={"brandFilter"}
                   onChange={() => toggleBrandAndSync(brand.id)}
                   checked={isChecked}

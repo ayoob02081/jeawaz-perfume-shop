@@ -506,6 +506,8 @@ function BrandsFilter({ state, brands, addFilter }) {
               checkId={brand.value + index}
               label={brand.title}
               imageSrc={brand.iconUrl}
+              // The visible label names the brand; the logo is decorative.
+              imageAlt={brand.title ? "" : undefined}
               name={"brandsModalFilter"}
               onChange={() => addFilter("SET_ITEMS", "brandIds", brand.id)}
               checked={isChecked}

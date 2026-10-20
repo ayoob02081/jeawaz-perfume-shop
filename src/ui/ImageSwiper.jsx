@@ -22,6 +22,10 @@ import {
   buildProductShareUrl,
   shareProduct,
 } from "@/utils/productShareContract.mjs";
+import {
+  productGalleryImageAlt,
+  productThumbnailAlt,
+} from "@/utils/productImageAlt.mjs";
 
 export default function ImageSwiper({ product, images = [] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -154,7 +158,7 @@ export default function ImageSwiper({ product, images = [] }) {
                     wrapper made iOS Safari enlarge the image after each pinch zoom. */}
                 <AppImage
                   src={src}
-                  alt={`${product?.enTitle || "product"}-image-${i}`}
+                  alt={productGalleryImageAlt(product, i)}
                   priority={i < 2}
                   objectFit="contain"
                   ratio=""
@@ -231,7 +235,7 @@ export default function ImageSwiper({ product, images = [] }) {
               >
                 <AppImage
                   src={imgSrc}
-                  alt={`${product?.enTitle || "product"}-thumb-${i}`}
+                  alt={productThumbnailAlt(product, i)}
                   priority={i < 2}
                   objectFit="contain"
                   className="size-full"
@@ -316,7 +320,7 @@ export default function ImageSwiper({ product, images = [] }) {
             >
               <AppImage
                 src={images[selectedIndex]}
-                alt={`${product?.enTitle || "product"}-fullscreen-${selectedIndex}`}
+                alt={productGalleryImageAlt(product, selectedIndex)}
                 objectFit="contain"
                 className="max-h-[90dvh] max-w-[90vw]"
                 sizes="100vw"

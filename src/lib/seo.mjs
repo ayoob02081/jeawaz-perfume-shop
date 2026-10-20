@@ -75,11 +75,14 @@ export function publicPageMetadata({ title, description, path }) {
 // URL and real public images; unknown values are left out, never invented.
 // Next replaces a parent's openGraph instead of merging it, so every indexable
 // page sets its own (an inherited og:url would point at another page).
+// A Next `{ absolute }` title is used as is, matching the document title.
 export function socialMetadata({ title, description, url, images = [] } = {}) {
   if (typeof url !== "string" || (url !== SITE_ORIGIN && !url.startsWith(SITE_ORIGIN + "/"))) {
     throw new Error("Social metadata needs a canonical jeawaz.com URL");
   }
-  const pageTitle = plainText(title) ? `${SITE_NAME} | ${plainText(title)}` : SITE_NAME;
+  const absolute = plainText(title?.absolute);
+  const pageTitle = absolute ||
+    (plainText(title) ? `${SITE_NAME} | ${plainText(title)}` : SITE_NAME);
   const summary = plainText(description);
   const image = (Array.isArray(images) ? images : []).find((value) => /^https?:\/\//i.test(value ?? ""));
   return {

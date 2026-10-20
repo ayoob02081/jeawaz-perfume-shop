@@ -8,6 +8,7 @@ function FilterCheckBox({
   label,
   className,
   imageSrc,
+  imageAlt,
   checked,
   onChange,
   checkbox,
@@ -32,7 +33,7 @@ function FilterCheckBox({
         <div className={imageClassName}>
           <AppImage
             src={imageSrc}
-            alt={checkId + "-icon"}
+            alt={imageAlt ?? checkId + "-icon"}
             width="size-full"
             ratio={ratio}
             sizes="20vw"

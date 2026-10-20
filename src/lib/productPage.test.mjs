@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import * as seo from "./seo.mjs";
 import * as jsonLd from "./productJsonLd.mjs";
+import * as productSeo from "./productSeo.mjs";
 
 const require = createRequire(import.meta.url);
 const { transformSync } = require("next/dist/build/swc");
@@ -31,6 +32,7 @@ function loadPage(get) {
     "@/services/httpServer": { get },
     "@/lib/seo.mjs": seo,
     "@/lib/productJsonLd.mjs": jsonLd,
+    "@/lib/productSeo.mjs": productSeo,
   };
   new Function("require", "exports", "process", code)(
     (name) => Object.hasOwn(dependencies, name) ? dependencies[name] : require(name),
@@ -57,16 +59,17 @@ for (const id of ["105", "00105"]) {
     const metadata = await page.generateMetadata(params(id));
     const element = await page.default(params(id));
     assert.deepEqual(metadata, {
-      title: product.perTitle, description: product.description,
+      // A complete title, store name last; the root template is not applied.
+      title: { absolute: "Fixture product | جیاواز پرفیوم" }, description: product.description,
       alternates: { canonical: "https://jeawaz.com/products/105" },
       // Share previews: the real name/description, canonical and JSON-LD image.
       openGraph: {
         type: "website", siteName: "جیاواز پرفیوم", locale: "fa_IR",
-        title: "جیاواز پرفیوم | Fixture product", url: "https://jeawaz.com/products/105",
+        title: "Fixture product | جیاواز پرفیوم", url: "https://jeawaz.com/products/105",
         description: product.description, images: [{ url: "https://images.example.test/product.jpg" }],
       },
       twitter: {
-        card: "summary_large_image", title: "جیاواز پرفیوم | Fixture product",
+        card: "summary_large_image", title: "Fixture product | جیاواز پرفیوم",
         description: product.description, images: ["https://images.example.test/product.jpg"],
       },
     });
@@ -84,6 +87,34 @@ for (const id of ["105", "00105"]) {
     assert.equal(schema.offers.availability, "https://schema.org/InStock");
   });
 }
+
+for (const [name, overrides, title] of [
+  ["complete attributes", { perTitle: "دیور ساواج", enTitle: "Dior Sauvage", concentration: "EAU_DE_PARFUM" },
+    "دیور ساواج ادو پرفیوم (Dior Sauvage) | جیاواز پرفیوم"],
+  ["SUPER_MASTER grade", { perTitle: "دیور ساواج", enTitle: "Dior Sauvage", concentration: "EAU_DE_PARFUM", grade: "SUPER_MASTER" },
+    "دیور ساواج ادو پرفیوم سوپر مستر (Dior Sauvage) | جیاواز پرفیوم"],
+  ["partial attributes", { perTitle: "دیور ساواج", enTitle: null, concentration: null, description: undefined },
+    "دیور ساواج | جیاواز پرفیوم"],
+]) {
+  test(`product metadata with ${name}: one title for the document and share previews`, async () => {
+    const value = { ...product, ...overrides };
+    const metadata = await loadPage(async () => ({ data: value })).generateMetadata(params("105"));
+    assert.deepEqual(metadata.title, { absolute: title });
+    assert.equal(metadata.openGraph.title, title);
+    assert.equal(metadata.twitter.title, title);
+    assert.equal(metadata.description, value.description);
+    assert.equal(metadata.openGraph.description, value.description);
+    assert.equal(metadata.alternates.canonical, "https://jeawaz.com/products/105");
+    assert.equal(metadata.openGraph.url, metadata.alternates.canonical);
+  });
+}
+
+test("product metadata without any name keeps the previous fallback title", async () => {
+  const value = { ...product, perTitle: "", enTitle: "" };
+  const metadata = await loadPage(async () => ({ data: value })).generateMetadata(params("105"));
+  assert.equal(metadata.title, "");
+  assert.equal(metadata.openGraph.title, "جیاواز پرفیوم");
+});
 
 test("an API 404 remains not found for both page and metadata", async () => {
   const page = loadPage(async () => { throw { response: { status: 404 } }; });

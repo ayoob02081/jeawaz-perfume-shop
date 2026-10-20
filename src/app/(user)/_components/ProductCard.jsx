@@ -5,6 +5,7 @@ import PriceSection from "@/components/PriceSection";
 import ProductGradeBadge from "@/components/ProductGradeBadge";
 import { getProductCardPresentation } from "@/utils/priceCalculator";
 import { isProductAvailable } from "@/utils/productAvailability.mjs";
+import { productCardImageAlt } from "@/utils/productImageAlt.mjs";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -49,7 +50,7 @@ function ProductCard({ product, isPending, error }) {
         >
           <AppImage
             src={images?.[0]}
-            alt={"-عکس" + perTitle}
+            alt={productCardImageAlt(product)}
             priority={true}
             ratio="aspect-4/5"
           />
@@ -96,7 +97,7 @@ function ProductCard({ product, isPending, error }) {
             >
               <AppImage
                 src={images?.[0]}
-                alt={"-عکس" + perTitle}
+                alt={productCardImageAlt(product)}
                 priority={true}
                 className="w-auto! h-full"
               />

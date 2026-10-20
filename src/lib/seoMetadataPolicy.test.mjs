@@ -131,7 +131,10 @@ test("F7: indexable public pages set their own preview; the root and utility pag
   }
   const productRoute = read("(user)/products/[id]/page.jsx");
   assert.match(productRoute, /buildProductJsonLd\(product, process\.env\.NEXT_PUBLIC_API_URL\)\?\.image \?\? \[\]/);
-  assert.match(productRoute, /\.\.\.socialMetadata\(\{ title: product\.perTitle, description: product\.description, url: canonical, images \}\)/);
+  // The preview shares the document title (one `title` value) and description.
+  assert.match(productRoute, /const title = seoTitle \? \{ absolute: seoTitle \} : product\.perTitle;/);
+  assert.match(productRoute, /title,\s+description: product\.description,/);
+  assert.match(productRoute, /\.\.\.socialMetadata\(\{ title, description: product\.description, url: canonical, images \}\)/);
   // Listing: only states with a canonical (indexable) get a preview.
   const listing = read("(user)/products/page.jsx");
   assert.match(listing, /if \(!canonical\) return metadata;/);
