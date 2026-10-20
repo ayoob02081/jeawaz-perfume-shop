@@ -53,12 +53,12 @@ function AuthLayout({
   return (
     <div className="flex flex-col gap-4 max-md:w-fit w-full">
       <img
-        src="/images/flower.svg"
+        src="/images/flower.webp"
         alt="flower-icon"
         className="pointer-events-none absolute -z-20 left-0 top-0 w-36 "
       />
       <img
-        src="/images/flower.svg"
+        src="/images/flower.webp"
         alt="flower-icon"
         className="pointer-events-none absolute rotate-180 -z-20 right-0 bottom-0 w-36 "
       />

@@ -68,7 +68,7 @@ function AddedToCartModal({
             محصول شما با موفقیت به سبد خرید اضافه شد!
           </h2>
           <img
-            src="/images/flower.svg"
+            src="/images/flower.webp"
             alt="flower-icon"
             className="pointer-events-none absolute -z-20 left-0 top-0 w-18 "
           />

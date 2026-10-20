@@ -123,7 +123,8 @@ test("F7: indexable public pages set their own preview; the root and utility pag
   assert.match(root, /title: \{ default: SITE_NAME, template: `\$\{SITE_NAME\} \| %s` \},/);
   assert.match(root, /description: SITE_DESCRIPTION,/);
   // Home and information pages: canonical + preview from one route path.
-  assert.match(read("(user)/page.jsx"), /export const metadata = publicPageMetadata\(\{ description: SITE_DESCRIPTION, path: "\/" \}\);/);
+  // Same arguments in any formatting (one line or one property per line).
+  assert.match(read("(user)/page.jsx"), /export const metadata = publicPageMetadata\(\{\s*description: SITE_DESCRIPTION,\s*path: "\/",?\s*\}\);/);
   for (const [file, path] of [["about-us", "/page/about-us"], ["contact-us", "/page/contact-us"], ["terms", "/page/terms"]]) {
     const source = read(`(user)/page/${file}/page.jsx`);
     assert.match(source, new RegExp(`\\.\\.\\.publicPageMetadata\\(\\{ \\.\\.\\.metadataFields, path: "${path}" \\}\\)`));

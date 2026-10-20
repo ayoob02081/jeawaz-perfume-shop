@@ -11,7 +11,10 @@ import { fetchCatalogSnapshot } from "@/lib/storefrontCatalog.server.mjs";
 import { publicPageMetadata, SITE_DESCRIPTION, SITE_NAME } from "@/lib/seo.mjs";
 
 // Title and description are the root defaults.
-export const metadata = publicPageMetadata({ description: SITE_DESCRIPTION, path: "/" });
+export const metadata = publicPageMetadata({
+  description: SITE_DESCRIPTION,
+  path: "/",
+});
 
 export default async function Home() {
   await connection();
@@ -29,21 +32,21 @@ export default async function Home() {
       {/* Decoration (a ~2 MB file): lazy and low priority, so React does not
           preload it and it does not compete with the banner (the LCP image). */}
       <img
-        src="/images/flower.svg"
+        src="/images/flower.webp"
         alt="flower-icon"
         loading="lazy"
         fetchPriority="low"
         className="pointer-events-none absolute z-0 left-0 max-sm:top-60 max-lg:top-70 top-90 xl:top-120 max-sm:w-24 sm:w-26"
       />
       <img
-        src="/images/flower.svg"
+        src="/images/flower.webp"
         alt="flower-icon"
         loading="lazy"
         fetchPriority="low"
         className="pointer-events-none absolute rotate-180 z-0 right-0 top-4/10 xl:top-3/7 max-sm:w-24 sm:w-26"
       />
       <img
-        src="/images/flower.svg"
+        src="/images/flower.webp"
         alt="flower-icon"
         loading="lazy"
         fetchPriority="low"
