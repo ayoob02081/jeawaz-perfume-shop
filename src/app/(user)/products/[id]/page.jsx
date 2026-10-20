@@ -1,5 +1,6 @@
-import { cache } from "react";
+import { cache, Suspense } from "react";
 import SingleProductPage from "../_components/SingleProductPage";
+import RelatedProducts from "../_components/RelatedProducts";
 import { notFound } from "next/navigation";
 import http from "@/services/httpServer";
 import { isValidProductId, productUrl, socialMetadata } from "@/lib/seo.mjs";
@@ -59,6 +60,10 @@ export default async function Page({ params }) {
         />
       )}
       <SingleProductPage product={product} />
+      {/* After the product content; never delays it, hidden when empty. */}
+      <Suspense fallback={null}>
+        <RelatedProducts product={product} />
+      </Suspense>
     </>
   );
 }

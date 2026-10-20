@@ -3,7 +3,8 @@
 // API (with `/__test/identity` answering `synthetic: true`), then set
 // SEO_HTTP_ORIGIN and SEO_HTTP_API. Never a live site. SEO_HTTP_PRODUCT_ID
 // (default 41) must be a product in that fixture, with a description, a gender
-// and a fragrance family category.
+// and a fragrance family category, and at least two related sellable products.
+// SEO_HTTP_UNRELATED_PRODUCT_ID (optional) names one without suitable relatives.
 import test from "node:test";
 import assert from "node:assert/strict";
 import { productSeoTitle } from "./productSeo.mjs";
@@ -199,5 +200,53 @@ test("rendered product content quality: description DOM, titles, category landin
     }
     // The base listing keeps its generic metadata.
     assert.deepEqual((await page("/products")).titles, ["جیاواز پرفیوم | محصولات"]);
+  });
+
+  const HEADING = /<h2 id="([^"]+)"[^>]*><span class="text-primary">عطرهایی که<\/span> شاید بپسندی<\/h2>/;
+  const relatedSection = (body) => {
+    const id = body.match(HEADING)?.[1];
+    return id ? body.match(new RegExp(`<section aria-labelledby="${id}"[\\s\\S]*?</section>`))?.[0] : null;
+  };
+  const activeSlugs = (item, key) => [item?.categories?.[key]].flat()
+    .filter((category) => category?.isActive === true && category.slug).map((category) => category.slug);
+
+  await t.test("related products: server HTML, after the product, real links to related sellable products", async () => {
+    const p = await page(`/products/${productId}`);
+    const section = relatedSection(p.body);
+    assert.ok(section, "the section is in the document");
+    assert.ok(p.body.indexOf(section) > p.body.lastIndexOf(description), "after the product content");
+    const ids = [...new Set([...section.matchAll(/href="\/products\/(\d+)"/g)].map((match) => match[1]))];
+    assert.ok(ids.length >= 2 && ids.length <= 8, ids.join());
+    assert.ok(!ids.includes(String(product.id)), "never the current product");
+    const families = new Set(activeSlugs(product, "fragranceFamilies"));
+    for (const id of ids) {
+      const item = await (await fetch(`${api}/products/${id}`)).json();
+      assert.ok(item.variants.some((variant) => variant.isPurchasable === true), `sellable ${id}`);
+      const sharesFamily = activeSlugs(item, "fragranceFamilies").some((slug) => families.has(slug));
+      assert.ok(sharesFamily || item.brand?.id === product.brand?.id, `related ${id}`);
+      assert.equal((await page(`/products/${id}`)).status, 200);
+    }
+    // The "more" link is the indexable landing of the first active family.
+    const [family] = activeSlugs(product, "fragranceFamilies");
+    assert.equal(section.split(`href="/products?fragranceFamilies=${family}"`).length - 1, 2);
+  });
+
+  await t.test("attribute values link to their indexable category landings", async () => {
+    const p = await page(`/products/${productId}`);
+    for (const key of ["gender", "fragranceFamilies", "seasons", "temperature", "characters", "occasions"]) {
+      for (const slug of activeSlugs(product, key)) {
+        const path = `/products?${new URLSearchParams({ [key]: slug })}`;
+        assert.ok(p.body.includes(`href="${path.replace(/&/g, "&amp;")}"`), path);
+        const landing = await page(path);
+        assert.deepEqual(landing.canonicals, [SITE + path], path);
+        assert.deepEqual(landing.robots, ["index, follow"], path);
+      }
+    }
+  });
+
+  await t.test("no section when there are no suitable related products", { skip: !process.env.SEO_HTTP_UNRELATED_PRODUCT_ID }, async () => {
+    const p = await page(`/products/${process.env.SEO_HTTP_UNRELATED_PRODUCT_ID}`);
+    assert.equal(p.status, 200);
+    assert.doesNotMatch(p.body, /شاید بپسندی/);
   });
 });

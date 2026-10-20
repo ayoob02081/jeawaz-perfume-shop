@@ -19,6 +19,15 @@ export const CATEGORY_TYPES = {
   occasions: "occasion",
 };
 
+// The single-category listing URL of an active category (the sitemap's, and
+// the indexable landing contract); null for anything else.
+export function categoryLandingPath(key, category) {
+  const type = CATEGORY_TYPES[key];
+  const slug = typeof category?.slug === "string" ? category.slug.trim() : "";
+  if (!type || category?.isActive !== true || category.type !== type || !slug) return null;
+  return `/products?${new URLSearchParams({ [key]: slug })}`;
+}
+
 export function isValidProductId(id) {
   return /^\d+$/.test(String(id)) && Number.isSafeInteger(Number(id)) && Number(id) > 0;
 }
@@ -155,12 +164,12 @@ export async function buildSitemap(apiUrl, fetchImpl = fetch) {
           updatedAt: product.updatedAt, createdAt: product.createdAt,
         });
       }
-      for (const [key, type] of Object.entries(CATEGORY_TYPES)) {
+      for (const key of Object.keys(CATEGORY_TYPES)) {
         const value = product.categories?.[key];
         for (const category of Array.isArray(value) ? value : value ? [value] : []) {
-          if (category?.isActive !== true || category.type !== type || typeof category.slug !== "string" || !category.slug.trim()) continue;
-          const params = new URLSearchParams({ [key]: category.slug.trim() });
-          const url = `${SITE_ORIGIN}/products?${params}`;
+          const path = categoryLandingPath(key, category);
+          if (!path) continue;
+          const url = SITE_ORIGIN + path;
           const categoryModified = lastModified(category.updatedAt);
           const filterModified = categoryModified && (!modified || categoryModified > modified)
             ? categoryModified : modified;

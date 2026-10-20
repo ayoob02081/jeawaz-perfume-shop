@@ -166,6 +166,8 @@ const isSuggestionLink = ({ file, href }) => file === "components/HeaderLayout.j
 
 const isBrandLandingLink = ({ file, href }) => file === "components/BrandLandingLink.jsx" && href === "{landing.href}";
 
+const isCategoryLandingLink = ({ file, href }) => file === "components/CategoryLandingLink.jsx" && href === "{href}";
+
 test("existing public links keep default prefetch; transient suggestions do not fetch detail pages", () => {
   const publicLinks = allLinks.filter((link) => link.href && PUBLIC_HREF.test(link.href) && !isSuggestionLink(link));
   assert.ok(publicLinks.length >= 30, `found ${publicLinks.length}`);
@@ -180,10 +182,15 @@ test("existing public links keep default prefetch; transient suggestions do not 
   const brands = allLinks.filter(isBrandLandingLink);
   assert.equal(brands.length, 1);
   assert.ok(noPrefetch(brands[0].tag));
+  // Likewise the product page's several category landing links (attribute
+  // values and the related products' "more" link): one reviewed wrapper.
+  const categories = allLinks.filter(isCategoryLandingLink);
+  assert.equal(categories.length, 1);
+  assert.ok(noPrefetch(categories[0].tag));
   // Other opt-outs remain restricted to these reviewed wrappers.
   const optedOut = allLinks.filter(({ tag }) => /\bprefetch=/.test(tag));
   assert.deepEqual(
-    optedOut.filter((link) => !PROTECTED_HREF.test(link.href ?? "") && !isProtectedWrapper(link) && !isSuggestionLink(link) && !isBrandLandingLink(link)).map(({ where, href }) => `${where} ${href}`),
+    optedOut.filter((link) => !PROTECTED_HREF.test(link.href ?? "") && !isProtectedWrapper(link) && !isSuggestionLink(link) && !isBrandLandingLink(link) && !isCategoryLandingLink(link)).map(({ where, href }) => `${where} ${href}`),
     [],
   );
 });

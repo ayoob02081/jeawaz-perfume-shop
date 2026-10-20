@@ -42,6 +42,8 @@ import Link from "next/link";
 import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { brandLogoAlt } from "@/utils/productImageAlt.mjs";
+import { categoryLandingPath } from "@/lib/seo.mjs";
+import CategoryLandingLink from "@/components/CategoryLandingLink";
 
 function SingleProductPage({ product }) {
   const { user } = useAuth();
@@ -392,8 +394,19 @@ function ProductOptions({ product }) {
           : ""
       }`
     : null;
-  const categoryTitles = (items) =>
-    (items ?? []).map((category) => category?.title).filter(Boolean);
+  // Category names, each linked to its listing landing when active.
+  const categoryValue = (key, category) =>
+    category?.title ? <CategoryName taxonomy={key} category={category} /> : null;
+  const categoryValues = (key) =>
+    (categories[key] ?? [])
+      .filter((category) => category?.title)
+      .map((category, index) => (
+        <CategoryName
+          key={category.id ?? index}
+          taxonomy={key}
+          category={category}
+        />
+      ));
 
   return (
     <article className="grow w-full max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:pt-6 md:p-4 border-stroke-250 ">
@@ -450,23 +463,29 @@ function ProductOptions({ product }) {
             volumes
             data={getVariantsByType(product, "sealed")}
           />
-          <ProductOption title="جنسیت" value={categories.gender?.title} />
+          <ProductOption
+            title="جنسیت"
+            value={categoryValue("gender", categories.gender)}
+          />
           <ProductOption
             title="گروه‌‌بندی رایحه"
-            data={categoryTitles(categories.fragranceFamilies)}
+            data={categoryValues("fragranceFamilies")}
           />
           <ProductOption
             title="فصل استفاده"
-            data={categoryTitles(categories.seasons)}
+            data={categoryValues("seasons")}
           />
-          <ProductOption title="طبع" value={categories.temperature?.title} />
+          <ProductOption
+            title="طبع"
+            value={categoryValue("temperature", categories.temperature)}
+          />
           <ProductOption
             title="شخصیت رایحه"
-            data={categoryTitles(categories.characters)}
+            data={categoryValues("characters")}
           />
           <ProductOption
             title="موقعیت استفاده"
-            data={categoryTitles(categories.occasions)}
+            data={categoryValues("occasions")}
           />
         </div>
       </section>
@@ -492,6 +511,18 @@ const sillageLabels = {
   HIGH: "زیاد",
   VERY_HIGH: "خیلی زیاد",
 };
+
+// The same indexable single-category URL as the sitemap; inactive or
+// incomplete categories stay plain text.
+function CategoryName({ taxonomy, category }) {
+  const href = categoryLandingPath(taxonomy, category);
+  if (!href) return category.title;
+  return (
+    <CategoryLandingLink href={href} className="hover:text-primary duration-200">
+      {category.title}
+    </CategoryLandingLink>
+  );
+}
 
 function ProductOption({ title, value, data, volumes = false }) {
   if ((value == null || value === "") && !data?.length) return null;

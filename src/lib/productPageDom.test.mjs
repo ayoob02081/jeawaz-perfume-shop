@@ -9,6 +9,9 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { listingSeoMetadata } from "./listingSeo.mjs";
+import { categoryLandingPath, SITE_ORIGIN } from "./seo.mjs";
+import { productsQueryFromSearchParams } from "../utils/productFilterContract.mjs";
 
 const require = createRequire(import.meta.url);
 const { transformSync } = require("next/dist/build/swc");
@@ -36,7 +39,10 @@ const stubs = {
   // the production HTML. Here they only expose what the page passes them.
   "@/components/AppImage": ({ src, alt }) => createElement("img", { src: src ?? "", alt }),
   "next/link": ({ href, children, prefetch, ...rest }) => createElement("a", { href, ...rest }, children),
+  // The reads are covered by relatedProducts tests; here only the outcome matters.
+  "@/lib/relatedProducts.server.mjs": { fetchRelatedProducts: async (args) => related(args) },
 };
+let related = async () => [];
 
 const modules = new Map();
 function file(base) {
@@ -67,6 +73,8 @@ const component = (path) => load(file(SRC + path)).default;
 const SingleProductPage = component("app/(user)/products/_components/SingleProductPage");
 const ProductCard = component("app/(user)/_components/ProductCard");
 const Accordion = component("ui/Accordion");
+const RelatedProductsSection = component("app/(user)/products/_components/RelatedProductsSection");
+const relatedModule = load(file(SRC + "app/(user)/products/_components/RelatedProducts"));
 
 const DESCRIPTION = "عطری مردانه، پودری و شیک با محور زنبق؛ اسطوخودوس در شروع و سدر در پایه.";
 const product = {
@@ -150,4 +158,80 @@ test("B5: product card images name the product (both responsive images)", () => 
   assert.doesNotMatch(html, /-عکس/);
   const unnamed = renderToStaticMarkup(createElement(ProductCard, { product: { ...product, perTitle: undefined, enTitle: undefined } }));
   assert.deepEqual(alts(unnamed).filter((alt) => alt.startsWith("تصویر")), ["تصویر محصول", "تصویر محصول"]);
+});
+
+/* ---------- Phase 2: attribute links and related products ---------- */
+
+const category = (type, slug, title, extra = {}) => ({ id: `${type}-${slug}`, type, slug, title, isActive: true, ...extra });
+const categorized = {
+  ...product,
+  categories: {
+    gender: category("gender", "male", "مردانه"),
+    fragranceFamilies: [category("fragrance_family", "woody", "چوبی"), category("fragrance_family", "floral", "گلی", { isActive: false })],
+    seasons: [category("season", "spring", "بهار")],
+    temperature: category("temperature", "warm", "گرم"),
+    characters: [category("character", "sweet", "شیرین", { slug: " " })],
+    occasions: [category("season", "party", "مهمانی")],
+  },
+};
+const categoryLinks = (html) => [...html.matchAll(/<a href="(\/products\?(?!brandIds)[^"]+)"[^>]*>([^<]*)<\/a>/g)]
+  .map(([, href, text]) => [href.replace(/&amp;/g, "&"), text]);
+
+test("attribute values link to their indexable single-category landing; others stay text", () => {
+  const html = render(categorized);
+  assert.deepEqual(categoryLinks(html), [
+    ["/products?gender=male", "مردانه"],
+    ["/products?fragranceFamilies=woody", "چوبی"],
+    ["/products?seasons=spring", "بهار"],
+    ["/products?temperature=warm", "گرم"],
+  ]);
+  // Inactive, slug-less and wrong-type categories: the same name, without a link.
+  for (const name of ["گلی", "شیرین", "مهمانی"]) {
+    assert.match(html, new RegExp(`<p>${name}</p>`), name);
+  }
+  // Each target is the listing's own canonical, indexable landing (the sitemap URL).
+  const snapshot = { data: [categorized], meta: { page: 1, limit: 12, total: 1, totalPages: 1 } };
+  for (const [href] of categoryLinks(html)) {
+    const query = productsQueryFromSearchParams(new URLSearchParams(href.split("?")[1]));
+    const metadata = listingSeoMetadata(query, snapshot);
+    assert.deepEqual(metadata.robots, { index: true, follow: true }, href);
+    assert.equal(metadata.alternates.canonical, SITE_ORIGIN + href);
+  }
+  assert.equal(categoryLandingPath("gender", { ...categorized.categories.gender, isActive: undefined }), null);
+});
+
+const card = (id) => ({ ...product, id, perTitle: `محصول ${id}`, enTitle: `Product ${id}` });
+const sectionHtml = (props) => renderToStaticMarkup(createElement(RelatedProductsSection, props));
+
+test("related section: labelled heading, real product links, no controls before measuring", () => {
+  const more = { href: "/products?fragranceFamilies=woody", label: "مشاهده عطر و ادکلن با رایحه چوبی" };
+  const html = sectionHtml({ products: [card(51), card(52), card(53)], more });
+  // (React hoists the priority card images' preload links before it.)
+  const id = html.match(/<section aria-labelledby="([^"]+)"/)?.[1];
+  assert.ok(id);
+  assert.match(html, new RegExp(`<h2 id="${id}"[^>]*><span class="text-primary">عطرهایی که</span> شاید بپسندی</h2>`));
+  const productLinks = [...new Set([...html.matchAll(/href="\/products\/(\d+)"/g)].map((match) => match[1]))];
+  assert.deepEqual(productLinks, ["51", "52", "53"]);
+  assert.doesNotMatch(html, /محصولات (قبلی|بعدی)/, "scroll controls only appear once the row overflows");
+  // One "more" link per breakpoint, to the real category landing.
+  assert.equal(html.split(`href="${more.href}"`).length - 1, 2);
+  assert.equal(html.split(more.label).length - 1, 2);
+  assert.doesNotMatch(sectionHtml({ products: [card(51), card(52)], more: null }), /fragranceFamilies/);
+});
+
+test("related products server component: hidden without suitable products, rendered with them", async () => {
+  related = async () => [];
+  assert.equal(await relatedModule.default({ product: categorized }), null);
+  let received;
+  related = async (args) => { received = args; return [card(61), card(62)]; };
+  const element = await relatedModule.default({ product: categorized });
+  assert.equal(received.product, categorized);
+  assert.equal(element.type, RelatedProductsSection);
+  assert.deepEqual(element.props.products.map((item) => item.id), [61, 62]);
+  // "More like this": the first active family landing, named like its heading.
+  assert.deepEqual(element.props.more, { href: "/products?fragranceFamilies=woody", label: "مشاهده عطر و ادکلن با رایحه چوبی" });
+  assert.equal(relatedModule.relatedMoreLink({ categories: { fragranceFamilies: [category("fragrance_family", "floral", "گلی", { isActive: false })] } }), null);
+  assert.equal(relatedModule.relatedMoreLink({ categories: { fragranceFamilies: [category("fragrance_family", "x", "Latin")] } }), null);
+  assert.equal(relatedModule.relatedMoreLink(null), null);
+  related = async () => [];
 });

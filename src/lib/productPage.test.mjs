@@ -16,6 +16,10 @@ const { code } = transformSync(source, {
   module: { type: "commonjs" },
 });
 const missing = new Error("NEXT_HTTP_ERROR_FALLBACK;404");
+const { Suspense } = require("react");
+// Its own reads are covered by relatedProducts tests and the production server.
+function RelatedProducts() { return null; }
+function SingleProductPage() { return null; }
 const product = {
   id: 105, perTitle: "Fixture product", description: "Fixture description", grade: "ORIGINAL",
   brand: { title: "Fixture brand" }, images: ["https://images.example.test/product.jpg"],
@@ -26,8 +30,9 @@ function loadPage(get) {
   const exports = {};
   const dependencies = {
     // Request memoization and actual HTTP statuses are covered by the production-server check.
-    react: { cache: (fn) => fn },
-    "../_components/SingleProductPage": () => null,
+    react: { cache: (fn) => fn, Suspense },
+    "../_components/SingleProductPage": SingleProductPage,
+    "../_components/RelatedProducts": RelatedProducts,
     "next/navigation": { notFound: () => { throw missing; } },
     "@/services/httpServer": { get },
     "@/lib/seo.mjs": seo,
@@ -85,6 +90,15 @@ for (const id of ["105", "00105"]) {
     assert.equal(schema.url, metadata.alternates.canonical);
     assert.equal(schema.offers.price, 1_000_000);
     assert.equal(schema.offers.availability, "https://schema.org/InStock");
+    // Related products: after the product content, inside their own Suspense
+    // boundary (no fallback), given the same Product snapshot.
+    const children = element.props.children.filter(Boolean);
+    const boundary = children.at(-1);
+    assert.equal(boundary.type, Suspense);
+    assert.equal(boundary.props.fallback, null);
+    assert.equal(boundary.props.children.type, RelatedProducts);
+    assert.equal(boundary.props.children.props.product, product);
+    assert.equal(children.at(-2).type, SingleProductPage);
   });
 }
 
