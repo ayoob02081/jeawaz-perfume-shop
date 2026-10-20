@@ -98,8 +98,12 @@ function ProductsLayout({ initialSnapshot }) {
               </NotExisted>
             )}
             {view === "products" &&
-              products.map((product) => (
-                <ProductCard key={product.id} product={product} />
+              products.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  imagePriority={index === 0}
+                />
               ))}
           </section>
           <div className="flex min-h-20 items-center justify-center py-5 sm:py-0">

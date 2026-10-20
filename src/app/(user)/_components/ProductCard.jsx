@@ -9,8 +9,14 @@ import { productCardImageAlt } from "@/utils/productImageAlt.mjs";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-// `imagePriority` preloads the image; pass false where the card is not in the first view.
-function ProductCard({ product, isPending, error, imagePriority = true }) {
+// Card images are lazy; `imagePriority` makes them eager and high priority, only
+// for a card that is certainly in the first view.
+// Each `sizes` collapses to 1px where its twin is CSS-hidden, so an eager hidden
+// twin costs only the smallest variant.
+const MOBILE_IMAGE_SIZES = "(min-width: 48rem) 1px, 64px";
+const DESKTOP_IMAGE_SIZES = "(min-width: 48rem) 160px, 1px";
+
+function ProductCard({ product, isPending, error, imagePriority = false }) {
   const {
     id,
     enTitle,
@@ -54,6 +60,7 @@ function ProductCard({ product, isPending, error, imagePriority = true }) {
             alt={productCardImageAlt(product)}
             priority={imagePriority}
             ratio="aspect-4/5"
+            sizes={MOBILE_IMAGE_SIZES}
           />
         </Link>
         <div className="flex grow flex-col justify-between size-full">
@@ -101,6 +108,7 @@ function ProductCard({ product, isPending, error, imagePriority = true }) {
                 alt={productCardImageAlt(product)}
                 priority={imagePriority}
                 className="w-auto! h-full"
+                sizes={DESKTOP_IMAGE_SIZES}
               />
             </Link>
           </div>

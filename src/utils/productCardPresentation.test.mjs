@@ -185,7 +185,7 @@ test("ProductCard shows the exact representative price without the 'از' prefix
 test("Product list keeps server price order without client-side resorting", () => {
   const layout = readFileSync(new URL("../app/(user)/products/_components/ProductsLayout.jsx",
     import.meta.url), "utf8");
-  assert.match(layout, /products\.map\(\(product\) =>/);
+  assert.match(layout, /products\.map\(\(product, index\) =>/);
   assert.doesNotMatch(layout, /products\.sort\(/);
   const backendOrdered = [product(decant), product(sealed)];
   assert.deepEqual(backendOrdered.map((item) => getProductCardPresentation(item).cardPrice.basePrice),

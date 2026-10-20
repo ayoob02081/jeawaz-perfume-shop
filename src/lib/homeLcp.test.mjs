@@ -133,7 +133,13 @@ test("the first primary banner is server HTML: one <picture>, eager, fetchpriori
   assert.equal(found.length, 3, "one picture per slide");
   const [first, ...rest] = found;
   assert.equal(attr(sourceTag(first), "media"), "(min-width: 30rem)");
-  assert.equal(attr(sourceTag(first), "srcSet"), `${API}/uploads/d1.webp`);
+  // Responsive WebP variants of the desktop art (one per backend tier).
+  assert.equal(
+    attr(sourceTag(first), "srcSet"),
+    [160, 320, 640, 960, 1280, 1920]
+      .map((w) => `${API}/uploads/w1/${w}/d1.webp ${w}w`)
+      .join(", "),
+  );
   const img = imgTag(first);
   assert.equal(attr(img, "src"), `${API}/uploads/m1.webp`);
   assert.equal(attr(img, "loading"), "eager");
@@ -195,7 +201,7 @@ test("no mobile art: both viewports use the desktop image; unloadable art leaves
   );
   assert.equal(
     attr(sourceTag(pictures(same)[0]), "srcSet"),
-    attr(imgTag(pictures(same)[0]), "src"),
+    attr(imgTag(pictures(same)[0]), "srcSet"),
   );
 
   const none = renderToString(
@@ -412,7 +418,7 @@ test("wiring: home seeds the banner, deprioritizes decoration and below-the-fold
   const card = read("app/(user)/_components/ProductCard.jsx");
   assert.match(
     card,
-    /function ProductCard\(\{ product, isPending, error, imagePriority = true \}\)/,
+    /function ProductCard\(\{ product, isPending, error, imagePriority = false \}\)/,
   );
   assert.equal(card.match(/priority=\{imagePriority\}/g).length, 2);
   for (const name of [
@@ -423,11 +429,14 @@ test("wiring: home seeds the banner, deprioritizes decoration and below-the-fold
     const source = read(`app/(user)/_components/${name}.jsx`);
     assert.match(source, /<ProductCard[^>]*imagePriority=\{false\}/s, name);
   }
-  // Listing and related products keep the existing preloaded card images.
-  for (const path of [
-    "app/(user)/products/_components/ProductsLayout.jsx",
-    "app/(user)/products/_components/RelatedProductsSection.jsx",
-  ]) {
-    assert.doesNotMatch(read(path), /imagePriority/, path);
-  }
+  // Card images are lazy by default: only the first listing card is
+  // prioritized, and related products stay lazy.
+  assert.match(
+    read("app/(user)/products/_components/ProductsLayout.jsx"),
+    /imagePriority=\{index === 0\}/,
+  );
+  assert.doesNotMatch(
+    read("app/(user)/products/_components/RelatedProductsSection.jsx"),
+    /imagePriority/,
+  );
 });

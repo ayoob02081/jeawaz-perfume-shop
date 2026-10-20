@@ -88,7 +88,7 @@ function MobileCartLayout({ cartItem }) {
             src={imageSrc}
             alt={product.enTitle + "-image"}
             width="size-16"
-            sizes="30vw"
+            sizes="64px"
           />
           <div className="flex flex-col gap-3 w-full">
             <Title
@@ -159,7 +159,7 @@ function DesktopCartLayout({ cartItem }) {
               src={imageSrc}
               alt={product.enTitle + "-image"}
               width="size-[5.65rem]"
-              sizes="30vw"
+              sizes="91px"
             />
           </div>
           <Title
@@ -224,7 +224,7 @@ function SuccessedOrderCard({ item }) {
             src={image}
             alt={enTitle + "-image"}
             width="size-16"
-            sizes="20vw"
+            sizes="64px"
           />
         </div>
         <div className="flex flex-col gap-3 size-full">
@@ -262,7 +262,12 @@ function DeskSuccessedCartItem({ item }) {
   return (
     <div className="md:flex max-md:hidden items-center justify-between gap-1 w-full">
       <div className="flex items-start justify-center h-full">
-        <AppImage src={image} alt={enTitle + "-image"} width="size-24" />
+        <AppImage
+          src={image}
+          alt={enTitle + "-image"}
+          width="size-24"
+          sizes="96px"
+        />
       </div>
       <div className="flex flex-col gap-3 size-full">
         <Title
@@ -325,7 +330,7 @@ function SummeryCard({ cartItem }) {
               src={imageSrc}
               alt={product.enTitle + "-image"}
               width="max-lg:size-20 lg:size-[5.65rem]"
-              sizes="20vw"
+              sizes="91px"
             />
           </div>
         </div>

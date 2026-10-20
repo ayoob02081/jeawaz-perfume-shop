@@ -1,8 +1,9 @@
 "use client";
 
 import { getImageProps } from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { artDirectedImageSources } from "@/utils/appImageSource.mjs";
+import { uploadVariantSrcSet } from "@/utils/imageVariants.mjs";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 // The desktop art from 30rem up: the same switch as the previous
@@ -24,11 +25,15 @@ export default function BannerPicture({
   priority = false,
 }) {
   const [failed, setFailed] = useState(() => new Set());
+  // Raster uploads whose variants failed: shown once more as the plain original.
+  const [plain, setPlain] = useState(() => new Set());
   const { desktop, mobile } = artDirectedImageSources(src, mobileSrc, BASE_URL, failed);
   const imageSrc = mobile ?? desktop;
+  const variantsOf = (url) =>
+    plain.has(url) ? null : uploadVariantSrcSet(url, BASE_URL);
 
-  const propsFor = (url, imageSizes) =>
-    getImageProps({
+  const propsFor = (url, imageSizes) => {
+    const props = getImageProps({
       src: url,
       alt,
       fill: true,
@@ -38,18 +43,34 @@ export default function BannerPicture({
       loading: priority ? "eager" : "lazy",
       ...(priority ? { fetchPriority: "high" } : {}),
     }).props;
+    const variants = variantsOf(url);
+    if (!variants) return props;
+    // srcSet and sizes before src, as next/image orders them.
+    const { src: original, srcSet: _srcSet, sizes: _sizes, ...rest } = props;
+    return { ...rest, sizes: imageSizes, srcSet: variants, src: original };
+  };
 
-  // The failed source is the one the <picture> selected for this viewport.
+  // The failed source is the one the <picture> selected for this viewport:
+  // its variants fall back to the original once, then the box only.
   const fail = () => {
     const url = desktop && mobile
       ? (window.matchMedia(DESKTOP_MEDIA).matches ? desktop : mobile)
       : imageSrc;
-    setFailed((previous) => new Set(previous).add(url));
+    if (variantsOf(url)) {
+      setPlain((previous) => new Set(previous).add(url));
+    } else {
+      setFailed((previous) => new Set(previous).add(url));
+    }
   };
   // An image that failed before hydration fired its error with no handler.
-  const checkFailedBeforeHydration = (img) => {
+  // Checked once on mount: after a fallback re-render the previous request
+  // still reads as broken until the new source starts loading.
+  const imgRef = useRef(null);
+  useEffect(() => {
+    const img = imgRef.current;
     if (img?.complete && img.currentSrc && img.naturalWidth === 0) fail();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const imgProps = imageSrc && propsFor(imageSrc, mobile ? mobileSizes : sizes);
   const desktopSource = desktop && mobile && propsFor(desktop, sizes);
@@ -71,7 +92,7 @@ export default function BannerPicture({
             {...imgProps}
             alt={alt}
             className={[imgProps.className, hiddenOn].filter(Boolean).join(" ")}
-            ref={checkFailedBeforeHydration}
+            ref={imgRef}
             onError={fail}
           />
         </picture>

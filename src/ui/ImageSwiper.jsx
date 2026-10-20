@@ -27,6 +27,12 @@ import {
   productThumbnailAlt,
 } from "@/utils/productImageAlt.mjs";
 
+// Rendered widths of the main slide image and a thumbnail (measured layout:
+// slide padding, then the md/lg/xl gallery columns).
+const SLIDE_SIZES =
+  "(min-width: 80rem) 396px, (min-width: 64rem) 320px, (min-width: 48rem) 290px, (min-width: 40rem) calc(100vw - 128px), calc(100vw - 112px)";
+const THUMBNAIL_SIZES = "104px";
+
 export default function ImageSwiper({ product, images = [] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -159,10 +165,11 @@ export default function ImageSwiper({ product, images = [] }) {
                 <AppImage
                   src={src}
                   alt={productGalleryImageAlt(product, i)}
-                  priority={i < 2}
+                  priority={i === 0}
                   objectFit="contain"
                   ratio=""
                   className="size-full"
+                  sizes={SLIDE_SIZES}
                 />
               </div>
             ))}
@@ -236,9 +243,9 @@ export default function ImageSwiper({ product, images = [] }) {
                 <AppImage
                   src={imgSrc}
                   alt={productThumbnailAlt(product, i)}
-                  priority={i < 2}
                   objectFit="contain"
                   className="size-full"
+                  sizes={THUMBNAIL_SIZES}
                 />
               </button>
             ))}
@@ -325,6 +332,7 @@ export default function ImageSwiper({ product, images = [] }) {
                 className="max-h-[90dvh] max-w-[90vw]"
                 sizes="100vw"
                 priority
+                responsive={false}
               />
             </div>
 

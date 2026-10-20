@@ -49,6 +49,7 @@ function SecondaryBannerLayout() {
               alt="banner-image"
               objectFit="cover"
               width="size-full"
+              sizes="(min-width: 80rem) 629px, (min-width: 40rem) 491px, 344px"
             />
 
             <div className="absolute z-10 bottom-8 right-5 group flex items-center banner--btn--secondary duration-200">

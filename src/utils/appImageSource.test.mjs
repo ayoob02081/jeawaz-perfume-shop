@@ -72,13 +72,17 @@ test("a fallback that also fails stops cleanly without looping", () => {
 test("AppImage has no default placeholder and renders no <Image> without a source", () => {
   assert.match(appImage, /fallbackSrc = null,/);
   assert.doesNotMatch(appImage, /placeholder\.png|getCorrectSrc/);
-  assert.match(appImage, /useState\(\(\) =>\s*initialImageSrc\(src, fallbackSrc, BASE_URL\),?\s*\)/);
-  assert.match(appImage, /\{imgSrc && \(\s*<Image/);
-  // The failed URL feeds the next choice, so onError cannot repeat itself.
   assert.match(
     appImage,
-    /onError=\{\(\) =>\s*setImgSrc\(\(failed\) =>\s*nextImageSrcAfterError\(failed, fallbackSrc, BASE_URL\),?\s*\)\s*\}/,
+    /useState\(\(\) =>\s*initialImageState\(src, fallbackSrc, BASE_URL, responsive\),?\s*\)/,
   );
+  assert.match(appImage, /\(imgSrc && \(\s*<Image/);
+  // Only the state that failed advances, so onError cannot repeat itself.
+  assert.match(
+    appImage,
+    /current === failed\s*\?\s*nextImageStateAfterError\(current, fallbackSrc, BASE_URL\)\s*:\s*current/,
+  );
+  assert.equal(appImage.match(/onError=\{\(\) => fail\(image\)\}/g)?.length, 2);
   // The sized container (and its caller classes) is always rendered.
   assert.match(appImage, /className=\{`relative \$\{width\} \$\{ratio\} overflow-hidden \$\{className\}`\}/);
 });

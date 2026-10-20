@@ -229,7 +229,7 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
                           src={item.image}
                           alt={`${item.title}-image`}
                           width="max-lg:size-11 lg:size-9"
-                          sizes="30vw"
+                          sizes="44px"
                         />
                         <div className="badge bg-stroke-200 text-xs text-stroke-800 border border-stroke-800 px-1 h-6 aspect-square absolute left-0 bottom-0 lg:-bottom-1.5 lg:-left-1.5">
                           <p className="translate-y-px">

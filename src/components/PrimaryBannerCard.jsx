@@ -21,8 +21,8 @@ export function PrimaryBannerCard({ banner, priority = false }) {
         src={imageUrl}
         mobileSrc={mobileImageUrl || imageUrl}
         alt={title || "بنر"}
-        sizes="(max-width: 640px) 100vw, 90vw"
-        mobileSizes="100vw"
+        sizes="(min-width: 80rem) 1248px, (min-width: 64rem) 992px, (min-width: 48rem) 736px, (min-width: 40rem) 608px, calc(100vw - 16px)"
+        mobileSizes="calc(100vw - 16px)"
         priority={priority}
       />
 

@@ -2,6 +2,8 @@
 // source can be shown, AppImage keeps its sized container and renders no <img>,
 // so there is no broken-image icon and no request to a missing file.
 
+import { uploadVariantSrcSet } from "./imageVariants.mjs";
+
 const STRINGIFIED_EMPTY = new Set(["undefined", "null"]);
 
 // A loadable URL for next/image, or null when there is nothing to load
@@ -25,6 +27,26 @@ export function initialImageSrc(src, fallbackSrc, baseUrl) {
 export function nextImageSrcAfterError(failedSrc, fallbackSrc, baseUrl) {
   const fallback = resolveImageSrc(fallbackSrc, baseUrl);
   return fallback && fallback !== failedSrc ? fallback : null;
+}
+
+// AppImage's source with its responsive variants. A raster upload starts with
+// its variant srcset when `responsive`; any error then drops to the plain
+// original once, and only a failing original moves on to the fallback rules
+// above. Every other source behaves exactly as before.
+export function initialImageState(src, fallbackSrc, baseUrl, responsive = true) {
+  const url = initialImageSrc(src, fallbackSrc, baseUrl);
+  return {
+    url,
+    srcSet: responsive ? uploadVariantSrcSet(url, baseUrl) : null,
+  };
+}
+
+export function nextImageStateAfterError(state, fallbackSrc, baseUrl) {
+  if (state.srcSet) return { url: state.url, srcSet: null };
+  return {
+    url: nextImageSrcAfterError(state.url, fallbackSrc, baseUrl),
+    srcSet: null,
+  };
 }
 
 // Desktop and mobile sources of one art-directed <picture>. Each viewport keeps
