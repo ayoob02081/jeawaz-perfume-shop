@@ -351,28 +351,54 @@ input[type="radio"] {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes fadeInRightBig {
-  from { opacity: 0; transform: translate3d(2000px, 0, 0); }
-  to { opacity: 1; transform: translate3d(0, 0, 0); }
+  from {
+    opacity: 0;
+    transform: translate3d(2000px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes fadeInUpBig {
-  from { opacity: 0; transform: translate3d(0, 2000px, 0); }
-  to { opacity: 1; transform: translate3d(0, 0, 0); }
+  from {
+    opacity: 0;
+    transform: translate3d(0, 2000px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
-.animate__fadeIn { animation-name: fadeIn; }
-.animate__fadeInRightBig { animation-name: fadeInRightBig; }
-.animate__fadeInUpBig { animation-name: fadeInUpBig; }
+.animate__fadeIn {
+  animation-name: fadeIn;
+}
+.animate__fadeInRightBig {
+  animation-name: fadeInRightBig;
+}
+.animate__fadeInUpBig {
+  animation-name: fadeInUpBig;
+}
 .animate__fadeOut {
   --animate-duration: 200ms;
   animation-name: fadeOut;
@@ -384,7 +410,9 @@ input[type="radio"] {
     transition-duration: 1ms !important;
     animation-iteration-count: 1 !important;
   }
-  .animate__animated[class*="Out"] { opacity: 0; }
+  .animate__animated[class*="Out"] {
+    opacity: 0;
+  }
 }
 
 .strikeThrough {
@@ -560,16 +588,30 @@ input:-webkit-autofill:active {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.24), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.24),
+    transparent
+  );
   transform: translateX(-100%);
   animation: product-card-shimmer 1.8s ease-in-out infinite;
 }
 .dark .product-card-skeleton::before {
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.07), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.07),
+    transparent
+  );
 }
 @keyframes product-card-shimmer {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(100%); }
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .product-card-skeleton::before {
