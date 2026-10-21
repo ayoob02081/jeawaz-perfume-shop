@@ -9,7 +9,10 @@ import "swiper/css/pagination";
 import { useRef } from "react";
 import PrimaryBannerCard from "@/components/PrimaryBannerCard";
 import { homeBannerView } from "@/utils/homeSectionView.mjs";
-import { bannerInitialQueryOptions, catalogInitialView } from "@/lib/storefrontCatalog.mjs";
+import {
+  bannerInitialQueryOptions,
+  catalogInitialView,
+} from "@/lib/storefrontCatalog.mjs";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { useCatalogSnapshotOptions } from "@/hooks/useCatalogSnapshotOptions";
 import { PrimaryBannerSkeleton } from "./skeleton/HomeSectionSkeletons";
@@ -22,7 +25,8 @@ function PrimaryBannerLayout({ initialSnapshot } = {}) {
   // With the server snapshot the first slide is in the HTML; without it the
   // client read shows the skeleton first, as before.
   const initialOptions = useCatalogSnapshotOptions(
-    bannerKeys.activeList(PRIMARY), bannerInitialQueryOptions(initialSnapshot),
+    bannerKeys.activeList(PRIMARY),
+    bannerInitialQueryOptions(initialSnapshot),
   );
   const result = useGetActiveBanners(PRIMARY, initialOptions);
   const query = catalogInitialView(result, initialOptions, useIsHydrated());
@@ -43,13 +47,28 @@ function PrimaryBannerLayout({ initialSnapshot } = {}) {
   return (
     <section className="relative container mx-auto xl:max-w-7xl mt-2 w-full px-2 sm:px-4">
       <Swiper
+        dir="ltr"
         modules={[Autoplay, Pagination]}
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
         }}
+        // A swipe during the autoplay transition made loop repositioning skip
+        // a second banner, and autoplay only pauses ~200 ms into a drag, so its
+        // timer could still advance under the finger. Ignore gestures while a
+        // transition runs and restart the countdown when a finger lands (mouse
+        // hover already pauses it).
+        preventInteractionOnTransition
+        onTouchStart={(swiper, event) => {
+          if (event?.pointerType !== "mouse" && swiper.autoplay?.running) {
+            swiper.autoplay.resume();
+          }
+        }}
         slidesPerView={1}
         spaceBetween={16}
-        centeredSlides
+        // No centeredSlides: one slide per view already fills the box, and with
+        // it on, loop repositioning of fewer than four banners shifted the first
+        // move of every drag one banner towards "next" (any rightward swipe
+        // advanced; leftward swipes needed half the width).
         loop={banners.length > 1}
         speed={700}
         autoplay={{
@@ -68,14 +87,15 @@ function PrimaryBannerLayout({ initialSnapshot } = {}) {
           </SwiperSlide>
         ))}
       </Swiper>
-      
-      {/* Desktop navigation */}
+
+      {/* Desktop navigation. The Swiper is dir="ltr": the next banner lies to the
+          right, so the right arrow advances and the left arrow goes back. */}
       {banners.length > 1 && (
         <>
           <button
             type="button"
-            aria-label="بنر قبلی"
-            onClick={() => swiperRef.current?.slidePrev()}
+            aria-label="بنر بعدی"
+            onClick={() => swiperRef.current?.slideNext()}
             className="absolute right-1 top-1/2 z-20 hidden max-lg:size-9 size-11 -translate-y-1/2 items-center justify-center rounded-full
             border border-stroke-200 bg-stroke-0/20 text-white shadow-md backdrop-blur-md duration-200 hover:bg-primary
             hover:text-white active:scale-95 md:flex xl:size-12"
@@ -85,8 +105,8 @@ function PrimaryBannerLayout({ initialSnapshot } = {}) {
 
           <button
             type="button"
-            aria-label="بنر بعدی"
-            onClick={() => swiperRef.current?.slideNext()}
+            aria-label="بنر قبلی"
+            onClick={() => swiperRef.current?.slidePrev()}
             className="absolute left-1 top-1/2 z-20 hidden max-lg:size-9 size-11 -translate-y-1/2 items-center justify-center rounded-full
             border border-stroke-200 bg-stroke-0/20 text-white shadow-md backdrop-blur-md duration-200 hover:bg-primary
             hover:text-white active:scale-95 md:flex xl:size-12 "
