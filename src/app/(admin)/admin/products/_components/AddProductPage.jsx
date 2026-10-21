@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Loading from "@/components/Loading";
-import { useGetProductById } from "@/hooks/useProducts";
+import { useGetProductById, useGetProductSearchAliases } from "@/hooks/useProducts";
 import ProductForm from "./ProductForm";
 import {
   COPY_FROM_PARAM,
@@ -46,11 +46,21 @@ function AddProductPage() {
 function DuplicateProductForm({ copyFrom, returnQuery }) {
   const id = parseCopyFromId(copyFrom);
   const { data: source, isLoading, error } = useGetProductById(id ?? undefined);
+  const {
+    data: aliases,
+    isLoading: aliasesLoading,
+    error: aliasesError,
+  } = useGetProductSearchAliases(id ?? undefined);
   const cloneDefaults = useMemo(
-    () => (source?.id ? mapProductToCloneDefaults(source) : null),
-    [source],
+    () => (source?.id ? mapProductToCloneDefaults(source, aliases?.searchAliases) : null),
+    [source, aliases],
   );
-  const { view, message } = duplicateView({ copyFrom, isLoading, error, source });
+  const { view, message } = duplicateView({
+    copyFrom,
+    isLoading: isLoading || aliasesLoading,
+    error: error || aliasesError,
+    source,
+  });
 
   if (view === "loading") return <Loading />;
   if (view === "error") {

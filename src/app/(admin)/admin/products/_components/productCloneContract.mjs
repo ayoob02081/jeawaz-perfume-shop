@@ -51,11 +51,11 @@ const copyList = (list) => (Array.isArray(list) ? [...list] : []);
 
 // Explicit whitelist (never a spread of the source). Reset: grade (blank, the
 // admin must choose), every Variant price (blank), stock (0) and offValue
-// (empty = no discount), so a copy can never inherit the source's price,
+// (0 = no discount), so a copy can never inherit the source's price,
 // inventory or discount. printName is copied but flagged for review in the UI.
 // Not copied: id, slug, timestamps, Variant ids, inventory, campaign,
 // representativeVariant, history, original/grade.
-export function mapProductToCloneDefaults(product) {
+export function mapProductToCloneDefaults(product, searchAliases) {
   const categories = product?.categories ?? {};
   const source = {
     perTitle: product?.perTitle,
@@ -92,10 +92,10 @@ export function mapProductToCloneDefaults(product) {
   };
 
   return {
-    ...initialProductFormValues(source),
+    ...initialProductFormValues(source, searchAliases),
     grade: "",
     stock: 0,
-    offValue: "",
+    offValue: 0,
   };
 }
 
