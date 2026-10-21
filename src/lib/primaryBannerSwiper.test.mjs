@@ -162,9 +162,9 @@ test("a mouse press or stopped autoplay leaves the countdown alone", () => {
   assert.deepEqual(stopped.calls, []);
 });
 
-// The Swiper is dir="ltr"; the desktop arrows keep their original mapping
-// (right arrow = previous, left arrow = next).
-test("the hero Swiper is LTR and the desktop arrows keep their original mapping", () => {
+// The Swiper is dir="ltr"; the desktop arrows act in the direction they point
+// (right arrow = next, left arrow = previous).
+test("the hero Swiper is LTR and each desktop arrow acts in the direction it points", () => {
   assert.equal(render(3).dir, "ltr");
   const source = readFileSync(
     resolve(SRC, "app/(user)/_components/PrimaryBannerLayout.jsx"),
@@ -175,11 +175,11 @@ test("the hero Swiper is LTR and the desktop arrows keep their original mapping"
   const right = buttons.find((b) => b.includes("ChevronRightIcon"));
   const left = buttons.find((b) => b.includes("ChevronLeftIcon"));
   assert.match(right, /absolute right-1/);
-  assert.match(right, /aria-label="بنر قبلی"/);
-  assert.match(right, /slidePrev\(\)/);
-  assert.doesNotMatch(right, /slideNext/);
+  assert.match(right, /aria-label="بنر بعدی"/);
+  assert.match(right, /slideNext\(\)/);
+  assert.doesNotMatch(right, /slidePrev/);
   assert.match(left, /absolute left-1/);
-  assert.match(left, /aria-label="بنر بعدی"/);
-  assert.match(left, /slideNext\(\)/);
-  assert.doesNotMatch(left, /slidePrev/);
+  assert.match(left, /aria-label="بنر قبلی"/);
+  assert.match(left, /slidePrev\(\)/);
+  assert.doesNotMatch(left, /slideNext/);
 });

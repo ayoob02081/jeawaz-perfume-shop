@@ -15,7 +15,10 @@ export function PrimaryBannerCard({ banner, priority = false }) {
   const { user } = useAuth();
 
   return (
-    <div className="relative flex w-full items-center justify-center overflow-hidden rounded-xl md:rounded-3xl banner--primary ">
+    <div
+      dir="rtl"
+      className="relative flex w-full items-center justify-center overflow-hidden rounded-xl md:rounded-3xl banner--primary "
+    >
       {/* Desktop art from 30rem, mobile art below it */}
       <BannerPicture
         src={imageUrl}
