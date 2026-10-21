@@ -50,7 +50,7 @@ test("focus and typing open an initially empty search without waiting for a seco
   find(tree, "input").props.onFocus(); find(tree, "input").props.onChange({ target: { value: "rose" } });
   assert.deepEqual(activations, [true, true]);
   const html = renderToStaticMarkup(Search({ ...defaults, results: [{ id: 105, perTitle: "Rose" }] }));
-  assert.match(html, /href="\/products\/105"/); assert.match(html, /aria-expanded="true"/);
+  assert.match(html, /href="\/products\/105"/); assert.doesNotMatch(html, /aria-expanded=/);
 });
 
 test("loading, empty, network error and 429 are distinct; stale data is not displayed while fetching", () => {
@@ -178,4 +178,32 @@ test("the actual shared suggestion renderer uses the card badge without inferrin
   const row = mod.exports({ id: 105, grade: "ORIGINAL" }, () => dismissed++);
   assert.equal(row.props.prefetch, false);
   row.props.onNavigate(); assert.equal(dismissed, 1);
+});
+
+test("search remains a labelled searchbox with linked result region and polite status, not an incomplete combobox", () => {
+  for (const inline of [false, true]) {
+    const html = renderToStaticMarkup(Search({ ...defaults, inline, results: [{ id: 105, perTitle: "Rose" }] }));
+    const input = html.match(/<input[^>]*>/)[0];
+    assert.match(html, /<form role="search" aria-label="جستجوی محصولات"/);
+    assert.match(input, /type="search"/);
+    assert.doesNotMatch(input, /aria-expanded|role="combobox"|aria-activedescendant/);
+    assert.match(input, /aria-controls="search-results"/);
+    assert.match(input, /aria-describedby="search-results-status"/);
+    assert.match(html, /id="search-results" role="region" aria-label="پیشنهادهای جستجو"/);
+    assert.match(html, /id="search-results-status" role="status" aria-live="polite"/);
+    assert.match(html, /<li><a href="\/products\/105">Rose<\/a><\/li>/);
+    const closed = renderToStaticMarkup(Search({ ...defaults, inline, active: false }));
+    assert.doesNotMatch(closed, /aria-expanded|aria-controls|aria-describedby|role="region"/);
+  }
+});
+
+test("search Escape dismissal retains the mobile dialog's ownership and existing form navigation", () => {
+  let closes = 0;
+  let prevented = 0;
+  for (const inline of [false, true]) {
+    const tree = Search({ ...defaults, inline, onActiveChange: (active) => { if (!active) closes++; } });
+    find(tree, "input").props.onKeyDown({ key: "Escape", preventDefault: () => prevented++ });
+  }
+  assert.equal(closes, 1);
+  assert.equal(prevented, 1);
 });

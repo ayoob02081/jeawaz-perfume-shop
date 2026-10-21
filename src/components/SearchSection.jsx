@@ -49,6 +49,8 @@ function SearchSection({
       }}
     >
       <form
+        role="search"
+        aria-label="جستجوی محصولات"
         onSubmit={(event) => {
           if (composing.current) {
             event.preventDefault();
@@ -67,8 +69,8 @@ function SearchSection({
           enterKeyHint="search"
           autoComplete="off"
           aria-label="جستجوی محصولات"
-          aria-expanded={shouldShowDropdown}
           aria-controls={shouldShowDropdown ? resultsId : undefined}
+          aria-describedby={shouldShowDropdown ? `${resultsId}-status` : undefined}
           placeholder={placeholder}
           value={value}
           onChange={(event) => {
@@ -111,11 +113,13 @@ function SearchSection({
       {shouldShowDropdown && (
         <div
           id={resultsId}
+          role="region"
           aria-label="پیشنهادهای جستجو"
           aria-busy={isFetching}
           className={`${inline ? "mt-3" : "absolute top-full mt-2 z-50 max-h-[min(60dvh,24rem)] overflow-y-auto overscroll-contain"} w-full bg-white dark:bg-stroke-0 rounded-2xl shadow-xl shadow-stroke-800/10 border border-stroke-150`}
         >
           <p
+            id={`${resultsId}-status`}
             role="status"
             aria-live="polite"
             className={

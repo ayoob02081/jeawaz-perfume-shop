@@ -21,7 +21,7 @@ function Footer() {
             />
             <p className="text-sm">جیاواز، دنیای رایحه‌های خاصه</p>
           </Link>
-          <div className="flex flex-col items-center justify-evenly gap-2 text-stroke-600 dark:text-stroke-600/50 text-xs max-md:text-center">
+          <div className="flex flex-col items-center justify-evenly gap-2 text-stroke-500 dark:text-stroke-250 text-xs max-md:text-center">
             <p>
               ما اینجاییم تا کمک کنیم عطری رو پیدا کنی که با شخصیتت هم‌صدا باشه.
             </p>
@@ -37,11 +37,9 @@ function Footer() {
           </div>
           <section className="flex items-center justify-evenly w-full text-white gap-6 pb-10">
             <nav className="flex flex-col items-start gap-2">
-              <ul>
-                <li>
-                  <h3 className="text-lg">عطر فروشی</h3>
-                </li>
-                <div className="footer--link grid-cols-2">
+              <div>
+                <h3 className="text-lg">عطر فروشی</h3>
+                <ul className="footer--link grid-cols-2">
                   <li>
                     <Link href={"/page/about-us"}>درباره ما</Link>
                   </li>
@@ -56,15 +54,13 @@ function Footer() {
                       پروفایل من
                     </Link>
                   </li>
-                </div>
-              </ul>
+                </ul>
+              </div>
             </nav>
             <nav className="flex flex-col items-start gap-2">
-              <ul>
-                <li>
-                  <h3 className="text-lg">فروشگاه</h3>
-                </li>
-                <div className="footer--link grid-cols-3 *:even:col-span-2">
+              <div>
+                <h3 className="text-lg">فروشگاه</h3>
+                <ul className="footer--link grid-cols-3 *:even:col-span-2">
                   <li>
                     <Link href={"/products?sort=newest"}>جدیدترین</Link>
                   </li>
@@ -83,8 +79,8 @@ function Footer() {
                       محصولات پرفروش
                     </Link>
                   </li>
-                </div>
-              </ul>
+                </ul>
+              </div>
             </nav>
           </section>
           <article className="flex max-sm:flex-col max-sm:gap-6 items-center justify-between w-full sm:px-16 text-white">
@@ -117,7 +113,7 @@ function Footer() {
                 <p className="font-bold text-nowrap">
                   منتظر صدای گرم شما هستیم!!{" "}
                 </p>
-                <p className="text-stroke-550 dark:text-stroke-200 font-semibod max-sm:w-full">
+                <p className="text-stroke-500 dark:text-stroke-250 font-semibod max-sm:w-full">
                   اگر سوالی داشتید با ما تماس بگیرید
                 </p>
               </span>
