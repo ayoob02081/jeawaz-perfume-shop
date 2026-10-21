@@ -1,6 +1,6 @@
 "use client";
 
-import Loading from "@/components/Loading";
+import { ProfileInfoSkeleton } from "./ProfileSkeletons";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { toJalali } from "@/utils/date";
 import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
@@ -21,9 +21,10 @@ function ProfileInfo() {
     birthday,
   } = user || {};
 
-  if (isLoading) {
-    return <Loading />;
+  if (isLoading && !user) {
+    return <ProfileInfoSkeleton />;
   }
+  if (!user) return null;
 
   return (
     <div className="w-full border md:border-[1.5px] border-stroke-200 rounded-2xl p-4 bg-stroke-0">

@@ -552,3 +552,28 @@ input:-webkit-autofill:active {
     break-inside: avoid;
   }
 }
+
+/* One transform-only shimmer per loading product card; inner shapes are static. */
+.product-card-skeleton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.24), transparent);
+  transform: translateX(-100%);
+  animation: product-card-shimmer 1.8s ease-in-out infinite;
+}
+.dark .product-card-skeleton::before {
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.07), transparent);
+}
+@keyframes product-card-shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-card-skeleton::before {
+    animation: none;
+    content: none;
+  }
+}

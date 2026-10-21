@@ -1,7 +1,8 @@
 "use client";
 
 import AppImage from "@/components/AppImage";
-import Loading from "@/components/Loading";
+import { ProfileAddressesSkeleton } from "./ProfileSkeletons";
+import { useAuth } from "@/contexts/auth/AuthContext";
 import { useGetAddresses, useRemoveAddress } from "@/hooks/useAddress";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { PlusIcon } from "@heroicons/react/24/outline";
@@ -9,10 +10,12 @@ import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 function AddressLayout() {
-  const { data, isLoading } = useGetAddresses();
+  const { user, loading: authLoading, sessionReady } = useAuth();
+  const { data, isLoading } = useGetAddresses({ enabled: Boolean(user) && sessionReady });
 
-  if (isLoading) {
-    return <Loading />;
+  if (!user) return authLoading ? <ProfileAddressesSkeleton /> : null;
+  if (isLoading && data === undefined) {
+    return <ProfileAddressesSkeleton />;
   }
 
   return (
