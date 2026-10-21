@@ -53,8 +53,9 @@ function FilterSection() {
     isLoading: brandsLoading,
     error,
   } = useGetAllBrandCategories();
-  // The root layout's CategorySidebar runs the same brands query and can fill
-  // the cache before this subtree hydrates; render the server's skeletons
+  // The root layout's CategorySidebar runs the same brands query once its
+  // trigger is hovered, focused or opened, and can fill the cache before this
+  // subtree hydrates; render the server's skeletons
   // until hydration ends so the first client render matches the HTML.
   const isHydrated = useIsHydrated();
   const { data: categories, isLoading: categoriesLoading } =

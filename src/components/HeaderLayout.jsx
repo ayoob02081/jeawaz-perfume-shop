@@ -32,8 +32,13 @@ import {
 } from "@/utils/headerSearch.mjs";
 
 function HeaderLayout() {
-  const { isCategoryOpen, openSidebar, toggleSidebar, toggleCategory } =
-    useSidebar();
+  const {
+    isCategoryOpen,
+    openSidebar,
+    toggleSidebar,
+    toggleCategory,
+    warmCategory,
+  } = useSidebar();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -170,6 +175,7 @@ function HeaderLayout() {
         searchProps={searchProps("desktop")}
         totalProducts={cartItems?.totalProducts}
         toggleCategory={toggleCategory}
+        warmCategory={warmCategory}
         isCategoryOpen={isCategoryOpen}
         loading={loading}
         fullName={fullName}
@@ -213,6 +219,7 @@ export default HeaderLayout;
 function DesktopHeader({
   searchProps,
   toggleCategory,
+  warmCategory,
   fullName,
   isAuthenticated,
   isCategoryOpen,
@@ -369,6 +376,9 @@ function DesktopHeader({
                 <button
                   className="w-full h-full btn btn--primary ring-4 ring-primary/5 hover:ring-0 flex items-center justify-center size-full gap-2"
                   onClick={toggleCategory}
+                  // Starts the category panel's data on intent, before the click.
+                  onPointerEnter={warmCategory}
+                  onFocus={warmCategory}
                   disabled={isCategoryOpen}
                 >
                   <Squares2X2Icon className="size-6" />

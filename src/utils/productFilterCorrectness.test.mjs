@@ -293,7 +293,7 @@ test("only storefront filter UIs use the inactive-free hook; the shared hook is 
   for (const ui of [filtersModal, categorySidebar]) {
     // Whitespace, line breaks and a trailing comma are formatting only.
     assert.match(ui, /useGetStorefrontCategoriesByType\(\s*"gender"(?:,\s*sharedCategoryOptions)?,?\s*\)/);
-    assert.match(ui, /useGetStorefrontCategoriesByType\(\s*"fragrance_family",?\s*\)/);
+    assert.match(ui, /useGetStorefrontCategoriesByType\(\s*"fragrance_family"(?:,\s*sharedCategoryOptions)?,?\s*\)/);
     assert.doesNotMatch(ui, /useGetCategoriesByType\(/);
   }
 });

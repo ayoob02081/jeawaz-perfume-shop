@@ -48,7 +48,8 @@ function FiltersModal({
   errors,
 }) {
   // Selected filter values become titles from brand and category caches that
-  // the root layout's CategorySidebar may fill before this subtree hydrates:
+  // the root layout's CategorySidebar may fill (once its trigger is hovered,
+  // focused or opened) before this subtree hydrates:
   // withhold query data until hydrated so the first client render matches the
   // server HTML (which never has it). Static options stay as they are.
   const isHydrated = useIsHydrated();

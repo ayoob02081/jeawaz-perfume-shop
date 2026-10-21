@@ -6,7 +6,7 @@ import { QueryCache, QueryClient, QueryClientProvider, QueryObserver, keepPrevio
 import axios from "axios";
 import {
   HOME_CATALOG_QUERY, STOREFRONT_CATALOG_STALE_TIME, catalogInitialQueryOptions,
-  categoryInitialQueryOptions, catalogSearchParams, catalogInitialView, sidebarCategoryQueryEnabled,
+  categoryInitialQueryOptions, catalogSearchParams, catalogInitialView,
   catalogSnapshotQueryOptions, commitCatalogSnapshot, prepareCatalogSnapshot,
 } from "./storefrontCatalog.mjs";
 import { fetchCatalogSnapshot, CATALOG_SNAPSHOT_TIMEOUT_MS } from "./storefrontCatalog.server.mjs";
@@ -185,23 +185,40 @@ test("first hydration view matches server HTML even if a sibling already filled 
   assert.deepEqual(category.data, [{ id: 1 }]);
 });
 
-test("closed home sidebar waits for the page seed; early opening and other routes still load categories", () => {
+test("closed sidebar reads no categories; intent loads each key once and reopening reuses it", async () => {
   const client = new QueryClient();
-  let requests = 0;
-  const base = { queryKey: ["categories", "gender"], queryFn: async () => { requests++; return []; }, staleTime: 300000 };
-  const sidebar = new QueryObserver(client, { ...base, enabled: sidebarCategoryQueryEnabled("/", false) });
-  const stopSidebar = sidebar.subscribe(() => {});
-  assert.equal(requests, 0, "streaming the home snapshot does not race a browser category read");
-  const page = new QueryObserver(client, { ...base, ...categoryInitialQueryOptions({ data: [{ id: 1 }], updatedAt: Date.now() }) });
-  const stopPage = page.subscribe(() => {});
-  assert.equal(requests, 0, "page seed requires no extra client fetch");
-  assert.deepEqual(client.getQueryData(base.queryKey), [{ id: 1 }]);
-  assert.equal(sidebarCategoryQueryEnabled("/", true), true, "early user interaction remains enabled");
-  for (const route of ["/products", "/products/105", "/page/about-us"]) {
-    assert.equal(sidebarCategoryQueryEnabled(route, false), true);
-  }
-  stopSidebar();
-  stopPage();
+  const requests = {};
+  const base = (type) => ({
+    queryKey: ["categories", type],
+    queryFn: async () => { requests[type] = (requests[type] ?? 0) + 1; return [{ id: type }]; },
+    retry: false, staleTime: 300000, refetchOnWindowFocus: false,
+  });
+  const settle = () => new Promise(setImmediate);
+  // Closed, no intent: the sidebar's observers stay disabled on every route.
+  const sidebar = ["gender", "season"].map((type) => new QueryObserver(client, { ...base(type), enabled: false }));
+  const stops = sidebar.map((observer) => observer.subscribe(() => {}));
+  await settle();
+  assert.deepEqual(requests, {}, "a closed sidebar starts no category read");
+  // Home seeds its own keys; the closed sidebar does not race that snapshot.
+  const page = new QueryObserver(client, { ...base("gender"), ...categoryInitialQueryOptions({ data: [{ id: 1 }], updatedAt: Date.now() }) });
+  stops.push(page.subscribe(() => {}));
+  await settle();
+  assert.deepEqual(requests, {}, "page seed requires no extra client fetch");
+  // Intent or opening: a fresh seeded key is reused, a missing key loads once.
+  sidebar.forEach((observer, index) => observer.setOptions({ ...base(["gender", "season"][index]), enabled: true }));
+  await settle();
+  assert.deepEqual(requests, { season: 1 });
+  assert.deepEqual(client.getQueryData(["categories", "gender"]), [{ id: 1 }]);
+  // A visible consumer of the same key (the /products filters) shares it.
+  const products = new QueryObserver(client, base("season"));
+  stops.push(products.subscribe(() => {}));
+  await settle();
+  assert.deepEqual(requests, { season: 1 }, "one request per key across consumers");
+  // Close and reopen keep the observers; fresh data is not read again.
+  sidebar[1].setOptions({ ...base("season"), enabled: true });
+  await settle();
+  assert.deepEqual(requests, { season: 1 }, "reopening within staleTime reuses the cache");
+  stops.forEach((stop) => stop());
   client.clear();
 });
 

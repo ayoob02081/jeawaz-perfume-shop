@@ -91,12 +91,6 @@ export async function commitCatalogSnapshot(client, queryKey, options,
   }
 }
 
-// On home, the page seeds these same category keys. Don't start a duplicate
-// sidebar read while that streamed snapshot is still arriving. Opening the
-// panel early can fetch normally; all other routes keep their existing reads.
-export const sidebarCategoryQueryEnabled = (pathname, isCategoryOpen) =>
-  pathname !== "/" || Boolean(isCategoryOpen);
-
 // Next page searchParams is a record, while the existing UI consumes the
 // URLSearchParams interface. Preserve repeated values and their order.
 export function catalogSearchParams(record = {}) {

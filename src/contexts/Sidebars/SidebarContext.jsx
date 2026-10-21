@@ -16,6 +16,9 @@ export function SidebarProvider({ children }) {
 
   // Category
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  // Latched: once the user signals they may open the category panel, its
+  // filter data loads and stays enabled.
+  const [categoryIntent, setCategoryIntent] = useState(false);
 
   // -------------------------
   // Sidebar
@@ -45,6 +48,10 @@ export function SidebarProvider({ children }) {
     setIsCategoryOpen(false);
   }, []);
 
+  const warmCategory = useCallback(() => {
+    setCategoryIntent(true);
+  }, []);
+
   const value = useMemo(
     () => ({
       // Sidebar
@@ -59,15 +66,19 @@ export function SidebarProvider({ children }) {
       setIsCategoryOpen,
       closeCategory,
       toggleCategory,
+      categoryIntent,
+      warmCategory,
     }),
     [
       isSidebarOpen,
       isCategoryOpen,
+      categoryIntent,
       openSidebar,
       closeSidebar,
       closeCategory,
       toggleSidebar,
       toggleCategory,
+      warmCategory,
     ],
   );
 

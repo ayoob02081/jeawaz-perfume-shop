@@ -26,14 +26,10 @@ import {
 import FilterCheckBox from "@/ui/FilterCheckBox";
 import Loading from "@/components/Loading";
 import { buildQueryFromFilters } from "@/utils/queryFilters";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
-import { useIsHydrated } from "@/hooks/useIsHydrated";
-import {
-  catalogInitialView,
-  sidebarCategoryQueryEnabled,
-} from "@/lib/storefrontCatalog.mjs";
 import { useSidebar } from "@/contexts/Sidebars/SidebarContext";
+import { useState } from "react";
 
 // The sidebar has its own dedicated gender panel; the generic taxonomy
 // columns render every other shared group.
@@ -41,44 +37,55 @@ const SIDEBAR_TAXONOMY_GROUPS = TAXONOMY_FILTER_GROUPS.filter(
   ({ key }) => key !== "gender",
 );
 
+// True from the first render where `active` is true, and from then on.
+function useLatch(active) {
+  const [latched, setLatched] = useState(false);
+  if (active && !latched) setLatched(true);
+  return latched || active;
+}
+
 function CategorySidebar() {
-  const { isCategoryOpen, closeCategory } = useSidebar();
+  const { isCategoryOpen, closeCategory, isSidebarOpen, categoryIntent } =
+    useSidebar();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const isHydrated = useIsHydrated();
+  // The panel mounts in the root layout on every route but is rarely opened.
+  // Its filter data loads on intent (desktop trigger hover/focus, the mobile
+  // navigation sidebar that holds the trigger) or on opening, and stays
+  // enabled. Pages that show the same keys (home sections, /products) load
+  // them on their own; the cache is shared either way.
   const sharedCategoryOptions = {
-    enabled: sidebarCategoryQueryEnabled(usePathname(), isCategoryOpen),
+    enabled: useLatch(isCategoryOpen || isSidebarOpen || categoryIntent),
   };
+  // The filter body is built on first opening and kept for fast reopening and
+  // the close animation. Never on the server or the hydration render.
+  const hasOpened = useLatch(isCategoryOpen);
 
-  // Home's snapshot can seed these shared keys before the sidebar hydrates.
-  // Its initial HTML has no snapshot, so keep that placeholder for hydration.
-  const genderResult = useGetStorefrontCategoriesByType(
-    "gender",
-    sharedCategoryOptions,
-  );
   const { data: genderCategories, isPending: isGenderPending } =
-    catalogInitialView(genderResult, {}, isHydrated);
+    useGetStorefrontCategoriesByType("gender", sharedCategoryOptions);
 
   const { data: fragranceFamilyCategories, isPending: isFamilyPending } =
-    useGetStorefrontCategoriesByType("fragrance_family");
+    useGetStorefrontCategoriesByType("fragrance_family", sharedCategoryOptions);
 
   const { data: brandCategories, isPending: isBrandPending } =
-    useGetAllBrandCategories();
+    useGetAllBrandCategories(sharedCategoryOptions);
 
-  const { data: seasonCategories } = useGetStorefrontCategoriesByType("season");
-  const { data: temperatureCategories } =
-    useGetStorefrontCategoriesByType("temperature");
-  const characterResult = useGetStorefrontCategoriesByType(
+  const { data: seasonCategories } = useGetStorefrontCategoriesByType(
+    "season",
+    sharedCategoryOptions,
+  );
+  const { data: temperatureCategories } = useGetStorefrontCategoriesByType(
+    "temperature",
+    sharedCategoryOptions,
+  );
+  const { data: characterCategories } = useGetStorefrontCategoriesByType(
     "character",
     sharedCategoryOptions,
   );
-  const { data: characterCategories } = catalogInitialView(
-    characterResult,
-    {},
-    isHydrated,
+  const { data: occasionCategories } = useGetStorefrontCategoriesByType(
+    "occasion",
+    sharedCategoryOptions,
   );
-  const { data: occasionCategories } =
-    useGetStorefrontCategoriesByType("occasion");
   const taxonomyOptions = {
     seasons: seasonCategories,
     temperature: temperatureCategories,
@@ -167,7 +174,7 @@ function CategorySidebar() {
           <div className="size-5" />
         </div>
 
-        {isLoadingCategories ? (
+        {!hasOpened ? null : isLoadingCategories ? (
           <Loading />
         ) : (
           <form className="flex max-md:flex-col justify-start lg:justify-between lg:items-stretch h-full lg:h-117.5 max-lg:w-full max-lg:pt-18 bg-stroke-100">

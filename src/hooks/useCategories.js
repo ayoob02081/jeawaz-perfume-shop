@@ -26,13 +26,14 @@ export const useGetAllCategories = () =>
     refetchOnWindowFocus: false,
   });
 
-export const useGetAllBrandCategories = () =>
+export const useGetAllBrandCategories = (options = {}) =>
   useQuery({
     queryKey: ["get-brands"],
     queryFn: getAllBrandsApi,
     retry: false,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
+    ...options,
   });
 
 export const useGetCategoriesByType = (type) =>

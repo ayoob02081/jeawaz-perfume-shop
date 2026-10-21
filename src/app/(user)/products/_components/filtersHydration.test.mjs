@@ -1,5 +1,6 @@
 // Product filter hydration. The root layout's CategorySidebar runs the same
-// brand and storefront-category queries and can fill the cache before the
+// brand and storefront-category queries once its trigger is hovered, focused
+// or opened, and can fill the cache before the
 // products subtree hydrates; markup built from that data must match the server
 // HTML until hydration ends. Narrow source checks: there is no DOM test
 // environment.
