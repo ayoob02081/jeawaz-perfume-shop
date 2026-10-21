@@ -99,7 +99,7 @@ test("actual Next Link SSR renders first/middle/last page hrefs and an accessibl
 
 test("boundary arrows and ellipses have no fake href and no nested interactive markup", () => {
   const html = render({ totalPages: 12 });
-  assert.match(html, /<span aria-disabled="true"/);
+  assert.match(html, /<span role="link" aria-disabled="true"/);
   assert.match(html, /aria-hidden="true">\.\.\.<\/span>/);
   assert(!hrefs(html).some((href) => href === "#" || href.includes("page=0") || href.includes("dots")));
   assert(!/<a\b[^>]*>(?:(?!<\/a>)[\s\S])*<(a|button)\b/.test(html));
@@ -247,5 +247,18 @@ test("one, five, ten, twenty and one hundred pages retain bounded nearby navigat
     assert.match(html, /<nav[^>]*><(?:a|span)[\s\S]*?<\/(?:a|span)><div class="flex min-w-0 flex-1 flex-wrap/);
     assert.match(html, /<\/div><(?:a|span)/);
     assert(!html.includes("<button"));
+  }
+});
+
+
+test("first/last disabled links have valid semantics, a name, and no focus or navigation target", () => {
+  for (const [page, name] of [[1, "صفحه قبل"], [3, "صفحه بعد"]]) {
+    const html = render({ page });
+    const disabled = [...html.matchAll(/<span\b[^>]*aria-disabled="true"[^>]*>/g)].map(match => match[0]);
+    assert.equal(disabled.length, 1);
+    assert.match(disabled[0], /role="link"/);
+    assert(disabled[0].includes('aria-label="' + name + '"'));
+    assert.doesNotMatch(disabled[0], /href=|tabindex=/);
+    assert(hrefs(html).length > 0);
   }
 });

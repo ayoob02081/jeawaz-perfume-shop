@@ -38,7 +38,7 @@ function Footer() {
           <section className="flex items-center justify-evenly w-full text-white gap-6 pb-10">
             <nav className="flex flex-col items-start gap-2">
               <div>
-                <h3 className="text-lg">عطر فروشی</h3>
+                <h2 className="text-lg">عطر فروشی</h2>
                 <ul className="footer--link grid-cols-2">
                   <li>
                     <Link href={"/page/about-us"}>درباره ما</Link>
@@ -59,7 +59,7 @@ function Footer() {
             </nav>
             <nav className="flex flex-col items-start gap-2">
               <div>
-                <h3 className="text-lg">فروشگاه</h3>
+                <h2 className="text-lg">فروشگاه</h2>
                 <ul className="footer--link grid-cols-3 *:even:col-span-2">
                   <li>
                     <Link href={"/products?sort=newest"}>جدیدترین</Link>

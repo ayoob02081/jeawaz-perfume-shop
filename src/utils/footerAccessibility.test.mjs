@@ -44,17 +44,19 @@ test("footer lists own only list items and every list item has a list parent", (
   assert.equal(items, 11);
 });
 
-test("navigation headings stay headings; all eight storefront/account destinations retain their order", () => {
+test("navigation headings follow the page h1 without changing their typography; all eight storefront/account destinations retain their order", () => {
   const headings = [];
   const links = [];
   visit(Footer(), (node, parent) => {
-    if (node.type === "h3") { headings.push(node.props.children); assert.notEqual(parent?.type, "li"); }
+    if (node.type === "h2") { headings.push(node.props.children); assert.notEqual(parent?.type, "li"); }
     if (node.type === Link && node.props.href.startsWith("/") && node.props.href !== "/") links.push(node.props.href);
   });
-  assert.equal(headings.length, 2);
+  assert.deepEqual(headings, ["عطر فروشی", "فروشگاه"]);
   assert.deepEqual(links, ["/page/about-us", "/page/contact-us", "/page/terms", "/profile/me", "/products?sort=newest", "/products?sort=most_discounted&discounted=true", "/products", "/products?sort=best_selling"]);
   const html = renderToStaticMarkup(React.createElement(Footer));
   assert.match(html, /<ul class="footer--link grid-cols-2">/);
   assert.match(html, /<ul class="footer--link grid-cols-3 \*:even:col-span-2">/);
   assert.match(html, /class="bg-stone-950 /);
+  assert.equal([...html.matchAll(/<h2 class="text-lg">/g)].length, 2);
+  assert.doesNotMatch(html, /<h[3-6]\b/);
 });

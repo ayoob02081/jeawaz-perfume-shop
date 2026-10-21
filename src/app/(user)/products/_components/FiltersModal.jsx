@@ -459,6 +459,7 @@ function FilterOption({
             </div>
             <button
               type="button"
+              aria-label={`انتخاب ${title}`}
               onClick={openFilter}
               className="flex items-center justify-end w-full"
             >
@@ -710,6 +711,7 @@ function SingleCategoryFilter({
         )}
         <button
           type="button"
+          aria-label={`انتخاب ${label}`}
           onClick={() => setMode(field)}
           className={`flex items-center justify-end gap- w-full `}
         >
@@ -811,6 +813,7 @@ function VariantTypeFilter({ value, addFilter, setMode, mode }) {
         )}
         <button
           type="button"
+          aria-label="انتخاب نوع محصول"
           onClick={() => setMode("type")}
           className={`flex items-center justify-end gap-2 w-full `}
         >

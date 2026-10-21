@@ -420,6 +420,7 @@ function BrandsFilter({
       </div>
       <button
         type="button"
+        aria-label="نمایش برندهای بیشتر"
         onClick={() => scrollTo(ref, "x", -400)}
         className="absolute left-0 z-10 flex items-center justify-center bg-stroke-0/10 backdrop-blur-md text-stroke-800 lg:text-lg font-bold h-full px-2"
       >

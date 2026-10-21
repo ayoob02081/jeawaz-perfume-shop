@@ -78,6 +78,7 @@ export default function ProductPagination({
         )
       ) : (
         <span
+          role="link"
           aria-disabled="true"
           aria-label="صفحه قبل"
           className={`${arrowClassName} opacity-30`}
@@ -128,6 +129,7 @@ export default function ProductPagination({
         )
       ) : (
         <span
+          role="link"
           aria-disabled="true"
           aria-label="صفحه بعد"
           className={`${arrowClassName} opacity-30`}
