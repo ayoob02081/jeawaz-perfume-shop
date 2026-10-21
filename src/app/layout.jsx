@@ -3,12 +3,8 @@ import Providers from "./Providers";
 import Footer from "./Footer";
 import MobilePannel from "./MobilePannel";
 import { Toaster } from "react-hot-toast";
-import { Inter } from "next/font/google";
-import { cn } from "@/lib/utils";
 import Sidebars from "./Sidebars";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_ORIGIN } from "@/lib/seo.mjs";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 // No openGraph here: Next would pass it unmerged to every page without its own.
 export const metadata = {
@@ -19,12 +15,7 @@ export const metadata = {
 
 export default function RootLayout({ children, modal }) {
   return (
-    <html
-      lang="fa"
-      dir="rtl"
-      suppressHydrationWarning
-      className={cn("font-sans", inter.variable)}
-    >
+    <html lang="fa" dir="rtl" suppressHydrationWarning className="font-sans">
       <body
         dir="rtl"
         className="font-display antialiased scrollbar-none bg-stroke-0! print:bg-white! duration-200"
