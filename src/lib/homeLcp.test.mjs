@@ -394,7 +394,7 @@ test("wiring: home seeds the banner, deprioritizes decoration and below-the-fold
     /<PrimaryBannerLayout initialSnapshot=\{snapshot\.primaryBanners\} \/>/,
   );
   const flowers = [
-    ...page.matchAll(/<img\s[^>]*src="\/images\/flower\.webp"[^>]*\/>/g),
+    ...page.matchAll(/<Image\s[^>]*src="\/images\/flower\.webp"[^>]*\/>/g),
   ].map(([tag]) => tag);
   assert.equal(flowers.length, 3);
   for (const tag of flowers) {

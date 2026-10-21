@@ -18,7 +18,6 @@ function Footer() {
               alt="jeawaz-brand-icon"
               width="w-28 h-[4.25rem]"
               sizes="20vw"
-              priority={true}
             />
             <p className="text-sm">جیاواز، دنیای رایحه‌های خاصه</p>
           </Link>
@@ -144,6 +143,7 @@ function Footer() {
                     referrerPolicy="origin"
                     src="https://trustseal.enamad.ir/logo.aspx?id=7688622&Code=xOwa5wAZcc7Sg2vZPyAOvqlYvMusK0sm"
                     alt="اینماد"
+                    loading="lazy"
                     style={{ cursor: "pointer" }}
                     code="xOwa5wAZcc7Sg2vZPyAOvqlYvMusK0sm"
                     className="size-full"
