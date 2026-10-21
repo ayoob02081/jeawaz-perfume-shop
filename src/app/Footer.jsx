@@ -7,7 +7,7 @@ function Footer() {
   return (
     <article className="max-w-480 mx-auto 2xl:rounded-t-4xl overflow-hidden">
       <OptionsFooter />
-      <section className="bg-black size-full max-sm:px-4 max-md:pb-24 sm:px-16 py-8">
+      <section className="bg-stone-950 size-full max-sm:px-4 max-md:pb-24 sm:px-16 py-8">
         <div className="flex flex-col items-center gap-6 max-sm:pb-6 sm:py-6">
           <Link
             href={"/"}
@@ -40,7 +40,7 @@ function Footer() {
             <nav className="flex flex-col items-start gap-2">
               <ul>
                 <li>
-                  <h4 className="text-lg">عطر فروشی</h4>
+                  <h3 className="text-lg">عطر فروشی</h3>
                 </li>
                 <div className="footer--link grid-cols-2">
                   <li>
@@ -63,7 +63,7 @@ function Footer() {
             <nav className="flex flex-col items-start gap-2">
               <ul>
                 <li>
-                  <h4 className="text-lg">فروشگاه</h4>
+                  <h3 className="text-lg">فروشگاه</h3>
                 </li>
                 <div className="footer--link grid-cols-3 *:even:col-span-2">
                   <li>
@@ -161,15 +161,15 @@ function Footer() {
             <ul className="flex items-center justify-between gap-2">
               <li>
                 <Link
-                  href={"/"}
+                  href="https://wa.me/989302125151"
                   className="text-white hover:text-green-500 hover:fill-stroke-200 duration-200"
                 >
-                <AppImage
-                  width="size-6"
-                  src="/images/whatsapp.png"
-                  alt="whatsapp"
-                  sizes="10vw"
-                />
+                  <AppImage
+                    width="size-6"
+                    src="/images/whatsapp.png"
+                    alt="whatsapp"
+                    sizes="10vw"
+                  />
                 </Link>
               </li>
               <li>

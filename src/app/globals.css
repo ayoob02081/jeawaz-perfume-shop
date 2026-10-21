@@ -165,7 +165,7 @@
     @apply h-35 sm:h-50 xl:h-64 aspect-27/11;
   }
   .banner--btn--secondary {
-    @apply font-bold text-[8px] sm:text-[10px] xl:text-xs 2xl:text-sm rounded-4xl h-5 sm:h-6 xl:h-8 2xl:h-8 bg-stroke-0/10 backdrop-blur-md text-stroke-800 hover:*:first:text-primary duration-200;
+    @apply font-bold text-[10px] xl:text-xs 2xl:text-sm rounded-4xl h-6 sm:h-8 xl:h-8 2xl:h-8 bg-stroke-0/10 backdrop-blur-md text-stroke-800 hover:*:first:text-primary duration-200;
   }
   .backdrop {
     @apply bg-stroke-950/15 backdrop-blur-md duration-200;
@@ -466,7 +466,7 @@ input:-webkit-autofill:active {
 }
 
 .primary-banner-swiper .swiper-pagination {
-  direction: rtl;
+  direction: ltr;
 }
 
 .primary-banner-swiper .swiper-pagination-bullet {

@@ -291,8 +291,9 @@ test("only storefront filter UIs use the inactive-free hook; the shared hook is 
   assert.match(categoryHooks,
     /export const useGetCategoriesByType = \(type\) =>\s*useQuery\(\{\s*queryKey: \["categories", type\],\s*queryFn: \(\) => getCategoriesByTypeApi\(type\),\s*enabled: !!type,\s*retry: false,\s*staleTime: 1000 \* 60 \* 5,\s*refetchOnWindowFocus: false,\s*\}\);/);
   for (const ui of [filtersModal, categorySidebar]) {
-    assert.match(ui, /useGetStorefrontCategoriesByType\("gender"(?:, sharedCategoryOptions)?\)/);
-    assert.match(ui, /useGetStorefrontCategoriesByType\("fragrance_family"\)/);
+    // Whitespace, line breaks and a trailing comma are formatting only.
+    assert.match(ui, /useGetStorefrontCategoriesByType\(\s*"gender"(?:,\s*sharedCategoryOptions)?,?\s*\)/);
+    assert.match(ui, /useGetStorefrontCategoriesByType\(\s*"fragrance_family",?\s*\)/);
     assert.doesNotMatch(ui, /useGetCategoriesByType\(/);
   }
 });
@@ -305,9 +306,10 @@ test("Home category sections render only storefront (active) categories", () => 
     ["AccordCategoriesLayout", "character", "characters"],
   ]) {
     const home = source(`../app/(user)/_components/${name}.jsx`);
-    assert.match(home, new RegExp(`useGetStorefrontCategoriesByType\\("${type}", initialOptions\\)`));
+    // Whitespace, line breaks and a trailing comma are formatting only.
+    assert.match(home, new RegExp(`useGetStorefrontCategoriesByType\\(\\s*"${type}",\\s*initialOptions,?\\s*\\)`));
     assert.match(home,
-      new RegExp(`data: ${list},\\s*isPending,\\s*error,\\s*\\} = catalogInitialView\\(result, initialOptions, useIsHydrated\\(\\), storefrontCategoryOptions\\);`));
+      new RegExp(`data: ${list},\\s*isPending,\\s*error,\\s*\\} = catalogInitialView\\(\\s*result,\\s*initialOptions,\\s*useIsHydrated\\(\\),\\s*storefrontCategoryOptions,?\\s*\\);`));
     assert.match(home, /import \{ useGetStorefrontCategoriesByType \} from "@\/hooks\/useCategories";/);
     assert.doesNotMatch(home, /useGetCategoriesByType\(|isActive/);
     assert.match(home, new RegExp(`${list}\\??\\.map\\(`));

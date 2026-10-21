@@ -32,7 +32,8 @@ import {
 } from "@/utils/headerSearch.mjs";
 
 function HeaderLayout() {
-  const { isCategoryOpen, toggleSidebar, toggleCategory } = useSidebar();
+  const { isCategoryOpen, openSidebar, toggleSidebar, toggleCategory } =
+    useSidebar();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -185,7 +186,7 @@ function HeaderLayout() {
         dialogId={dialogId}
         onOpenSearch={() => activateSearch("spotlight", true)}
         totalProducts={cartItems?.totalProducts}
-        toggleSidebar={toggleSidebar}
+        openSidebar={openSidebar}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         handleSearchSubmit={handleSearchSubmit}
@@ -225,11 +226,11 @@ function DesktopHeader({
   const pathName = usePathname();
 
   return (
-    <nav className="max-lg:hidden relative lg:fixed top-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl bg-stroke-0 shadow-md dark:shadow-stroke-800/10 z-90 duration-200">
-      <ul className="flex flex-col justify-between gap-6">
+    <nav className="max-lg:hidden relative lg:fixed top-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl bg-stroke-0 shadow-md shadow-black/10 dark:shadow-black/20 z-90 duration-200">
+      <div className="flex flex-col justify-between gap-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex grow items-center justify-betwee gap-4">
-            <div className="flex grow items-center justify-between">
+            <ul className="flex grow items-center justify-between">
               <li className=" justify-items-center">
                 <Link className="block p-2" href="/">
                   <AppImage
@@ -250,11 +251,13 @@ function DesktopHeader({
                   onSubmit={handleSearchSubmit}
                 />
               </li>
-            </div>
-            <li>
-              <ThemeToggle />
-            </li>
-            <div className="flex flex-none items-center justify-between gap-4">
+            </ul>
+            <ul>
+              <li>
+                <ThemeToggle />
+              </li>
+            </ul>
+            <ul className="flex flex-none items-center justify-between gap-4">
               <li className="relative flex items-center justify-center max-lg:hidden">
                 <Link
                   href={"/page/terms"}
@@ -300,9 +303,9 @@ function DesktopHeader({
                   <div className="absolute -bottom-3 size-2 rounded-full bg-primary"></div>
                 )}
               </li>
-            </div>
+            </ul>
           </div>
-          <div className="flex flex-none items-center justify-between gap-3">
+          <ul className="flex flex-none items-center justify-between gap-3">
             <li
               className={`w-fit group max-w-36 h-10 lg:h-12 btn bg-stroke-0 active:bg-stroke-900 dark:active:bg-stroke-150 py-0 pl-1 pr-2 ${isAuthenticated === true ? "border-0 ring-1" : "border ring-0"} ring-stroke-900/10 dark:ring-stroke-800/10 border-stroke-250 duration-200`}
             >
@@ -357,22 +360,24 @@ function DesktopHeader({
                 )}
               </button>
             </li>
-          </div>
+          </ul>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-between gap-4">
-            <li className="relative w-36 lg:w-44 h-12 cursor-not-allowed">
-              <button
-                className="w-full h-full btn btn--primary ring-4 ring-primary/5 hover:ring-0 flex items-center justify-center size-full gap-2"
-                onClick={toggleCategory}
-                disabled={isCategoryOpen}
-              >
-                <Squares2X2Icon className="size-6" />
-                <p className="text-xs lg:text-sm">دسته بندی ها</p>
-                <ChevronDownIcon className="size-4" />
-              </button>
-            </li>
-            <div className="flex items-center justify-start gap-4">
+            <ul>
+              <li className="relative w-36 lg:w-44 h-12 cursor-not-allowed">
+                <button
+                  className="w-full h-full btn btn--primary ring-4 ring-primary/5 hover:ring-0 flex items-center justify-center size-full gap-2"
+                  onClick={toggleCategory}
+                  disabled={isCategoryOpen}
+                >
+                  <Squares2X2Icon className="size-6" />
+                  <p className="text-xs lg:text-sm">دسته بندی ها</p>
+                  <ChevronDownIcon className="size-4" />
+                </button>
+              </li>
+            </ul>
+            <ul className="flex items-center justify-start gap-4">
               <li className="">
                 <Link
                   href={"/products?sort=best_selling"}
@@ -424,31 +429,33 @@ function DesktopHeader({
                   </div>
                 </Link>
               </li>
-            </div>
+            </ul>
           </div>
-          <li className="flex items-center justify-between gap-4">
-            <Link
-              href={"tel:+989302125151"}
-              className="flex items-center justify-between gap-4"
-            >
-              <div className="flex items-center justify-center text-xl pl-4 border-l-[1.5px] border-stroke-200">
-                <p className="text-stroke-800 ">{toPersianNumbers("5151")}</p>
-                <p className="text-stroke-800 ">{toPersianNumbers("212")}</p>
-                <p className="text-primary ">{toPersianNumbers("0930")}</p>
-              </div>
-              <CardIconResponsive
-                as="div"
-                src="/images/call-ringing-4-primary-icon.svg"
-                alt="call-ringing-icon"
-                title="پشتیبانی"
-                type="support"
-                className="max-lg:h-8 lg:h-10"
-                size="max-lg:size-4 lg:size-6"
-              />
-            </Link>
-          </li>
+          <ul>
+            <li className="flex items-center justify-between gap-4">
+              <Link
+                href={"tel:+989302125151"}
+                className="flex items-center justify-between gap-4"
+              >
+                <div className="flex items-center justify-center text-xl pl-4 border-l-[1.5px] border-stroke-200">
+                  <p className="text-stroke-800 ">{toPersianNumbers("5151")}</p>
+                  <p className="text-stroke-800 ">{toPersianNumbers("212")}</p>
+                  <p className="text-primary ">{toPersianNumbers("0930")}</p>
+                </div>
+                <CardIconResponsive
+                  as="div"
+                  src="/images/call-ringing-4-primary-icon.svg"
+                  alt="call-ringing-icon"
+                  title="پشتیبانی"
+                  type="support"
+                  className="max-lg:h-8 lg:h-10"
+                  size="max-lg:size-4 lg:size-6"
+                />
+              </Link>
+            </li>
+          </ul>
         </div>
-      </ul>
+      </div>
     </nav>
   );
 }
@@ -458,7 +465,7 @@ function MobileHeader({
   searchTriggerRef,
   dialogId,
   onOpenSearch,
-  toggleSidebar,
+  openSidebar,
   totalProducts,
   searchValue,
   setSearchValue,
@@ -473,8 +480,8 @@ function MobileHeader({
         <li className="flex-none">
           <button
             type="button"
-            className="text-2xl aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 bg-stroke-800/5 backdrop-blur-md active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-primary active:text-primary/80 dark:text-stroke-800 dark:active:text-stroke-800/70 duration-200"
-            onClick={toggleSidebar}
+            className="text-2xl aspect-square w-14 flex items-center justify-center rounded-full border-2 border-stroke-0/5 bg-stroke-800/5 backdrop-blur-md active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 shadow-md shadow-black/10 text-primary active:text-primary/80 dark:text-stroke-800 dark:active:text-stroke-800/70 duration-200"
+            onClick={openSidebar}
           >
             {pathname.startsWith("/admin") ||
             pathname.startsWith("/profile") ? (
@@ -489,7 +496,10 @@ function MobileHeader({
             )}
           </button>
         </li>
-        <li className="px-2 flex-1 [@media(max-width:480px)]:pl-0 [@media(max-width:480px)]:w-full backdrop-blur-md bg-stroke-800/5 rounded-full">
+        <li
+          className="px-2 flex-1 [@media(max-width:480px)]:pl-0 [@media(max-width:480px)]:w-full backdrop-blur-md bg-stroke-800/5 border-2 border-stroke-0/5
+            shadow-md shadow-black/10 rounded-full"
+        >
           <div className="[@media(max-width:480px)]:flex items-center justify-between gap-1">
             <Link
               className="block min-[481px]:p-2 [@media(max-width:480px)]:hidden [@media(max-width:480px)]:pr-1"
@@ -525,7 +535,7 @@ function MobileHeader({
                   sizes="20vw"
                 />
               </div>
-              <div className="flex items-center justify-center h-full aspect-square p-2.5 rounded-full backdrop-blur-md ">
+              <div className="flex items-center justify-center h-full aspect-square p-2.5 rounded-full backdrop-blur-md bg-stroke-0/5">
                 <MagnifyingGlassIcon className="size-6 stroke-2" />
               </div>
             </button>
@@ -545,7 +555,7 @@ function MobileHeader({
         <li className="flex-none">
           <button
             onClick={() => router.push("/cart")}
-            className="relative aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 bg-stroke-800/5 backdrop-blur-md active:bg-stroke-50 active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-stroke-800 active:text-stroke-800/70 duration-200"
+            className="relative aspect-square w-14 flex items-center justify-center rounded-full border-2 border-stroke-0/5 bg-stroke-800/5 backdrop-blur-md active:bg-stroke-50 active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 shadow-md shadow-black/10 text-stroke-800 active:text-stroke-800/70 duration-200"
           >
             <AppImage
               src="/images/bag-stroke-sec-icon.svg"

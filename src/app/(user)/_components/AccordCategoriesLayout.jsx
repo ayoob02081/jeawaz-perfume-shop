@@ -11,21 +11,30 @@ import { useGetStorefrontCategoriesByType } from "@/hooks/useCategories";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { categoryInitialQueryOptions, catalogInitialView } from "@/lib/storefrontCatalog.mjs";
+import {
+  categoryInitialQueryOptions,
+  catalogInitialView,
+} from "@/lib/storefrontCatalog.mjs";
 import { storefrontCategoryOptions } from "@/utils/productFilterContract.mjs";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { useCatalogSnapshotOptions } from "@/hooks/useCatalogSnapshotOptions";
 
 function AccordCategoriesLayout({ initialSnapshot } = {}) {
   const initialOptions = useCatalogSnapshotOptions(
-    ["categories", "character"], categoryInitialQueryOptions(initialSnapshot),
+    ["categories", "character"],
+    categoryInitialQueryOptions(initialSnapshot),
   );
   const result = useGetStorefrontCategoriesByType("character", initialOptions);
   const {
     data: characters,
     isPending,
     error,
-  } = catalogInitialView(result, initialOptions, useIsHydrated(), storefrontCategoryOptions);
+  } = catalogInitialView(
+    result,
+    initialOptions,
+    useIsHydrated(),
+    storefrontCategoryOptions,
+  );
 
   const view = homeCategoryView({ isPending, error });
 
@@ -46,7 +55,7 @@ function AccordCategoriesLayout({ initialSnapshot } = {}) {
         />
         <h2 className="text-stroke-800">دنیایی متفاوت</h2>
       </div>
-      <div className="flex gap-4 justify-between items-center w-full px-16 my-6 scroll--x rounded-2xl">
+      <div className="flex gap-4 justify-between items-center w-full px-16 py-6 overflow-x-auto scrollbar-none snap-x">
         {view === "loading" ? (
           <AccordCategoryCardSkeletons count={ACCORD_CATEGORY_SKELETON_COUNT} />
         ) : (
@@ -73,7 +82,7 @@ function FilterCard({ src, alt, slug, label, productsCount }) {
     <div className="snap-center">
       <Link
         href={`/products?${new URLSearchParams({ characters: slug })}`}
-        className="relative flex h-24 sm:h-30! aspect-9/3 sm:aspect-5/2 justify-between items-center px-3 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 "
+        className="relative group flex h-24 sm:h-30! aspect-9/3 sm:aspect-5/2 justify-between items-center px-3 bg-stroke-0 hover:bg-stroke-200 dark:hover:bg-stroke-50 sm:hover:scale-105 active:bg-stroke-200 dark:active:bg-stroke-50 max-sm:active:scale-95 rounded-2xl border-[1.5px] border-stroke-250 duration-200"
       >
         <div className="relative flex items-center justify-center h-full px-4">
           <div className=" flex items-center justify-center aspect-square h-11 md:h-13 rounded-xl">
@@ -86,7 +95,7 @@ function FilterCard({ src, alt, slug, label, productsCount }) {
               ratio="aspect-3/4"
             />
           </div>
-          <div className="absolute bottom-1/6 blur-[10px] w-1/2 h-1 sm:h-1.5 bg-stroke-600 rounded-full"></div>
+          <div className="absolute bottom-1/6 blur-[10px] dark:blur w-1/2 h-1 sm:h-1.5 bg-black rounded-full"></div>
         </div>
         <div className="grow flex flex-col gap-1 p-4 justify-center items-start">
           <span className="flex items-center justify-start gap-1 font-bold text-sm sm:text-xl">
@@ -100,7 +109,7 @@ function FilterCard({ src, alt, slug, label, productsCount }) {
           </p>
         </div>
         <div className="flex-none justify-self-end self-end px-2 pb-5">
-          <ArrowLeftIcon className="size-5 text-stroke-800" />
+          <ArrowLeftIcon className="size-5 sm:size-6 group-hover:stroke-2 group-active:stroke-2 text-stroke-800" />
         </div>
       </Link>
     </div>

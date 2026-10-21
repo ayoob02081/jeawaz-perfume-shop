@@ -56,7 +56,8 @@ function SearchSection({
           }
           onSubmit(event);
         }}
-        className={`relative flex items-center justify-center group border-primary bg-stroke-800/5 backdrop-blur-md size-full h-12 rounded-[48px]
+        className={`relative flex items-center justify-center group max-lg:border-2 border-stroke-0/5
+         max-lg:shadow-md shadow-black/10 focus-within:border-primary bg-stroke-800/5 backdrop-blur-md size-full h-12 rounded-[48px]
           ${shouldShowDropdown ? "border-[1.5px]" : "focus-within:border-[1.5px] focus-within:bg-stroke-0"} duration-200`}
       >
         <input
@@ -103,7 +104,9 @@ function SearchSection({
         </button>
       </form>
       {inline && !shouldShowDropdown && (
-        <p className="p-3 text-sm text-stroke-500">حداقل سه حرف را وارد کنید.</p>
+        <p className="p-3 text-sm text-stroke-500">
+          حداقل سه حرف را وارد کنید.
+        </p>
       )}
       {shouldShowDropdown && (
         <div

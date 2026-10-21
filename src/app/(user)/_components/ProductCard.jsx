@@ -48,7 +48,7 @@ function ProductCard({ product, isPending, error, imagePriority = false }) {
   const PriceWrapper = cardPrice.basePrice > 0 ? Link : "div";
 
   return (
-    <article className="relative hover:*:*:last:*:first:*:last:scale-105 *:*:last:*:first:*:last:duration-300 flex items-center justify-center max-md:p-3 p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 snap-center duration-200">
+    <article className="relative hover:*:*:last:*:first:*:last:scale-105 *:*:last:*:first:*:last:duration-300 flex items-center justify-center max-md:p-3 p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 rounded-2xl border-[1.5px] border-stroke-250 snap-center duration-200">
       {/* Mobile Mode Base Image */}
       <div className="flex items-start justify-between size-full">
         <Link
@@ -158,14 +158,14 @@ function ProductCard({ product, isPending, error, imagePriority = false }) {
                   </PriceWrapper>
                 )
               ) : (
-                <div className="flex items-center justify-start text-wrap size-full text-primary text-2xl font-bold  py-1 px-2 md:p-2 md:h-20">
+                <div className="flex items-center justify-start text-wrap size-full text-primary max-sm:text-xl text-2xl font-bold  py-1 px-2 md:p-2 md:h-20">
                   <p>ناموجود!</p>
                 </div>
               )}
 
               {/* Products Order Button */}
               <Link href={productHref}>
-                <p className="btn border border-primary text-primary bg-stroke-50 backdrop-blur-md active:bg-primary active:text-white md:hover:bg-primary md:hover:text-white rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
+                <p className="btn border border-primary text-primary bg-stroke-50 backdrop-blur-md active:bg-primary active:text-white active:scale-95 md:hover:bg-primary md:hover:text-white rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
                   مشاهده
                 </p>
               </Link>

@@ -59,6 +59,9 @@ const hrefOf = (tag) =>
   tag.match(/\bhref=(\{[\s\S]*?\}(?=\s|\/?>)|"[^"]*"|'[^']*')/)?.[1].replace(/\s+/g, " ") ?? null;
 
 const PROTECTED_HREF = /^\{?\s*["'`]\/(admin|profile)(?=[/"'`?]|$)/;
+// Any href that can resolve to a protected route, including a conditional
+// (e.g. ternary) branch that is not its leading literal.
+const REACHES_PROTECTED = /["'`]\/(admin|profile)(?=[/"'`?]|$)/;
 const PUBLIC_HREF = /^\{?\s*["'`](\/(?!admin|profile)|tel:|https?:)/;
 const noPrefetch = (tag) => /\bprefetch=\{false\}/.test(tag);
 
@@ -91,7 +94,7 @@ const isProtectedWrapper = ({ file, href }) =>
   PROTECTED_WRAPPERS.some(([wrapperFile, wrapperHref]) => file === wrapperFile && href === wrapperHref);
 
 test("every Link to /admin or /profile disables prefetch", () => {
-  const protectedLinks = allLinks.filter(({ href }) => href && PROTECTED_HREF.test(href));
+  const protectedLinks = allLinks.filter(({ href }) => href && REACHES_PROTECTED.test(href));
   // The admin and profile areas are covered, not just a few links.
   assert.ok(protectedLinks.length >= 35, `found ${protectedLinks.length}`);
   assert.ok(protectedLinks.some(({ href }) => href.includes("/admin")));
@@ -99,6 +102,23 @@ test("every Link to /admin or /profile disables prefetch", () => {
 
   const missing = protectedLinks.filter(({ tag }) => !noPrefetch(tag)).map(({ where, href }) => `${where} ${href}`);
   assert.deepEqual(missing, []);
+});
+
+test("the mobile panel's admin and conditional profile links disable prefetch", () => {
+  // The panel is always on screen on mobile, so a default-prefetching Link
+  // would run proxy.js as soon as it renders. The profile tab switches to
+  // /profile/me once authentication resolves; the admin tab renders for admins.
+  const panel = allLinks.filter(({ file }) => file === "app/MobilePannel.jsx");
+  const admin = panel.filter(({ href }) => href === '{"/admin/dashboard"}');
+  const profile = panel.filter(({ href }) => href === '{isAuthenticated !== true ? "/auth/login" : "/profile/me"}');
+  assert.equal(admin.length, 1);
+  assert.equal(profile.length, 1);
+  for (const link of [...admin, ...profile]) assert.ok(noPrefetch(link.tag), link.where);
+  // Only these two panel links opt out; the public tabs keep default prefetch.
+  assert.deepEqual(
+    panel.filter(({ tag }) => /\bprefetch=/.test(tag)).map(({ href }) => href),
+    [profile[0].href, admin[0].href],
+  );
 });
 
 test("links through always-protected wrappers disable prefetch", () => {
@@ -190,7 +210,7 @@ test("existing public links keep default prefetch; transient suggestions do not 
   // Other opt-outs remain restricted to these reviewed wrappers.
   const optedOut = allLinks.filter(({ tag }) => /\bprefetch=/.test(tag));
   assert.deepEqual(
-    optedOut.filter((link) => !PROTECTED_HREF.test(link.href ?? "") && !isProtectedWrapper(link) && !isSuggestionLink(link) && !isBrandLandingLink(link) && !isCategoryLandingLink(link)).map(({ where, href }) => `${where} ${href}`),
+    optedOut.filter((link) => !REACHES_PROTECTED.test(link.href ?? "") && !isProtectedWrapper(link) && !isSuggestionLink(link) && !isBrandLandingLink(link) && !isCategoryLandingLink(link)).map(({ where, href }) => `${where} ${href}`),
     [],
   );
 });

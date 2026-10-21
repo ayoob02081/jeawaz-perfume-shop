@@ -29,7 +29,11 @@ import { buildQueryFromFilters } from "@/utils/queryFilters";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
-import { catalogInitialView, sidebarCategoryQueryEnabled } from "@/lib/storefrontCatalog.mjs";
+import {
+  catalogInitialView,
+  sidebarCategoryQueryEnabled,
+} from "@/lib/storefrontCatalog.mjs";
+import { useSidebar } from "@/contexts/Sidebars/SidebarContext";
 
 // The sidebar has its own dedicated gender panel; the generic taxonomy
 // columns render every other shared group.
@@ -37,15 +41,21 @@ const SIDEBAR_TAXONOMY_GROUPS = TAXONOMY_FILTER_GROUPS.filter(
   ({ key }) => key !== "gender",
 );
 
-function CategorySidebar({ isCategoryOpen, closeCategory }) {
+function CategorySidebar() {
+  const { isCategoryOpen, closeCategory } = useSidebar();
   const searchParams = useSearchParams();
   const router = useRouter();
   const isHydrated = useIsHydrated();
-  const sharedCategoryOptions = { enabled: sidebarCategoryQueryEnabled(usePathname(), isCategoryOpen) };
+  const sharedCategoryOptions = {
+    enabled: sidebarCategoryQueryEnabled(usePathname(), isCategoryOpen),
+  };
 
   // Home's snapshot can seed these shared keys before the sidebar hydrates.
   // Its initial HTML has no snapshot, so keep that placeholder for hydration.
-  const genderResult = useGetStorefrontCategoriesByType("gender", sharedCategoryOptions);
+  const genderResult = useGetStorefrontCategoriesByType(
+    "gender",
+    sharedCategoryOptions,
+  );
   const { data: genderCategories, isPending: isGenderPending } =
     catalogInitialView(genderResult, {}, isHydrated);
 
@@ -58,8 +68,15 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
   const { data: seasonCategories } = useGetStorefrontCategoriesByType("season");
   const { data: temperatureCategories } =
     useGetStorefrontCategoriesByType("temperature");
-  const characterResult = useGetStorefrontCategoriesByType("character", sharedCategoryOptions);
-  const { data: characterCategories } = catalogInitialView(characterResult, {}, isHydrated);
+  const characterResult = useGetStorefrontCategoriesByType(
+    "character",
+    sharedCategoryOptions,
+  );
+  const { data: characterCategories } = catalogInitialView(
+    characterResult,
+    {},
+    isHydrated,
+  );
   const { data: occasionCategories } =
     useGetStorefrontCategoriesByType("occasion");
   const taxonomyOptions = {

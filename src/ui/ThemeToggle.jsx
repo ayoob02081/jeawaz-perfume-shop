@@ -31,6 +31,7 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
+      aria-label="تغییر تم"
       className="relative flex items-center justify-center bg-stroke-200 dark:bg-stroke-50 rounded-full px-1 py-0.5 w-12 h-6 duration-200 **:duration-200"
     >
       <div

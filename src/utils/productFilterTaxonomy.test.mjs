@@ -239,7 +239,8 @@ test("storefront taxonomy options come from the inactive-free hook in both filte
   ]).map((c) => c.slug), ["summer", "spring"]);
   for (const ui of [filtersModal, categorySidebar]) {
     for (const type of ["season", "temperature", "character", "occasion"]) {
-      assert.match(ui, new RegExp(`useGetStorefrontCategoriesByType\\("${type}"(?:, sharedCategoryOptions)?\\)`), type);
+      // Whitespace, line breaks and a trailing comma are formatting only.
+      assert.match(ui, new RegExp(`useGetStorefrontCategoriesByType\\(\\s*"${type}"(?:,\\s*sharedCategoryOptions)?,?\\s*\\)`), type);
     }
     assert.doesNotMatch(ui, /useGetCategoriesByType\(/);
   }

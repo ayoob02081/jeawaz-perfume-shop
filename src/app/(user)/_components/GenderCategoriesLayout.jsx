@@ -10,22 +10,34 @@ import { GenderCategoryCardSkeletons } from "./skeleton/HomeSectionSkeletons";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { genderProductsHref, storefrontCategoryOptions } from "@/utils/productFilterContract.mjs";
+import {
+  genderProductsHref,
+  storefrontCategoryOptions,
+} from "@/utils/productFilterContract.mjs";
 import { useGetStorefrontCategoriesByType } from "@/hooks/useCategories";
-import { categoryInitialQueryOptions, catalogInitialView } from "@/lib/storefrontCatalog.mjs";
+import {
+  categoryInitialQueryOptions,
+  catalogInitialView,
+} from "@/lib/storefrontCatalog.mjs";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { useCatalogSnapshotOptions } from "@/hooks/useCatalogSnapshotOptions";
 
 function GenderCategoriesLayout({ initialSnapshot } = {}) {
   const initialOptions = useCatalogSnapshotOptions(
-    ["categories", "gender"], categoryInitialQueryOptions(initialSnapshot),
+    ["categories", "gender"],
+    categoryInitialQueryOptions(initialSnapshot),
   );
   const result = useGetStorefrontCategoriesByType("gender", initialOptions);
   const {
     data: genderCategories,
     isPending,
     error,
-  } = catalogInitialView(result, initialOptions, useIsHydrated(), storefrontCategoryOptions);
+  } = catalogInitialView(
+    result,
+    initialOptions,
+    useIsHydrated(),
+    storefrontCategoryOptions,
+  );
 
   const view = homeCategoryView({ isPending, error });
 
@@ -34,8 +46,8 @@ function GenderCategoriesLayout({ initialSnapshot } = {}) {
   }
 
   return (
-    <section className="flex flex-col justify-between items-center py-4 container mx-auto xl:max-w-7xl z-10">
-      <div className="flex justify-center items-center gap-1 w-full px-6 mb-6 text-base sm:text-[28px] font-bold">
+    <section className="flex flex-col justify-between items-center gap-2 pt-4 container mx-auto xl:max-w-7xl z-10">
+      <div className="flex justify-center items-center gap-1 w-full px-6 text-base sm:text-[28px] font-bold">
         <h2 className="text-primary">دسته‌بندی</h2>
         <AppImage
           src="/images/star-8-icon.svg"
@@ -46,20 +58,19 @@ function GenderCategoriesLayout({ initialSnapshot } = {}) {
         />
         <h2 className="text-stroke-800">محصولات ما</h2>
       </div>
-      <div className="mx-6 flex flex-col w-full sm:px-36 md:px-6 md:flex-row gap-4 sm:gap-6 items-center justify-between overflow-x-auto scrollbar-none sm:rounded-2xl">
+      <div className="mx-6 flex flex-col w-full py-4 sm:px-36 md:px-6 md:flex-row gap-4 sm:gap-6 items-center justify-between overflow-x-auto scrollbar-none">
         {view === "loading" ? (
           <GenderCategoryCardSkeletons count={GENDER_CATEGORY_SKELETON_COUNT} />
         ) : (
           genderCategories?.map((item) => (
-            <div key={item.id} className="sm:snap-center">
-              <CategoreyCard
-                src={item.imageUrl}
-                alt={item.value + "-image"}
-                slug={item.slug}
-                label={item.title}
-                productsCount={item.productsCount}
-              />
-            </div>
+            <CategoreyCard
+              key={item.id}
+              src={item.imageUrl}
+              alt={item.value + "-image"}
+              slug={item.slug}
+              label={item.title}
+              productsCount={item.productsCount}
+            />
           ))
         )}
       </div>
@@ -71,35 +82,37 @@ export default GenderCategoriesLayout;
 
 function CategoreyCard({ src, alt, slug, label, productsCount }) {
   return (
-    <Link
-      href={genderProductsHref(slug)}
-      className="relative flex h-24 md:h-35 max-[365px]:aspect-6/2 aspect-7/2 md:aspect-9/3 justify-center items-center justify-items-center bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 "
-    >
-      <div className="h-full self-start justify-self-start px-4">
-        <div className="relative flex items-center justify-center aspect-8/10 md:aspect-10/13 w-16 md:w-21 p-3 rounded-b-xl bg-stroke-200">
-          <AppImage
-            src={src}
-            alt={alt}
-            className="grow justify-center -rotate-12 z-10"
-            objectFit="cover"
-            sizes="10vw"
-            ratio="aspect-3/4"
-          />
-          <div className="absolute bottom-1/6 blur-md w-2/3 h-1 md:h-1.5 bg-stroke-600 rounded-full"></div>
+    <div className="sm:snap-center">
+      <Link
+        href={genderProductsHref(slug)}
+        className="group relative flex h-24 md:h-35 max-[365px]:aspect-6/2 aspect-7/2 md:aspect-9/3 justify-center items-center justify-items-center bg-stroke-0 hover:bg-stroke-200 dark:hover:bg-stroke-50 sm:hover:scale-105 active:bg-stroke-200 dark:active:bg-stroke-50 max-sm:active:scale-95 rounded-2xl border-[1.5px] border-stroke-250 duration-200"
+      >
+        <div className="h-full self-start justify-self-start px-4">
+          <div className="relative flex items-center justify-center aspect-8/10 md:aspect-10/13 w-16 md:w-21 p-3 rounded-b-xl bg-stroke-200 dark:bg-stroke-50">
+            <AppImage
+              src={src}
+              alt={alt}
+              className="grow justify-center -rotate-12 z-10"
+              objectFit="cover"
+              sizes="10vw"
+              ratio="aspect-3/4"
+            />
+            <div className="absolute bottom-1/6 blur-[10px] w-2/3 h-1 md:h-1.5 bg-black rounded-full"></div>
+          </div>
         </div>
-      </div>
-      <div className="grow flex flex-col gap-1 p-4 justify-center items-start">
-        <span className="flex items-center justify-start gap-1 font-bold text-sm sm:text-xl">
-          <p className="text-stroke-800">عطرهای</p>
-          <p className="text-primary">{label}</p>
-        </span>
-        <p className="text-stroke-600 text-sm sm:text-lg md:font-bold">
-          {toPersianNumbers(productsCount)} محصول
-        </p>
-      </div>
-      <div className="justify-self-end self-end p-4">
-        <ArrowLeftIcon className="size-5 sm:size-6 text-primary" />
-      </div>
-    </Link>
+        <div className="grow flex flex-col gap-1 p-4 justify-center items-start">
+          <span className="flex items-center justify-start gap-1 font-bold text-sm sm:text-xl">
+            <p className="text-stroke-800">عطرهای</p>
+            <p className="text-primary">{label}</p>
+          </span>
+          <p className="text-stroke-600 text-sm sm:text-lg md:font-bold">
+            {toPersianNumbers(productsCount)} محصول
+          </p>
+        </div>
+        <div className="justify-self-end self-end p-4">
+          <ArrowLeftIcon className="size-5 sm:size-6 text-primary group-hover:stroke-2 group-active:stroke-2 duration-200" />
+        </div>
+      </Link>
+    </div>
   );
 }

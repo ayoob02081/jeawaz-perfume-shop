@@ -88,7 +88,7 @@ function OrdersLayout() {
         isUpdating={isPlaceholderData}
       />
       <div className="flex flex-col gap-2 w-full overflow-hidden">
-        <div className="flex items-center justify-start max-md:gap-4 gap-8 overflow-x-auto scrollbar-none px-4 py-1 w-full text-nowrap">
+        <div className="flex items-center justify-start max-md:gap-4 gap-6 overflow-x-auto scrollbar-none px-4 py-1 w-full text-nowrap">
           {adminStatusConfig.map((item) => (
             <OrderStatusButton
               key={item.id}

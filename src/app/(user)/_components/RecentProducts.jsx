@@ -10,7 +10,10 @@ import {
 import { useGetAllProducts } from "@/hooks/useProducts";
 import Error from "@/components/Error";
 import { useState } from "react";
-import { catalogInitialQueryOptions, catalogInitialView } from "@/lib/storefrontCatalog.mjs";
+import {
+  catalogInitialQueryOptions,
+  catalogInitialView,
+} from "@/lib/storefrontCatalog.mjs";
 import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { useCatalogSnapshotOptions } from "@/hooks/useCatalogSnapshotOptions";
 import { productListKey } from "@/utils/productFilterContract.mjs";
@@ -25,10 +28,15 @@ function RecentProducts({ initialSnapshot }) {
     gender: gender || undefined,
   };
   const initialOptions = useCatalogSnapshotOptions(
-    productListKey(query), catalogInitialQueryOptions(query, initialSnapshot),
+    productListKey(query),
+    catalogInitialQueryOptions(query, initialSnapshot),
   );
   const result = useGetAllProducts(query, initialOptions);
-  const { data, isLoading, error } = catalogInitialView(result, initialOptions, useIsHydrated());
+  const { data, isLoading, error } = catalogInitialView(
+    result,
+    initialOptions,
+    useIsHydrated(),
+  );
 
   const getFullHrefParams = () => {
     const params = new URLSearchParams();
@@ -57,14 +65,18 @@ function RecentProducts({ initialSnapshot }) {
       title={"جدید ترین "}
       des={"محصولات ما"}
       desc={"ترندهای رایحه، همین‌جاست."}
-      className={"rounded-2xl overflow-x-auto"}
+      className={"overflow-x-auto"}
     >
       <div></div>
       {view === "loading" ? (
         <ProductCardSkeletons count={HOME_SECTION_SKELETON_COUNT} />
       ) : (
         products?.map((product) => (
-          <ProductCard key={product.id} product={product} imagePriority={false} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            imagePriority={false}
+          />
         ))
       )}
     </HomePageSortProductsLayout>
