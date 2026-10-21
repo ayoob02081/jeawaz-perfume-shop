@@ -88,14 +88,13 @@ function PrimaryBannerLayout({ initialSnapshot } = {}) {
         ))}
       </Swiper>
 
-      {/* Desktop navigation. The Swiper is dir="ltr": the next banner lies to the
-          right, so the right arrow advances and the left arrow goes back. */}
+      {/* Desktop navigation */}
       {banners.length > 1 && (
         <>
           <button
             type="button"
-            aria-label="بنر بعدی"
-            onClick={() => swiperRef.current?.slideNext()}
+            aria-label="بنر قبلی"
+            onClick={() => swiperRef.current?.slidePrev()}
             className="absolute right-1 top-1/2 z-20 hidden max-lg:size-9 size-11 -translate-y-1/2 items-center justify-center rounded-full
             border border-stroke-200 bg-stroke-0/20 text-white shadow-md backdrop-blur-md duration-200 hover:bg-primary
             hover:text-white active:scale-95 md:flex xl:size-12"
@@ -105,8 +104,8 @@ function PrimaryBannerLayout({ initialSnapshot } = {}) {
 
           <button
             type="button"
-            aria-label="بنر قبلی"
-            onClick={() => swiperRef.current?.slidePrev()}
+            aria-label="بنر بعدی"
+            onClick={() => swiperRef.current?.slideNext()}
             className="absolute left-1 top-1/2 z-20 hidden max-lg:size-9 size-11 -translate-y-1/2 items-center justify-center rounded-full
             border border-stroke-200 bg-stroke-0/20 text-white shadow-md backdrop-blur-md duration-200 hover:bg-primary
             hover:text-white active:scale-95 md:flex xl:size-12 "
