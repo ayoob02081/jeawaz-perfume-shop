@@ -59,18 +59,20 @@ function SearchSection({
           onSubmit(event);
         }}
         className={`relative flex items-center justify-center group max-lg:border-2 border-stroke-0/5
-         max-lg:shadow-md shadow-black/10 focus-within:border-primary bg-stroke-800/5 backdrop-blur-md size-full h-12 rounded-[48px]
-          ${shouldShowDropdown ? "border-[1.5px]" : "focus-within:border-[1.5px] focus-within:bg-stroke-0"} duration-200`}
+         max-lg:shadow-md shadow-black/10 focus-within:border-primary bg-stroke-800/5 backdrop-blur-md size-full max-lg:h-14 h-12 rounded-[48px]
+        ${shouldShowDropdown ? "border-[1.5px]" : "focus-within:border-[1.5px] focus-within:bg-stroke-0"} duration-200`}
       >
         <input
           ref={inputRef}
-          className="p-4 pl-16 outline-0 w-full text-base text-stroke-800"
+          className="pr-4 pl-16 py-1 outline-0 size-full text-base text-stroke-800"
           type="search"
           enterKeyHint="search"
           autoComplete="off"
           aria-label="جستجوی محصولات"
           aria-controls={shouldShowDropdown ? resultsId : undefined}
-          aria-describedby={shouldShowDropdown ? `${resultsId}-status` : undefined}
+          aria-describedby={
+            shouldShowDropdown ? `${resultsId}-status` : undefined
+          }
           placeholder={placeholder}
           value={value}
           onChange={(event) => {
@@ -94,12 +96,12 @@ function SearchSection({
         <button
           type="submit"
           aria-label="جستجو"
-          className={`absolute flex items-center justify-center gap-1 top-1/2 -translate-1/2 bg-stroke-0/80 backdrop-blur-md rounded-full p-2
-            ${shouldShowDropdown ? "left-12 bg-stroke-100" : "lg:group-hover:left-12 lg:group-focus-within:left-12 group-focus-within:bg-stroke-100 left-6"} duration-200`}
+          className={`absolute flex items-center justify-center gap-1 top-1/2 -translate-1/2 max-lg:bg-stroke-0/5 lg:bg-stroke-0/80 backdrop-blur-md rounded-full h-full lg:h-11 w-fit px-3 py-2
+            ${shouldShowDropdown ? "left-12 bg-stroke-100" : "lg:group-hover:left-12 lg:group-focus-within:left-12 group-focus-within:bg-stroke-100 max-lg:left-6.5 left-6.5"} duration-200`}
         >
-          <MagnifyingGlassIcon className="size-6 text-stroke-800 duration-200" />
+          <MagnifyingGlassIcon className="size-7 lg:size-6 stroke-2 max-lg:text-stroke-500 text-stroke-800 duration-200" />
           <p
-            className={`text-sm text-stroke-800 ${shouldShowDropdown ? "block w-full" : "lg:group-hover:w-auto lg:group-focus-within:w-auto lg:group-hover:block lg:group-focus-within:block hidden w-0"} duration-200`}
+            className={`text-sm text-stroke-800 font-bold ${shouldShowDropdown ? "block w-full" : "lg:group-hover:w-auto lg:group-focus-within:w-auto lg:group-hover:block lg:group-focus-within:block hidden w-0"} duration-200`}
           >
             جستجو
           </p>

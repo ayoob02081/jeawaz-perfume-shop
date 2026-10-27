@@ -485,8 +485,8 @@ function MobileHeader({
   const router = useRouter();
 
   return (
-    <nav className="lg:hidden max-lg:fixed max-lg:top-0 inset-x-0 h-fit w-full z-50">
-      <ul className="flex items-center justify-between gap-2 sm:gap-4 w-full relative p-4 rounded-b-4xl bg-stroke-0/0 duration-200">
+    <nav className="lg:hidden max-lg:fixed max-lg:top-0 inset-x-0 h-fit w-full z-60">
+      <ul className="flex items-center justify-between gap-2 sm:gap-4 w-full h-22 relative p-4 rounded-b-4xl bg-stroke-0/0 duration-200">
         <li className="flex-none">
           <button
             type="button"
@@ -507,18 +507,18 @@ function MobileHeader({
           </button>
         </li>
         <li
-          className="px-2 flex-1 [@media(max-width:480px)]:pl-0 [@media(max-width:480px)]:w-full backdrop-blur-md bg-stroke-800/5 border-2 border-stroke-0/5
+          className="px-2 flex-1 max-sm:pl-0 max-sm:w-full h-full backdrop-blur-md bg-stroke-800/5 border-2 border-stroke-0/5
             shadow-md shadow-black/10 rounded-full"
         >
-          <div className="[@media(max-width:480px)]:flex items-center justify-between gap-1">
+          <div className="max-sm:flex items-center justify-between gap-1 h-full">
             <Link
-              className="block min-[481px]:p-2 [@media(max-width:480px)]:hidden [@media(max-width:480px)]:pr-1"
+              className="flex items-center justify-center size-full max-sm:hidden max-sm:pr-1 sm:px-2"
               href="/"
             >
               <AppImage
                 src="/images/jeawaz-logo-v6.0-r.webp"
                 alt="jeawaz-brand-icon"
-                width="[@media(max-width:480px)]:h-7 h-8.5"
+                width="max-sm:h-7 h-8.5"
                 ratio="aspect-3/2"
                 sizes="20vw"
               />
@@ -531,7 +531,7 @@ function MobileHeader({
               aria-haspopup="dialog"
               aria-expanded={activeSurface === "spotlight"}
               aria-controls={dialogId}
-              className="relative [@media(max-width:480px)]:flex flex-1 h-14 shrink-0 items-center justify-center rounded-full text-stroke-500 hidden"
+              className="relative max-sm:flex flex-1 h-14 py-0.5 shrink-0 items-center justify-center rounded-full text-stroke-500 hidden"
             >
               <div className="flex items-center justify-start size-full gap-1">
                 <p className="flex items-center text-nowrap text-stroke-400 font-bold -translate-y-">
@@ -540,27 +540,25 @@ function MobileHeader({
                 <AppImage
                   src="/images/jeawaz-logo-v6.0-r.webp"
                   alt="jeawaz-brand-icon"
-                  width="[@media(max-width:480px)]:h-8 h-8.5"
+                  width="max-sm:h-8 h-8.5"
                   ratio="aspect-3/2"
                   sizes="20vw"
                 />
               </div>
               <div className="flex items-center justify-center h-full aspect-square p-2.5 rounded-full backdrop-blur-md bg-stroke-0/5">
-                <MagnifyingGlassIcon className="size-6 stroke-2" />
+                <MagnifyingGlassIcon className="size-7 stroke-2" />
               </div>
             </button>
           </div>
         </li>
-        <li className="[@media(max-width:480px)]:hidden w-full">
-          <div className=" w-full h-12">
-            <SearchSection
-              {...searchProps("tablet")}
-              placeholder="نام ادکلن ، دسته بندی ، برند و ..."
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onSubmit={handleSearchSubmit}
-            />
-          </div>
+        <li className="max-sm:hidden size-full">
+          <SearchSection
+            {...searchProps("tablet")}
+            placeholder="نام ادکلن ، دسته بندی ، برند و ..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onSubmit={handleSearchSubmit}
+          />
         </li>
         <li className="flex-none">
           <button

@@ -174,11 +174,11 @@ test("the hero Swiper is LTR and each desktop arrow acts in the direction it poi
   assert.equal(buttons.length, 2);
   const right = buttons.find((b) => b.includes("ChevronRightIcon"));
   const left = buttons.find((b) => b.includes("ChevronLeftIcon"));
-  assert.match(right, /absolute right-1/);
+  assert.match(right, /absolute right-0/);
   assert.match(right, /aria-label="بنر بعدی"/);
   assert.match(right, /slideNext\(\)/);
   assert.doesNotMatch(right, /slidePrev/);
-  assert.match(left, /absolute left-1/);
+  assert.match(left, /absolute left-0/);
   assert.match(left, /aria-label="بنر قبلی"/);
   assert.match(left, /slidePrev\(\)/);
   assert.doesNotMatch(left, /slideNext/);

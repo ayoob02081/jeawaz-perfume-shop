@@ -7,7 +7,7 @@ function Footer() {
   return (
     <article className="max-w-480 mx-auto 2xl:rounded-t-4xl overflow-hidden">
       <OptionsFooter />
-      <section className="bg-stone-950 size-full max-sm:px-4 max-md:pb-24 sm:px-16 py-8">
+      <section className="bg-stone-950 size-full max-sm:px-4 max-md:pb-24 sm:px-6 py-8">
         <div className="flex flex-col items-center gap-6 max-sm:pb-6 sm:py-6">
           <Link
             href={"/"}
@@ -85,7 +85,7 @@ function Footer() {
           </section>
           <article className="flex max-sm:flex-col max-sm:gap-6 items-center justify-between w-full sm:px-16 text-white">
             <section className="flex flex-col max-sm:flex-col-reverse justify-between gap-4">
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center justify-center sm:justify-between gap-4">
                 <Link href={"tel:+989302125151"} className="flex items-center">
                   <p className="text-3xl text-white ">
                     {toPersianNumbers("5151")}

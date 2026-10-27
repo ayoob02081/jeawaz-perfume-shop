@@ -39,9 +39,9 @@ test("only an active three-character fully debounced term can request suggestion
   assert.equal(headerSuggestionQuery("rose", "ros", true).waiting, true);
 });
 
-test("mobile overlay stops exactly at 480px; the single inline input owns 481-1023px", () => {
-  for (const width of [320, 375, 390, 430, 480]) assert.equal(headerSearchSurface(width), "spotlight");
-  assert.equal(headerSearchSurface(481), "tablet"); assert.equal(headerSearchSurface(639), "tablet");
+test("Spotlight owns widths below 640px; the inline input owns 640-1023px", () => {
+  for (const width of [320, 375, 390, 430, 480, 481, 639]) assert.equal(headerSearchSurface(width), "spotlight");
+
   assert.equal(headerSearchSurface(1023), "tablet"); assert.equal(headerSearchSurface(640), "tablet"); assert.equal(headerSearchSurface(1024), "desktop");
 });
 
@@ -132,10 +132,13 @@ test("restored previews preserve submitted filters, sort, page reset and URL enc
 });
 
 
-test("the mobile CSS breakpoint includes exactly 480px, matching the controller", () => {
+test("the mobile CSS breakpoint switches to inline search at 640px, matching the controller", () => {
   const header = readFileSync(new URL("../components/HeaderLayout.jsx", import.meta.url), "utf8");
   const outer = readFileSync(new URL("../app/Header.jsx", import.meta.url), "utf8");
-  assert(header.includes("[@media(max-width:480px)]:hidden"));
+  assert(header.includes("max-sm:hidden"));
+  assert(header.includes("max-sm:flex"));
+  assert.equal(headerSearchSurface(639), "spotlight");
+  assert.equal(headerSearchSurface(640), "tablet");
   assert(outer.includes("max-sm:mb-22"));
   assert(!header.includes("max-[480px]") && !header.includes("max-[30rem]"));
   assert.match(header, /prefetch=\{false\}\s+onNavigate=/);

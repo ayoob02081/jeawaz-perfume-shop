@@ -31,9 +31,13 @@ export function productSearchNavigation(value, currentSearchParams, pathname) {
 export function headerSuggestionQuery(value, debounced, active) {
   const term = value.trim();
   const enabled = Boolean(active && term.length >= 3 && term === debounced);
-  return { search: enabled ? term : "", enabled, waiting: Boolean(active && term.length >= 3 && !enabled) };
+  return {
+    search: enabled ? term : "",
+    enabled,
+    waiting: Boolean(active && term.length >= 3 && !enabled),
+  };
 }
 
 export function headerSearchSurface(width) {
-  return width <= 480 ? "spotlight" : width < 1024 ? "tablet" : "desktop";
+  return width < 640 ? "spotlight" : width < 1024 ? "tablet" : "desktop";
 }

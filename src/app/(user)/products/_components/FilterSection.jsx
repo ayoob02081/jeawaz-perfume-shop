@@ -411,9 +411,9 @@ function BrandsFilter({
                   onChange={() => toggleBrandAndSync(brand.id)}
                   checked={isChecked}
                   className={`flex items-center justify-center text-nowrap size-full snap-center
-                    ${isChecked && "dark:*:bg-stroke-0 *:border-2 dark:*:border-[1.5px] *:bg-white *:border-primary dark:*:border-stroke-200"}`}
-                  imageClassName="px-2 h-full rounded-full duration-200 dark:*:invert "
-                  ratio="aspect-3/2"
+                    ${isChecked && "dark:*:bg-stroke-0 *:ring-2 dark:*:ring-2 *:bg-white *:ring-primary dark:*:ring-stroke-200"}`}
+                  imageClassName="px-2 h-full rounded-lg duration-200 dark:*:invert "
+                  ratio="aspect-10/3"
                 />
               );
             })}

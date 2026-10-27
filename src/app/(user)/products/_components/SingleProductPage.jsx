@@ -198,18 +198,21 @@ function ProductDes({ product }) {
     <article className="grid grid-cols-1 w-full gap-y-4 xl:gap-y-10 max-md:py-6 h-fit justify-items-start">
       {/* Product Name */}
       <section className="flex flex-col gap-2 items-start justify-start w-full">
-        <span className="flex items-center max-md:justify-between gap-2 md:justify-start w-full">
+        <span className="flex items-start max-md:justify-between gap-2 md:justify-start w-full">
           <h1 className="font-bold text-wrap text-[28px] w-full text-stroke-800">
             {product.perTitle}
           </h1>
 
-          <BrandLandingLink brand={productBrand} className="md:hidden p-2">
+          <BrandLandingLink
+            brand={productBrand}
+            className="md:hidden translate-y-1"
+          >
             <AppImage
               src={productBrand?.iconUrl}
               alt={brandLogoAlt(productBrand)}
               className="justify-center h-full dark:invert"
-              width="max-md:w-20 md:w-[4.815rem]"
-              ratio="aspect-[6/2]"
+              width="max-[30rem]:w-20 max-sm:w-24 w-28"
+              ratio="aspect-10/4"
               sizes="20vw"
             />
           </BrandLandingLink>
@@ -313,13 +316,16 @@ function ProductDes({ product }) {
           </p>
         )}
 
-        <BrandLandingLink brand={productBrand} className="max-md:hidden p-2">
+        <BrandLandingLink
+          brand={productBrand}
+          className="flex items-center justify-end size-full translate-y-1 max-md:hidden"
+        >
           <AppImage
             src={productBrand?.iconUrl}
             alt={brandLogoAlt(productBrand)}
             className="justify-center h-full dark:invert"
-            width="max-md:w-16 md:w-20 xl:w-28"
-            ratio="aspect-[4/1]"
+            width="md:w-24 lg:w-30"
+            ratio="aspect-10/2"
             sizes="20vw"
           />
         </BrandLandingLink>
@@ -590,11 +596,11 @@ function Notes({ type, top, middle }) {
         alt="shape-background"
         className="dark:mix-blend-overlay"
         width={`max-md:h-full ${
-          top ? "md:h-[53.3px]" : middle ? "md:h-[66.02px]" : "md:h-[134.23px]"
+          top ? "md:h-13.25" : middle ? "md:h-17.5" : "md:h-37.5"
         }`}
-        ratio={top ? "aspect-4/3" : middle ? "aspect-4/2" : "aspect-4/1"}
+        ratio={top ? "aspect-4/3" : middle ? "aspect-3/1" : "aspect-3/1"}
       />
-      <span className="absolute flex flex-col items-center justify-center gap-1 z-20 w-full -translate-y-3">
+      <span className="absolute flex flex-col items-center justify-center gap-1 z-20 w-full -translate-y-3.5">
         <p className="text-xs text-stroke-800 font-bold">
           {top ? "نت‌های آغازین" : middle ? "نت‌های میانی" : "نت‌های پایانی"}
         </p>
@@ -604,8 +610,12 @@ function Notes({ type, top, middle }) {
               className="flex items-center justify-start gap-0.5 text-wrap"
               key={index}
             >
-              {index > 0 && <p className="text-[10px]">-</p>}
-              <p className="text-xs text-stroke-600 text-nowrap -translate-y-px">
+              {index > 0 && (
+                <p className="text-primary dark:text-stroke-800 text-[8px] font-bold">
+                  -
+                </p>
+              )}
+              <p className="text-xs text-stroke-600 dark:text-stroke-700 text-nowrap -translate-y-px">
                 {s}
               </p>
             </span>

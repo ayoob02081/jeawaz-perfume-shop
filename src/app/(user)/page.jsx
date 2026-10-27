@@ -26,7 +26,7 @@ export default async function Home() {
     includePrimaryBanners: true,
   });
   return (
-    <div className="relative flex flex-col justify-between gap-14 scrollbar--primary scrollbar-w-2 md:pb-10 max-sm:p-0">
+    <div className="relative flex flex-col justify-between gap-14 md:pb-10 max-sm:p-0">
       {/* No visible page title: the store name as the main heading for
           assistive technology and document structure (out of the flex flow). */}
       <h1 className="sr-only">{SITE_NAME}</h1>
@@ -40,7 +40,7 @@ export default async function Home() {
         style={{ height: "auto" }}
         loading="lazy"
         fetchPriority="low"
-        className="pointer-events-none absolute z-0 left-0 max-sm:top-60 max-lg:top-70 top-90 xl:top-120 max-sm:w-24 sm:w-26"
+        className="pointer-events-none absolute z-0 left-0 max-sm:top-62 max-lg:top-70 top-90 xl:top-120 max-sm:w-22 sm:w-26"
       />
       <Image
         src="/images/flower.webp"
@@ -51,7 +51,7 @@ export default async function Home() {
         style={{ height: "auto" }}
         loading="lazy"
         fetchPriority="low"
-        className="pointer-events-none absolute rotate-180 z-0 right-0 top-4/10 xl:top-3/7 max-sm:w-24 sm:w-26"
+        className="pointer-events-none absolute rotate-180 z-0 right-0 top-4/9 xl:top-3/7 max-sm:w-22 sm:w-26"
       />
       <Image
         src="/images/flower.webp"
@@ -62,7 +62,7 @@ export default async function Home() {
         style={{ height: "auto" }}
         loading="lazy"
         fetchPriority="low"
-        className="pointer-events-none absolute z-0 left-0 bottom-0 max-sm:w-24 sm:w-26"
+        className="pointer-events-none absolute z-0 left-0 bottom-0 max-sm:w-22 sm:w-26"
       />
       <PrimaryBannerLayout initialSnapshot={snapshot.primaryBanners} />
       <GenderCategoriesLayout initialSnapshot={snapshot.gender} />

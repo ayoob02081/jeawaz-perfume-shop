@@ -2,6 +2,7 @@ import { publicPageMetadata } from "@/lib/seo.mjs";
 import FooterDetail from "@/components/FooterDetail";
 import AppImage from "@/components/AppImage";
 import SupportBox from "@/components/SupportBox";
+import Link from "next/link";
 
 const metadataFields = {
   title: "درباره ما",
