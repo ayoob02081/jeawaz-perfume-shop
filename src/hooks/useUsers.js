@@ -4,11 +4,14 @@ import {
   getAllUsersApi,
   getUserByIdApi,
   searchAdminUsersApi,
+  listAdminUsersApi,
+  setUserBanApi,
 } from "@/services/usersServices";
 import {
   keepPreviousData,
   useInfiniteQuery,
   useMutation,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -16,6 +19,39 @@ import { useAuth } from "@/contexts/auth/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { getSafeApiErrorMessage } from "@/utils/profileFormContract.mjs";
 import { getNextUserCursor } from "@/utils/entityPickerContract.mjs";
+import { sessionLifecycle } from "@/utils/sessionLifecycle.mjs";
+
+export const adminUserKeys = {
+  all: ["users", "management"],
+  list: (params) => ["users", "management", params],
+};
+
+export const useAdminUsers = (params, { enabled = true } = {}) => useQuery({
+  queryKey: adminUserKeys.list(params),
+  queryFn: ({ signal }) => listAdminUsersApi(params, { signal }),
+  retry: false,
+  enabled,
+});
+
+export function useSetUserBan() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ generation, ...payload }) => {
+      sessionLifecycle.assertCurrent(generation, true);
+      const result = await setUserBanApi(payload);
+      sessionLifecycle.assertCurrent(generation, true);
+      return result;
+    },
+    onSuccess: async (result, { generation }) => {
+      sessionLifecycle.assertCurrent(generation, true);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["users"] }),
+        queryClient.invalidateQueries({ queryKey: ["user", String(result.id)] }),
+        queryClient.invalidateQueries({ queryKey: ["user", result.id] }),
+      ]);
+    },
+  });
+}
 
 // Infinite-query data: never shares a key with the plain ["users"] query.
 export const userPickerKeys = {

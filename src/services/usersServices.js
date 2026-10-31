@@ -30,3 +30,11 @@ export function searchAdminUsersApi({ search, cursor, limit } = {}, { signal } =
     .get("/users/admin", { params: { search, cursor, limit }, signal })
     .then(({ data }) => data);
 }
+
+export function listAdminUsersApi(params, { signal } = {}) {
+  return app.get("/users/admin/list", { params, signal }).then(({ data }) => data);
+}
+
+export function setUserBanApi({ id, isBanned }) {
+  return app.patch(`/users/admin/${id}/ban`, { isBanned }).then(({ data }) => data);
+}

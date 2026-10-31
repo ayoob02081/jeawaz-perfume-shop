@@ -2,10 +2,11 @@ import { userDesktopTHeads, userMobileTHeads } from "@/constants/tableHeads";
 import Table from "@/ui/Table";
 import { toLocalDateString } from "@/utils/toLocalDate";
 import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
-import { EyeIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { EyeIcon } from "@heroicons/react/24/solid";
+import { canChangeUserBan, userAccountStatus } from "@/utils/adminUsersContract.mjs";
 import Link from "next/link";
 
-function UsersListTable({ users }) {
+function UsersListTable({ users, rowOffset = 0, actorId, disabled, onBan }) {
   return (
     <div className="w-full overflow-x-auto h-fit rounded-xl shadow-xl scrollbar-none">
       <>
@@ -23,7 +24,7 @@ function UsersListTable({ users }) {
                 return (
                   <Table.Row key={user.id} className="even:bg-primary/5">
                     <td className="table__td font-bold rounded-r-xl px-2">
-                      {toPersianNumbers(index + 1)}
+                      {toPersianNumbers(rowOffset + index + 1)}
                     </td>
                     <td className="table__td px-2 max-w-70 min-w-40 text-wrap">
                       <p>{user?.fullName || "اسمی ثبت نشده"}</p>
@@ -52,9 +53,7 @@ function UsersListTable({ users }) {
                         <p
                           className={`badge border font-bold ${user?.accountStatus === "verified" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
                         >
-                          {user?.accountStatus === "verified"
-                            ? "احراز شده"
-                            : "احراز نشده"}
+                          {userAccountStatus(user?.accountStatus)}
                         </p>
                       </div>
                     </td>
@@ -70,6 +69,7 @@ function UsersListTable({ users }) {
                     <td className="table__td flex items-center justify-center rounded-l-xl gap-2 px-3">
                       <Link
                         href={`/admin/users/${user?.id}`}
+                        aria-label="مشاهده جزئیات کاربر"
                         prefetch={false}
                         className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
                       >
@@ -77,9 +77,11 @@ function UsersListTable({ users }) {
                       </Link>
                       <button
                         type="button"
-                        className="flex items-center justify-center text-stroke-450 hover:text-primary duration-200"
+                        disabled={disabled || !canChangeUserBan(user, actorId)}
+                        onClick={() => onBan(user)}
+                        className="flex items-center justify-center text-stroke-450 hover:text-primary duration-200 disabled:opacity-40 text-sm whitespace-nowrap"
                       >
-                        <TrashIcon className="size-5" />
+                        {user.accountStatus === "banned" ? "رفع مسدودی" : "مسدود کردن"}
                       </button>
                     </td>
                   </Table.Row>
@@ -101,7 +103,7 @@ function UsersListTable({ users }) {
                 return (
                   <Table.Row key={user.id} className="even:bg-primary/5">
                     <td className="table__td font-bold rounded-r-xl px-2">
-                      {toPersianNumbers(index + 1)}
+                      {toPersianNumbers(rowOffset + index + 1)}
                     </td>
                     <td className="table__td px-2 max-w-70 truncate">
                       <p>{user?.fullName || "اسمی ثبت نشده"}</p>
@@ -131,9 +133,7 @@ function UsersListTable({ users }) {
                       <p
                         className={`badge border font-bold ${user?.accountStatus === "verified" ? " bg-success/5 text-success border-success" : "bg-orange/10 text-orange border-orange"}`}
                       >
-                        {user?.accountStatus === "verified"
-                          ? "احراز شده"
-                          : "احراز نشده"}
+                        {userAccountStatus(user?.accountStatus)}
                       </p>
                     </td>
                     <td className="table__td px-2">
@@ -149,6 +149,7 @@ function UsersListTable({ users }) {
                     <td className="table__td flex items-center justify-center rounded-l-xl gap-2 px-3">
                       <Link
                         href={`/admin/users/${user?.id}`}
+                        aria-label="مشاهده جزئیات کاربر"
                         prefetch={false}
                         className="flex items-center justify-center text-stroke-450 hover:text-blue duration-200"
                       >
@@ -156,9 +157,11 @@ function UsersListTable({ users }) {
                       </Link>
                       <button
                         type="button"
-                        className="flex items-center justify-center text-stroke-450 hover:text-primary duration-200"
+                        disabled={disabled || !canChangeUserBan(user, actorId)}
+                        onClick={() => onBan(user)}
+                        className="flex items-center justify-center text-stroke-450 hover:text-primary duration-200 disabled:opacity-40 text-sm whitespace-nowrap"
                       >
-                        <TrashIcon className="size-5" />
+                        {user.accountStatus === "banned" ? "رفع مسدودی" : "مسدود کردن"}
                       </button>
                     </td>
                   </Table.Row>

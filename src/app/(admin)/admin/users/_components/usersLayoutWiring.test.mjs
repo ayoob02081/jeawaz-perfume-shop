@@ -29,10 +29,10 @@ test("every component UsersLayout renders is imported or defined", () => {
 });
 
 test("loading, error, results and the empty state stay distinct", () => {
-  assert.match(layout, /if \(error\) return <Error \/>;/);
-  assert.match(layout, /\{isPending \? <Loading \/> : <UsersListTable users=\{users\} \/>\}/);
+  assert.match(layout, /error \? <Error onRetry=\{refetch\} \/> : isPending \? <Loading \/> :/);
+  assert.match(layout, /<UsersListTable users=\{users\}/);
   // Only a settled, successful, empty answer shows the empty state.
-  assert.match(layout, /\{users && !isPending && users\?\.length === 0 && \(\s*<NotExisted className="h-96">کاربری وجود ندارد!<\/NotExisted>/);
+  assert.match(layout, /\{!error && !isPending && users.length === 0 && <NotExisted/);
 });
 
 test("every file that renders NotExisted imports it", () => {

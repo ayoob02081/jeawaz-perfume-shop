@@ -8,6 +8,7 @@ import {
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import Link from "next/link";
+import { userAccountStatus } from "@/utils/adminUsersContract.mjs";
 
 function SingleUserPage({ userId }) {
   const { data: user, isLoading, error } = useGetUserById(userId);
@@ -40,8 +41,8 @@ function SingleUserPage({ userId }) {
     {
       id: 4,
       title: "وضعیت :",
-      des: accountStatus ? "فعال" : "غیر فعال",
-      className: accountStatus ? "text-success" : "text-orange",
+      des: userAccountStatus(accountStatus),
+      className: accountStatus === "banned" ? "text-error" : "text-success",
     },
     {
       id: 5,
