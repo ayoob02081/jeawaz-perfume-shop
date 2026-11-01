@@ -1,5 +1,6 @@
 import Header from "./Header";
 import Providers from "./Providers";
+import { THEME_BOOTSTRAP } from "@/utils/themeTransition.mjs";
 import Footer from "./Footer";
 import MobilePannel from "./MobilePannel";
 import { Toaster } from "react-hot-toast";
@@ -16,6 +17,9 @@ export const metadata = {
 export default function RootLayout({ children, modal }) {
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning className="font-sans">
+      <head>
+        <script id="jeawaz-theme-init" dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
+      </head>
       <body
         dir="rtl"
         className="font-display antialiased scrollbar-none bg-stroke-0! print:bg-white! duration-200"

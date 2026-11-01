@@ -101,6 +101,7 @@ function harness() {
   }).default;
   const data = { data: [{ id: 2 }, { id: 3 }], meta: { total: 2, page: 1, totalPages: 1 } };
   const Layout = load("./UsersLayout.jsx", {
+    "@/components/PagesNumber": defaultExport("PagesNumber"),
     react: component.react,
     "next/navigation": { useRouter: () => ({}), usePathname: () => "/admin/users", useSearchParams: () => new URLSearchParams() },
     "@/hooks/useUsers": { useAdminUsers: () => ({ data, isPending: false, isFetching: false }), useSetUserBan: () => ({

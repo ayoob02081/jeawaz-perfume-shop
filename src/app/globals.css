@@ -83,6 +83,72 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+html.light {
+  color-scheme: light;
+}
+
+/* Snapshot the new theme above the old one; JS reveals it from the toggle. */
+html[data-theme-transition]::view-transition-group(root),
+html[data-theme-transition]::view-transition-old(root),
+html[data-theme-transition]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html[data-theme-transition]::view-transition-old(root) {
+  z-index: 1;
+}
+html[data-theme-transition]::view-transition-new(root) {
+  z-index: 2;
+}
+
+.theme-toggle[data-mounted="false"] .theme-toggle__icon {
+  visibility: hidden;
+}
+.theme-toggle__icon {
+  transform-origin: center;
+}
+.theme-toggle__sun,
+.theme-toggle[data-dark="true"] .theme-toggle__moon {
+  opacity: 0;
+}
+.theme-toggle[data-dark="true"] .theme-toggle__sun {
+  opacity: 1;
+}
+.theme-toggle[data-animate="true"][data-dark="false"] .theme-toggle__moon,
+.theme-toggle[data-animate="true"][data-dark="true"] .theme-toggle__sun {
+  animation: theme-icon-in 320ms ease-out both;
+}
+.theme-toggle[data-animate="true"][data-dark="true"] .theme-toggle__moon,
+.theme-toggle[data-animate="true"][data-dark="false"] .theme-toggle__sun {
+  animation: theme-icon-out 320ms ease-out both;
+}
+@keyframes theme-icon-in {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.45);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+@keyframes theme-icon-out {
+  from {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.45);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle .theme-toggle__sun,
+  .theme-toggle .theme-toggle__moon {
+    animation: none !important;
+  }
+}
+
 @theme {
   --color-primary: rgb(204, 49, 45);
   --color-secondary: rgb(254, 248, 250);

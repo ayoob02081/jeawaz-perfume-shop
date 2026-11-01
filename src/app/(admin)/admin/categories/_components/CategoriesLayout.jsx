@@ -3,6 +3,7 @@
 import Link from "next/link";
 import NotExisted from "@/components/NotExisted";
 import Loading from "@/components/Loading";
+import Error from "@/components/Error";
 import CategoriesListTable from "./CategoriesListTable";
 import {
   useGetAllBrandCategories,
@@ -45,12 +46,13 @@ const additionalTypes = [
 
 function CategoriesLayout() {
   const [mode, setMode] = useState("brands");
-  const { data: allCategories, isPending: isAllCategoriesPending } =
+  const { data: allCategories, isPending: isAllCategoriesPending, error: isCategoriesError, refetch: refetchCategories } =
     useGetAllCategories();
   const {
     data: brandCategoriess,
     isPending: isBrandsPending,
     error: isBrandsError,
+    refetch: refetchBrands,
   } = useGetAllBrandCategories();
 
   return (
@@ -91,12 +93,15 @@ function CategoriesLayout() {
               <p>اضافه کردن برند</p>
             </Link>
           </div>
-          {isBrandsPending ? (
+          {isBrandsError ? (
+            <Error onRetry={refetchBrands} />
+          ) : isBrandsPending ? (
             <Loading />
           ) : (
             <CategoriesListTable categories={brandCategoriess} brands />
           )}
           {brandCategoriess &&
+            !isBrandsError &&
             !isBrandsPending &&
             brandCategoriess?.length === 0 && (
               <NotExisted className="h-96">برندی وجود نداره!</NotExisted>
@@ -119,7 +124,9 @@ function CategoriesLayout() {
               <p>افزودن دسته‌بندی</p>
             </Link>
           </div>
-          {isAllCategoriesPending ? (
+          {isCategoriesError ? (
+            <Error onRetry={refetchCategories} />
+          ) : isAllCategoriesPending ? (
             <Loading />
           ) : (
             <CategoriesListTable

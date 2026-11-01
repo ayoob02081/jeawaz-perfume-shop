@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import test from "node:test";
+import postcss from "postcss";
 import {
   PRINTABLE_ORDER_STATUSES,
   buildInvoiceView,
@@ -291,5 +292,14 @@ test("site chrome is hidden in print and the page is A4", () => {
   assert.match(profileLayout, /container mx-auto[^"]*print:block print:max-w-none/);
   assert.match(globalsCss, /@page \{\s*size: A4;\s*margin: 12mm;\s*\}/);
   assert.match(globalsCss, /\.invoice thead \{\s*display: table-header-group;/);
-  assert.doesNotMatch(globalsCss, /visibility:\s*hidden/);
+  const hiddenPrintRules = [];
+  postcss.parse(globalsCss).walkDecls("visibility", (declaration) => {
+    if (declaration.value !== "hidden") return;
+    for (let parent = declaration.parent; parent; parent = parent.parent) {
+      if (parent.type === "atrule" && parent.name === "media" && /\bprint\b/.test(parent.params)) {
+        hiddenPrintRules.push(declaration.parent.toString());
+      }
+    }
+  });
+  assert.deepEqual(hiddenPrintRules, []);
 });

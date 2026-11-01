@@ -14,6 +14,7 @@ import NotExisted from "@/components/NotExisted";
 import Modal from "@/components/Modal";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import toast from "react-hot-toast";
+import PagesNumber from "@/components/PagesNumber";
 
 function UsersLayout() {
   const router = useRouter();
@@ -121,10 +122,16 @@ function UsersLayout() {
       )}
       {!error && !isPending && users.length === 0 && <NotExisted className="h-40">کاربری یافت نشد.</NotExisted>}
       {meta && !error && meta.totalPages > 1 && (
-        <nav aria-label="صفحه‌بندی کاربران" className="flex flex-wrap items-center justify-center gap-4">
-          <button type="button" className="btn disabled:opacity-40" disabled={isFetching || query.page <= 1} onClick={() => navigate({ page: query.page - 1 })}>صفحه قبل</button>
-          <span>صفحه {toPersianNumbers(query.page)} از {toPersianNumbers(meta.totalPages)}</span>
-          <button type="button" className="btn disabled:opacity-40" disabled={isFetching || query.page >= meta.totalPages} onClick={() => navigate({ page: query.page + 1 })}>صفحه بعد</button>
+        <nav
+          aria-label="صفحه‌بندی کاربران"
+          className="flex flex-wrap items-center justify-center gap-4"
+        >
+          <PagesNumber
+            page={query.page}
+            setPage={(page) => navigate({ page })}
+            totalPages={meta.totalPages}
+            isLoading={isFetching}
+          />
         </nav>
       )}
       {selected && <Modal isOpen={true} accessibleLabel="تغییر وضعیت حساب کاربر" onClose={closeBanDialog} className="h-fit md:w-fit p-6 space-y-5">

@@ -43,9 +43,24 @@ test.beforeEach(() => { auth = { user, loading: false, sessionReady: true }; add
 test("one product overlay owns animation and all thirteen shapes are static and decorative", () => {
   const output = html(cardModule.default);
   assert.equal((output.match(/product-card-skeleton/g) || []).length, 1);
-  assert.equal((output.match(/bg-stroke-250 dark:bg-stroke-0/g) || []).length, 13);
+  assert.equal((output.match(/bg-stroke-250 dark:bg-stroke-500\/15/g) || []).length, 13);
   assert.doesNotMatch(output, /before:animate|animate-pulse|<a |<button|<input/);
   assert.match(output, /<article aria-hidden="true"/);
+});
+test("generic animated placeholders respect reduced motion for both pulse and shimmer", () => {
+  const Skeleton = load(resolveFile(SRC + "ui/Skeleton")).default;
+  for (const animation of ["pulse", "shimmer"]) {
+    const output = html(Skeleton, { animation });
+    assert.match(output, /motion-reduce:animate-none/);
+    assert.match(output, /motion-reduce:before:animate-none/);
+  }
+});
+test("static profile placeholders remain visible against the dark stroke-0 frame", () => {
+  for (const Component of Object.values(skeletons)) {
+    const output = html(Component);
+    assert.match(output, /bg-stroke-250 dark:bg-stroke-500\/15/);
+    assert.doesNotMatch(output, /bg-stroke-250 dark:bg-stroke-0/);
+  }
 });
 test("shared card dimensions and requested card counts are preserved", () => {
   for (const count of [1, 4, 12]) assert.equal((render(cardModule.ProductCardSkeletons({ count })).match(/<article/g) || []).length, count);

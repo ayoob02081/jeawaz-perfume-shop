@@ -17,6 +17,20 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { storefrontCategoryOptions } from "@/utils/productFilterContract.mjs";
 import toast from "react-hot-toast";
 
+async function refreshCategoryQueries(queryClient, categoryId) {
+  const filters = {
+    predicate: ({ queryKey }) =>
+      queryKey[0] === "get-categories" ||
+      queryKey[0] === "categories" ||
+      (queryKey[0] === "get-category" &&
+        Number(queryKey[1]) === Number(categoryId)),
+  };
+  // Cancel even initial pending reads: invalidation alone can reuse their
+  // pre-save result. Typed lists share these keys with storefront filters.
+  await queryClient.cancelQueries(filters);
+  await queryClient.invalidateQueries(filters);
+}
+
 export const useGetAllCategories = () =>
   useQuery({
     queryKey: ["get-categories"],
@@ -94,9 +108,9 @@ export function useAddCategory() {
 
   const { isPending: isAdding, mutateAsync: addCategory } = useMutation({
     mutationFn: addCategoryApi,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      await refreshCategoryQueries(queryClient, data?.id);
       toast.success(data?.message || "دسته‌بندی اضافه شد");
-      queryClient.invalidateQueries({ queryKey: ["get-categories"] });
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "خطا در افزودن دسته‌بندی");
@@ -128,13 +142,9 @@ export function useEditCategory(categoryId) {
 
   const { isPending: isEditing, mutateAsync: editCategory } = useMutation({
     mutationFn: (data) => updateCategoryApi({ categoryId, data }),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      await refreshCategoryQueries(queryClient, categoryId);
       toast.success(data?.message || "دسته‌بندی ویرایش شد");
-
-      queryClient.invalidateQueries({ queryKey: ["get-categories"] });
-      queryClient.invalidateQueries({
-        queryKey: ["get-category", categoryId],
-      });
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "خطا در ویرایش دسته‌بندی");
