@@ -5,10 +5,13 @@ import {
   MinusIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useId, useState } from "react";
 
-function Accordion({ label, children, className = "flex", titleStyle, plus }) {
+// `keepMounted`: the closed panel stays in the server-rendered DOM, hidden,
+// instead of mounting only on open (page content such as a product description).
+function Accordion({ label, children, className = "flex", titleStyle, plus, keepMounted = false }) {
   const [accordionOpen, setAccordionOpen] = useState(false);
+  const panelId = useId();
   const toggleAccordion = () => {
     setAccordionOpen((prevState) => !prevState);
   };
@@ -21,6 +24,8 @@ function Accordion({ label, children, className = "flex", titleStyle, plus }) {
       <button
         type="button"
         onClick={toggleAccordion}
+        aria-expanded={accordionOpen}
+        aria-controls={keepMounted ? panelId : undefined}
         className="flex items-center justify-between gap-4 size-full max-sm:py-4 sm:py-6 md:py-4"
       >
         <h4 className={`text-start ${titleStyle}`}>{label}</h4>
@@ -36,7 +41,13 @@ function Accordion({ label, children, className = "flex", titleStyle, plus }) {
           />
         )}
       </button>
-      {accordionOpen && children}
+      {keepMounted ? (
+        <div id={panelId} hidden={!accordionOpen}>
+          {children}
+        </div>
+      ) : (
+        accordionOpen && children
+      )}
     </div>
   );
 }

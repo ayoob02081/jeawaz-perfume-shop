@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
+import { formatFullName } from "@/utils/profileFormContract.mjs";
 import Loading from "./Loading";
 import {
   ArrowRightStartOnRectangleIcon,
@@ -10,7 +11,6 @@ import {
   ChatBubbleLeftRightIcon,
   ClipboardDocumentListIcon,
   EnvelopeIcon,
-  PencilSquareIcon,
   PresentationChartLineIcon,
   ReceiptPercentIcon,
   RectangleGroupIcon,
@@ -20,6 +20,7 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import {
+  PencilSquareIcon,
   UserCircleIcon as UserCircleSolidIcon,
   ChartPieIcon as ChartPieSolidIcon,
   ChatBubbleLeftRightIcon as ChatBubbleLeftRightSolidIcon,
@@ -35,6 +36,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { useUnreadNotificationsCount } from "@/hooks/useNotification";
+import { useSidebar } from "@/contexts/Sidebars/SidebarContext";
 
 export default function ProfileSidebarLayout({ children, className }) {
   return (
@@ -44,9 +46,9 @@ export default function ProfileSidebarLayout({ children, className }) {
     >
       <div className={`flex flex-col h-full max-lg:pb-6 w-full`}>
         <div className=" flex items-center gap-2 w-full max-lg:*:*:*:first:border-none lg:overflow-hidden">
-          <div className="flex flex-col items-start justify-start size-full lg:max-w-xs max-lg:pb-10 lg:pb-2 lg:overflow-auto lg:max-h-[70dvh] scrollbar-none">
+          <ul className="flex flex-col items-start justify-start size-full lg:max-w-xs max-lg:pb-10 lg:pb-2 lg:overflow-auto lg:max-h-[70dvh] scrollbar-none">
             {children}
-          </div>
+          </ul>
         </div>
       </div>
     </div>
@@ -61,24 +63,30 @@ export function ProfileLink({
   logoutMode,
   profileMode,
   countUnread,
-  toggleSidebar,
 }) {
+  const { closeSidebar } = useSidebar();
   const { user, isAuthenticated, logout } = useAuth();
   const { phoneNumber, firstName, lastName, role } = user || {};
   const isPending = isAuthenticated === null;
+  // A user without a name (no longer asked for one after login) is shown by
+  // phone, never as "null null".
+  const accountName = formatFullName(firstName, lastName);
   const fullName =
-    (isAuthenticated === true && firstName + " " + lastName) ||
-    "لطفا وارد شوید";
+    isAuthenticated !== true
+      ? "لطفا وارد شوید"
+      : accountName !== "-"
+        ? accountName
+        : normalizeIranPhone(phoneNumber) || "-";
 
   const pathName = usePathname();
   const isPathName = pathName.startsWith(baseHref);
   const router = useRouter();
   const LogoutHandler = async () => {
     try {
+      closeSidebar();
       await logout();
       router.replace("/");
       localStorage.removeItem("user");
-      toggleSidebar;
     } catch (error) {
       console.error("Error during logout:", error);
     }
@@ -189,7 +197,7 @@ export function ProfileLink({
 
   if (logoutMode) {
     return (
-      <div className="flex flex-col items-center justify-center size-full p-2 lg:py-1 max-lg:border-t border-stroke-300">
+      <li className="flex flex-col items-center justify-center size-full p-2 lg:py-1 max-lg:border-t border-stroke-300">
         <button
           onClick={LogoutHandler}
           className="flex items-center justify-start gap-4 hover:bg-stroke-250/20 hover:backdrop-blur-md **:transition-all **:last:duration-200 text-stroke-800
@@ -204,20 +212,20 @@ export function ProfileLink({
             </p>
           </div>
         </button>
-      </div>
+      </li>
     );
   }
 
   if (profileMode) {
     return (
-      <div className=" flex flex-col items-center justify-center size-full px-4 lg:px-2">
-        <div className="flex items-center justify-start py-4 lg:pt-6 size-full rounded-3xl">
-          <div className="flex items-center max-lg:justify-between justify-start lg:-translate-x-1 group-hover:lg:translate-x-0 2xl:translate-x-0 w-full h-full group-hover:lg:gap-12 2xl:gap-12">
+      <li className=" flex flex-col items-center justify-center size-full px-4 lg:px-2">
+        <div className="flex items-center justify-start py-4 size-full rounded-3xl">
+          <div className="flex items-center max-lg:justify-between justify-center group-hover:lg:justify-start 2xl:justify-start w-full h-full group-hover:lg:gap-12 2xl:gap-12 transition-all duration-200">
             <Link
-              onClick={toggleSidebar}
+              onClick={closeSidebar}
               href={"/profile/me"}
               prefetch={false}
-              className="flex items-center justify-between max-lg:gap-4 lg:gap-4 overflow-hidden"
+              className="flex items-center justify-between max-lg:gap-4 group-hover:lg:gap-4 2xl:gap-4 overflow-hidden"
             >
               <UserIcon className="p-3 text-stroke-800 size-14 bg-stroke-150 lg:bg-stroke-0 rounded-xl z-10" />
               {isPending ? (
@@ -239,8 +247,10 @@ export function ProfileLink({
               )}
             </Link>
             <Link
-              onClick={toggleSidebar}
-              href={"/profile/me"}
+              onClick={closeSidebar}
+              href={"/profile/me/edit"}
+              title="ویرایش اطلاعات کاربری"
+              aria-label="ویرایش اطلاعات کاربری"
               prefetch={false}
               className="flex items-center justify-center lg:opacity-0 lg:w-0 group-hover:lg:opacity-100 2xl:opacity-100 group-hover:lg:w-fit 2xl:w-fit transition-all duration-200"
             >
@@ -249,14 +259,14 @@ export function ProfileLink({
           </div>
         </div>
         <div className="w-full lg:w-0 group-hover:lg:w-full 2xl:w-full max-lg:hidden max-lg:border-t lg:border-0 group-hover:lg:border-t 2xl:border-t border-stroke-300"></div>
-      </div>
+      </li>
     );
   }
 
   return (
-    <div className=" flex flex-col items-center justify-center size-full p-2 lg:py-1 max-lg:border-t border-stroke-300 transition-all duration-200">
+    <li className=" flex flex-col items-center justify-center size-full p-2 lg:py-1 max-lg:border-t border-stroke-300 transition-all duration-200">
       <Link
-        onClick={toggleSidebar}
+        onClick={closeSidebar}
         href={href}
         prefetch={false}
         className={`flex items-center justify-start gap-4
@@ -290,6 +300,6 @@ export function ProfileLink({
           {children}
         </div>
       </Link>
-    </div>
+    </li>
   );
 }

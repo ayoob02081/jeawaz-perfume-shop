@@ -179,8 +179,10 @@ function DashboardCard({ href, title, children }) {
           <div className="grow flex items-end justify-start gap-1 rounded-b-2xl pb-3 px-3 bg-stroke-0">
             <div className="w-full "></div>
           </div>
-          <CardButton href={href}>
-            <ChevronLeftIcon className="p-2.5 text-stroke-600 bg-stroke-0 rounded-full size-full shadow" />
+          <CardButton>
+            <Link href={href} prefetch={false}>
+              <ChevronLeftIcon className="p-2.5 text-stroke-600 bg-stroke-0 rounded-full size-full shadow" />
+            </Link>
           </CardButton>
         </div>
       </div>
@@ -188,24 +190,24 @@ function DashboardCard({ href, title, children }) {
   );
 }
 
-function CardButton({ children, href }) {
+function CardButton({ children }) {
   return (
-    <Link
-      href={href}
-      prefetch={false}
-      className="flex flex-none items-start justify-start size-11 aspect-square bg-stroke-100 rounded-2xl"
-    >
+    <div className="flex flex-none items-start justify-start size-11 aspect-square bg-stroke-100 rounded-2xl">
       <div className="size-6 aspect-square bg-stroke-0 "></div>
       <div className="absolute bottom-2 left-2 flex items-center justify-center size-11 bg-stroke-100 pt-1 pr-1 rounded-full">
         {children}
       </div>
-    </Link>
+    </div>
   );
 }
 
 function DataDashboardBox({ href, title, type, value, percentValue, isGrow }) {
   return (
-    <div className="relative group flex flex-col items-stretch rounded-2xl border border-stroke-100 w-full transition-all overflow-hidden duration-200 p-2">
+    <Link
+      href={href}
+      prefetch={false}
+      className="relative group flex flex-col items-stretch rounded-2xl border border-stroke-100 w-full transition-all overflow-hidden duration-200 p-2"
+    >
       <p className="flex items-start text-base text-stroke-800 lg:text-stroke-600 p-4 rounded-t-2xl bg-stroke-0">
         {title}
       </p>
@@ -233,7 +235,7 @@ function DataDashboardBox({ href, title, type, value, percentValue, isGrow }) {
             </>
           )}
         </div>
-        <CardButton href={href}>
+        <CardButton>
           {percentValue === 0 ? (
             <MinusIcon className="p-2.5 text-error bg-stroke-0 rounded-full size-full shadow" />
           ) : isGrow ? (
@@ -243,6 +245,6 @@ function DataDashboardBox({ href, title, type, value, percentValue, isGrow }) {
           )}
         </CardButton>
       </div>
-    </div>
+    </Link>
   );
 }

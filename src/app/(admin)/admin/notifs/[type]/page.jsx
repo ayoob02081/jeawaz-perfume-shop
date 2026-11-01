@@ -1,17 +1,13 @@
-"use client";
+import { Suspense } from "react";
+import Loading from "@/components/Loading";
+import AdminNotificationsLayout from "../_components/AdminNotificationsLayout";
 
-import NotifLayout from "@/components/NotifLayout";
-import NotifTypePage from "@/components/NotifTypePage";
-import { useParams } from "next/navigation";
-
-function SingleNotifPage() {
-  const { type } = useParams();
-
+// Admin management list (GET /admin/notifications); the customer inbox is
+// /profile/notifs.
+export default function AdminNotificationsPage() {
   return (
-    <NotifLayout>
-      <NotifTypePage type={type} />
-    </NotifLayout>
+    <Suspense fallback={<Loading />}>
+      <AdminNotificationsLayout />
+    </Suspense>
   );
 }
-
-export default SingleNotifPage;

@@ -1,33 +1,40 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useController, useForm } from "react-hook-form";
 import RHFTextField from "@/ui/RHFTextField";
 import RHFRadioButton from "@/ui/RHFRadioButton";
 import PersianDateRHForm from "@/ui/PersianDateRHForm";
+import ProductPicker, {
+  ProductSummary,
+  productDisplayName,
+} from "../../_components/picker/ProductPicker";
+import SelectedEntityList from "../../_components/picker/SelectedEntityList";
+import {
+  campaignProductSnapshots,
+  campaignScopeProductType,
+  removeFromSelection,
+  toCampaignProductsPayload,
+} from "@/utils/entityPickerContract.mjs";
 
 import { useAddCampaign, useEditCampaign } from "@/hooks/useCampaigns";
+import ActionButtons from "../../_components/ActionButtons";
+
+const SCOPE_VARIANT_LABELS = { sealed: "پلمپ", decant: "دکانت" };
 
 function CampaignForm({ campaignToEdit }) {
-  const router = useRouter();
-
   const isEdit = Boolean(campaignToEdit);
   const { id } = campaignToEdit || {};
 
   const { addCampaign, isAdding } = useAddCampaign();
   const { editCampaign, isEditing } = useEditCampaign(id);
 
-  const existingProductIds =
-    campaignToEdit?.products
-      ?.map((item) => {
-        if (typeof item === "number") {
-          return item;
-        }
-
-        return item?.productId ?? item?.product?.id;
-      })
-      .filter(Boolean)
-      .join(",") || "";
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+  // The scope the current selection was picked under; a later scope change
+  // keeps the products but warns that the backend may reject some.
+  const [selectionScope, setSelectionScope] = useState(
+    campaignToEdit?.scope || "product",
+  );
 
   const {
     register,
@@ -51,13 +58,33 @@ function CampaignForm({ campaignToEdit }) {
 
       status: campaignToEdit?.status || "draft",
 
-      productIds: existingProductIds,
+      // Snapshots for display; only their IDs are sent. An `all` Campaign
+      // never seeds a manual selection.
+      selectedProducts: campaignProductSnapshots(campaignToEdit),
     },
   });
 
   const scope = watch("scope");
   const status = watch("status");
   const selectionMode = watch("selectionMode");
+
+  const {
+    field: productsField,
+    fieldState: { error: productsError },
+  } = useController({
+    name: "selectedProducts",
+    control,
+    rules: {
+      validate: (value, values) =>
+        values.selectionMode !== "manual" ||
+        value.length > 0 ||
+        "حداقل یک محصول باید انتخاب شود",
+    },
+  });
+  const selectedProducts = productsField.value;
+  const scopeVariant = SCOPE_VARIANT_LABELS[scope];
+  const showScopeWarning =
+    selectedProducts.length > 0 && scopeVariant && scope !== selectionScope;
 
   const onSubmit = async (data) => {
     const payload = {
@@ -80,14 +107,7 @@ function CampaignForm({ campaignToEdit }) {
 
     // فقط در حالت manual محصولات را ارسال می‌کنیم
     if (data.selectionMode === "manual") {
-      const productIds = data.productIds
-        .split(",")
-        .map((value) => Number(value.trim()))
-        .filter((value) => Number.isInteger(value) && value > 0);
-
-      payload.products = productIds.map((productId) => ({
-        productId,
-      }));
+      payload.products = toCampaignProductsPayload(data.selectedProducts);
     }
 
     if (isEdit) {
@@ -101,7 +121,10 @@ function CampaignForm({ campaignToEdit }) {
 
   return (
     <div className="max-w-5xl w-full border-stroke-300 max-xl:px-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 w-full">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="relative space-y-8 w-full"
+      >
         {/* BASIC INFO */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
           <RHFTextField
@@ -256,44 +279,38 @@ function CampaignForm({ campaignToEdit }) {
         {/* PRODUCTS */}
         {selectionMode === "manual" && (
           <div className="space-y-2">
-            <RHFTextField
-              textClassName="font-bold"
-              label="آی‌دی محصولات"
-              name="productIds"
-              register={register}
-              errors={errors}
+            <SelectedEntityList
+              label="محصولات کمپین"
               isRequired
-              placeholder="مثلاً: 12,15,21"
-              validationSchema={{
-                required: "حداقل یک محصول باید انتخاب شود",
-                validate: (value) => {
-                  const ids = value
-                    .split(",")
-                    .map((item) => Number(item.trim()))
-                    .filter(Boolean);
-
-                  if (!ids.length) {
-                    return "حداقل یک محصول باید انتخاب شود";
-                  }
-
-                  if (ids.some((id) => !Number.isInteger(id) || id <= 0)) {
-                    return "آی‌دی محصولات نامعتبر است";
-                  }
-
-                  return true;
-                },
-              }}
+              items={selectedProducts}
+              entityLabel="محصول"
+              addLabel="انتخاب محصولات"
+              emptyText="هنوز محصولی انتخاب نشده است."
+              renderItem={(product) => <ProductSummary product={product} />}
+              getItemName={productDisplayName}
+              onOpen={() => setIsPickerOpen(true)}
+              onRemove={(productId) =>
+                productsField.onChange(
+                  removeFromSelection(selectedProducts, productId),
+                )
+              }
+              onClear={() => productsField.onChange([])}
+              error={productsError?.message}
             />
 
-            <p className="text-xs text-stroke-500">
-              آی‌دی محصولات را با کاما از هم جدا کنید. مثال: 12,15,21
-            </p>
+            {showScopeWarning && (
+              <p role="status" className="text-sm text-orange">
+                نوع کمپین تغییر کرده است. انتخاب‌ها حذف نشده‌اند، اما محصولاتی
+                که بخش {scopeVariant} ندارند هنگام ذخیره رد می‌شوند.
+              </p>
+            )}
           </div>
         )}
 
         {selectionMode === "all" && (
           <p className="text-xs text-stroke-500">
-            تمام محصولات موجود در کمپین قرار خواهند گرفت.
+            همه محصولات فعلی در زمان ذخیره در کمپین قرار می‌گیرند؛ محصولاتی که
+            بعداً اضافه شوند خودکار به این کمپین اضافه نمی‌شوند.
           </p>
         )}
 
@@ -367,27 +384,24 @@ function CampaignForm({ campaignToEdit }) {
           </div>
         </div>
 
-        {/* ACTIONS */}
-        <div className="flex items-center md:items-end flex-col max-md:gap-8 md:gap-6">
-          <div className="flex items-center justify-between max-sm:flex-col gap-4 w-full">
-            <button
-              type="submit"
-              disabled={isSubmitting || isAdding || isEditing}
-              className="btn btn--success py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
-            >
-              {isEdit ? "ویرایش کمپین" : "ساخت کمپین"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="btn btn--primary--2 border-2 border-primary py-3.5 px-7 rounded-x disabled:opacity-50 max-md:w-full md:w-44"
-            >
-              بازگشت
-            </button>
-          </div>
-        </div>
+        {/* Action Buttons */}
+        <ActionButtons
+          confurmLabel={isEdit ? "ویرایش کمپین" : "ساخت کمپین"}
+          isPending={isSubmitting || isAdding || isEditing}
+        />
       </form>
+
+      {/* Outside the form: nothing in the picker can submit it. */}
+      <ProductPicker
+        isOpen={isPickerOpen}
+        onClose={() => setIsPickerOpen(false)}
+        value={selectedProducts}
+        onConfirm={(products) => {
+          productsField.onChange(products);
+          setSelectionScope(scope);
+        }}
+        forcedType={campaignScopeProductType(scope)}
+      />
     </div>
   );
 }

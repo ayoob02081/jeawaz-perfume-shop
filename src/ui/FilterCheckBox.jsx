@@ -8,6 +8,7 @@ function FilterCheckBox({
   label,
   className,
   imageSrc,
+  imageAlt,
   checked,
   onChange,
   checkbox,
@@ -18,7 +19,7 @@ function FilterCheckBox({
 }) {
   return (
     <CheckBox
-      className={`${className} w-full cursor-pointer scroll-smooth duration-200`}
+      className={`${className} w-full cursor-pointer scroll-smooth px-px duration-200`}
       id={checkId + "-" + name}
       name={name}
       value={checkId}
@@ -32,7 +33,7 @@ function FilterCheckBox({
         <div className={imageClassName}>
           <AppImage
             src={imageSrc}
-            alt={checkId + "-icon"}
+            alt={imageAlt ?? checkId + "-icon"}
             width="size-full"
             ratio={ratio}
             sizes="20vw"

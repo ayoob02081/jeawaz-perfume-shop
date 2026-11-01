@@ -8,6 +8,7 @@ import {
   ADMIN_ORDER_STATUSES,
   adminOrderByNumberPath,
   adminOrderDetailHref,
+  adminOrderDetailKey,
   adminOrderKeys,
   adminOrdersSelectionKey,
   buildAdminOrdersListParams,
@@ -153,6 +154,21 @@ test("the query key is structured, normalized and under the admin-orders prefix"
   );
   assert.deepEqual(adminOrderKeys.all, ["admin-orders"]);
   assert.deepEqual(adminOrderKeys.list().slice(0, 1), adminOrderKeys.all);
+});
+
+test("the admin order detail key is the same for numeric and string ids", () => {
+  // Route params ("21") and list rows / mutation variables (21) share one entry.
+  assert.deepEqual(adminOrderDetailKey(21), ["admin-order", "21"]);
+  assert.deepEqual(adminOrderDetailKey("21"), ["admin-order", "21"]);
+  assert.deepEqual(adminOrderDetailKey("021"), adminOrderDetailKey(21));
+  assert.notDeepEqual(adminOrderDetailKey(21), adminOrderDetailKey(210));
+  // Still under the root the identity-change reset clears; not under the list prefix.
+  assert.equal(adminOrderDetailKey(21)[0], "admin-order");
+  assert.notEqual(adminOrderDetailKey(21)[0], adminOrderKeys.all[0]);
+  // Non-ids are left unchanged (the query is disabled or the API rejects them).
+  assert.deepEqual(adminOrderDetailKey(undefined), ["admin-order", undefined]);
+  assert.deepEqual(adminOrderDetailKey("abc"), ["admin-order", "abc"]);
+  assert.deepEqual(adminOrderDetailKey("9".repeat(20)), ["admin-order", "9".repeat(20)]);
 });
 
 test("the hook uses the structured key, v5 keepPreviousData and bounded retries", () => {

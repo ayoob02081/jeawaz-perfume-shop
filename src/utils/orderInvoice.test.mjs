@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import test from "node:test";
+import postcss from "postcss";
 import {
   PRINTABLE_ORDER_STATUSES,
   buildInvoiceView,
@@ -239,6 +240,15 @@ test("unpaid and error states offer no print and link back", () => {
   for (const state of [unpaid, failed]) assert.doesNotMatch(state, /handlePrint|<button/);
 });
 
+test("invoice back navigation goes to fixed order routes, never browser history", () => {
+  // The invoice is often opened in a new tab or bookmarked, where history back
+  // would do nothing or leave the site.
+  assert.doesNotMatch(invoicePage, /router\.back|history\.back|<GoBack\b/);
+  const printable = invoicePage.slice(invoicePage.indexOf("const { customer, shipping, payment }"), invoicePage.indexOf("<article"));
+  assert.match(printable, /<BackLink href=\{`\/profile\/orders\/\$\{id\}`\}/);
+  assert.match(invoicePage, /function BackLink\(\{ href, label \}\) \{\s*return \(\s*<Link\s+href=\{href\}\s+prefetch=\{false\}/);
+});
+
 test("invoice is a print-safe RTL document without images or hardcoded data", () => {
   assert.match(invoicePage, /<article\s+dir="rtl"/);
   assert.match(invoicePage, /bg-white text-black font-display/);
@@ -282,5 +292,14 @@ test("site chrome is hidden in print and the page is A4", () => {
   assert.match(profileLayout, /container mx-auto[^"]*print:block print:max-w-none/);
   assert.match(globalsCss, /@page \{\s*size: A4;\s*margin: 12mm;\s*\}/);
   assert.match(globalsCss, /\.invoice thead \{\s*display: table-header-group;/);
-  assert.doesNotMatch(globalsCss, /visibility:\s*hidden/);
+  const hiddenPrintRules = [];
+  postcss.parse(globalsCss).walkDecls("visibility", (declaration) => {
+    if (declaration.value !== "hidden") return;
+    for (let parent = declaration.parent; parent; parent = parent.parent) {
+      if (parent.type === "atrule" && parent.name === "media" && /\bprint\b/.test(parent.params)) {
+        hiddenPrintRules.push(declaration.parent.toString());
+      }
+    }
+  });
+  assert.deepEqual(hiddenPrintRules, []);
 });

@@ -205,6 +205,62 @@ Before a release, run the tests and a production build (`pnpm build`).
 - Never put secrets in `NEXT_PUBLIC_*` variables, and never commit real `.env*` files.
 - Keep the UI Persian and RTL.
 
+## Sitemap and robots
+
+App Router metadata routes serve `/sitemap.xml` and `/robots.txt` using canonical
+`https://jeawaz.com` URLs. The sitemap contains `/`, `/products`, `/page/about-us`,
+`/page/contact-us`, `/page/terms`, every numeric product URL returned by the public
+catalog, and active populated category filters on `/products`. There are no
+`/categories/...` or product-slug routes. The backend currently has no publication
+flag: its public `GET /products` listing defines published pages; out-of-stock
+products remain public. Product metadata uses the same numeric canonical URLs.
+
+Set `NEXT_PUBLIC_API_URL` to the reachable production API **before building**.
+Catalog generation happens at request time, not during the build, and reads all
+100-item pages with stable oldest-first ordering and availability ordering disabled.
+Complete successful snapshots are cached for one hour with Next's data cache.
+During revalidation Next can retain a previous successful snapshot; a cold API
+failure returns an error rather than publishing a partial static-only sitemap.
+No cookies, credentials or admin API are used. URLs and timestamps come from real
+API data; static pages do not claim an invented last-modified date. Catalogs beyond
+50,000 total sitemap URLs require a split-sitemap implementation; generation fails
+explicitly rather than truncating them.
+
+Robots allows public pages and rendering assets, disallows `/admin`, `/profile`,
+`/auth`, `/cart`, `/payment`, and references `https://jeawaz.com/sitemap.xml`.
+These are crawler instructions; existing authentication/authorization still governs
+private routes. No private URLs are included in the sitemap.
+
+Run `node --test --test-isolation=none src/lib/seo.test.mjs` and `pnpm build`.
+After an owner-approved deployment, verify both public metadata endpoints return
+200 with XML/text content, actual production product IDs and canonical URLs, then
+submit the sitemap in Search Console. Local production-server verification uses
+an isolated synthetic API, not production catalog access; see
+`SEO_SITEMAP_REVIEW.md` for coverage and evidence. Build validation also needs the
+existing Google Fonts download; no font or dependency configuration was changed.
+
+## Product structured data
+
+Product detail pages render one JSON-LD `Product` from the same server response
+used by the visible page. The default type/volume and discounted price reuse the
+existing detail-page helpers. One `Offer` is included only for the displayed
+default variant with `isPurchasable === true` and a positive safe integer price;
+its final IRT price is converted to IRR x10 with another safe-integer check.
+Missing/false availability or invalid prices omit the offer, without guessing
+`OutOfStock` or selecting a different variant. No price/stock cache is added.
+
+Names include the actual type/volume and preserve the SUPER_MASTER grade. Brand
+markup is omitted for non-original/unknown-grade products to avoid asserting
+manufacture. Images resolve through the existing image-source contract; absent
+or invalid optional fields are omitted. No ratings, reviews, GTIN/SKU, condition,
+shipping, returns, ProductGroup or variant URLs are invented. Serialization
+escapes HTML-sensitive text before insertion into the server-rendered script.
+
+Run `node --test --test-isolation=none src/lib/productJsonLd.test.mjs` and the
+production build/Safari gate. See `PRODUCT_JSONLD_REVIEW.md` for HTML verification,
+examples and remaining Google eligibility checks. Missing images/offers can limit
+rich-result eligibility; a valid payload does not guarantee Google display.
+
 ## Deployment Notes
 
 - The frontend and backend are built and deployed separately.

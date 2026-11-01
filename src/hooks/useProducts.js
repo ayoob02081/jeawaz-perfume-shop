@@ -4,6 +4,7 @@ import {
   addProductApi,
   getAllProductsApi,
   getProductByIdApi,
+  getProductSearchAliasesApi,
   getProductPriceApi,
   getProductSuggestionsApi,
   getProductVolumeOptionsApi,
@@ -21,6 +22,7 @@ import {
 import { showApiError } from "@/utils/showApiError";
 import {
   keepPreviousData,
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -28,6 +30,7 @@ import {
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { normalizeProductsQuery, productListKey } from "@/utils/productFilterContract.mjs";
+import { getNextProductPage } from "@/utils/entityPickerContract.mjs";
 
 export const productKeys = {
   all: ["products"],
@@ -42,6 +45,8 @@ export const productKeys = {
     search,
     limit,
   ],
+  // Infinite-query data: never shares a key with the plain list queries.
+  picker: (params) => [...productKeys.all, "picker", params],
 };
 
 export const priceHistoryKeys = {
@@ -64,6 +69,23 @@ export const useGetAllProducts = (query = {}, options = {}) => {
   });
 };
 
+// Admin picker pages of GET /products (params from buildProductPickerParams).
+export const useProductPickerSearch = (params, { enabled = true } = {}) =>
+  useInfiniteQuery({
+    queryKey: productKeys.picker(params),
+    queryFn: ({ pageParam, signal }) =>
+      getAllProductsApi(normalizeProductsQuery({ ...params, page: pageParam }), {
+        signal,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: getNextProductPage,
+    enabled,
+    retry: false,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+    staleTime: 30 * 1000,
+  });
+
 export const useGetProductVolumeOptions = (enabled = true) => useQuery({
   queryKey: productKeys.volumeOptions(),
   queryFn: getProductVolumeOptionsApi,
@@ -72,17 +94,17 @@ export const useGetProductVolumeOptions = (enabled = true) => useQuery({
   staleTime: 5 * 60 * 1000,
 });
 
-export const useGetProductSuggestions = ({ search, limit = 5 } = {}) => {
+export const useGetProductSuggestions = ({ search, limit = 5, enabled = true } = {}) => {
   const normalizedSearch = search?.trim() || "";
 
   return useQuery({
     queryKey: productKeys.suggestions(normalizedSearch, limit),
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       getProductSuggestionsApi({
         search: normalizedSearch,
         limit,
-      }),
-    enabled: normalizedSearch.length >= 3,
+      }, { signal }),
+    enabled: enabled && normalizedSearch.length >= 3,
     retry: false,
     refetchOnWindowFocus: false,
     staleTime: 60 * 1000,
@@ -98,7 +120,22 @@ export const useGetProductById = (id) =>
     refetchOnWindowFocus: false,
   });
 
-export function useAddProduct() {
+// Admin edit form only. Never served from cache: the form is filled once
+// from it, and a stale copy saved back would undo the last change.
+export const useGetProductSearchAliases = (id) =>
+  useQuery({
+    queryKey: [...productKeys.all, "search-aliases", id],
+    queryFn: () => getProductSearchAliasesApi(id),
+    enabled: Boolean(id),
+    gcTime: 0,
+    staleTime: 0,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+// `returnHref`: the admin list to go back to after creating (by default the
+// plain list).
+export function useAddProduct(returnHref = "/admin/products") {
   const queryClient = useQueryClient();
   const router = useRouter();
 
@@ -112,7 +149,7 @@ export function useAddProduct() {
 
       queryClient.invalidateQueries({ queryKey: productKeys.all });
       queryClient.invalidateQueries({ queryKey: priceHistoryKeys.all });
-      router.push("/admin/products");
+      router.push(returnHref);
     },
 
     onError: showApiError,

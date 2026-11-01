@@ -12,8 +12,11 @@ import {
 import { useGetProductVolumeOptions } from "@/hooks/useProducts";
 import {
   CONCENTRATION_FILTER_LABEL,
+  SIDEBAR_PRICE_RANGES,
   TAXONOMY_FILTER_GROUPS,
-  activeFilterCount,
+  canApplySidebarFilters,
+  genderProductsHref,
+  isPriceRangeSelected,
   mergeVolumeOptions,
 } from "@/utils/productFilterContract.mjs";
 import {
@@ -25,6 +28,8 @@ import Loading from "@/components/Loading";
 import { buildQueryFromFilters } from "@/utils/queryFilters";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
+import { useSidebar } from "@/contexts/Sidebars/SidebarContext";
+import { useState } from "react";
 
 // The sidebar has its own dedicated gender panel; the generic taxonomy
 // columns render every other shared group.
@@ -32,57 +37,55 @@ const SIDEBAR_TAXONOMY_GROUPS = TAXONOMY_FILTER_GROUPS.filter(
   ({ key }) => key !== "gender",
 );
 
-const priceRanges = [
-  {
-    id: 1,
-    minPrice: 0,
-    maxPrice: 999999,
-    value: "until-one-million",
-    label: "تا یک میلیون",
-  },
-  {
-    id: 2,
-    minPrice: 0,
-    maxPrice: 3000000,
-    value: "until-three-million",
-    label: "تا سه میلیون",
-  },
-  {
-    id: 3,
-    minPrice: 0,
-    maxPrice: 5000000,
-    value: "until-five-million",
-    label: "تا پنج میلیون",
-  },
-  {
-    id: 4,
-    minPrice: 5000001,
-    maxPrice: null,
-    value: "over-five-million",
-    label: "بالای پنج میلیون",
-  },
-];
+// True from the first render where `active` is true, and from then on.
+function useLatch(active) {
+  const [latched, setLatched] = useState(false);
+  if (active && !latched) setLatched(true);
+  return latched || active;
+}
 
-function CategorySidebar({ isCategoryOpen, closeCategory }) {
+function CategorySidebar() {
+  const { isCategoryOpen, closeCategory, isSidebarOpen, categoryIntent } =
+    useSidebar();
   const searchParams = useSearchParams();
   const router = useRouter();
+  // The panel mounts in the root layout on every route but is rarely opened.
+  // Its filter data loads on intent (desktop trigger hover/focus, the mobile
+  // navigation sidebar that holds the trigger) or on opening, and stays
+  // enabled. Pages that show the same keys (home sections, /products) load
+  // them on their own; the cache is shared either way.
+  const sharedCategoryOptions = {
+    enabled: useLatch(isCategoryOpen || isSidebarOpen || categoryIntent),
+  };
+  // The filter body is built on first opening and kept for fast reopening and
+  // the close animation. Never on the server or the hydration render.
+  const hasOpened = useLatch(isCategoryOpen);
 
   const { data: genderCategories, isPending: isGenderPending } =
-    useGetStorefrontCategoriesByType("gender");
+    useGetStorefrontCategoriesByType("gender", sharedCategoryOptions);
 
   const { data: fragranceFamilyCategories, isPending: isFamilyPending } =
-    useGetStorefrontCategoriesByType("fragrance_family");
+    useGetStorefrontCategoriesByType("fragrance_family", sharedCategoryOptions);
 
   const { data: brandCategories, isPending: isBrandPending } =
-    useGetAllBrandCategories();
+    useGetAllBrandCategories(sharedCategoryOptions);
 
-  const { data: seasonCategories } = useGetStorefrontCategoriesByType("season");
-  const { data: temperatureCategories } =
-    useGetStorefrontCategoriesByType("temperature");
-  const { data: characterCategories } =
-    useGetStorefrontCategoriesByType("character");
-  const { data: occasionCategories } =
-    useGetStorefrontCategoriesByType("occasion");
+  const { data: seasonCategories } = useGetStorefrontCategoriesByType(
+    "season",
+    sharedCategoryOptions,
+  );
+  const { data: temperatureCategories } = useGetStorefrontCategoriesByType(
+    "temperature",
+    sharedCategoryOptions,
+  );
+  const { data: characterCategories } = useGetStorefrontCategoriesByType(
+    "character",
+    sharedCategoryOptions,
+  );
+  const { data: occasionCategories } = useGetStorefrontCategoriesByType(
+    "occasion",
+    sharedCategoryOptions,
+  );
   const taxonomyOptions = {
     seasons: seasonCategories,
     temperature: temperatureCategories,
@@ -105,11 +108,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
     (gender) => gender.slug === state.draft.gender,
   );
 
-  const isFilter = activeFilterCount(state.draft) > 0;
-
-  const isPriceFilter =
-    state.draft.priceRange?.[0] !== null ||
-    state.draft.priceRange?.[1] !== null;
+  const canApply = canApplySidebarFilters(state);
 
   function addFilter(actionType, itemKey, itemValue) {
     dispatch({
@@ -175,7 +174,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
           <div className="size-5" />
         </div>
 
-        {isLoadingCategories ? (
+        {!hasOpened ? null : isLoadingCategories ? (
           <Loading />
         ) : (
           <form className="flex max-md:flex-col justify-start lg:justify-between lg:items-stretch h-full lg:h-117.5 max-lg:w-full max-lg:pt-18 bg-stroke-100">
@@ -239,21 +238,21 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
               </div>
             </GenderCategoriesFilter>
 
-            {/* Mobile Gender Link */}
-            {state.draft.gender && (
+            {/* Mobile Gender Link (only for a known, active gender) */}
+            {activeGender && (
               <div className="md:hidden bg-stroke-0 rounded-2xl m-4">
                 <button
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
 
-                    router.replace(`/products?gender=${activeGender?.slug}`);
+                    router.replace(genderProductsHref(activeGender.slug));
 
                     closeCategory();
                   }}
                   className="flex items-center justify-between p-6 text-primary w-full"
                 >
-                  <span>همه ادکلن‌های {activeGender?.title}</span>
+                  <span>همه ادکلن‌های {activeGender.title}</span>
 
                   <ChevronLeftIcon className="text-primary size-4" />
                 </button>
@@ -411,7 +410,10 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                             checkId={`${key}-${category.slug}`}
                             name={key}
                             label={category.title}
-                            checked={state.draft[key].includes(category.slug)}
+                            checked={
+                              state.draft[key] &&
+                              state.draft[key].includes(category.slug)
+                            }
                             onChange={() =>
                               addFilter("SET_ITEMS", key, category.slug)
                             }
@@ -483,10 +485,11 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                     title="محدوده قیمت"
                     className="md:pl-4"
                   >
-                    {priceRanges.map((price) => {
-                      const checked =
-                        state.draft.priceRange?.[0] === price.minPrice &&
-                        state.draft.priceRange?.[1] === price.maxPrice;
+                    {SIDEBAR_PRICE_RANGES.map((price) => {
+                      const checked = isPriceRangeSelected(
+                        state.draft.priceRange,
+                        price,
+                      );
 
                       return (
                         <FilterRadioBtn
@@ -513,7 +516,7 @@ function CategorySidebar({ isCategoryOpen, closeCategory }) {
                 <div className="max-sm:fixed max-sm:bottom-4 max-sm:inset-x-0 max-sm:px-4 flex items-center justify-between justify-items-center gap-4 max-[30rem]:w-full w-fit h-8">
                   <button
                     type="button"
-                    disabled={!isFilter && !isPriceFilter}
+                    disabled={!canApply}
                     onClick={() => {
                       submitFilters();
                       closeCategory();

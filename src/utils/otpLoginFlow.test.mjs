@@ -592,7 +592,7 @@ test("editing the phone clears the code-related state", () => {
   );
   assert.match(
     loginSource,
-    /const handleEditPhone = \(\) => \{\s*if \(!canEditPhone\(flowRef\.current\)\) return;\s*setOtp\(""\);\s*dispatch\(\{ type: "phoneEdited" \}\);/,
+    /const handleEditPhone = \(\) => \{\s*if \(acceptedAttemptRef\.current !== null \|\| !canEditPhone\(flowRef\.current\)\) return;\s*setOtp\(""\);\s*dispatch\(\{ type: "phoneEdited" \}\);/,
   );
 });
 

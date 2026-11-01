@@ -3,15 +3,18 @@
 import { useGetProductVolumeOptions } from "@/hooks/useProducts";
 import {
   CONCENTRATION_FILTER_LABEL,
+  GRADE_FILTER_LABEL,
   TAXONOMY_FILTER_GROUPS,
   activeFilterCount,
   mergeVolumeOptions,
+  validatePriceBound,
   validatePriceRange,
 } from "@/utils/productFilterContract.mjs";
 import {
   PRODUCT_CONCENTRATIONS,
   concentrationLabel,
 } from "@/utils/productConcentration.mjs";
+import { PRODUCT_GRADES, gradeLabel } from "@/utils/productGrade.mjs";
 
 const concentrationOptions = PRODUCT_CONCENTRATIONS.map((value) => ({
   id: value,
@@ -24,6 +27,7 @@ import {
   useGetStorefrontCategoriesByType,
 } from "@/hooks/useCategories";
 import { useFilters } from "@/hooks/useFilters";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
 import { Badge } from "@/ui/Badge";
 import FilterCheckBox from "@/ui/FilterCheckBox";
 import RHFTextField from "@/ui/RHFTextField";
@@ -43,16 +47,33 @@ function FiltersModal({
   watch,
   errors,
 }) {
-  const { data: genderCategories } = useGetStorefrontCategoriesByType("gender");
-  const { data: fragranceFamilyCategories } =
+  // Selected filter values become titles from brand and category caches that
+  // the root layout's CategorySidebar may fill (once its trigger is hovered,
+  // focused or opened) before this subtree hydrates:
+  // withhold query data until hydrated so the first client render matches the
+  // server HTML (which never has it). Static options stay as they are.
+  const isHydrated = useIsHydrated();
+  const hydratedOnly = (data) => (isHydrated ? data : undefined);
+  const { data: cachedGenderCategories } =
+    useGetStorefrontCategoriesByType("gender");
+  const genderCategories = hydratedOnly(cachedGenderCategories);
+  const { data: cachedFragranceFamilyCategories } =
     useGetStorefrontCategoriesByType("fragrance_family");
-  const { data: seasonCategories } = useGetStorefrontCategoriesByType("season");
-  const { data: temperatureCategories } =
+  const fragranceFamilyCategories = hydratedOnly(
+    cachedFragranceFamilyCategories,
+  );
+  const { data: cachedSeasonCategories } =
+    useGetStorefrontCategoriesByType("season");
+  const seasonCategories = hydratedOnly(cachedSeasonCategories);
+  const { data: cachedTemperatureCategories } =
     useGetStorefrontCategoriesByType("temperature");
-  const { data: characterCategories } =
+  const temperatureCategories = hydratedOnly(cachedTemperatureCategories);
+  const { data: cachedCharacterCategories } =
     useGetStorefrontCategoriesByType("character");
-  const { data: occasionCategories } =
+  const characterCategories = hydratedOnly(cachedCharacterCategories);
+  const { data: cachedOccasionCategories } =
     useGetStorefrontCategoriesByType("occasion");
+  const occasionCategories = hydratedOnly(cachedOccasionCategories);
   const taxonomyOptions = {
     seasons: seasonCategories,
     temperature: temperatureCategories,
@@ -61,7 +82,8 @@ function FiltersModal({
     concentrations: concentrationOptions,
     gender: genderCategories,
   };
-  const { data: brandCategories } = useGetAllBrandCategories();
+  const { data: cachedBrandCategories } = useGetAllBrandCategories();
+  const brandCategories = hydratedOnly(cachedBrandCategories);
   const {
     data: volumeResponse,
     isPending: volumesLoading,
@@ -100,7 +122,7 @@ function FiltersModal({
     switch (mode) {
       case "all":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl md:pl-3">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl md:py-6">
             <div className="flex flex-col justify-between md:gap-4">
               <FilterOption
                 button
@@ -190,36 +212,13 @@ function FiltersModal({
                   control={control}
                   watch={watch}
                   errors={errors}
-                  hidde
                 />
               </FilterOption>
-              <FilterOption>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    addFilter("SET_ITEM", "original", !state?.draft?.original);
-                  }}
-                  className="flex items-center justify-between size-full gap-3"
-                >
-                  <div>
-                    <p className="flex font-bold text-stroke-800">
-                      فقط کالاهای اورجینال
-                    </p>
-                  </div>
-                  <div
-                    className={`relative flex items-center  gap-2  rounded-full p-0.5 w-11 h-6 
-                    ${state?.draft?.original ? "bg-primary justify-start" : "justify-en bg-stroke-200 dark:bg-stroke-50 transition-all duration-200"}`}
-                  >
-                    <div
-                      className={`absolute flex items-center justify-center h-5 aspect-square rounded-full  ${
-                        state?.draft?.original
-                          ? " bg-stroke-0 "
-                          : "-translate-x-full bg-stroke-150 dark:bg-stroke-0"
-                      } shadow transition-all duration-200`}
-                    />
-                  </div>
-                </button>
+              <FilterOption title={GRADE_FILTER_LABEL}>
+                <GradeFilter
+                  value={state.draft?.grades}
+                  addFilter={addFilter}
+                />
               </FilterOption>
               <FilterOption>
                 <button
@@ -314,7 +313,7 @@ function FiltersModal({
         );
       case "temperature":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl max-md:px-4">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl max-md:px-4 max-md:py-4">
             <SingleCategoryFilter
               mode={mode}
               addFilter={addFilter}
@@ -328,7 +327,7 @@ function FiltersModal({
         );
       case "type":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl max-md:px-4">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl max-md:px-4 max-md:py-4">
             <VariantTypeFilter
               value={state.draft?.type}
               addFilter={addFilter}
@@ -339,7 +338,7 @@ function FiltersModal({
         );
       case "gender":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl max-md:px-4">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl max-md:px-4 max-md:py-4">
             <SingleCategoryFilter
               mode={mode}
               addFilter={addFilter}
@@ -371,32 +370,35 @@ function FiltersModal({
   };
 
   return (
-    <div className=" flex flex-col max-md:py-4 md:p-6 size-full max-md:gap-4 gap-6">
-      <div className="flex items-center justify-between border-b-[1.5px] border-stroke-250 max-md:px-4 pb-6">
-        <p className="md:text-xl font-bold text-stroke-800">{titles[mode]}</p>
-        <button
-          disabled={!hasFilters}
-          type="button"
-          onClick={resetAllFilters}
-          className="btn btn--primary--2 disabled:text-stroke-600 border-[1.5px] flex items-center justify-center h-8 md:h-12 gap-2 px-4 text-xs md:text-lg"
-        >
-          حذف فیلتر ها
-        </button>
+    <div className="relative flex flex-col max-md:py-4 md:p-6 size-full">
+      <div className="flex flex-col max-md:gap-4 gap-6 w-full">
+        <div className="flex items-center justify-between max-md:px-4">
+          <p className="md:text-xl font-bold text-stroke-800">{titles[mode]}</p>
+          <button
+            disabled={!hasFilters}
+            type="button"
+            onClick={resetAllFilters}
+            className="btn btn--primary--2 disabled:text-stroke-600 border-[1.5px] flex items-center justify-center h-8 md:h-12 gap-2 px-4 text-xs md:text-lg"
+          >
+            حذف فیلتر ها
+          </button>
+        </div>
+        <div className=" border-b-[1.5px] border-stroke-250 max-md:px-4"></div>
       </div>
-      <div className="h-full overflow-y-auto scrollbar-none">
+      <div className="size-full overflow-y-auto scrollbar-none px-px pb-16!">
         {renderTypes()}
       </div>
-      <div className="flex items-center justify-between md:justify-end flex-row-reverse gap-4 w-full h-10 sm:h-12 max-md:px-4">
+      <div className="absolute flex items-center justify-between md:justify-end flex-row-reverse gap-4 w-full max-w-full px-4 md:px-6 h-10 sm:h-12 left-0 right-0 bottom-4 md:bottom-6 z-10">
         <button
           type="submit"
-          className="btn btn--primary border-none px-6 md:px-18 size-full"
+          className="btn btn--primary px-6 md:px-18 size-full flex-2"
         >
           <p className="text-sm sm:text-base ">اعمال فیلتر</p>
         </button>
         <button
           type="button"
           onClick={mode === "all" ? onClose : () => setMode("all")}
-          className="btn btn--secondary--2 px-6 h-full w-1/2 "
+          className="btn btn--secondary--2 px-6 h-full w-full flex-1"
         >
           <p className="text-sm sm:text-base">
             {mode === "all" ? "انصراف" : "بازگشت"}
@@ -457,13 +459,14 @@ function FilterOption({
             </div>
             <button
               type="button"
+              aria-label={`انتخاب ${title}`}
               onClick={openFilter}
               className="flex items-center justify-end w-full"
             >
               <ChevronLeftIcon className="size-5 text-stroke-800" />
             </button>
           </div>
-          {state.length > 0 && (
+          {state?.length > 0 && (
             <div className="w-full flex flex-wrap items-center justify-start gap-2 ">
               {Array.isArray(state) &&
                 state.map((item) => {
@@ -500,12 +503,12 @@ function BrandsFilter({ state, brands, addFilter }) {
         const isChecked = state?.includes(brand.id);
 
         return (
-          <div className="flex flex-col w-full">
+          <div key={brand.id} className="flex flex-col w-full">
             <FilterCheckBox
-              key={brand.id}
               checkId={brand.value + index}
               label={brand.title}
               imageSrc={brand.iconUrl}
+              imageAlt={brand.title ? "" : undefined}
               name={"brandsModalFilter"}
               onChange={() => addFilter("SET_ITEMS", "brandIds", brand.id)}
               checked={isChecked}
@@ -542,7 +545,7 @@ export function PriceFilter({ addFilter, control, watch, errors, hidden }) {
       </div>
       <div
         className={`
-          ${hidden && "max-md:hidden"}
+          ${hidden ? "max-md:hidden" : ""}
           flex items-center justify-between gap-2 w-full h-fit min-h-11`}
       >
         <div className="flex max-[30rem]:flex-col items-center justify-between gap-2 w-full">
@@ -552,7 +555,10 @@ export function PriceFilter({ addFilter, control, watch, errors, hidden }) {
             isPrice={true}
             name="minPrice"
             errors={errors}
-            validationSchema={{ deps: ["maxPrice"] }}
+            validationSchema={{
+              deps: ["maxPrice"],
+              validate: validatePriceBound,
+            }}
             className="w-full px-3"
             placeholder="حداقل"
             containerClassName="size-full *:pr-0"
@@ -567,8 +573,11 @@ export function PriceFilter({ addFilter, control, watch, errors, hidden }) {
             name="maxPrice"
             errors={errors}
             validationSchema={{
-              validate: (maxPrice, values) =>
-                validatePriceRange(values.minPrice, maxPrice),
+              validate: {
+                bound: validatePriceBound,
+                range: (maxPrice, values) =>
+                  validatePriceRange(values.minPrice, maxPrice),
+              },
             }}
             className="w-full px-3"
             placeholder="حداکثر"
@@ -624,15 +633,14 @@ function VolumesFilter({ state, volumes, type, addFilter }) {
         const isChecked = state?.includes(item.quantity);
 
         return (
-          <div className="flex flex-col w-full">
+          <div key={item.id} className="flex flex-col w-full">
             <FilterCheckBox
-              key={item.id}
               checkId={item.value + index}
               label={item.title}
               name="volumesModalFilter"
               onChange={() => addFilter("SET_ITEMS", type, item.quantity)}
               checked={isChecked}
-              className="flex flex-row-reverse justify-between text-nowrap text-stroke-800 size-full max-md:py-4 py-6 "
+              className="flex flex-row-reverse justify-between text-nowrap text-stroke-800 size-full py-4 "
               imageClassName="flex items-center justify-end py-1 lg:py-2 rounded-full wfull size-12 duration-200"
               textClassName="text-base"
               checkbox
@@ -663,7 +671,7 @@ function SingleCategoryFilter({
       aria-label={label}
     >
       <div
-        className={`flex items-center gap-2 w-full ${mode ? "" : "max-md:hidden"}`}
+        className={`flex items-center gap-2 w-full max-md:flex-wrap ${mode ? "" : "max-md:hidden"}`}
       >
         {options?.map((category) => (
           <button
@@ -677,7 +685,7 @@ function SingleCategoryFilter({
                 value === category.slug ? null : category.slug,
               )
             }
-            className={`rounded-full px-4 py-2 border text-sm w-full ${
+            className={`rounded-full px-4 py-2 border text-sm w-full text-nowrap ${
               value === category.slug
                 ? "border-primary text-primary font-bold"
                 : "bg-stroke-150 border-stroke-200 text-stroke-600"
@@ -701,6 +709,7 @@ function SingleCategoryFilter({
         )}
         <button
           type="button"
+          aria-label={`انتخاب ${label}`}
           onClick={() => setMode(field)}
           className={`flex items-center justify-end gap- w-full `}
         >
@@ -716,6 +725,43 @@ function SingleCategoryFilter({
           {`پاک کردن ${label}`}
         </button>
       )}
+    </div>
+  );
+}
+
+// Product grade: multi-select chips (none = every grade). Toggling uses the
+// shared SET_ITEMS draft action; Apply writes repeated `grades` URL keys.
+function GradeFilter({ value = [], addFilter }) {
+  return (
+    <div className="flex flex-col gap-3 w-full">
+      {/* FilterOption shows its title from md up only. */}
+      <p className="md:hidden font-bold text-stroke-800">
+        {GRADE_FILTER_LABEL}
+      </p>
+      <div
+        className="flex items-center gap-2 w-full"
+        role="group"
+        aria-label={GRADE_FILTER_LABEL}
+      >
+        {PRODUCT_GRADES.map((grade) => {
+          const selected = (value ?? []).includes(grade);
+          return (
+            <button
+              key={grade}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => addFilter("SET_ITEMS", "grades", grade)}
+              className={`rounded-full px-4 py-2 border text-sm w-full ${
+                selected
+                  ? "border-primary text-primary font-bold"
+                  : "bg-stroke-150 border-stroke-200 text-stroke-600"
+              }`}
+            >
+              {gradeLabel(grade)}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -765,6 +811,7 @@ function VariantTypeFilter({ value, addFilter, setMode, mode }) {
         )}
         <button
           type="button"
+          aria-label="انتخاب نوع محصول"
           onClick={() => setMode("type")}
           className={`flex items-center justify-end gap-2 w-full `}
         >

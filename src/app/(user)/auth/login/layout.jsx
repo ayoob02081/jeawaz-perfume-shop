@@ -21,8 +21,8 @@ export default function RootLayout({ children }) {
       fontStyle="text-lg sm:text-2xl font-bold"
       justify="between"
       overflow="overflow-y-auto"
-      max={false}
-      product
+      defaultStyle="max-md:p-4 sm:p-6"
+      max
     >
       {children}
     </AdaptiveOverlayPage>

@@ -6,6 +6,7 @@ import {
   PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
+import { useModalDismissal } from "@/components/Modal";
 
 // Code-step heading around the phone button, per code screen status.
 const OTP_HEADINGS = {
@@ -23,6 +24,7 @@ function AuthLayout({
   togglePasswordType,
   phoneNumber,
   otpScreen,
+  sessionAccepted = false,
   requestError,
   onEditPhone,
   onResend,
@@ -33,27 +35,30 @@ function AuthLayout({
   actionsDisabled = false,
 }) {
   const router = useRouter();
+  const modalDismissal = useModalDismissal();
   const canResend = resendRemaining === 0 && !actionsDisabled;
   // The code is claimed as sent only once the backend confirmed it.
   const [otpHeadingStart, otpHeadingEnd] =
     OTP_HEADINGS[otpScreen] ?? OTP_HEADINGS.ready;
 
   const RouteToTerms = () => {
-    router.back();
+    if (modalDismissal?.isDismissed()) return;
+    if (modalDismissal) modalDismissal.dismiss();
+    else router.back();
     setTimeout(() => {
       router.push("/page/terms");
     }, 0);
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-4 max-md:w-fit w-full">
       <img
-        src="/images/flower.svg"
+        src="/images/flower.webp"
         alt="flower-icon"
         className="pointer-events-none absolute -z-20 left-0 top-0 w-36 "
       />
       <img
-        src="/images/flower.svg"
+        src="/images/flower.webp"
         alt="flower-icon"
         className="pointer-events-none absolute rotate-180 -z-20 right-0 bottom-0 w-36 "
       />
@@ -65,7 +70,11 @@ function AuthLayout({
           </span>
         )}
         {login &&
-          (step === "otp" ? (
+          (sessionAccepted ? (
+            <p className="text-xs sm:text-sm text-stroke-600">
+              کد ورود تأیید شد
+            </p>
+          ) : step === "otp" ? (
             <span
               aria-live="polite"
               className="flex items-center justify-center gap-1 text-xs sm:text-sm text-stroke-600"
@@ -122,6 +131,7 @@ function AuthLayout({
           </div>
         )}
         {step === "otp" &&
+          !sessionAccepted &&
           (otpScreen === "ready" || otpScreen === "resending") && (
             <div className="flex items-center justify-center gap-1 text-stroke-800">
               {resendRemaining > 0 && (

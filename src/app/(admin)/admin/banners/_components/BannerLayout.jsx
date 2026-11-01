@@ -7,6 +7,7 @@ import Link from "next/link";
 import NotExisted from "@/components/NotExisted";
 import { useState } from "react";
 import RadioButton from "@/ui/RadioButton";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 function BannerLayout() {
   const [type, setType] = useState("primary");
@@ -21,9 +22,10 @@ function BannerLayout() {
         <Link
           href={"/admin/banners/add"}
           prefetch={false}
-          className="btn btn--primary border py-1.5 px-3"
+          className="btn btn--primary border gap-1 py-1.5 px-3"
         >
-          اضافه کردن بنر
+          <PlusIcon className="size-5 stroke-3" />
+          <p>اضافه کردن بنر</p>
         </Link>
       </div>
       <div className="flex items-center justify-stretch gap-4">

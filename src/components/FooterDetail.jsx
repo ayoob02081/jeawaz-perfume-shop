@@ -12,7 +12,7 @@ function FooterDetail({
 }) {
   return (
     <div
-      className={`flex ${direction} items-center justify-start gap-4 h-16 max-lg:min-w-3xs`}
+      className={`flex ${direction} items-center justify-start gap-4 h-16`}
     >
       <div className={`relative ${bg} p-4 rounded-full`}>
         <AppImage

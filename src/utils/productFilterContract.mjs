@@ -1,4 +1,5 @@
 import { PRODUCT_CONCENTRATIONS } from "./productConcentration.mjs";
+import { gradesFromLegacyOriginal, normalizeGrades } from "./productGrade.mjs";
 
 const decimalInteger = (value, allowZero = false) => {
   if (!/^\d+$/.test(String(value ?? ""))) return null;
@@ -7,6 +8,31 @@ const decimalInteger = (value, allowZero = false) => {
     ? number
     : null;
 };
+
+// GET /products bounds (backend QueryProductsDto): integer IRT prices and
+// integer ml volumes. A value outside them, an inverted min/max pair or an
+// unknown sort is a 400, so it is dropped instead of being sent.
+export const PRODUCT_PRICE_MAX = 2_147_483_647;
+export const PRODUCT_VOLUME_MAX = 4_294_967_295;
+export const PRODUCT_SORTS = [
+  "newest",
+  "oldest",
+  "best_selling",
+  "most_discounted",
+  "price_low_to_high",
+  "price_high_to_low",
+];
+
+const boundedInteger = (max) => (value) => {
+  const number = decimalInteger(value);
+  return number !== null && number <= max ? number : null;
+};
+const priceBound = boundedInteger(PRODUCT_PRICE_MAX);
+const volumeBound = boundedInteger(PRODUCT_VOLUME_MAX);
+// An inverted pair is ambiguous: neither bound is applied.
+const orderedRange = (min, max) =>
+  min !== null && max !== null && min > max ? [null, null] : [min, max];
+const productSort = (value) => (PRODUCT_SORTS.includes(value) ? value : null);
 
 const uniqueSorted = (values, parse) =>
   [
@@ -18,7 +44,7 @@ const uniqueSorted = (values, parse) =>
   ].sort((a, b) => a - b);
 
 export const normalizeVolumes = (values = []) =>
-  uniqueSorted(values, (value) => decimalInteger(value));
+  uniqueSorted(values, volumeBound);
 const normalizeIds = (values = []) =>
   uniqueSorted(values, (value) => decimalInteger(value));
 const normalizeSlugs = (values = []) =>
@@ -54,7 +80,8 @@ export const emptyFilters = {
   maxVolume: null,
   priceRange: [null, null],
   inStock: null,
-  original: null,
+  // Canonical ProductGrade values (OR within); replaces the old `original` flag.
+  grades: [],
   gender: null,
   // Product V2 taxonomy (Category slugs; OR within a group, AND across).
   seasons: [],
@@ -160,6 +187,8 @@ const ownedParams = [
   "maxPrice",
   "page",
   "inStock",
+  "grades",
+  // Legacy key: read once (see getFiltersFromSearchParams), never written back.
   "original",
   "discounted",
   "seasons",
@@ -175,18 +204,19 @@ export const TAXONOMY_SLUG_FILTERS = ["seasons", "characters", "occasions"];
 // One definition of the Product V2 taxonomy filter groups for every filter UI:
 // filter/URL key, Category type (storefront options) and Persian label.
 export const TAXONOMY_FILTER_GROUPS = [
+  { key: "gender", type: "gender", label: "جنسیت", multiple: false },
   { key: "seasons", type: "season", label: "فصل", multiple: true },
   { key: "characters", type: "character", label: "شخصیت", multiple: true },
+  { key: "temperature", type: "temperature", label: "طبع", multiple: false },
   {
     key: "occasions",
     type: "occasion",
     label: "موقعیت استفاده",
     multiple: true,
   },
-  { key: "temperature", type: "temperature", label: "طبع", multiple: false },
-  { key: "gender", type: "gender", label: "جنسیت", multiple: false },
 ];
 export const CONCENTRATION_FILTER_LABEL = "غلظت";
+export const GRADE_FILTER_LABEL = "نوع کیفیت";
 
 export function buildQueryFromFilters(filters, currentSearchParams) {
   const params = new URLSearchParams(currentSearchParams.toString());
@@ -206,17 +236,24 @@ export function buildQueryFromFilters(filters, currentSearchParams) {
   normalizeConcentrations(filters.concentrations).forEach((value) =>
     params.append("concentrations", value),
   );
+  normalizeGrades(filters.grades).forEach((grade) =>
+    params.append("grades", grade),
+  );
   if (variantType(filters.type)) params.set("type", filters.type);
   if (filters.gender) params.set("gender", filters.gender);
   if (filters.temperature) params.set("temperature", filters.temperature);
-  if (filters.sort) params.set("sort", filters.sort);
+  const sort = productSort(filters.sort);
+  if (sort) params.set("sort", sort);
   if (filters.inStock === true) params.set("inStock", "true");
-  if (filters.original === true) params.set("original", "true");
   if (filters.discounted === true) params.set("discounted", "true");
-  const minVolume = decimalInteger(filters.minVolume);
-  const maxVolume = decimalInteger(filters.maxVolume);
-  const minPrice = decimalInteger(filters.priceRange?.[0]);
-  const maxPrice = decimalInteger(filters.priceRange?.[1]);
+  const [minVolume, maxVolume] = orderedRange(
+    volumeBound(filters.minVolume),
+    volumeBound(filters.maxVolume),
+  );
+  const [minPrice, maxPrice] = orderedRange(
+    priceBound(filters.priceRange?.[0]),
+    priceBound(filters.priceRange?.[1]),
+  );
   if (minVolume !== null) params.set("minVolume", String(minVolume));
   if (maxVolume !== null) params.set("maxVolume", String(maxVolume));
   if (minPrice !== null) params.set("minPrice", String(minPrice));
@@ -226,6 +263,15 @@ export function buildQueryFromFilters(filters, currentSearchParams) {
 
 export function getFiltersFromSearchParams(searchParams) {
   const types = searchParams.getAll("type");
+  const grades = normalizeGrades(searchParams.getAll("grades"));
+  const [minVolume, maxVolume] = orderedRange(
+    volumeBound(searchParams.get("minVolume")),
+    volumeBound(searchParams.get("maxVolume")),
+  );
+  const priceRange = orderedRange(
+    priceBound(searchParams.get("minPrice")),
+    priceBound(searchParams.get("maxPrice")),
+  );
   return {
     ...structuredClone(emptyFilters),
     brandIds: normalizeIds(searchParams.getAll("brandIds")),
@@ -240,16 +286,16 @@ export function getFiltersFromSearchParams(searchParams) {
     concentrations: normalizeConcentrations(
       searchParams.getAll("concentrations"),
     ),
-    sort: searchParams.get("sort") || "",
+    sort: productSort(searchParams.get("sort")) ?? "",
     inStock: searchParams.get("inStock") === "true" ? true : null,
-    original: searchParams.get("original") === "true" ? true : null,
+    // Old links (?original=true|false) still load; `grades` wins when present.
+    grades: grades.length
+      ? grades
+      : gradesFromLegacyOriginal(singleValue(searchParams.getAll("original"))),
     discounted: searchParams.get("discounted") === "true" ? true : null,
-    minVolume: decimalInteger(searchParams.get("minVolume")),
-    maxVolume: decimalInteger(searchParams.get("maxVolume")),
-    priceRange: [
-      decimalInteger(searchParams.get("minPrice")),
-      decimalInteger(searchParams.get("maxPrice")),
-    ],
+    minVolume,
+    maxVolume,
+    priceRange,
   };
 }
 
@@ -276,6 +322,66 @@ export const validatePriceRange = (minPrice, maxPrice) => {
   return min === null || max === null || min <= max || PRICE_RANGE_ERROR;
 };
 
+export const PRICE_MAX_ERROR = "قیمت وارد شده بیشتر از حد مجاز است";
+
+// The backend rejects a price above its integer bound with 400; block it
+// before Apply instead of dropping the typed value.
+export const validatePriceBound = (value) =>
+  !/^\d+$/.test(String(value ?? "")) ||
+  Number(value) <= PRODUCT_PRICE_MAX ||
+  PRICE_MAX_ERROR;
+
+// CategorySidebar's preset price ranges. "No minimum" is null, as the URL
+// round trip produces it (a zero minimum is never written).
+export const SIDEBAR_PRICE_RANGES = [
+  {
+    id: 1,
+    minPrice: null,
+    maxPrice: 999999,
+    value: "until-one-million",
+    label: "تا یک میلیون",
+  },
+  {
+    id: 2,
+    minPrice: null,
+    maxPrice: 3000000,
+    value: "until-three-million",
+    label: "تا سه میلیون",
+  },
+  {
+    id: 3,
+    minPrice: null,
+    maxPrice: 5000000,
+    value: "until-five-million",
+    label: "تا پنج میلیون",
+  },
+  {
+    id: 4,
+    minPrice: 5000001,
+    maxPrice: null,
+    value: "over-five-million",
+    label: "بالای پنج میلیون",
+  },
+];
+
+// A preset is selected when the price bounds normalize to the same values.
+export const isPriceRangeSelected = (priceRange, range) => {
+  const current = priceFormValues(priceRange);
+  const preset = priceFormValues([range.minPrice, range.maxPrice]);
+  return (
+    current.minPrice === preset.minPrice && current.maxPrice === preset.maxPrice
+  );
+};
+
+// The sidebar's Apply is usable when there is a filter to apply or an applied
+// filter that the draft clears.
+export const canApplySidebarFilters = ({ draft, applied } = {}) =>
+  activeFilterCount(draft) > 0 || activeFilterCount(applied) > 0;
+
+// "All <gender> perfumes": only the gender filter, URL-encoded.
+export const genderProductsHref = (slug) =>
+  slug ? `/products?${new URLSearchParams({ gender: slug })}` : "/products";
+
 // Storefront filter options never offer inactive categories. The shared
 // /categories/type/:type endpoint also serves admin, so this is applied only
 // where the storefront consumes it. Order is preserved.
@@ -296,7 +402,7 @@ export const activeFilterCount = (filters = {}) =>
     filters.type,
     filters.priceRange?.some((price) => price !== null && price !== undefined),
     filters.inStock,
-    filters.original,
+    filters.grades?.length,
     filters.gender,
     filters.discounted,
     ...TAXONOMY_SLUG_FILTERS.map((key) => filters[key]?.length),
@@ -344,15 +450,22 @@ export const normalizeProductListLimit = (value) => {
     : PRODUCT_LIST_DEFAULT_LIMIT;
 };
 
-// Error state is rendered separately; empty only after a successful response.
-export const productListView = ({ isLoading, data }) => {
+// Error first (the filter controls stay usable above it); empty only after a
+// successful response.
+export const productListView = ({ isLoading, data, error }) => {
+  if (error) return "error";
   if (isLoading && !data) return "loading";
   if (data && !data.data?.length) return "empty";
   return "products";
 };
 
 export function normalizeProductsQuery(query = {}) {
-  const original = optionalBoolean(query.original);
+  // `grades` only: a legacy `original` input is translated, never sent (the
+  // backend rejects `grades` together with `original`).
+  const requestedGrades = normalizeGrades(query.grades);
+  const grades = requestedGrades.length
+    ? requestedGrades
+    : gradesFromLegacyOriginal(query.original);
   const inStock = optionalBoolean(query.inStock);
   const discounted = optionalBoolean(query.discounted);
   const brandIds = normalizeIds(query.brandIds);
@@ -363,6 +476,14 @@ export function normalizeProductsQuery(query = {}) {
   const characters = normalizeSlugs(query.characters);
   const occasions = normalizeSlugs(query.occasions);
   const concentrations = normalizeConcentrations(query.concentrations);
+  const [minVolume, maxVolume] = orderedRange(
+    volumeBound(query.minVolume),
+    volumeBound(query.maxVolume),
+  );
+  const [minPrice, maxPrice] = orderedRange(
+    priceBound(query.minPrice),
+    priceBound(query.maxPrice),
+  );
   const temperature =
     typeof query.temperature === "string" && query.temperature
       ? query.temperature
@@ -372,25 +493,38 @@ export function normalizeProductsQuery(query = {}) {
     ...(campaignId ? { campaignId } : {}),
     // Admin management opts out of the backend's availability-first ordering.
     ...(query.availabilityFirst === false ? { availabilityFirst: false } : {}),
+    // Admin management searches like Bulk Price targeting (the previous
+    // search), so its list and a bulk change over its filters always match.
+    ...(query.searchMode === "legacy" && query.search
+      ? { searchMode: "legacy" }
+      : {}),
     ...(seasons.length ? { seasons } : {}),
     ...(temperature ? { temperature } : {}),
     ...(characters.length ? { characters } : {}),
     ...(occasions.length ? { occasions } : {}),
     ...(concentrations.length ? { concentrations } : {}),
+    ...(grades.length ? { grades } : {}),
     search: query.search || undefined,
     brandIds: brandIds.length ? brandIds : undefined,
-    original,
     inStock,
     discounted,
     gender: query.gender || undefined,
     fragranceFamilies: fragranceFamilies.length ? fragranceFamilies : undefined,
     type: variantType(query.type) || undefined,
     volumes: volumes.length ? volumes : undefined,
-    minVolume: decimalInteger(query.minVolume) ?? undefined,
-    maxVolume: decimalInteger(query.maxVolume) ?? undefined,
-    minPrice: decimalInteger(query.minPrice) ?? undefined,
-    maxPrice: decimalInteger(query.maxPrice) ?? undefined,
-    sort: query.sort || "newest",
+    minVolume: minVolume ?? undefined,
+    maxVolume: maxVolume ?? undefined,
+    minPrice: minPrice ?? undefined,
+    maxPrice: maxPrice ?? undefined,
+    // Searching without a chosen sort uses backend relevance. Admin legacy
+    // search and ordinary lists retain their existing newest default.
+    sort:
+      productSort(query.sort) ??
+      (typeof query.search === "string" &&
+      query.search.trim() &&
+      query.searchMode !== "legacy"
+        ? undefined
+        : "newest"),
     page: normalizeProductListPage(query.page),
     limit: normalizeProductListLimit(query.limit),
   };
@@ -401,3 +535,32 @@ export const productListKey = (query = {}) => [
   "list",
   normalizeProductsQuery(query),
 ];
+
+// Shared by the server snapshot and interactive listing; URL filters must seed
+// exactly the same request/key the client will observe, including omitted sort.
+export function productsQueryFromSearchParams(searchParams) {
+  const applied = getFiltersFromSearchParams(searchParams);
+  return normalizeProductsQuery({
+    search: searchParams.get("search") || undefined,
+    brandIds: applied.brandIds,
+    gender: applied.gender,
+    fragranceFamilies: applied.fragranceFamilies,
+    seasons: applied.seasons,
+    temperature: applied.temperature,
+    characters: applied.characters,
+    occasions: applied.occasions,
+    concentrations: applied.concentrations,
+    volumes: applied.volumes,
+    minVolume: applied.minVolume,
+    maxVolume: applied.maxVolume,
+    inStock: applied.inStock,
+    grades: applied.grades,
+    discounted: applied.discounted,
+    minPrice: applied.priceRange[0],
+    maxPrice: applied.priceRange[1],
+    type: applied.type,
+    sort: applied.sort || undefined,
+    page: searchParams.get("page"),
+    limit: searchParams.get("limit"),
+  });
+}

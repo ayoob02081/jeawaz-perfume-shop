@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 @plugin 'tailwind-scrollbar' {
   nocompatible: true;
   preferredstrategy: "pseudoelements";
@@ -41,9 +40,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-display: "Vazirmatn", "sans-serif";
-  --font-heading: var(--font-sans);
-  --font-sans: var(--font-sans);
+  --font-display: "Vazirmatn", sans-serif;
+  --font-heading: "Vazirmatn", sans-serif;
+  --font-sans: "Vazirmatn", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -83,6 +82,72 @@
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+html.light {
+  color-scheme: light;
+}
+
+/* Snapshot the new theme above the old one; JS reveals it from the toggle. */
+html[data-theme-transition]::view-transition-group(root),
+html[data-theme-transition]::view-transition-old(root),
+html[data-theme-transition]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html[data-theme-transition]::view-transition-old(root) {
+  z-index: 1;
+}
+html[data-theme-transition]::view-transition-new(root) {
+  z-index: 2;
+}
+
+.theme-toggle[data-mounted="false"] .theme-toggle__icon {
+  visibility: hidden;
+}
+.theme-toggle__icon {
+  transform-origin: center;
+}
+.theme-toggle__sun,
+.theme-toggle[data-dark="true"] .theme-toggle__moon {
+  opacity: 0;
+}
+.theme-toggle[data-dark="true"] .theme-toggle__sun {
+  opacity: 1;
+}
+.theme-toggle[data-animate="true"][data-dark="false"] .theme-toggle__moon,
+.theme-toggle[data-animate="true"][data-dark="true"] .theme-toggle__sun {
+  animation: theme-icon-in 320ms ease-out both;
+}
+.theme-toggle[data-animate="true"][data-dark="true"] .theme-toggle__moon,
+.theme-toggle[data-animate="true"][data-dark="false"] .theme-toggle__sun {
+  animation: theme-icon-out 320ms ease-out both;
+}
+@keyframes theme-icon-in {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.45);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+@keyframes theme-icon-out {
+  from {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.45);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle .theme-toggle__sun,
+  .theme-toggle .theme-toggle__moon {
+    animation: none !important;
+  }
+}
 
 @theme {
   --color-primary: rgb(204, 49, 45);
@@ -166,7 +231,7 @@
     @apply h-35 sm:h-50 xl:h-64 aspect-27/11;
   }
   .banner--btn--secondary {
-    @apply font-bold text-[8px] sm:text-[10px] xl:text-xs 2xl:text-sm rounded-4xl h-5 sm:h-6 xl:h-8 2xl:h-8 bg-stroke-0/10 backdrop-blur-md text-stroke-800 hover:*:first:text-primary duration-200;
+    @apply font-bold text-[10px] xl:text-xs 2xl:text-sm rounded-4xl h-6 sm:h-8 xl:h-8 2xl:h-8 bg-stroke-0/10 backdrop-blur-md text-stroke-800 hover:*:first:text-primary duration-200;
   }
   .backdrop {
     @apply bg-stroke-950/15 backdrop-blur-md duration-200;
@@ -199,10 +264,10 @@
     @apply border border-stroke-600 hover:bg-error hover:text-stroke-100 hover:border-stroke-100 active:bg-primary active:text-stroke-100 active:border-stroke-100 duration-200;
   }
   .btn--secondary--2 {
-    @apply border border-stroke-150 bg-stroke-150 hover:bg-stroke-0 hover:text-primary hover:border-primary active:bg-white text-stroke-800 active:text-primary active:border-primary duration-200;
+    @apply border border-stroke-200 bg-stroke-150 hover:bg-stroke-0 hover:text-primary hover:border-primary active:bg-white text-stroke-800 active:text-primary active:border-primary duration-200;
   }
   .btn--success {
-    @apply border bg-success border-stroke-100 text-white hover:border-success hover:text-success hover:bg-stroke-0 **:text-success hover:border active:text-success active:bg-white active:**:text-success active:border-success duration-200;
+    @apply border bg-success border-stroke-100 text-white hover:border-success hover:text-success hover:bg-stroke-0 hover:border active:text-success active:bg-white active:**:text-success active:border-success duration-200;
   }
   .btn--type {
     @apply bg-stroke-0 text-stroke-800 border border-stroke-250 dark:has-checked:border-primary hover:bg-stroke-900/30 has-checked:bg-stroke-900 has-checked:text-stroke-0 dark:hover:bg-primary/40 dark:bg-stroke-50 dark:has-checked:bg-primary dark:has-checked:text-stroke-800;
@@ -248,7 +313,7 @@
     focus-within:text-stroke-800 focus-within:bg-stroke-0 focus:bg-stroke-0 focus-within:border focus-within:border-primary transition-all duration-200;
   }
   .footer--link {
-    @apply max-sm:flex max-sm:flex-col max-sm:gap-2 sm:grid gap-x-6 gap-y-1 text-base text-nowrap text-stroke-600 dark:text-stroke-600/50 *:hover:text-primary *:active:text-primary *:duration-200;
+    @apply max-sm:flex max-sm:flex-col max-sm:gap-2 sm:grid gap-x-6 gap-y-1 text-base text-nowrap text-stroke-500 dark:text-stroke-250 *:hover:text-[#d4504d] *:active:text-[#d4504d] *:duration-200;
   }
 }
 
@@ -344,12 +409,76 @@ input[type="radio"] {
   appearance: none;
 }
 
+/* Only the animate.css-compatible effects used by Modal and Backdrop. */
 .animate__animated {
   --animate-duration: 400ms;
+  animation-duration: var(--animate-duration);
+  animation-fill-mode: both;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInRightBig {
+  from {
+    opacity: 0;
+    transform: translate3d(2000px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeInUpBig {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 2000px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate__fadeIn {
+  animation-name: fadeIn;
+}
+.animate__fadeInRightBig {
+  animation-name: fadeInRightBig;
+}
+.animate__fadeInUpBig {
+  animation-name: fadeInUpBig;
+}
 .animate__fadeOut {
   --animate-duration: 200ms;
+  animation-name: fadeOut;
+}
+
+@media (prefers-reduced-motion: reduce), print {
+  .animate__animated {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  .animate__animated[class*="Out"] {
+    opacity: 0;
+  }
 }
 
 .strikeThrough {
@@ -467,7 +596,7 @@ input:-webkit-autofill:active {
 }
 
 .primary-banner-swiper .swiper-pagination {
-  direction: rtl;
+  direction: ltr;
 }
 
 .primary-banner-swiper .swiper-pagination-bullet {
@@ -515,5 +644,44 @@ input:-webkit-autofill:active {
   .invoice tr,
   .invoice-totals {
     break-inside: avoid;
+  }
+}
+
+/* One transform-only shimmer per loading product card; inner shapes are static. */
+.product-card-skeleton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.24),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: product-card-shimmer 1.8s ease-in-out infinite;
+}
+.dark .product-card-skeleton::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.07),
+    transparent
+  );
+}
+@keyframes product-card-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-card-skeleton::before {
+    animation: none;
+    content: none;
   }
 }

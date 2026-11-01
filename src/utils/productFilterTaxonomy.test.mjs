@@ -48,7 +48,7 @@ function listQueryFromUrl(query) {
     characters: applied.characters, occasions: applied.occasions,
     concentrations: applied.concentrations,
     volumes: applied.volumes, minVolume: applied.minVolume, maxVolume: applied.maxVolume,
-    inStock: applied.inStock, original: applied.original, discounted: applied.discounted,
+    inStock: applied.inStock, grades: applied.grades, discounted: applied.discounted,
     minPrice: applied.priceRange[0], maxPrice: applied.priceRange[1],
     type: applied.type, sort: applied.sort || "newest",
     page: searchParams.get("page"), limit: searchParams.get("limit"),
@@ -182,7 +182,8 @@ test("Apply sends all five to GET /products with repeated keys, in the query key
   assert.deepEqual(key[2].concentrations, ["PARFUM", "EAU_DE_PARFUM"]);
 
   for (const key of ["seasons", "temperature", "characters", "occasions", "concentrations"]) {
-    assert.match(productsLayout, new RegExp(`${key}: applied\\.${key},`), key);
+    assert.match(productsLayout, /productsQueryFromSearchParams\(searchParams\)/);
+    assert.match(source("./productFilterContract.mjs"), new RegExp(`${key}: applied\\.${key},`), key);
   }
 });
 
@@ -191,6 +192,9 @@ test("existing filters serialize and normalize exactly as before (no new keys wh
     + "&volumes=100&volumes=50&minPrice=100&maxPrice=900&inStock=true&original=true"
     + "&discounted=true&sort=oldest&search=rose";
   const url = serialize(hydrate(query), query);
+  // The legacy `original=true` link loads as grades=ORIGINAL and is rewritten.
+  assert.equal(url.get("original"), null);
+  assert.deepEqual(url.getAll("grades"), ["ORIGINAL"]);
   assert.deepEqual(url.getAll("brandIds"), ["1", "2"]);
   assert.deepEqual(url.getAll("volumes"), ["50", "100"]);
   assert.equal(url.get("discounted"), "true");
@@ -235,17 +239,18 @@ test("storefront taxonomy options come from the inactive-free hook in both filte
   ]).map((c) => c.slug), ["summer", "spring"]);
   for (const ui of [filtersModal, categorySidebar]) {
     for (const type of ["season", "temperature", "character", "occasion"]) {
-      assert.match(ui, new RegExp(`useGetStorefrontCategoriesByType\\("${type}"\\)`), type);
+      // Whitespace, line breaks and a trailing comma are formatting only.
+      assert.match(ui, new RegExp(`useGetStorefrontCategoriesByType\\(\\s*"${type}"(?:,\\s*sharedCategoryOptions)?,?\\s*\\)`), type);
     }
     assert.doesNotMatch(ui, /useGetCategoriesByType\(/);
   }
   assert.deepEqual(TAXONOMY_FILTER_GROUPS.map(({ key, type, label, multiple }) =>
     [key, type, label, multiple]), [
+    ["gender", "gender", "جنسیت", false],
     ["seasons", "season", "فصل", true],
     ["characters", "character", "شخصیت", true],
-    ["occasions", "occasion", "موقعیت استفاده", true],
     ["temperature", "temperature", "طبع", false],
-    ["gender", "gender", "جنسیت", false],
+    ["occasions", "occasion", "موقعیت استفاده", true],
   ]);
   assert.equal(CONCENTRATION_FILTER_LABEL, "غلظت");
   // The modal renders gender through the shared groups with storefront options.

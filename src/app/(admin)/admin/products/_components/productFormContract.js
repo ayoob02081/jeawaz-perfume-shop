@@ -1,6 +1,12 @@
 import { PRODUCT_CONCENTRATIONS } from "../../../../../utils/productConcentration.mjs";
+import {
+  PRODUCT_GRADES,
+  productGrade,
+} from "../../../../../utils/productGrade.mjs";
+import { searchAliasesPayload } from "../../../../../utils/searchAliasesContract.mjs";
 
 export const concentrationOptions = PRODUCT_CONCENTRATIONS;
+export const gradeOptions = PRODUCT_GRADES;
 
 export const longevityOptions = ["LOW", "MODERATE", "HIGH", "VERY_HIGH"];
 export const projectionOptions = ["WEAK", "MODERATE", "STRONG", "VERY_STRONG"];
@@ -15,7 +21,8 @@ export const VARIANT_VOLUME_MAX = 16_777_216;
 // Optional admin short name for order Excel/print; empty = use enTitle.
 export const PRINT_NAME_MAX = 100;
 
-const isEmpty = (value) => value === "" || value === null || value === undefined;
+const isEmpty = (value) =>
+  value === "" || value === null || value === undefined;
 const inIntegerRange = (value, min, max) =>
   Number.isInteger(value) && value >= min && value <= max;
 
@@ -33,7 +40,8 @@ const optionalText = (value) => {
 
 const invalid = (field, message) => ({ field, message });
 
-export function initialProductFormValues(product) {
+// `searchAliases` comes from the admin alias route (never in `product`).
+export function initialProductFormValues(product, searchAliases) {
   const categories = product?.categories ?? {};
   const images = (product?.images ?? [])
     .filter((image) => typeof image === "string" && image.trim())
@@ -49,10 +57,12 @@ export function initialProductFormValues(product) {
     concentration: product?.concentration ?? "",
     perfumer: product?.perfumer ?? "",
     printName: product?.printName ?? "",
+    searchAliases: searchAliases ?? "",
     images: [...images, { url: "" }],
     offValue: product?.offValue ?? "",
     stock: product?.stock ?? 0,
-    original: product?.original ? "original" : false,
+    // Blank for a new Product: the admin must choose (never a silent default).
+    grade: productGrade(product) ?? "",
     notes: {
       top: product?.notes?.top?.length ? product.notes.top : [""],
       middle: product?.notes?.middle?.length ? product.notes.middle : [""],
@@ -87,7 +97,13 @@ export function initialProductFormValues(product) {
   };
 }
 
-export function buildProductFormPayload(data, originalVariants) {
+// `searchAliasesEditable: false` (the stored aliases could not be read) leaves
+// them out of the payload, so they are kept rather than cleared.
+export function buildProductFormPayload(
+  data,
+  originalVariants,
+  { searchAliasesEditable = true } = {},
+) {
   const errors = [];
   const stock = isEmpty(data.stock) ? Number.NaN : Number(data.stock);
   // An empty discount clears it (null), never silently becomes 0.
@@ -101,6 +117,9 @@ export function buildProductFormPayload(data, originalVariants) {
   // Empty clears the override (null); enTitle is never copied in.
   const printName = optionalText(data.printName);
   const concentration = data.concentration || null;
+  const searchAliases = searchAliasesEditable
+    ? searchAliasesPayload(data.searchAliases)
+    : null;
 
   if (!inIntegerRange(stock, 0, PRODUCT_STOCK_MAX)) {
     errors.push(invalid("stock", "موجودی باید عدد صحیح و غیرمنفی باشد"));
@@ -127,8 +146,14 @@ export function buildProductFormPayload(data, originalVariants) {
       invalid("printName", "نام کوتاه برای چاپ نباید بیش از ۱۰۰ نویسه باشد"),
     );
   }
+  if (searchAliases?.error) {
+    errors.push(invalid("searchAliases", searchAliases.error));
+  }
   if (concentration && !concentrationOptions.includes(concentration)) {
     errors.push(invalid("concentration", "غلظت معتبر نیست"));
+  }
+  if (!gradeOptions.includes(data.grade)) {
+    errors.push(invalid("grade", "انتخاب نوع کیفیت ضروری است"));
   }
 
   const variants = (data.variants ?? []).map((row, index) => {
@@ -139,10 +164,20 @@ export function buildProductFormPayload(data, originalVariants) {
       errors.push(invalid(`variants.${index}.type`, "نوع معتبر نیست"));
     }
     if (!inIntegerRange(volume, 1, VARIANT_VOLUME_MAX)) {
-      errors.push(invalid(`variants.${index}.volume`, "حجم باید عدد صحیح مثبت و معتبر باشد"));
+      errors.push(
+        invalid(
+          `variants.${index}.volume`,
+          "حجم باید عدد صحیح مثبت و معتبر باشد",
+        ),
+      );
     }
     if (!inIntegerRange(price, 1, VARIANT_PRICE_MAX)) {
-      errors.push(invalid(`variants.${index}.price`, "قیمت باید عدد صحیح مثبت و معتبر باشد"));
+      errors.push(
+        invalid(
+          `variants.${index}.price`,
+          "قیمت باید عدد صحیح مثبت و معتبر باشد",
+        ),
+      );
     }
     return { type, volume, price };
   });
@@ -151,7 +186,12 @@ export function buildProductFormPayload(data, originalVariants) {
   }
   const seenVariants = new Set();
   variants.forEach(({ type, volume }, index) => {
-    if (!variantTypes.includes(type) || !Number.isInteger(volume) || volume <= 0) return;
+    if (
+      !variantTypes.includes(type) ||
+      !Number.isInteger(volume) ||
+      volume <= 0
+    )
+      return;
     const key = `${type}:${volume}`;
     if (seenVariants.has(key)) {
       errors.push(invalid(`variants.${index}.volume`, "نوع و حجم تکراری است"));
@@ -164,8 +204,11 @@ export function buildProductFormPayload(data, originalVariants) {
   if (!Number.isInteger(genderId) || genderId <= 0) {
     errors.push(invalid("genderId", "انتخاب جنسیت ضروری است"));
   }
-  if (temperatureId !== null && (!Number.isInteger(temperatureId) || temperatureId <= 0)) {
-    errors.push(invalid("temperatureId", "دما معتبر نیست"));
+  if (
+    temperatureId !== null &&
+    (!Number.isInteger(temperatureId) || temperatureId <= 0)
+  ) {
+    errors.push(invalid("temperatureId", "طبع معتبر نیست"));
   }
   const categoryIds = [genderId];
   if (temperatureId !== null) categoryIds.push(temperatureId);
@@ -193,22 +236,42 @@ export function buildProductFormPayload(data, originalVariants) {
     errors.push(invalid("performance.longevity.level", "ماندگاری معتبر نیست"));
   }
   if ((minProvided || maxProvided) && !level) {
-    errors.push(invalid("performance.longevity.level", "برای بازهٔ ساعت، سطح ماندگاری را انتخاب کنید"));
+    errors.push(
+      invalid(
+        "performance.longevity.level",
+        "برای بازهٔ ساعت، سطح ماندگاری را انتخاب کنید",
+      ),
+    );
   }
   if (minProvided !== maxProvided) {
-    errors.push(invalid("performance.longevity.maxHours", "هر دو کران بازهٔ ساعت لازم است"));
+    errors.push(
+      invalid(
+        "performance.longevity.maxHours",
+        "هر دو کران بازهٔ ساعت لازم است",
+      ),
+    );
   }
   if (
     minProvided &&
     (!Number.isInteger(minHours) || minHours < 0 || minHours > 168)
   ) {
-    errors.push(invalid("performance.longevity.minHours", "ساعت باید عدد صحیح بین ۰ و ۱۶۸ باشد"));
+    errors.push(
+      invalid(
+        "performance.longevity.minHours",
+        "ساعت باید عدد صحیح بین ۰ و ۱۶۸ باشد",
+      ),
+    );
   }
   if (
     maxProvided &&
-    (!Number.isInteger(maxHours) || maxHours < 0 || maxHours > 168 || maxHours < minHours)
+    (!Number.isInteger(maxHours) ||
+      maxHours < 0 ||
+      maxHours > 168 ||
+      maxHours < minHours)
   ) {
-    errors.push(invalid("performance.longevity.maxHours", "بیشینهٔ ساعت معتبر نیست"));
+    errors.push(
+      invalid("performance.longevity.maxHours", "بیشینهٔ ساعت معتبر نیست"),
+    );
   }
   const projection = data.performance?.projection || null;
   const sillage = data.performance?.sillage || null;
@@ -237,13 +300,15 @@ export function buildProductFormPayload(data, originalVariants) {
       concentration,
       perfumer,
       printName,
+      ...(searchAliases ? { searchAliases: searchAliases.value } : {}),
       stock,
       offValue,
-      original: Boolean(data.original),
+      // `grade` only; the deprecated `original` alias is never sent.
+      grade: data.grade,
       brandId,
       categoryIds,
       images: (data.images ?? [])
-        .map((image) => typeof image === "string" ? image : image?.url)
+        .map((image) => (typeof image === "string" ? image : image?.url))
         .filter((url) => typeof url === "string" && url.trim() !== ""),
       notes: {
         top: (data.notes?.top ?? []).filter(Boolean),
@@ -251,11 +316,17 @@ export function buildProductFormPayload(data, originalVariants) {
         base: (data.notes?.base ?? []).filter(Boolean),
       },
       variants,
-      ...(originalVariants !== undefined ? {
-        expectedVariants: originalVariants.map(({ type, volume, price }) => ({
-          type, volume: Number(volume), price: Number(price),
-        })),
-      } : {}),
+      ...(originalVariants !== undefined
+        ? {
+            expectedVariants: originalVariants.map(
+              ({ type, volume, price }) => ({
+                type,
+                volume: Number(volume),
+                price: Number(price),
+              }),
+            ),
+          }
+        : {}),
       performance: {
         longevity: level
           ? {

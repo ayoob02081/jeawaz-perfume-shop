@@ -66,12 +66,17 @@ test("the category rows render skeleton cards inside the real container", () => 
   }
 });
 
+// A hover/active background (also under dark:, sm:, group-…) only recolors a
+// hovered or pressed card; a skeleton is never hovered or pressed.
+const isInteractionBackground = (c) => /(?:^|:)(?:group-|peer-)?(?:hover|active):(?:[^:]+:)*bg-/.test(c);
+
 // Every geometry class of the real element must be on its skeleton.
 const geometry = (source, marker) => {
   const line = source.split("\n").find((l) => l.includes(marker));
   assert.ok(line, `found ${marker}`);
   return line.match(/className="([^"]+)"/)[1].split(/\s+/)
-    .filter((c) => /^(?:[\w-[\]:!/.]+:)?(?:h-|w-|size-|aspect-|rounded|border|banner--|p[xytblr]?-|mx-|mt-|my-|m[xy]?-|gap-|flex|container|max-w|justify|items|self-|bg-|dark:bg-|sm:snap|snap-)/.test(c));
+    .filter((c) => /^(?:[\w-[\]:!/.]+:)?(?:h-|w-|size-|aspect-|rounded|border|banner--|p[xytblr]?-|mx-|mt-|my-|m[xy]?-|gap-|flex|container|max-w|justify|items|self-|bg-|dark:bg-|sm:snap|snap-)/.test(c))
+    .filter((c) => !isInteractionBackground(c));
 };
 const assertCovers = (classes, skeleton, label) => {
   for (const c of classes) assert.ok(skeleton.includes(c), `${label}: skeleton lacks ${c}`);
@@ -93,6 +98,12 @@ test("banner skeletons keep the banner height, aspect ratio, radius and containe
 
 test("category skeletons keep the card box and the image shape", () => {
   const sk = skeletons();
+  // Only hover/active backgrounds are exempt; resting colors and any
+  // interaction-state sizing still count.
+  assert.deepEqual(
+    ["hover:bg-stroke-200", "dark:hover:bg-stroke-50", "active:bg-stroke-200", "dark:active:bg-stroke-50", "group-hover:bg-white", "bg-stroke-0", "dark:bg-stroke-50", "hover:h-20", "active:rounded-xl"].map(isInteractionBackground),
+    [true, true, true, true, true, false, false, false, false],
+  );
   const gender = home("GenderCategoriesLayout");
   assertCovers(geometry(gender, "max-[365px]:aspect-6/2"), sk, "gender card");
   assertCovers(["aspect-8/10", "md:aspect-10/13", "w-16", "md:w-21", "rounded-b-xl", "sm:snap-center"], sk, "gender image");

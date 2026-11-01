@@ -116,6 +116,25 @@ export const userDesktopTHeads = [
   // },
 ];
 
+export const adminNotifMobileTHeads = [
+  { id: 1, label: "#" },
+  { id: 2, label: "اعلان" },
+  { id: 3, label: "آمار" },
+  { id: 4, label: "مشاهده" },
+];
+
+export const adminNotifDesktopTHeads = [
+  { id: 1, label: "#" },
+  { id: 2, label: "عنوان و متن" },
+  { id: 3, label: "نوع" },
+  { id: 4, label: "کانال" },
+  { id: 5, label: "مخاطب" },
+  { id: 6, label: "تاریخ ایجاد" },
+  { id: 7, label: "خوانده‌شده" },
+  { id: 8, label: "پیامک" },
+  { id: 9, label: "مشاهده" },
+];
+
 export const NotifMobileTHeads = [
   {
     id: 1,
@@ -190,19 +209,19 @@ export const productMobileTHeads = [
   },
   {
     id: 3,
-    label: "برند و جنسیت",
+    label: "قیمت و نوع",
   },
   {
     id: 4,
-    label: "رایحه‌ها",
-  },
-  {
-    id: 5,
     label: "موجودی و تخفیف",
   },
   {
+    id: 5,
+    label: "رایحه‌ها",
+  },
+  {
     id: 6,
-    label: "قیمت گونه‌ها",
+    label: "برند و جنسیت",
   },
   {
     id: 7,
@@ -233,7 +252,7 @@ export const productDesktopTHeads = [
   },
   {
     id: 6,
-    label: "موجودی",
+    label: "موجودی و تخفیف",
   },
   {
     id: 7,
@@ -245,10 +264,6 @@ export const productDesktopTHeads = [
   },
   {
     id: 9,
-    label: "تخفیف",
-  },
-  {
-    id: 10,
     label: "عملیات",
   },
 ];
@@ -500,15 +515,15 @@ export const orderMobileTHeads = [
     label: "دریافت کننده",
   },
   {
-    id: 4,
+    id: 3,
     label: "شماره سفارش",
   },
   {
-    id: 5,
+    id: 4,
     label: "مبلغ پرداخت شده",
   },
   {
-    id: 9,
+    id: 5,
     label: "عملیات",
   },
 ];
@@ -522,7 +537,6 @@ export const orderDesktopTHeads = [
     id: 2,
     label: "دریافت کننده",
   },
-
   {
     id: 3,
     label: "شماره موبایل",
@@ -532,15 +546,15 @@ export const orderDesktopTHeads = [
     label: "شماره سفارش",
   },
   {
-    id: 6,
+    id: 5,
     label: "وضعیت مرسوله",
   },
   {
-    id: 7,
+    id: 6,
     label: "تعداد محصولات",
   },
   {
-    id: 5,
+    id: 7,
     label: "مبلغ پرداخت شده",
   },
   {

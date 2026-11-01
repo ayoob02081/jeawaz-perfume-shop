@@ -166,42 +166,30 @@ test("only a 401 from the refresh is definitive", () => {
   }
 });
 
-test("AuthProvider logs a signed-in user out on the signal, ignores it for a guest, and starts no request", () => {
+test("AuthProvider settles session loss through the cancellation barrier without a new auth request", () => {
   const source = read("../contexts/auth/AuthContext.jsx");
-  const listener = source.slice(
-    source.indexOf("onSessionExpired(() => {"),
-    source.indexOf("[settle],", source.indexOf("onSessionExpired(() => {")),
-  );
-
-  assert.match(source, /import \{ onSessionExpired \} from "@\/utils\/authSessionEvents\.mjs";/);
-  assert.match(
-    listener,
-    /if \(!userRef\.current\) return;\s*authGeneration\.current \+= 1;\s*userRef\.current = null;\s*setUser\(null\);\s*settle\(\);\s*setSessionExpiredAt\(Date\.now\(\)\);/,
-  );
-  for (const request of [/checkAuth\(/, /getUserApi\(/, /refresh/i, /logoutApi\(/]) {
-    assert.doesNotMatch(listener, request);
-  }
+  const listener = source.slice(source.indexOf("onSessionExpired(() => {"), source.indexOf("const login = useCallback"));
+  assert.match(listener, /if \(!userRef\.current\) return;/);
+  assert.match(listener, /sessionLifecycle\.invalidate\("session-expired"\)/);
+  assert.match(listener, /sessionLifecycle\.wait\(captured\)/);
+  assert.match(listener, /sessionLifecycle\.confirm\(captured, null\)/);
+  assert.match(listener, /setSessionExpiredAt\(Date\.now\(\)\)/);
+  assert.doesNotMatch(listener, /getUserApi\(|logoutApi\(/);
   assert.match(source, /initializing: !initialized,/);
-  assert.match(source, /sessionExpiredAt,/);
 });
 
-test("the HTTP client signals only from the shared refresh, and stays free of React", () => {
+test("HTTP refresh expiry signals are generation guarded and stay free of React", () => {
   const source = read("../services/httpClient.js");
-  assert.match(
-    source,
-    /\.post\("\/auth\/refresh"\)\s*\.catch\(\(refreshError\) => \{\s*if \(isDefinitiveRefreshFailure\(refreshError\)\) \{\s*notifySessionExpired\(\);\s*\}\s*throw refreshError;\s*\}\)/,
-  );
+  assert.match(source, /sessionLifecycle\.current\(captured\) && isDefinitiveRefreshFailure\(refreshError\)/);
+  assert.match(source, /notifySessionExpired\(\)/);
   assert.doesNotMatch(source, /from "react"|AuthContext|useAuth/);
 });
 
-test("Providers applies identity changes inside the auth and query providers", () => {
+test("Providers synchronously cancels private work before confirmation and preserves catalog caches", () => {
   const source = read("../app/Providers.jsx");
-  assert.match(
-    source,
-    /const identity = identityOf\(\{ initializing, user \}\);[\s\S]*?const plan = planIdentityChange\(previousIdentity\.current, identity\);\s*previousIdentity\.current = identity;\s*applyIdentityChange\(queryClient, plan\);/,
-  );
-  assert.match(
-    source,
-    /<QueryClientProvider client=\{queryClient\}>\s*<AuthProvider>\s*<NotificationSocketBridge \/>\s*<AuthQueryCacheBridge \/>/,
-  );
+  assert.match(source, /sessionLifecycle\.subscribe/);
+  assert.match(source, /event\.type === "invalidate"/);
+  assert.match(source, /applyIdentityChange\(queryClient,[\s\S]*?refetch: false/);
+  assert.match(source, /event\.type === "ready" && event\.changed/);
+  assert.match(source, /<QueryClientProvider client=\{queryClient\}>\s*<AuthProvider>\s*<NotificationSocketBridge \/>\s*<AuthQueryCacheBridge \/>/);
 });

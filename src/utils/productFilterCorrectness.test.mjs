@@ -3,9 +3,12 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { createFormControl } from "react-hook-form";
 import {
+  PRICE_MAX_ERROR,
   PRICE_RANGE_ERROR,
+  PRODUCT_PRICE_MAX,
   activeFilterCount,
   buildQueryFromFilters,
+  canApplySidebarFilters,
   emptyFilters,
   filtersReducer,
   getFiltersFromSearchParams,
@@ -14,6 +17,7 @@ import {
   priceFormValues,
   productListHeading,
   storefrontCategoryOptions,
+  validatePriceBound,
   validatePriceRange,
 } from "./productFilterContract.mjs";
 
@@ -36,9 +40,12 @@ function filtersPage(initialUrl = "", { restorePriceOnCancel = true } = {}) {
   });
   // reset() drops registrations; the next render re-registers the inputs.
   const render = () => {
-    form.register("minPrice", { deps: ["maxPrice"] });
+    form.register("minPrice", { deps: ["maxPrice"], validate: validatePriceBound });
     form.register("maxPrice", {
-      validate: (maxPrice, values) => validatePriceRange(values.minPrice, maxPrice),
+      validate: {
+        bound: validatePriceBound,
+        range: (maxPrice, values) => validatePriceRange(values.minPrice, maxPrice),
+      },
     });
   };
   const priceEffect = () => {
@@ -172,10 +179,39 @@ test("valid price ranges still serialize: empty, min only, max only, equal, zero
   assert.equal(validatePriceRange(6, 5), PRICE_RANGE_ERROR);
 });
 
-test("the modal's price inputs carry the range rule and show its error", () => {
+test("a price above the backend bound is rejected before the URL or a request changes", async () => {
+  for (const [min, max, field] of [
+    ["", String(PRODUCT_PRICE_MAX + 1), "maxPrice"],
+    [String(PRODUCT_PRICE_MAX + 1), "", "minPrice"],
+    ["", "99999999999999999999", "maxPrice"],
+  ]) {
+    const page = filtersPage("brandIds=2");
+    page.open();
+    page.typePrice(min, max);
+    const before = page.url;
+    await page.apply();
+    assert.equal(page.url, before, `${min}-${max}`);
+    assert.equal(page.requests, 0, `${min}-${max}`);
+    assert.equal(page.errors[field]?.message, PRICE_MAX_ERROR, `${min}-${max}`);
+  }
+
+  // The bound itself is a valid price and still applies.
+  const page = filtersPage();
+  page.open();
+  page.typePrice("", String(PRODUCT_PRICE_MAX));
+  const url = new URLSearchParams(await page.apply());
+  assert.equal(page.requests, 1);
+  assert.equal(url.get("maxPrice"), String(PRODUCT_PRICE_MAX));
+  for (const value of ["", null, undefined, "0", "1", String(PRODUCT_PRICE_MAX)]) {
+    assert.equal(validatePriceBound(value), true, String(value));
+  }
+});
+
+test("the modal's price inputs carry the bound and range rules and show their errors", () => {
   assert.match(filtersModal,
-    /name="maxPrice"\s*errors=\{errors\}\s*validationSchema=\{\{\s*validate: \(maxPrice, values\) =>\s*validatePriceRange\(values\.minPrice, maxPrice\),/);
-  assert.match(filtersModal, /name="minPrice"\s*errors=\{errors\}\s*validationSchema=\{\{ deps: \["maxPrice"\] \}\}/);
+    /name="maxPrice"\s*errors=\{errors\}\s*validationSchema=\{\{\s*validate: \{\s*bound: validatePriceBound,\s*range: \(maxPrice, values\) =>\s*validatePriceRange\(values\.minPrice, maxPrice\),/);
+  assert.match(filtersModal,
+    /name="minPrice"\s*errors=\{errors\}\s*validationSchema=\{\{\s*deps: \["maxPrice"\],\s*validate: validatePriceBound,\s*\}\}/);
   assert.match(filterSection, /watch=\{watch\}\s*errors=\{errors\}/);
   assert.match(filterSection, /onSubmit=\{handleSubmit\(HandleSubmitfilter\)\}/);
 });
@@ -223,13 +259,16 @@ test("a normal Apply keeps discounted active and it reaches the request", async 
   const applied = getFiltersFromSearchParams(url);
   assert.equal(normalizeProductsQuery({ discounted: applied.discounted }).discounted, true);
   assert.equal(normalizeProductsQuery({ discounted: null }).discounted, undefined);
-  assert.match(productsLayout, /discounted: applied\.discounted,/);
+  assert.match(productsLayout, /productsQueryFromSearchParams\(searchParams\)/);
+  assert.match(source("./productFilterContract.mjs"), /discounted: applied\.discounted,/);
   // Both filter UIs enable reset/apply through the shared count, which
   // includes the URL-only discounted filter.
   assert.equal(activeFilterCount({ ...emptyFilters, discounted: true }), 1);
   assert.match(filtersModal,
     /activeFilterCount\(filtersFromUrl\) > 0 \|\| activeFilterCount\(state\.draft\) > 0/);
-  assert.match(categorySidebar, /const isFilter = activeFilterCount\(state\.draft\) > 0;/);
+  assert.equal(canApplySidebarFilters({
+    draft: { ...emptyFilters, discounted: true }, applied: emptyFilters }), true);
+  assert.match(categorySidebar, /const canApply = canApplySidebarFilters\(state\);/);
 });
 
 // --- A4: inactive categories ---------------------------------------------------
@@ -248,12 +287,13 @@ test("storefront category options exclude inactive categories and keep order", (
 
 test("only storefront filter UIs use the inactive-free hook; the shared hook is unchanged", () => {
   assert.match(categoryHooks,
-    /export const useGetStorefrontCategoriesByType = \(type\) =>[\s\S]*?queryKey: \["categories", type\][\s\S]*?select: storefrontCategoryOptions,/);
+    /export const useGetStorefrontCategoriesByType = \(type, options = \{\}\) =>[\s\S]*?queryKey: \["categories", type\][\s\S]*?select: storefrontCategoryOptions,/);
   assert.match(categoryHooks,
     /export const useGetCategoriesByType = \(type\) =>\s*useQuery\(\{\s*queryKey: \["categories", type\],\s*queryFn: \(\) => getCategoriesByTypeApi\(type\),\s*enabled: !!type,\s*retry: false,\s*staleTime: 1000 \* 60 \* 5,\s*refetchOnWindowFocus: false,\s*\}\);/);
   for (const ui of [filtersModal, categorySidebar]) {
-    assert.match(ui, /useGetStorefrontCategoriesByType\("gender"\)/);
-    assert.match(ui, /useGetStorefrontCategoriesByType\("fragrance_family"\)/);
+    // Whitespace, line breaks and a trailing comma are formatting only.
+    assert.match(ui, /useGetStorefrontCategoriesByType\(\s*"gender"(?:,\s*sharedCategoryOptions)?,?\s*\)/);
+    assert.match(ui, /useGetStorefrontCategoriesByType\(\s*"fragrance_family"(?:,\s*sharedCategoryOptions)?,?\s*\)/);
     assert.doesNotMatch(ui, /useGetCategoriesByType\(/);
   }
 });
@@ -266,15 +306,18 @@ test("Home category sections render only storefront (active) categories", () => 
     ["AccordCategoriesLayout", "character", "characters"],
   ]) {
     const home = source(`../app/(user)/_components/${name}.jsx`);
+    // Whitespace, line breaks and a trailing comma are formatting only.
+    assert.match(home, new RegExp(`useGetStorefrontCategoriesByType\\(\\s*"${type}",\\s*initialOptions,?\\s*\\)`));
     assert.match(home,
-      new RegExp(`data: ${list},\\s*isPending,\\s*error,\\s*\\} = useGetStorefrontCategoriesByType\\("${type}"\\);`));
+      new RegExp(`data: ${list},\\s*isPending,\\s*error,\\s*\\} = catalogInitialView\\(\\s*result,\\s*initialOptions,\\s*useIsHydrated\\(\\),\\s*storefrontCategoryOptions,?\\s*\\);`));
     assert.match(home, /import \{ useGetStorefrontCategoriesByType \} from "@\/hooks\/useCategories";/);
     assert.doesNotMatch(home, /useGetCategoriesByType\(|isActive/);
     assert.match(home, new RegExp(`${list}\\??\\.map\\(`));
   }
   // The Character cards filter the product list by the same taxonomy.
   const accord = source("../app/(user)/_components/AccordCategoriesLayout.jsx");
-  assert.match(accord, /router\.push\(`\/products\?characters=\$\{encodeURIComponent\(slug\)\}`\)/);
+  assert.match(accord, /<Link\s+href=/);
+  assert.match(accord, /new URLSearchParams\(\{ characters: slug \}\)/);
   assert.doesNotMatch(accord, /fragranceFamilies=/);
   const rendered = storefrontCategoryOptions([
     { id: 1, slug: "male", isActive: true },

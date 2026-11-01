@@ -141,19 +141,19 @@ test("the review notice is the agreed Persian text", () => {
 test("an auth re-check never replaces the checkout: only the first check or an unloaded cart shows the loader", () => {
   assert.match(cartLayout, /if \(initializing \|\| \(isLoading && !cart\)\) \{\s*return <Loading \/>;/);
   assert.doesNotMatch(cartLayout, /if \(loading \|\| isLoading\)/);
-  assert.match(cartLayout, /const \{ initializing, isAuthenticated, sessionExpiredAt \} = useAuth\(\);/);
+  assert.match(cartLayout, /const \{ user, initializing, isAuthenticated, sessionExpiredAt \} = useAuth\(\);/);
 });
 
 test("the login modal belongs to the mounted CartLayout and resumes through a callback, not the router", () => {
   const layout = section(cartLayout, "function CartLayout() {", "export default CartLayout;");
   assert.match(
     layout,
-    /<Modal\s+isOpen=\{!!authPrompt\}\s+onClose=\{closeAuthPrompt\}[\s\S]*?<Login\s+closeBtn=\{true\}\s+onAuthenticated=\{handleAuthenticated\}\s+onClose=\{closeAuthPrompt\}\s*\/>/,
+    /<Modal\s+isOpen=\{!!authPrompt\}\s+accessibleLabel="[^"]+"\s+onClose=\{closeAuthPrompt\}[\s\S]*?<Login\s+closeBtn=\{true\}\s+onAuthenticated=\{handleAuthenticated\}\s+onClose=\{closeAuthPrompt\}\s*\/>/,
   );
   assert.doesNotMatch(layout, /router\.(push|replace|back)\(/);
   assert.doesNotMatch(layout, /\/auth\/login/);
   assert.match(login, /if \(onAuthenticated\) return onAuthenticated\(\);/);
-  assert.match(login, /const close = onClose \?\? \(\(\) => router\.back\(\)\);/);
+  assert.match(login, /const close = \(\) => \{[\s\S]*?mountedRef\.current = false;\s*if \(modalDismissal\) modalDismissal\.dismiss\(\);\s*else if \(onClose\) onClose\(\);\s*else router\.back\(\);/);
 });
 
 test("step 1's continue goes through the auth gate", () => {
@@ -200,7 +200,7 @@ test("a lapsed session on step 2 holds the signed-in cart and opens the prompt d
   assert.match(cartLayout, /const cart = heldCart \?\? liveCart;/);
   assert.match(
     cartLayout,
-    /if \(sessionExpiredAt !== seenSessionExpiry\) \{\s*setSeenSessionExpiry\(sessionExpiredAt\);\s*if \(step === 2 && liveCart && !heldCart && !authPrompt\) \{\s*setHeldCart\(liveCart\);/,
+    /if \(sessionExpiredAt !== seenSessionExpiry\) \{\s*setSeenSessionExpiry\(sessionExpiredAt\);\s*const previousCart = lastCartRef\.current\?\.cart;\s*if \(step === 2 && previousCart && !heldCart && !authPrompt\) \{\s*setHeldCart\(previousCart\);/,
   );
 });
 
@@ -214,4 +214,12 @@ test("refetched addresses do not overwrite typed checkout fields", () => {
     cartLayout,
     /if \(!selectedAddress \|\| filledAddressIdRef\.current === selectedAddress\.id\) \{\s*return;\s*\}\s*filledAddressIdRef\.current = selectedAddress\.id;/,
   );
+});
+
+test("checkout re-login retains the last cart after synchronous cleanup and drops a different account's snapshot", () => {
+  const retain = section(cartLayout, "  const lastCartRef = useRef(null);", "  const cart = heldCart");
+  const update = new Function("useRef", "user", "liveCart", retain + ";return lastCartRef.current;");
+  const saved = { current: { userId: 7, cart: { items: ["owned-by-A"] } } };
+  assert.deepEqual(update(() => saved, null, undefined).cart.items, ["owned-by-A"]);
+  assert.equal(update(() => saved, { id: 8 }, undefined), null);
 });

@@ -23,3 +23,18 @@ export function removeUserApi(id) {
 export function getAllUsersApi() {
   return app.get("/users/admin").then((res) => res.data.data);
 }
+
+// One cursor page of GET /users/admin: { data, nextCursor }.
+export function searchAdminUsersApi({ search, cursor, limit } = {}, { signal } = {}) {
+  return app
+    .get("/users/admin", { params: { search, cursor, limit }, signal })
+    .then(({ data }) => data);
+}
+
+export function listAdminUsersApi(params, { signal } = {}) {
+  return app.get("/users/admin/list", { params, signal }).then(({ data }) => data);
+}
+
+export function setUserBanApi({ id, isBanned }) {
+  return app.patch(`/users/admin/${id}/ban`, { isBanned }).then(({ data }) => data);
+}

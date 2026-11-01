@@ -316,7 +316,7 @@ test("visible labels, placeholders and form styling are preserved", () => {
     'label: "نام و نام خانوادگی"', 'placeholder: "علی حسنی"',
     'label: "شماره همراه"', 'placeholder: "۰۹۱۲۳۴۵۶۷۸۹"', 'label="پیام شما"',
     'placeholder="پیام خود را بنویسید ..."', "ارسال پیام یا سوال",
-    'className="flex flex-col items-start justify-between gap-6 p-6 border border-stroke-250 rounded-2xl size-full"',
+    'className="flex flex-col items-start justify-between gap-6 max-sm:pt-4 sm:p-6 max-sm:border-t sm:border border-stroke-250 sm:rounded-2xl size-full"',
     'className="flex flex-col items-center justify-between gap-6 size-full"',
     'className="rounded-xl h-32"', 'textClassName="text-sm!"',
     "placeholder={`مثال: ${item.placeholder}`}",

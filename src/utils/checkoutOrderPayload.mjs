@@ -13,14 +13,16 @@ export function checkoutShippingMethod(cart) {
 
 // `useSavedAddress`: the form still shows the selected saved address
 // unchanged, so the order refers to it by id; otherwise the typed receiver
-// details are sent.
+// details are sent. `customer` (checkoutBuyerContract.buyerNamePayload) adds
+// the buyer's name, independent of the receiver; null sends nothing new.
 export function buildCheckoutOrderPayload({
   useSavedAddress,
   addressId,
   form,
   shippingMethod,
+  customer = null,
 }) {
-  if (useSavedAddress) return { addressId, shippingMethod };
+  if (useSavedAddress) return { addressId, shippingMethod, ...customer };
 
   return {
     receiverName: form.fullName,
@@ -30,5 +32,6 @@ export function buildCheckoutOrderPayload({
     fullAddress: form.addressLine,
     postalCode: form.postalCode,
     shippingMethod,
+    ...customer,
   };
 }

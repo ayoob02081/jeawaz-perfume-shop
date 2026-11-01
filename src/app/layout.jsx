@@ -1,39 +1,29 @@
 import Header from "./Header";
 import Providers from "./Providers";
+import { THEME_BOOTSTRAP } from "@/utils/themeTransition.mjs";
 import Footer from "./Footer";
 import MobilePannel from "./MobilePannel";
 import { Toaster } from "react-hot-toast";
-import { Inter } from "next/font/google";
-import { cn } from "@/lib/utils";
 import Sidebars from "./Sidebars";
-import Script from "next/script";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_ORIGIN } from "@/lib/seo.mjs";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-
+// No openGraph here: Next would pass it unmerged to every page without its own.
 export const metadata = {
-  metadataBase: new URL("https://jeawaz.com"),
-  title: { default: "جیاواز پرفیوم", template: "جیاواز پرفیوم | %s" },
-  description:
-    "خرید آنلاین ادکلن و دکانت با بهترین قیمت و ارسال به سراسر ایران",
+  metadataBase: new URL(SITE_ORIGIN),
+  title: { default: SITE_NAME, template: `${SITE_NAME} | %s` },
+  description: SITE_DESCRIPTION,
 };
 
 export default function RootLayout({ children, modal }) {
   return (
-    <html
-      lang="fa"
-      dir="rtl"
-      suppressHydrationWarning
-      className={cn("font-sans", inter.variable)}
-    >
+    <html lang="fa" dir="rtl" suppressHydrationWarning className="font-sans">
+      <head>
+        <script id="jeawaz-theme-init" dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
+      </head>
       <body
         dir="rtl"
         className="font-display antialiased scrollbar-none bg-stroke-0! print:bg-white! duration-200"
       >
-        <Script
-          src="https://kit.fontawesome.com/0d5a818c03.js"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
         <Providers>
           <Toaster />
           {/* Site chrome is left out of printed pages (e.g. the order invoice). */}

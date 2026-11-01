@@ -116,6 +116,7 @@ export function StatusOrderCard({
                 src={item.image}
                 alt={`${item.enTitle}-icon`}
                 className="size-10 "
+                sizes="40px"
               />
               <div className="max-lg:hidden badge bg-stroke-200 text-xs text-stroke-800 border border-stroke-800 px-1 h-6 aspect-square absolute left-0 bottom-0 lg:-bottom-1.5 lg:-left-1.5">
                 <p className="translate-y-px">

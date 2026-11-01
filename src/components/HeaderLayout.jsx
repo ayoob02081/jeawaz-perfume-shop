@@ -4,66 +4,173 @@ import {
   ArrowLeftIcon,
   ChevronDownIcon,
   Squares2X2Icon,
+  MagnifyingGlassIcon,
   UserIcon,
+  Bars3Icon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import AppImage from "./AppImage";
-import { useState } from "react";
+import ProductGradeBadge from "./ProductGradeBadge";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import MobileSearchOverlay from "./MobileSearchOverlay";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useGetProductSuggestions } from "@/hooks/useProducts";
 import SearchSection from "./SearchSection";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import { CardIconResponsive } from "@/app/(user)/_components/ProductCard";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useGetAllCartItems } from "@/hooks/useCart";
 import { useAuth } from "@/contexts/auth/AuthContext";
-import CompleteUserData from "@/components/CompleteUserData";
-import { useHideOnScroll } from "@/hooks/useHideOnScroll";
+import { formatFullName } from "@/utils/profileFormContract.mjs";
 import { useSidebar } from "@/contexts/Sidebars/SidebarContext";
 import ThemeToggle from "@/ui/ThemeToggle";
+import {
+  productSearchNavigation,
+  syncHeaderSearch,
+  headerSuggestionQuery,
+  headerSearchSurface,
+} from "@/utils/headerSearch.mjs";
 
 function HeaderLayout() {
-  const { isCategoryOpen, toggleSidebar, toggleCategory } = useSidebar();
+  const { isCategoryOpen, openSidebar, toggleCategory, warmCategory } =
+    useSidebar();
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [searchValue, setSearchValue] = useState(
-    searchParams.get("search") || "",
+  const urlSearch = searchParams.get("search") || "";
+  const [search, setSearch] = useState({ value: urlSearch, urlSearch });
+  // Follow the URL's search during render (no effect, no request).
+  const syncedSearch = syncHeaderSearch(search, urlSearch);
+  if (syncedSearch !== search) setSearch(syncedSearch);
+  const searchValue = syncedSearch.value;
+  const setSearchValue = (value) =>
+    setSearch((current) => ({ ...current, value }));
+  const [activeSurface, setActiveSurface] = useState(null);
+  const searchTriggerRef = useRef(null);
+  const inlineInputs = useRef({});
+  const closeReason = useRef("dismiss");
+  const dialogId = useId();
+  const closeSearch = useCallback((reason = "dismiss") => {
+    closeReason.current = reason;
+    setActiveSurface(null);
+  }, []);
+  const activateSearch = (surface, active) => {
+    if (active) {
+      if (headerSearchSurface(window.innerWidth) !== surface) return;
+      if (surface === "spotlight") closeReason.current = "dismiss";
+      setActiveSurface(surface);
+    } else
+      setActiveSurface((current) => (current === surface ? null : current));
+  };
+  const queryString = searchParams.toString();
+  useEffect(() => {
+    closeSearch("navigation");
+  }, [pathname, queryString, closeSearch]);
+  useEffect(() => {
+    const media = [
+      "(max-width: 480px)",
+      "(min-width: 640px)",
+      "(min-width: 1024px)",
+    ].map((query) => window.matchMedia(query));
+    const onResize = () => {
+      if (
+        activeSurface &&
+        headerSearchSurface(window.innerWidth) !== activeSurface
+      )
+        closeSearch("resize");
+    };
+    media.forEach((query) => query.addEventListener("change", onResize));
+    return () =>
+      media.forEach((query) => query.removeEventListener("change", onResize));
+  }, [activeSurface, closeSearch]);
+  const debouncedSearch = useDebounce(searchValue.trim(), 300);
+  const suggestionQuery = headerSuggestionQuery(
+    searchValue,
+    debouncedSearch,
+    Boolean(activeSurface),
   );
+  const suggestions = useGetProductSuggestions(suggestionQuery);
+  const renderResult = (item, dismiss) => (
+    <Link
+      href={`/products/${item.id}`}
+      prefetch={false}
+      onNavigate={() => {
+        dismiss();
+        closeSearch("navigation");
+      }}
+      className="flex items-center gap-3 p-3 text-stroke-800 hover:bg-stroke-100 focus-visible:bg-stroke-100"
+    >
+      <AppImage src={item.image} alt="" width="size-12 shrink-0" sizes="48px" />
+      <span className="min-w-0 flex-1 wrap-break-word">
+        <span className="block text-sm">{item.perTitle}</span>
+        {item.enTitle && (
+          <span className="block text-xs text-stroke-500">{item.enTitle}</span>
+        )}
+      </span>
+      <div className="flex h-6 shrink-0 items-center">
+        <ProductGradeBadge product={{ grade: item.grade }} />
+      </div>
+    </Link>
+  );
+  const searchProps = (surface) => ({
+    active: activeSurface === surface,
+    onActiveChange: (active) => activateSearch(surface, active),
+    results:
+      suggestionQuery.enabled && Array.isArray(suggestions.data)
+        ? suggestions.data
+        : [],
+    isFetching:
+      suggestionQuery.waiting ||
+      (suggestionQuery.enabled && suggestions.isFetching),
+    isError: suggestionQuery.enabled && suggestions.isError,
+    errorStatus: suggestions.error?.response?.status,
+    renderResult,
+    inputRef: (element) => {
+      inlineInputs.current[surface] = element;
+    },
+  });
+  const restoreSearchFocus = () => {
+    if (closeReason.current === "navigation") return false;
+    const visible = (element) =>
+      element?.isConnected && element.getClientRects().length > 0;
+    if (closeReason.current === "resize")
+      return Object.values(inlineInputs.current).find(visible) || false;
+    return visible(searchTriggerRef.current) ? searchTriggerRef.current : false;
+  };
   const { user, isAuthenticated, loading } = useAuth();
   const { data: cartItems, isLoading } = useGetAllCartItems();
-  const isProfileCompleted = user?.profileCompleted || false;
+  // No profile is required after login: a user without a name is shown by
+  // phone; the name is asked for at checkout instead.
+  const accountName = formatFullName(user?.firstName, user?.lastName);
 
   const fullName =
     isAuthenticated !== true
       ? "ورود | ثبت نام"
-      : isProfileCompleted && user?.firstName.length > 1
-        ? user?.firstName + " " + user?.lastName
+      : accountName !== "-"
+        ? accountName
         : toPersianNumbers(user?.phoneNumber);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
 
-    const value = searchValue.trim();
-    const params = new URLSearchParams(searchParams.toString());
+    const { href, replace } = productSearchNavigation(
+      searchValue,
+      searchParams,
+      pathname,
+    );
 
-    if (value) {
-      params.set("search", value);
-    } else {
-      params.delete("search");
-    }
-
-    params.set("page", "1");
-    params.set("limit", "12");
-
-    const query = params.toString();
-
-    router.replace(`/products${query ? `?${query}` : ""}`);
+    closeSearch("navigation");
+    if (replace) router.replace(href);
+    else router.push(href);
   };
 
   return (
     <>
-      {isAuthenticated && !isProfileCompleted && <CompleteUserData />}
       <DesktopHeader
+        searchProps={searchProps("desktop")}
         totalProducts={cartItems?.totalProducts}
         toggleCategory={toggleCategory}
+        warmCategory={warmCategory}
         isCategoryOpen={isCategoryOpen}
         loading={loading}
         fullName={fullName}
@@ -74,11 +181,29 @@ function HeaderLayout() {
       />
 
       <MobileHeader
+        searchProps={searchProps}
+        activeSurface={activeSurface}
+        searchTriggerRef={searchTriggerRef}
+        dialogId={dialogId}
+        onOpenSearch={() => activateSearch("spotlight", true)}
         totalProducts={cartItems?.totalProducts}
-        toggleSidebar={toggleSidebar}
+        openSidebar={openSidebar}
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         handleSearchSubmit={handleSearchSubmit}
+        pathname={pathname}
+      />
+      <MobileSearchOverlay
+        open={activeSurface === "spotlight"}
+        onClose={() => closeSearch()}
+        dialogId={dialogId}
+        finalFocus={restoreSearchFocus}
+        searchProps={{
+          ...searchProps("spotlight"),
+          value: searchValue,
+          onChange: (event) => setSearchValue(event.target.value),
+          onSubmit: handleSearchSubmit,
+        }}
       />
     </>
   );
@@ -87,7 +212,9 @@ function HeaderLayout() {
 export default HeaderLayout;
 
 function DesktopHeader({
+  searchProps,
   toggleCategory,
+  warmCategory,
   fullName,
   isAuthenticated,
   isCategoryOpen,
@@ -101,11 +228,11 @@ function DesktopHeader({
   const pathName = usePathname();
 
   return (
-    <nav className="max-lg:hidden relative lg:fixed top-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl bg-stroke-0 shadow-md dark:shadow-stroke-800/10 z-90 duration-200">
-      <ul className="flex flex-col justify-between gap-6">
+    <nav className="max-lg:hidden relative lg:fixed top-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl bg-stroke-0 shadow-md shadow-black/10 dark:shadow-black/20 z-90 duration-200">
+      <div className="flex flex-col justify-between gap-6">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex grow items-center justify-betwee gap-4">
-            <div className="flex grow items-center justify-between">
+          <div className="flex grow items-center justify-betwee gap-3">
+            <ul className="flex grow items-center justify-between">
               <li className=" justify-items-center">
                 <Link className="block p-2" href="/">
                   <AppImage
@@ -119,17 +246,20 @@ function DesktopHeader({
               </li>
               <li className="flex relative grow col-span-3 ">
                 <SearchSection
+                  {...searchProps}
                   placeholder="نام ادکلن ، دسته بندی ، برند و ..."
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                   onSubmit={handleSearchSubmit}
                 />
               </li>
-            </div>
-            <li>
-              <ThemeToggle />
-            </li>
-            <div className="flex flex-none items-center justify-between gap-4">
+            </ul>
+            <ul>
+              <li>
+                <ThemeToggle />
+              </li>
+            </ul>
+            <ul className="flex flex-none items-center justify-between gap-4">
               <li className="relative flex items-center justify-center max-lg:hidden">
                 <Link
                   href={"/page/terms"}
@@ -175,9 +305,9 @@ function DesktopHeader({
                   <div className="absolute -bottom-3 size-2 rounded-full bg-primary"></div>
                 )}
               </li>
-            </div>
+            </ul>
           </div>
-          <div className="flex flex-none items-center justify-between gap-3">
+          <ul className="flex flex-none items-center justify-between gap-3">
             <li
               className={`w-fit group max-w-36 h-10 lg:h-12 btn bg-stroke-0 active:bg-stroke-900 dark:active:bg-stroke-150 py-0 pl-1 pr-2 ${isAuthenticated === true ? "border-0 ring-1" : "border ring-0"} ring-stroke-900/10 dark:ring-stroke-800/10 border-stroke-250 duration-200`}
             >
@@ -232,22 +362,29 @@ function DesktopHeader({
                 )}
               </button>
             </li>
-          </div>
+          </ul>
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-between gap-4">
-            <li className="relative w-36 lg:w-44 h-12 cursor-not-allowed">
-              <button
-                className="w-full h-full btn btn--primary ring-4 ring-primary/5 hover:ring-0 flex items-center justify-center size-full gap-2"
-                onClick={toggleCategory}
-                disabled={isCategoryOpen}
-              >
-                <Squares2X2Icon className="size-6" />
-                <p className="text-xs lg:text-sm">دسته بندی ها</p>
-                <ChevronDownIcon className="size-4" />
-              </button>
-            </li>
-            <div className="flex items-center justify-start gap-4">
+            <ul>
+              <li className="relative w-36 lg:w-44 h-12 cursor-not-allowed">
+                <button
+                  className="w-full h-full btn btn--primary ring-4 ring-primary/5 hover:ring-0 flex items-center justify-center size-full gap-2"
+                  onClick={toggleCategory}
+                  // Starts the category panel's data on intent, before the click.
+                  onPointerEnter={warmCategory}
+                  onFocus={warmCategory}
+                  disabled={isCategoryOpen}
+                >
+                  <Squares2X2Icon className="size-6 stroke-2" />
+                  <p className="text-xs lg:text-sm font-bold">دسته بندی ها</p>
+                  <ChevronDownIcon
+                    className={`size-4 stroke-3 ${isCategoryOpen ? "rotate-180" : "rotate-0"} transition-all duration-200`}
+                  />
+                </button>
+              </li>
+            </ul>
+            <ul className="flex items-center justify-start gap-4">
               <li className="">
                 <Link
                   href={"/products?sort=best_selling"}
@@ -299,85 +436,128 @@ function DesktopHeader({
                   </div>
                 </Link>
               </li>
-            </div>
+            </ul>
           </div>
-          <li className="flex items-center justify-between gap-4">
-            <Link
-              href={"tel:+989302125151"}
-              className="flex items-center justify-between gap-4"
-            >
-              <div className="flex items-center justify-center text-xl pl-4 border-l-[1.5px] border-stroke-200">
-                <p className="text-stroke-800 ">{toPersianNumbers("5151")}</p>
-                <p className="text-stroke-800 ">{toPersianNumbers("212")}</p>
-                <p className="text-primary ">{toPersianNumbers("0930")}</p>
-              </div>
-              <CardIconResponsive
-                as="div"
-                src="/images/call-ringing-4-primary-icon.svg"
-                alt="call-ringing-icon"
-                title="پشتیبانی"
-                type="support"
-                className="max-lg:h-8 lg:h-10"
-                size="max-lg:size-4 lg:size-6"
-              />
-            </Link>
-          </li>
+          <ul>
+            <li className="flex items-center justify-between gap-4">
+              <Link
+                href={"tel:+989302125151"}
+                className="flex items-center justify-between gap-4"
+              >
+                <div className="flex items-center justify-center text-xl pl-4 border-l-[1.5px] border-stroke-200">
+                  <p className="text-stroke-800 ">{toPersianNumbers("5151")}</p>
+                  <p className="text-stroke-800 ">{toPersianNumbers("212")}</p>
+                  <p className="text-primary ">{toPersianNumbers("0930")}</p>
+                </div>
+                <CardIconResponsive
+                  as="div"
+                  src="/images/call-ringing-4-primary-icon.svg"
+                  alt="call-ringing-icon"
+                  title="پشتیبانی"
+                  type="support"
+                  className="max-lg:h-8 lg:h-10"
+                  size="max-lg:size-4 lg:size-6"
+                />
+              </Link>
+            </li>
+          </ul>
         </div>
-      </ul>
+      </div>
     </nav>
   );
 }
 function MobileHeader({
-  toggleSidebar,
+  searchProps,
+  activeSurface,
+  searchTriggerRef,
+  dialogId,
+  onOpenSearch,
+  openSidebar,
   totalProducts,
   searchValue,
   setSearchValue,
   handleSearchSubmit,
+  pathname,
 }) {
   const router = useRouter();
-  const showElement = useHideOnScroll();
 
   return (
-    <nav className="lg:hidden max-lg:fixed max-lg:top-0 inset-x-0 h-fit w-full z-50">
-      <ul className="flex items-center justify-between sm:gap-4 max-sm:flex-wrap w-full relative p-4 rounded-b-4xl bg-stroke-0/0 duration-200">
+    <nav className="lg:hidden max-lg:fixed max-lg:top-0 inset-x-0 h-fit w-full z-60">
+      <ul className="flex items-center justify-between gap-2 sm:gap-4 w-full h-22 relative p-4 rounded-b-4xl bg-stroke-0/0 duration-200">
         <li className="flex-none">
           <button
             type="button"
-            className="text-2xl aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 bg-stroke-800/5 backdrop-blur-md active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-primary active:text-primary/80 dark:text-stroke-800 dark:active:text-stroke-800/70 duration-200"
-            onClick={toggleSidebar}
+            className="text-2xl aspect-square w-14 flex items-center justify-center rounded-full border-2 border-stroke-0/5 bg-stroke-800/5 backdrop-blur-md active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 shadow-md shadow-black/10 text-primary active:text-primary/80 dark:text-stroke-800 dark:active:text-stroke-800/70 duration-200"
+            onClick={openSidebar}
           >
-            <AppImage
-              src="/images/category.svg"
-              alt="shopping-bag-icon"
-              width="size-8"
-              sizes="10vw"
-            />
+            {pathname.startsWith("/admin") ||
+            pathname.startsWith("/profile") ? (
+              <Bars3Icon className="size-8 stroke-2 " />
+            ) : (
+              <AppImage
+                src="/images/category.svg"
+                alt="shopping-bag-icon"
+                width="size-8"
+                sizes="10vw"
+              />
+            )}
           </button>
         </li>
-        <li className="px-2 flex-none bg-stroke-800/ backdrop-blur-md rounded-full">
-          <Link className="block p-2" href="/">
-            <AppImage
-              src="/images/jeawaz-logo-v6.0-r.webp"
-              alt="jeawaz-brand-icon"
-              width="h-10.5 w-20.75"
-              sizes="20vw"
-            />
-          </Link>
-        </li>
-        <li className="max-sm:hidden w-full">
-          <div className=" w-full h-12">
-            <SearchSection
-              placeholder="نام ادکلن ، دسته بندی ، برند و ..."
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onSubmit={handleSearchSubmit}
-            />
+        <li className="px-2 flex-1 max-sm:pl-0 max-sm:w-full h-full backdrop-blur-md bg-stroke-800/5 border-2 border-stroke-0/5 shadow-md shadow-black/10 rounded-full">
+          <div className="max-sm:flex items-center justify-between gap-1 h-full">
+            <Link
+              className="flex items-center justify-center size-full max-sm:hidden max-sm:pr-1 sm:px-2"
+              href="/"
+            >
+              <AppImage
+                src="/images/jeawaz-logo-v6.0-r.webp"
+                alt="jeawaz-brand-icon"
+                width="max-sm:h-7 h-8.5"
+                ratio="aspect-3/2"
+                sizes="20vw"
+              />
+            </Link>
+            <button
+              ref={searchTriggerRef}
+              type="button"
+              onClick={onOpenSearch}
+              aria-label="جستجوی محصولات"
+              aria-haspopup="dialog"
+              aria-expanded={activeSurface === "spotlight"}
+              aria-controls={dialogId}
+              className="relative max-sm:flex flex-1 h-14 py-0.5 shrink-0 items-center justify-center rounded-full text-stroke-500 hidden"
+            >
+              <div className="flex items-center justify-start size-full gap-1">
+                <p className="flex items-center text-nowrap text-stroke-400 font-bold -translate-y-">
+                  جستجو در
+                </p>
+                <AppImage
+                  src="/images/jeawaz-logo-v6.0-r.webp"
+                  alt="jeawaz-brand-icon"
+                  width="max-sm:h-8 h-8.5"
+                  ratio="aspect-3/2"
+                  sizes="20vw"
+                />
+              </div>
+              <div className="flex items-center justify-center h-full aspect-square p-2.5 rounded-full backdrop-blur-md bg-stroke-0/5">
+                <MagnifyingGlassIcon className="size-7 stroke-2" />
+              </div>
+            </button>
           </div>
+        </li>
+        <li className="max-sm:hidden size-full">
+          <SearchSection
+            {...searchProps("tablet")}
+            placeholder="نام ادکلن ، دسته بندی ، برند و ..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            onSubmit={handleSearchSubmit}
+          />
         </li>
         <li className="flex-none">
           <button
             onClick={() => router.push("/cart")}
-            className="relative aspect-square w-14 flex items-center justify-center rounded-full border-2 border-primary/10 bg-stroke-800/5 backdrop-blur-md active:bg-stroke-50 active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 text-stroke-800 active:text-stroke-800/70 duration-200"
+            className="relative aspect-square w-14 flex items-center justify-center rounded-full border-2 border-stroke-0/5 bg-stroke-800/5 backdrop-blur-md active:bg-stroke-50 active:border-stroke-900/20 dark:border-stroke-800/5 dark:active:border-stroke-800/5 shadow-md shadow-black/10 text-stroke-800 active:text-stroke-800/70 duration-200"
           >
             <AppImage
               src="/images/bag-stroke-sec-icon.svg"
@@ -394,20 +574,6 @@ function MobileHeader({
               </div>
             )}
           </button>
-        </li>
-        <li
-          className={`max-sm:flex sm:hidden items-center justify-center relative grow transition-all duration-200 ease-in-out overflow-hidden w-full ${
-            showElement ? "max-h-16 opacity-100 mt-5" : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className=" w-full h-12">
-            <SearchSection
-              placeholder="نام ادکلن ، دسته بندی ، برند و ..."
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onSubmit={handleSearchSubmit}
-            />
-          </div>
         </li>
       </ul>
     </nav>

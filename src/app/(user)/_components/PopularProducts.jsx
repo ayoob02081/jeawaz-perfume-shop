@@ -49,14 +49,14 @@ function PopularProducts() {
       des={"محصولات ما"}
       desc={"رایحه هایی که همیشه می درخشن"}
       className={
-        " flex-col md:flex-row sm:overflow-x-auto rounded-2xl"
+        " flex-col md:flex-row sm:overflow-x-auto"
       }
     >
       {view === "loading" ? (
         <ProductCardSkeletons count={HOME_SECTION_SKELETON_COUNT} />
       ) : (
         products?.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} imagePriority={false} />
         ))
       )}
     </HomePageSortProductsLayout>

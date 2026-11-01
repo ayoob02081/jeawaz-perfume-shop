@@ -1,31 +1,43 @@
-import { useState, useEffect } from "react";
+import { sessionLifecycle } from "@/utils/sessionLifecycle.mjs";
+import { useState, useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
+  cartKeys,
   useAddToCart,
   useGetAllCartItems,
   useRemoveFromCart,
   useUpdateQuantity,
 } from "./useCart";
+import { findCartLine } from "@/utils/addedToCartContract.mjs";
 import {
-  findCartLine,
-  resolveDecrement,
-  resolveIncrement,
-} from "@/utils/addedToCartContract.mjs";
+  createLineGuard,
+  createQuantityFlow,
+  lineScopeFor,
+} from "@/utils/cartQuantityFlow.mjs";
 
 export function useQuantityHandler(
   product,
   defaultVolume,
   volumeMode,
   cartItem,
-  { onAdded } = {},
+  { onAdded, onRejected } = {},
 ) {
-  // `onAdded` only covers a new cart line; quantity updates keep their toast.
-  const { addToCart } = useAddToCart({ onAdded });
-  const { removeFromCart } = useRemoveFromCart();
-  const { data: cart } = useGetAllCartItems();
-  const { updateQuantity } = useUpdateQuantity();
-
+  const queryClient = useQueryClient();
+  const generation = sessionLifecycle.generation();
   const [selectedVolume, setSelectedVolume] = useState(defaultVolume);
   const [quantity, setQuantity] = useState(0);
+  // One change of this line at a time; "+" and "-" wait for it.
+  const [isPending, setIsPending] = useState(false);
+  const guardRef = useRef(null);
+  if (!guardRef.current) guardRef.current = createLineGuard();
+
+  const request = { productId: product?.id, mode: volumeMode, volume: selectedVolume };
+  const scope = lineScopeFor(guardRef.current, request);
+  // `onAdded` only covers a new cart line; quantity updates keep their toast.
+  const { addToCart } = useAddToCart({ onAdded, scope });
+  const { removeFromCart } = useRemoveFromCart({ scope });
+  const { data: cart } = useGetAllCartItems();
+  const { updateQuantity } = useUpdateQuantity({ scope });
 
   useEffect(() => {
     if (defaultVolume !== undefined) {
@@ -47,48 +59,34 @@ export function useQuantityHandler(
     } else {
       setQuantity(0);
     }
-  }, [cartItem, defaultCartItem]);
+  }, [cartItem, defaultCartItem, cart, generation]);
 
-  const RemoveFromCartHandler = async () => {
-    const action = resolveDecrement({
-      line: cartItem || defaultCartItem,
-      quantity,
-    });
-    if (!action) return;
+  useEffect(() => { setIsPending(false); }, [generation]);
 
-    if (action.type === "update") {
-      updateQuantity({
-        itemId: action.itemId,
-        quantity: action.quantity,
-      });
-    } else {
-      await removeFromCart(action.itemId);
-    }
+  const flow = createQuantityFlow({
+    guard: guardRef.current,
+    quantity,
+    setQuantity: (value) => { if (sessionLifecycle.current(generation)) setQuantity(value); },
+    line: cartItem || defaultCartItem,
+    request,
+    readCart: () => queryClient.getQueryData(cartKeys.items()),
+    add: addToCart,
+    update: updateQuantity,
+    remove: removeFromCart,
+    onRejected: (error) => { if (sessionLifecycle.current(generation)) onRejected?.(error); },
+    onPendingChange: (pending) => { if (sessionLifecycle.current(generation)) setIsPending(pending); },
+  });
 
-    setQuantity((q) => Math.max(0, q - 1));
+  const RemoveFromCartHandler = () => {
+    if (!sessionLifecycle.ready()) return;
+    return flow.decrement();
   };
 
   const AddToCartHandler = () => {
+    if (!sessionLifecycle.ready()) return;
     if (!selectedVolume || !product?.id) return;
     if (selectedVolume > product?.stock) return;
-
-    const onError = () => setQuantity((q) => Math.max(0, q - 1));
-    const action = resolveIncrement({
-      line: cartItem || defaultCartItem,
-      quantity,
-      request: { productId: product.id, mode: volumeMode, volume: selectedVolume },
-    });
-
-    if (action.type === "update") {
-      updateQuantity(
-        { itemId: action.itemId, quantity: action.quantity },
-        { onError },
-      );
-    } else {
-      addToCart(action.payload, { onError });
-    }
-
-    setQuantity((q) => q + 1);
+    flow.increment();
   };
 
   return {
@@ -99,5 +97,6 @@ export function useQuantityHandler(
     quantity,
     setQuantity,
     defaultCartItem,
+    isPending: isPending || !sessionLifecycle.ready(),
   };
 }

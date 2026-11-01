@@ -9,6 +9,8 @@ import { join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { getInvoiceHref } from "./orderInvoice.mjs";
+import { parseNotificationMessage } from "./notificationMessage.mjs";
+import { adminProductCreateHref, adminProductsReturnHref } from "./adminProductsListContract.mjs";
 
 const srcDir = fileURLToPath(new URL("..", import.meta.url));
 const read = (path) => readFileSync(join(srcDir, path), "utf8");
@@ -57,6 +59,9 @@ const hrefOf = (tag) =>
   tag.match(/\bhref=(\{[\s\S]*?\}(?=\s|\/?>)|"[^"]*"|'[^']*')/)?.[1].replace(/\s+/g, " ") ?? null;
 
 const PROTECTED_HREF = /^\{?\s*["'`]\/(admin|profile)(?=[/"'`?]|$)/;
+// Any href that can resolve to a protected route, including a conditional
+// (e.g. ternary) branch that is not its leading literal.
+const REACHES_PROTECTED = /["'`]\/(admin|profile)(?=[/"'`?]|$)/;
 const PUBLIC_HREF = /^\{?\s*["'`](\/(?!admin|profile)|tel:|https?:)/;
 const noPrefetch = (tag) => /\bprefetch=\{false\}/.test(tag);
 
@@ -68,19 +73,28 @@ const allLinks = sourceFiles(srcDir)
   );
 
 // Links whose href is a variable that always resolves to a protected route
-// (the wrappers are checked against their callers below).
+// (the wrappers are checked against their callers below). An optional third
+// value is the wrapper's exact Link count (default 1).
 const PROTECTED_WRAPPERS = [
   ["components/ProfileLinks.jsx", "{href}"],
-  ["app/(admin)/admin/dashboard/_components/AdminDashboardLayout.jsx", "{href}"],
+  // DashboardCard's arrow and the whole DataDashboardBox card.
+  ["app/(admin)/admin/dashboard/_components/AdminDashboardLayout.jsx", "{href}", 2],
   ["app/(profile)/profile/orders/[id]/invoice/page.jsx", "{href}"],
   ["app/(user)/payment/result/_components/PaymentResult.jsx", "{actions.orderLink.href}"],
   ["components/SingleOrderPage.jsx", "{getInvoiceHref(order.id)}"],
+  ["components/NotificationMessage.jsx", "{segment.href}"],
+  // Admin Products create/copy links and their return to the list.
+  ["app/(admin)/admin/products/_components/ProductsLayout.jsx", "{adminProductCreateHref(search)}"],
+  ["app/(admin)/admin/products/_components/ProductsListTable.jsx", "{adminProductCreateHref(listSearch, product.id)}", 2],
+  ["app/(admin)/admin/products/_components/AddProductPage.jsx", "{adminProductCreateHref(returnQuery)}"],
+  ["app/(admin)/admin/products/_components/AddProductPage.jsx", "{adminProductsReturnHref(returnQuery)}"],
+  ["app/(admin)/admin/products/_components/ProductForm.jsx", "{adminProductCreateHref(returnQuery)}"],
 ];
 const isProtectedWrapper = ({ file, href }) =>
   PROTECTED_WRAPPERS.some(([wrapperFile, wrapperHref]) => file === wrapperFile && href === wrapperHref);
 
 test("every Link to /admin or /profile disables prefetch", () => {
-  const protectedLinks = allLinks.filter(({ href }) => href && PROTECTED_HREF.test(href));
+  const protectedLinks = allLinks.filter(({ href }) => href && REACHES_PROTECTED.test(href));
   // The admin and profile areas are covered, not just a few links.
   assert.ok(protectedLinks.length >= 35, `found ${protectedLinks.length}`);
   assert.ok(protectedLinks.some(({ href }) => href.includes("/admin")));
@@ -90,11 +104,28 @@ test("every Link to /admin or /profile disables prefetch", () => {
   assert.deepEqual(missing, []);
 });
 
+test("the mobile panel's admin and conditional profile links disable prefetch", () => {
+  // The panel is always on screen on mobile, so a default-prefetching Link
+  // would run proxy.js as soon as it renders. The profile tab switches to
+  // /profile/me once authentication resolves; the admin tab renders for admins.
+  const panel = allLinks.filter(({ file }) => file === "app/MobilePannel.jsx");
+  const admin = panel.filter(({ href }) => href === '{"/admin/dashboard"}');
+  const profile = panel.filter(({ href }) => href === '{isAuthenticated !== true ? "/auth/login" : "/profile/me"}');
+  assert.equal(admin.length, 1);
+  assert.equal(profile.length, 1);
+  for (const link of [...admin, ...profile]) assert.ok(noPrefetch(link.tag), link.where);
+  // Only these two panel links opt out; the public tabs keep default prefetch.
+  assert.deepEqual(
+    panel.filter(({ tag }) => /\bprefetch=/.test(tag)).map(({ href }) => href),
+    [profile[0].href, admin[0].href],
+  );
+});
+
 test("links through always-protected wrappers disable prefetch", () => {
-  for (const [file, href] of PROTECTED_WRAPPERS) {
+  for (const [file, href, count = 1] of PROTECTED_WRAPPERS) {
     const links = allLinks.filter((link) => link.file === file && link.href === href);
-    assert.equal(links.length, 1, `${file} ${href}`);
-    assert.ok(noPrefetch(links[0].tag), `${file} ${href}`);
+    assert.equal(links.length, count, `${file} ${href}`);
+    for (const link of links) assert.ok(noPrefetch(link.tag), link.where);
   }
 });
 
@@ -130,17 +161,56 @@ test("the dashboard, invoice and order-link wrappers only reach protected routes
   const orderLinks = [...read("utils/paymentResultView.mjs").matchAll(/href: [`"]([^`"]+)/g)].map((m) => m[1]);
   assert.ok(orderLinks.length >= 2);
   for (const href of orderLinks) assert.match(href, /^\/profile\//);
+
+  // Notification order links: /profile/orders/{id} for customers,
+  // /admin/orders/{id} for admins, and no link for anyone else.
+  for (const [audience, prefix] of [["customer", "/profile/orders/"], ["admin", "/admin/orders/"]]) {
+    const [notificationLink] = parseNotificationMessage("https://jeawaz.com/profile/orders/7", { audience })
+      .filter((segment) => segment.type === "orderLink");
+    assert.equal(notificationLink.href, `${prefix}7`);
+  }
+  assert.deepEqual(
+    parseNotificationMessage("https://jeawaz.com/profile/orders/7").filter((segment) => segment.type === "orderLink"),
+    [],
+  );
+
+  // Admin Products create/copy and return hrefs, whatever the list query.
+  for (const query of ["", "brandId=2&page=3", "limit=48&search=x", "returnTo=%2Fevil", "//evil.com", "https://evil.com"]) {
+    assert.match(adminProductCreateHref(query), /^\/admin\/products\/add(\?|$)/);
+    assert.match(adminProductCreateHref(query, 9), /^\/admin\/products\/add\?copyFrom=9(&|$)/);
+    assert.match(adminProductsReturnHref(query), /^\/admin\/products(\?|$)/);
+  }
 });
 
-test("public links keep Next.js default prefetching", () => {
-  const publicLinks = allLinks.filter(({ href }) => href && PUBLIC_HREF.test(href));
+const isSuggestionLink = ({ file, href }) => file === "components/HeaderLayout.jsx" && href === '{`/products/${item.id}`}';
+
+const isBrandLandingLink = ({ file, href }) => file === "components/BrandLandingLink.jsx" && href === "{landing.href}";
+
+const isCategoryLandingLink = ({ file, href }) => file === "components/CategoryLandingLink.jsx" && href === "{href}";
+
+test("existing public links keep default prefetch; transient suggestions do not fetch detail pages", () => {
+  const publicLinks = allLinks.filter((link) => link.href && PUBLIC_HREF.test(link.href) && !isSuggestionLink(link));
   assert.ok(publicLinks.length >= 30, `found ${publicLinks.length}`);
   assert.deepEqual(publicLinks.filter(({ tag }) => /\bprefetch=/.test(tag)).map(({ where }) => where), []);
 
-  // Only protected links (literal or known wrapper) opt out.
+  // The new transient result rows must not prefetch details on each search.
+  const suggestions = allLinks.filter(isSuggestionLink);
+  assert.equal(suggestions.length, 1);
+  assert.ok(noPrefetch(suggestions[0].tag));
+  // The two responsive brand logos share one destination and do not eagerly
+  // request a second catalog snapshot merely because a product page is viewed.
+  const brands = allLinks.filter(isBrandLandingLink);
+  assert.equal(brands.length, 1);
+  assert.ok(noPrefetch(brands[0].tag));
+  // Likewise the product page's several category landing links (attribute
+  // values and the related products' "more" link): one reviewed wrapper.
+  const categories = allLinks.filter(isCategoryLandingLink);
+  assert.equal(categories.length, 1);
+  assert.ok(noPrefetch(categories[0].tag));
+  // Other opt-outs remain restricted to these reviewed wrappers.
   const optedOut = allLinks.filter(({ tag }) => /\bprefetch=/.test(tag));
   assert.deepEqual(
-    optedOut.filter((link) => !PROTECTED_HREF.test(link.href ?? "") && !isProtectedWrapper(link)).map(({ where, href }) => `${where} ${href}`),
+    optedOut.filter((link) => !REACHES_PROTECTED.test(link.href ?? "") && !isProtectedWrapper(link) && !isSuggestionLink(link) && !isBrandLandingLink(link) && !isCategoryLandingLink(link)).map(({ where, href }) => `${where} ${href}`),
     [],
   );
 });

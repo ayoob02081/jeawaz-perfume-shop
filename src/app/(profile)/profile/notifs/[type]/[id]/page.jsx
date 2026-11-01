@@ -10,14 +10,16 @@ import { useEffect } from "react";
 
 function UserNotifPage() {
   const { id } = useParams();
-  const { data, isPending, error } = useGetNotificationById(id);
+  const { data, isPending, error, refetch } = useGetNotificationById(id);
   const { openNotification } = useOpenNotification();
 
   useEffect(() => {
     if (!data) return;
 
+    // Opening marks it read; a failure is already shown by the mutation and
+    // never blocks reading the notification.
     if (!data.isRead) {
-      openNotification(data.id);
+      openNotification(data.id).catch(() => {});
     }
   }, [data]);
   return (
@@ -25,8 +27,10 @@ function UserNotifPage() {
       title={data?.notification?.title}
       createdAt={data?.notification?.createdAt}
       message={data?.notification?.message}
+      audience="customer"
       isPending={isPending}
       error={error}
+      onRetry={() => refetch()}
     />
   );
 }

@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   buildBulkPricePreviewRequest,
   classifyBulkPriceError,
@@ -36,17 +37,42 @@ test("selected target sends exact unique Product IDs and no page", () => {
 
 test("filtered target sends only supported active filters, not page or price", () => {
   const filters = {
-    search: " Rose ", brandIds: [2, 2], original: false,
+    search: " Rose ", brandIds: [2, 2], grades: ["SUPER_MASTER", "SUPER_MASTER", "NOPE"],
+    original: false,
     gender: " unisex ", fragranceFamilies: ["woody", "woody"],
     page: 4, limit: 12, minPrice: 1000, type: "sealed", discounted: true,
   };
-  const expected = { search: "Rose", brandIds: [2], original: false,
+  // `grades` replaces the deprecated `original`, which is never sent (the backend
+  // rejects the two together).
+  const expected = { search: "Rose", brandIds: [2], grades: ["SUPER_MASTER"],
     gender: "unisex", fragranceFamilies: ["woody"] };
   assert.deepEqual(supportedBulkFilters(filters), expected);
   assert.deepEqual(buildBulkPricePreviewRequest({ ...form, targetKind: TARGET.FILTERED }, [], filters).target,
     { kind: TARGET.FILTERED, filters: expected });
   assert.equal(hasBulkFilters({ page: 2, discounted: true }), false);
   assert.match(validateBulkPriceForm({ ...form, targetKind: TARGET.FILTERED }, [], {}), /فیلتر/);
+});
+
+test("grade filters keep canonical order and an empty selection sends nothing", () => {
+  assert.deepEqual(supportedBulkFilters({ grades: ["SUPER_MASTER", "ORIGINAL"] }),
+    { grades: ["ORIGINAL", "SUPER_MASTER"] });
+  assert.deepEqual(supportedBulkFilters({ grades: [] }), {});
+  assert.deepEqual(supportedBulkFilters({ original: true }), {});
+  assert.equal(hasBulkFilters({ grades: ["ORIGINAL"] }), true);
+});
+
+test("the admin list filter is grade-aware and never builds an original filter", async () => {
+  const { adminProductsApiFilters, parseAdminProductsQuery } = await import(
+    "../../../../../utils/adminProductsListContract.mjs"
+  );
+  // The list's URL grade becomes the `grades` filter Bulk Price targets.
+  assert.deepEqual(adminProductsApiFilters({ grade: "ORIGINAL" }), { grades: ["ORIGINAL"] });
+  assert.deepEqual(adminProductsApiFilters(parseAdminProductsQuery(new URLSearchParams("original=true"))), {});
+  const source = ["./ProductsLayout.jsx", "./ProductsFilters.jsx", "./ProductFilterFields.jsx",
+    "../../../../../utils/adminProductsListContract.mjs"]
+    .map((file) => readFileSync(new URL(file, import.meta.url), "utf8")).join("\n");
+  assert.match(source, /PRODUCT_GRADES\.map\(\(grade\) => \(/);
+  assert.doesNotMatch(source, /original|غیراصل|"اصل"/);
 });
 
 test("all target never serializes Product IDs or filters", () => {

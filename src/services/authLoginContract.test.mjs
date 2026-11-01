@@ -26,7 +26,7 @@ test("loginApi posts the credentials with the cookie-sending client", () => {
   assert.match(source, /^import app from "\.\/httpClient";$/m);
   assert.match(
     source,
-    /export function loginApi\(data\) \{\s*return app\s*\.post\("\/auth\/login", data, \{ skipAuthRefresh: true \}\)\s*\.then\(\(\{ data \}\) => data\);\s*\}/,
+    /export function loginApi\(data\) \{\s*return sessionLifecycle\.change\("login", \(\) => app\s*\.post\("\/auth\/login", data, \{ skipAuthRefresh: true \}\)\s*\.then\(\(\{ data \}\) => data\)\);\s*\}/,
   );
   assert.match(read("services/httpClient.js"), /withCredentials: true/);
 });
@@ -42,7 +42,7 @@ test("AuthContext.login ignores the login body and loads the user from /users/me
   assert.match(login, /^\s*await loginApi\(data\);$/m);
   assert.doesNotMatch(login, /=\s*await loginApi/);
   // … then the session is confirmed through the cookies.
-  assert.match(login, /await checkAuth\(\);/);
+  assert.match(login, /await checkAuth\(\{ requireUser \}\);/);
   assert.match(source, /const me = await getUserApi\(\);/);
   assert.match(
     read("services/usersServices.js"),

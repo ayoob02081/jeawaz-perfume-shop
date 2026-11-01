@@ -1,6 +1,6 @@
 import ProfileSidebarLayout, { ProfileLink } from "@/components/ProfileLinks";
 
-function AdminSidebar({ className, toggleSidebar }) {
+function AdminSidebar({ className }) {
   const AdminProfileLinks = [
     {
       id: 2,
@@ -35,7 +35,8 @@ function AdminSidebar({ className, toggleSidebar }) {
       href: "/admin/notifs/ALL",
       baseHref: "/admin/notifs",
       label: "مدیریت پیام",
-      countUnread: true,
+      // Management, not the admin's own inbox: no personal unread badge.
+      countUnread: false,
     },
     {
       id: 7,
@@ -87,7 +88,6 @@ function AdminSidebar({ className, toggleSidebar }) {
           srcSecondary={link.srcSecondary}
           alt={link.alt}
           countUnread={link.countUnread}
-          toggleSidebar={toggleSidebar}
         />
       ))}
     </ProfileSidebarLayout>

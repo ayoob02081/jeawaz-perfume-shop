@@ -71,7 +71,7 @@ function MobileCartLayout({ cartItem }) {
   const imageSrc = product.images[0];
   const defaultVolume = volume;
   const volumeMode = mode;
-  const { AddToCartHandler, RemoveFromCartHandler } = useQuantityHandler(
+  const { AddToCartHandler, RemoveFromCartHandler, isPending } = useQuantityHandler(
     product,
     defaultVolume,
     volumeMode,
@@ -88,7 +88,7 @@ function MobileCartLayout({ cartItem }) {
             src={imageSrc}
             alt={product.enTitle + "-image"}
             width="size-16"
-            sizes="30vw"
+            sizes="64px"
           />
           <div className="flex flex-col gap-3 w-full">
             <Title
@@ -114,6 +114,7 @@ function MobileCartLayout({ cartItem }) {
               <CardEvents
                 RemoveFromCartHandler={RemoveFromCartHandler}
                 AddToCartHandler={AddToCartHandler}
+                pending={isPending}
                 quantity={quantity}
                 BtnBackgroundColor="bg-stroke-100 dark:bg-stroke-50"
                 className="lg:*:*:size-5 *:*:size-4"
@@ -140,7 +141,7 @@ function DesktopCartLayout({ cartItem }) {
   const imageSrc = product.images[0];
   const defaultVolume = volume;
   const volumeMode = mode;
-  const { AddToCartHandler, RemoveFromCartHandler } = useQuantityHandler(
+  const { AddToCartHandler, RemoveFromCartHandler, isPending } = useQuantityHandler(
     product,
     defaultVolume,
     volumeMode,
@@ -158,7 +159,7 @@ function DesktopCartLayout({ cartItem }) {
               src={imageSrc}
               alt={product.enTitle + "-image"}
               width="size-[5.65rem]"
-              sizes="30vw"
+              sizes="91px"
             />
           </div>
           <Title
@@ -181,6 +182,7 @@ function DesktopCartLayout({ cartItem }) {
         <CardEvents
           RemoveFromCartHandler={RemoveFromCartHandler}
           AddToCartHandler={AddToCartHandler}
+          pending={isPending}
           quantity={quantity}
           BtnBackgroundColor="bg-stroke-100 dark:bg-stroke-50"
         />
@@ -222,7 +224,7 @@ function SuccessedOrderCard({ item }) {
             src={image}
             alt={enTitle + "-image"}
             width="size-16"
-            sizes="20vw"
+            sizes="64px"
           />
         </div>
         <div className="flex flex-col gap-3 size-full">
@@ -260,7 +262,12 @@ function DeskSuccessedCartItem({ item }) {
   return (
     <div className="md:flex max-md:hidden items-center justify-between gap-1 w-full">
       <div className="flex items-start justify-center h-full">
-        <AppImage src={image} alt={enTitle + "-image"} width="size-24" />
+        <AppImage
+          src={image}
+          alt={enTitle + "-image"}
+          width="size-24"
+          sizes="96px"
+        />
       </div>
       <div className="flex flex-col gap-3 size-full">
         <Title
@@ -307,7 +314,7 @@ function SummeryCard({ cartItem }) {
   } = cartItem;
   const defaultVolume = volume;
   const volumeMode = mode;
-  const { AddToCartHandler, RemoveFromCartHandler } = useQuantityHandler(
+  const { AddToCartHandler, RemoveFromCartHandler, isPending } = useQuantityHandler(
     product,
     defaultVolume,
     volumeMode,
@@ -323,7 +330,7 @@ function SummeryCard({ cartItem }) {
               src={imageSrc}
               alt={product.enTitle + "-image"}
               width="max-lg:size-20 lg:size-[5.65rem]"
-              sizes="20vw"
+              sizes="91px"
             />
           </div>
         </div>
@@ -348,6 +355,7 @@ function SummeryCard({ cartItem }) {
               <CardEvents
                 RemoveFromCartHandler={RemoveFromCartHandler}
                 AddToCartHandler={AddToCartHandler}
+                pending={isPending}
                 quantity={quantity}
                 BtnBackgroundColor="bg-stroke-0"
                 className="lg:*:*:size-5 *:*:size-4 h-10"

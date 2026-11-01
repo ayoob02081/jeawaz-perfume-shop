@@ -4,6 +4,8 @@ import AppImage from "@/components/AppImage";
 import CardEvents from "@/components/CardEvents";
 import RadioButton from "@/ui/RadioButton";
 import PriceSection from "@/components/PriceSection";
+import BrandLandingLink from "@/components/BrandLandingLink";
+import ProductGradeBadge from "@/components/ProductGradeBadge";
 import Accordion from "@/ui/Accordion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
@@ -17,6 +19,13 @@ import {
   getMatchingVariant,
   getVariantsByType,
 } from "@/utils/priceCalculator";
+import {
+  getDefaultPurchaseVolume,
+  getPreferredPurchaseMode,
+  isStaleAvailabilityRejection,
+  isVariantPurchasable,
+  resolveSelectedVolume,
+} from "@/utils/productAvailability.mjs";
 import SingleProductSkeleton from "../../_components/skeleton/SingleProductSkeleton";
 import { showAddToCartSuccessToast } from "@/hooks/useCart";
 import {
@@ -30,8 +39,11 @@ import {
 import AddedToCartModal from "./AddedToCartModal";
 import { CONCENTRATION_LABELS as concentrationLabels } from "@/utils/productConcentration.mjs";
 import Link from "next/link";
-import { PencilIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "@/contexts/auth/AuthContext";
+import { brandLogoAlt } from "@/utils/productImageAlt.mjs";
+import { categoryLandingPath } from "@/lib/seo.mjs";
+import CategoryLandingLink from "@/components/CategoryLandingLink";
 
 function SingleProductPage({ product }) {
   const { user } = useAuth();
@@ -45,7 +57,7 @@ function SingleProductPage({ product }) {
   }
 
   return (
-    <main className=" md:container md:mx-auto xl:max-w-7xl h-full">
+    <main className=" md:container md:mx-auto xl:max-w-7xl h-fit">
       <article className="max-md:hidden">
         <BreadCrumbBase>
           <BreadCrumb href={"/"} label={"فروشگاه"} />
@@ -67,6 +79,7 @@ function SingleProductPage({ product }) {
           titleStyle="font-bold text-stroke-800"
           className="max-md:flex md:hidden"
           label="توضیحات تکمیلی"
+          keepMounted
         >
           <p className="text-stroke-600 text-sm pt-4 border-t border-stroke-200 leading-8">
             {product?.description}
@@ -81,7 +94,7 @@ function SingleProductPage({ product }) {
               aria-label="ویرایش محصول"
               className="flex items-center justify-center aspect-square size-12 sm:size-16 md:size-10 xl:size-12 rounded-full bg-stroke-0 shadow-md"
             >
-              <PencilIcon className="text-primary size-5 sm:size-6 md:size-5 xl:size-6" />
+              <PencilSquareIcon className="text-primary size-5 sm:size-6 md:size-5 xl:size-6" />
             </Link>
           </div>
         )}
@@ -99,11 +112,8 @@ function ProductDes({ product }) {
 
   const decantVariants = getVariantsByType(product, "decant");
   const sealedVariants = getVariantsByType(product, "sealed");
-  const preferredMode = decantVariants.length
-    ? "decant"
-    : sealedVariants.length
-      ? "sealed"
-      : null;
+  // Decant before sealed, but first a mode with a purchasable Variant.
+  const preferredMode = getPreferredPurchaseMode(product);
   const [volumeMode, setVolumeMode] = useState(preferredMode);
   const activeMode =
     volumeMode === "decant" && decantVariants.length
@@ -117,7 +127,9 @@ function ProductDes({ product }) {
       : activeMode === "sealed"
         ? sealedVariants
         : [];
-  const defaultVolume = Number(variantsForMode[0]?.volume ?? 0);
+  const defaultVolume = getDefaultPurchaseVolume(product, activeMode);
+  // Chosen once: refreshed availability must not move a manual selection.
+  const [initialVolume] = useState(defaultVolume);
 
   // A new cart line: mobile shows the confirmation modal from the returned
   // line; desktop, or a line that cannot be identified, keeps the toast.
@@ -150,15 +162,20 @@ function ProductDes({ product }) {
     selectedVolume,
     setSelectedVolume,
     quantity,
-  } = useQuantityHandler(product, defaultVolume, activeMode, undefined, {
+    isPending,
+  } = useQuantityHandler(product, initialVolume, activeMode, undefined, {
     onAdded: handleAdded,
+    // Stock, price or the Variant changed since the page loaded: re-read the
+    // Product. Only on a user's rejected request, never in a loop.
+    onRejected: (error) => {
+      if (isStaleAvailabilityRejection(error)) router.refresh();
+    },
   });
 
   useEffect(() => {
-    if (!getMatchingVariant(product, activeMode, selectedVolume)) {
-      setSelectedVolume(defaultVolume);
-    }
-  }, [product, activeMode, selectedVolume, defaultVolume, setSelectedVolume]);
+    const volume = resolveSelectedVolume(product, activeMode, selectedVolume);
+    if (volume !== Number(selectedVolume)) setSelectedVolume(volume);
+  }, [product, activeMode, selectedVolume, setSelectedVolume]);
 
   const selectedVariant = getMatchingVariant(
     product,
@@ -170,34 +187,35 @@ function ProductDes({ product }) {
     selectedVariant?.type,
     selectedVariant?.volume,
   );
-  const canPurchase =
-    !!selectedVariant &&
-    Number(product.stock) >= Number(selectedVariant.volume);
+  const canPurchase = isVariantPurchasable(product, selectedVariant);
 
   const selectMode = (type) => {
     setVolumeMode(type);
-    setSelectedVolume(Number(getVariantsByType(product, type)[0]?.volume ?? 0));
+    setSelectedVolume(getDefaultPurchaseVolume(product, type));
   };
 
   return (
     <article className="grid grid-cols-1 w-full gap-y-4 xl:gap-y-10 max-md:py-6 h-fit justify-items-start">
       {/* Product Name */}
       <section className="flex flex-col gap-2 items-start justify-start w-full">
-        <span className="flex items-center max-md:justify-between gap-2 md:justify-start w-full">
-          <p className="font-bold text-wrap text-[28px] w-full text-stroke-800">
+        <span className="flex items-start max-md:justify-between gap-2 md:justify-start w-full">
+          <h1 className="font-bold text-wrap text-[28px] w-full text-stroke-800">
             {product.perTitle}
-          </p>
+          </h1>
 
-          <div className="md:hidden p-2">
+          <BrandLandingLink
+            brand={productBrand}
+            className="md:hidden translate-y-1"
+          >
             <AppImage
               src={productBrand?.iconUrl}
-              alt={productBrand?.value + "-icon"}
+              alt={brandLogoAlt(productBrand)}
               className="justify-center h-full dark:invert"
-              width="max-md:w-20 md:w-[4.815rem]"
-              ratio="aspect-[6/2]"
+              width="max-[30rem]:w-20 max-sm:w-24 w-28"
+              ratio="aspect-10/4"
               sizes="20vw"
             />
-          </div>
+          </BrandLandingLink>
         </span>
 
         <p className="text-base text-wrap text-stroke-600 w-full">
@@ -241,22 +259,7 @@ function ProductDes({ product }) {
               </div>
             </div>
 
-            {product.original === true ? (
-              <AppImage
-                src="/images/bg-original.svg"
-                alt="original-icon"
-                ratio="aspect-[5/2]"
-                width="w-32"
-                sizes="10vw"
-                className="self-end"
-              />
-            ) : (
-              <div className="h-full py-2">
-                <span className="inline-flex items-center h-full rounded-full border border-stroke-200 bg-stroke-200 px-4 py-2 text-sm font-bold text-stroke-500">
-                  سوپر مستر
-                </span>
-              </div>
-            )}
+            <ProductGradeBadge product={product} variant="detail" />
           </div>
 
           <div className="flex flex-col items-start justify-start gap-3">
@@ -265,7 +268,7 @@ function ProductDes({ product }) {
             <div className="flex items-center justify-start gap-2 w-full overflow-auto scrollbar-none snap-x bg-transparent">
               {variantsForMode.map((variant) => {
                 const volume = Number(variant.volume);
-                const isDisabled = product.stock < volume;
+                const isDisabled = !isVariantPurchasable(product, variant);
 
                 return (
                   <RadioButton
@@ -313,16 +316,19 @@ function ProductDes({ product }) {
           </p>
         )}
 
-        <div className="max-md:hidden p-2">
+        <BrandLandingLink
+          brand={productBrand}
+          className="flex items-center justify-end size-full translate-y-1 max-md:hidden"
+        >
           <AppImage
             src={productBrand?.iconUrl}
-            alt={productBrand?.value + "-icon"}
+            alt={brandLogoAlt(productBrand)}
             className="justify-center h-full dark:invert"
-            width="max-md:w-16 md:w-20 xl:w-28"
-            ratio="aspect-[4/1]"
+            width="md:w-24 lg:w-30"
+            ratio="aspect-10/2"
             sizes="20vw"
           />
-        </div>
+        </BrandLandingLink>
       </div>
 
       {/* Buttons */}
@@ -330,6 +336,7 @@ function ProductDes({ product }) {
         {canPurchase && (
           <button
             ref={addButtonRef}
+            disabled={quantity === 0 && isPending}
             onClick={
               quantity === 0 ? AddToCartHandler : () => router.push("/cart")
             }
@@ -346,6 +353,8 @@ function ProductDes({ product }) {
             <CardEvents
               RemoveFromCartHandler={RemoveFromCartHandler}
               AddToCartHandler={AddToCartHandler}
+              addDisabled={!canPurchase}
+              pending={isPending}
               quantity={quantity}
               btnStyle="max-lg:size-8 lg:size-12 not-active:bg-stroke-100 dark:not-active:bg-stroke-50"
               quantityStyle="max-lg:size-12 lg:size-12 max-lg:text-lg lg:text-lg"
@@ -359,6 +368,7 @@ function ProductDes({ product }) {
         titleStyle="font-bold text-stroke-800"
         className="max-md:hidden md:flex"
         label="توضیحات تکمیلی"
+        keepMounted
       >
         <p className="text-stroke-600 text-sm pt-4 border-t border-stroke-200 leading-8">
           {product?.description}
@@ -390,8 +400,21 @@ function ProductOptions({ product }) {
           : ""
       }`
     : null;
-  const categoryTitles = (items) =>
-    (items ?? []).map((category) => category?.title).filter(Boolean);
+  // Category names, each linked to its listing landing when active.
+  const categoryValue = (key, category) =>
+    category?.title ? (
+      <CategoryName taxonomy={key} category={category} />
+    ) : null;
+  const categoryValues = (key) =>
+    (categories[key] ?? [])
+      .filter((category) => category?.title)
+      .map((category, index) => (
+        <CategoryName
+          key={category.id ?? index}
+          taxonomy={key}
+          category={category}
+        />
+      ));
 
   return (
     <article className="grow w-full max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl max-md:pt-6 md:p-4 border-stroke-250 ">
@@ -448,23 +471,26 @@ function ProductOptions({ product }) {
             volumes
             data={getVariantsByType(product, "sealed")}
           />
-          <ProductOption title="جنسیت" value={categories.gender?.title} />
+          <ProductOption
+            title="جنسیت"
+            value={categoryValue("gender", categories.gender)}
+          />
           <ProductOption
             title="گروه‌‌بندی رایحه"
-            data={categoryTitles(categories.fragranceFamilies)}
+            data={categoryValues("fragranceFamilies")}
           />
+          <ProductOption title="فصل استفاده" data={categoryValues("seasons")} />
           <ProductOption
-            title="فصل استفاده"
-            data={categoryTitles(categories.seasons)}
+            title="طبع"
+            value={categoryValue("temperature", categories.temperature)}
           />
-          <ProductOption title="طبع" value={categories.temperature?.title} />
           <ProductOption
             title="شخصیت رایحه"
-            data={categoryTitles(categories.characters)}
+            data={categoryValues("characters")}
           />
           <ProductOption
             title="موقعیت استفاده"
-            data={categoryTitles(categories.occasions)}
+            data={categoryValues("occasions")}
           />
         </div>
       </section>
@@ -490,6 +516,21 @@ const sillageLabels = {
   HIGH: "زیاد",
   VERY_HIGH: "خیلی زیاد",
 };
+
+// The same indexable single-category URL as the sitemap; inactive or
+// incomplete categories stay plain text.
+function CategoryName({ taxonomy, category }) {
+  const href = categoryLandingPath(taxonomy, category);
+  if (!href) return category.title;
+  return (
+    <CategoryLandingLink
+      href={href}
+      className="hover:text-primary duration-200"
+    >
+      {category.title}
+    </CategoryLandingLink>
+  );
+}
 
 function ProductOption({ title, value, data, volumes = false }) {
   if ((value == null || value === "") && !data?.length) return null;
@@ -521,7 +562,7 @@ function ProductDetails({ product }) {
   const { notes } = product;
 
   return (
-    <div className="grow flex flex-col items-center justify-between gap-6 size-full md:px-4 max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl py-6 border-stroke-250  ">
+    <div className="grow flex flex-col items-center justify-between max-md:gap-12 gap-6 size-full md:px-4 max-md:row-start-3 max-md:border-t-[1.5px] md:border-[1.5px] md:rounded-2xl py-6 border-stroke-250  ">
       <div className="flex flex-col items-start justify-between gap-2 w-full">
         <span className="flex items-center justify-start gap-2">
           <AppImage
@@ -536,41 +577,47 @@ function ProductDetails({ product }) {
           {product?.notesDescription}
         </p>
       </div>
-      <div className="flex flex-col items-center justify-end gap-2 size-full max-md:min-h-[28vh] md:max-h-80">
-        <Notes type={notes?.base} base />
-        <Notes type={notes?.middle} middle />
+      <div className="flex flex-col items-center justify-end max-md:gap-4 size-full max-md:min-h-64 md:max-h-80">
         <Notes type={notes?.top} top />
+        <Notes type={notes?.middle} middle />
+        <Notes type={notes?.base} base />
       </div>
     </div>
   );
 }
 
-function Notes({ type, top, middle, base }) {
+function Notes({ type, top, middle }) {
   return (
     <div
-      className={`relative flex flex-col items-center justify-start gap-2 text-nowrap whitespace-nowrap w-full ${base ? "h-1/5" : middle ? "h-1/4" : "h-1/2"}`}
+      className={`relative flex flex-col items-center justify-start gap-2 text-nowrap whitespace-nowrap w-full ${top ? "h-1/5" : middle ? "h-1/4" : "h-1/2"}`}
     >
       <AppImage
-        src={`/images/scent-background-${base ? "1" : middle ? "2" : "3"}.svg`}
+        src={`/images/scent-background-${top ? "1" : middle ? "2" : "3"}.svg`}
         alt="shape-background"
         className="dark:mix-blend-overlay"
         width={`max-md:h-full ${
-          base ? "md:h-[53.3px]" : middle ? "md:h-[66.02px]" : "md:h-[134.23px]"
+          top ? "md:h-13.25" : middle ? "md:h-17.5" : "md:h-37.5"
         }`}
-        ratio={base ? "aspect-4/3" : middle ? "aspect-4/2" : "aspect-4/1"}
+        ratio={top ? "aspect-4/3" : middle ? "aspect-3/1" : "aspect-3/1"}
       />
-      <span className="absolute flex flex-col items-center justify-center gap-1 z-20 w-4/5">
+      <span className="absolute flex flex-col items-center justify-center gap-1 z-20 w-full -translate-y-3.5">
         <p className="text-xs text-stroke-800 font-bold">
-          {base ? "نت‌های آغازین" : middle ? "نت‌های میانی" : "نت‌های پایانی"}
+          {top ? "نت‌های آغازین" : middle ? "نت‌های میانی" : "نت‌های پایانی"}
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-1 w-full text-wrap text-center leading-px">
+        <div className="flex flex-wrap items-center justify-center gap-0.5 w-full text-wrap text-center leading-0">
           {type?.map((s, index) => (
             <span
-              className="flex items-center justify-start gap-1 text-wrap"
+              className="flex items-center justify-start gap-0.5 text-wrap"
               key={index}
             >
-              {index > 0 && " - "}
-              <p className="text-xs text-stroke-600 text-nowrap">{s}</p>
+              {index > 0 && (
+                <p className="text-primary dark:text-stroke-800 text-[8px] font-bold">
+                  -
+                </p>
+              )}
+              <p className="text-xs text-stroke-600 dark:text-stroke-700 text-nowrap -translate-y-px">
+                {s}
+              </p>
             </span>
           ))}
         </div>

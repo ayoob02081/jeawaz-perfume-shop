@@ -3,24 +3,36 @@
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/outline";
-import { useGetActiveBanners } from "@/hooks/useBanners";
+import { bannerKeys, useGetActiveBanners } from "@/hooks/useBanners";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useRef } from "react";
 import PrimaryBannerCard from "@/components/PrimaryBannerCard";
 import { homeBannerView } from "@/utils/homeSectionView.mjs";
+import {
+  bannerInitialQueryOptions,
+  catalogInitialView,
+} from "@/lib/storefrontCatalog.mjs";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
+import { useCatalogSnapshotOptions } from "@/hooks/useCatalogSnapshotOptions";
 import { PrimaryBannerSkeleton } from "./skeleton/HomeSectionSkeletons";
 
-function PrimaryBannerLayout() {
+const PRIMARY = { type: "primary" };
+
+function PrimaryBannerLayout({ initialSnapshot } = {}) {
   const swiperRef = useRef(null);
 
-  const {
-    data: banners,
-    isPending,
-    isError,
-  } = useGetActiveBanners({
-    type: "primary",
-  });
+  // With the server snapshot the first slide is in the HTML; without it the
+  // client read shows the skeleton first, as before.
+  const initialOptions = useCatalogSnapshotOptions(
+    bannerKeys.activeList(PRIMARY),
+    bannerInitialQueryOptions(initialSnapshot),
+  );
+  const result = useGetActiveBanners(PRIMARY, initialOptions);
+  const query = catalogInitialView(result, initialOptions, useIsHydrated());
+  const { data: banners, isPending } = query;
+  // The hydration render clears `error` (not `isError`) to match the server.
+  const isError = Boolean(query.error);
 
   const view = homeBannerView({ isPending, isError, banners });
 
@@ -35,13 +47,28 @@ function PrimaryBannerLayout() {
   return (
     <section className="relative container mx-auto xl:max-w-7xl mt-2 w-full px-2 sm:px-4">
       <Swiper
+        dir="ltr"
         modules={[Autoplay, Pagination]}
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
         }}
+        // A swipe during the autoplay transition made loop repositioning skip
+        // a second banner, and autoplay only pauses ~200 ms into a drag, so its
+        // timer could still advance under the finger. Ignore gestures while a
+        // transition runs and restart the countdown when a finger lands (mouse
+        // hover already pauses it).
+        preventInteractionOnTransition
+        onTouchStart={(swiper, event) => {
+          if (event?.pointerType !== "mouse" && swiper.autoplay?.running) {
+            swiper.autoplay.resume();
+          }
+        }}
         slidesPerView={1}
         spaceBetween={16}
-        centeredSlides
+        // No centeredSlides: one slide per view already fills the box, and with
+        // it on, loop repositioning of fewer than four banners shifted the first
+        // move of every drag one banner towards "next" (any rightward swipe
+        // advanced; leftward swipes needed half the width).
         loop={banners.length > 1}
         speed={700}
         autoplay={{
@@ -60,7 +87,7 @@ function PrimaryBannerLayout() {
           </SwiperSlide>
         ))}
       </Swiper>
-      
+
       {/* Desktop navigation */}
       {banners.length > 1 && (
         <>
@@ -68,22 +95,22 @@ function PrimaryBannerLayout() {
             type="button"
             aria-label="بنر قبلی"
             onClick={() => swiperRef.current?.slidePrev()}
-            className="absolute right-1 top-1/2 z-20 hidden max-lg:size-9 size-11 -translate-y-1/2 items-center justify-center rounded-full
-            border border-stroke-200 bg-stroke-0/20 text-white shadow-md backdrop-blur-md duration-200 hover:bg-primary
+            className="absolute left-0 top-1/2 z-20 hidden max-lg:size-9 size-11 -translate-y-1/2 items-center justify-center rounded-full
+            border-[1.5px] border-stroke-0/5 bg-stroke-0/5 text-stroke-0/60 shadow-md backdrop-blur-md duration-200 hover:bg-primary
             hover:text-white active:scale-95 md:flex xl:size-12"
           >
-            <ChevronRightIcon className="max-lg:size-4 size-5 xl:size-6" />
+            <ChevronLeftIcon className="max-lg:size-4 size-5 xl:size-6 stroke-2" />
           </button>
 
           <button
             type="button"
             aria-label="بنر بعدی"
             onClick={() => swiperRef.current?.slideNext()}
-            className="absolute left-1 top-1/2 z-20 hidden max-lg:size-9 size-11 -translate-y-1/2 items-center justify-center rounded-full
-            border border-stroke-200 bg-stroke-0/20 text-white shadow-md backdrop-blur-md duration-200 hover:bg-primary
+            className="absolute right-0 top-1/2 z-20 hidden max-lg:size-9 size-11 -translate-y-1/2 items-center justify-center rounded-full
+            border-[1.5px] border-stroke-0/5 bg-stroke-0/5 text-stroke-0/60 shadow-md backdrop-blur-md duration-200 hover:bg-primary
             hover:text-white active:scale-95 md:flex xl:size-12 "
           >
-            <ChevronLeftIcon className="max-lg:size-4 size-5 xl:size-6" />
+            <ChevronRightIcon className="max-lg:size-4 size-5 xl:size-6 stroke-2" />
           </button>
         </>
       )}

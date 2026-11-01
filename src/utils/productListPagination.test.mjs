@@ -46,7 +46,9 @@ test("a hostile URL yields one bounded query for request, key, skeletons and pre
 test("storefront layout derives page, limit and skeletons only from the normalized query", () => {
   const layout = readFileSync(new URL("../app/(user)/products/_components/ProductsLayout.jsx",
     import.meta.url), "utf8");
-  assert.match(layout, /return normalizeProductsQuery\(\{/);
+  assert.match(layout, /productsQueryFromSearchParams\(searchParams\)/);
+  const contract = readFileSync(new URL("./productFilterContract.mjs", import.meta.url), "utf8");
+  assert.match(contract, /export function productsQueryFromSearchParams\(searchParams\)/);
   assert.match(layout, /const \{ page \} = filters;/);
   assert.match(layout, /const skeletonCount = filters\.limit;/);
   assert.doesNotMatch(layout, /Number\(searchParams\.get\("(limit|page)"\)\)/);

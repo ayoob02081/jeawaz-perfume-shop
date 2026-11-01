@@ -2,18 +2,25 @@ import AppImage from "@/components/AppImage";
 import Error from "@/components/Error";
 import Loading from "@/components/Loading";
 import PriceSection from "@/components/PriceSection";
+import ProductGradeBadge from "@/components/ProductGradeBadge";
 import { getProductCardPresentation } from "@/utils/priceCalculator";
-import { useRouter } from "next/navigation";
+import { isProductAvailable } from "@/utils/productAvailability.mjs";
+import { productCardImageAlt } from "@/utils/productImageAlt.mjs";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-function ProductCard({ product, isPending, error }) {
-  const router = useRouter();
+// Card images are lazy; `imagePriority` makes them eager and high priority, only
+// for a card that is certainly in the first view.
+// Each `sizes` collapses to 1px where its twin is CSS-hidden, so an eager hidden
+// twin costs only the smallest variant.
+const MOBILE_IMAGE_SIZES = "(min-width: 48rem) 1px, 64px";
+const DESKTOP_IMAGE_SIZES = "(min-width: 48rem) 160px, 1px";
+
+function ProductCard({ product, isPending, error, imagePriority = false }) {
   const {
     id,
-    original,
     enTitle,
     perTitle,
-    stock,
     images,
     categories,
     brand: productBrand,
@@ -21,9 +28,8 @@ function ProductCard({ product, isPending, error }) {
 
   const { representativeVariant, cardPrice, cardLabel } =
     getProductCardPresentation(product);
-  const inStock =
-    !!representativeVariant &&
-    Number(stock) >= Number(representativeVariant.volume);
+  // The list's `isAvailable` when sent; else stock vs the representative Variant.
+  const inStock = isProductAvailable(product, representativeVariant);
   const productTemperature = categories?.temperature;
   const productCharacters = categories?.characters;
   const productGender = categories?.gender;
@@ -37,20 +43,26 @@ function ProductCard({ product, isPending, error }) {
   }
   if (!product) return null;
 
+  const productHref = `/products/${id}`;
+  // PriceSection's no-price fallback contains its own telephone link.
+  const PriceWrapper = cardPrice.basePrice > 0 ? Link : "div";
+
   return (
-    <article
-      className={`relative hover:*:*:last:*:first:*:last:scale-105 *:*:last:*:first:*:last:duration-300 flex items-center justify-center max-md:p-3 p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 dark:bg-stroke-50 rounded-2xl border-[1.5px] border-stroke-250 ${inStock ? "" : "opacity-80 dark:opacity-60"} snap-center duration-200`}
-    >
+    <article className="relative hover:*:*:last:*:first:*:last:scale-105 *:*:last:*:first:*:last:duration-300 flex items-center justify-center max-md:p-3 p-4 max-md:pr-0 h-54 md:h-115.5 aspect-2/3 max-md:min-w-78 bg-stroke-0 rounded-2xl border-[1.5px] border-stroke-250 snap-center duration-200">
       {/* Mobile Mode Base Image */}
       <div className="flex items-start justify-between size-full">
-        <div className="flex flex-none md:hidden items-center justify-center p-2 h-25 aspect-4/5">
+        <Link
+          href={productHref}
+          className="flex flex-none md:hidden items-center justify-center p-2 h-25 aspect-4/5"
+        >
           <AppImage
             src={images?.[0]}
-            alt={"-عکس" + perTitle}
-            priority={true}
+            alt={productCardImageAlt(product)}
+            priority={imagePriority}
             ratio="aspect-4/5"
+            sizes={MOBILE_IMAGE_SIZES}
           />
-        </div>
+        </Link>
         <div className="flex grow flex-col justify-between size-full">
           <div className="flex flex-col justify-start size-full">
             {/* Categories Icon */}
@@ -87,82 +99,78 @@ function ProductCard({ product, isPending, error }) {
             </div>
 
             {/* Desktop Mode Base Picture */}
-            <div className="grow max-md:hidden md:flex items-center justify-center pt-11 pb-5">
+            <Link
+              href={productHref}
+              className="grow max-md:hidden md:flex items-center justify-center pt-11 pb-5"
+            >
               <AppImage
                 src={images?.[0]}
-                alt={"-عکس" + perTitle}
-                priority={true}
+                alt={productCardImageAlt(product)}
+                priority={imagePriority}
                 className="w-auto! h-full"
+                sizes={DESKTOP_IMAGE_SIZES}
               />
-            </div>
+            </Link>
           </div>
 
           {/* Product Des */}
-          <button onClick={() => router.push(`/products/${id}`)}>
-            {/* Products Brand */}
-            <div className="flex-none flex items-center justify-between mb-2 md:mt-2 h-6">
-              <p className="text-stroke-600 text-sm md:text-base md:font-bold">
-                {productBrand?.value?.toUpperCase()}
-              </p>
-              {original === true ? (
-                <AppImage
-                  src="/images/bg-original.svg"
-                  alt="original-icon"
-                  ratio="aspect-6/1"
-                  className="justify-center"
-                  width="max-md:w-16 h-full md:w-[4.815rem]"
-                  sizes="10vw"
-                />
-              ) : (
-                <span className="inline-flex items-center rounded-full border border-stroke-200 bg-stroke-200 px-2 py-1.5 text-[10px] font-bold text-stroke-500">
-                  سوپر مستر
-                </span>
-              )}
-            </div>
+          <div className="text-center">
+            <Link href={productHref} className="block">
+              {/* Products Brand */}
+              <div className="flex-none flex items-center justify-between mb-2 md:mt-2 h-6">
+                <p className="text-stroke-600 text-sm md:text-base md:font-bold">
+                  {productBrand?.value?.toUpperCase()}
+                </p>
+                <ProductGradeBadge product={product} />
+              </div>
 
-            {/* Products Name */}
-            <div className="flex-none flex items-start justify-start flex-col gap-1 max-md:pb-3 md:pb-6 font-bold border-b border-stroke-250">
-              <span className="flex items-start justify-start flex-col w-full text-lg font-bold text-stroke-800 text-nowrap overflow-hidden *:overflow-x-auto *:scrollbar-none *:py-[0.5px] text-start max-md:max-w-55 md:max-w-68">
-                <p className="w-full max-md:text-base">{enTitle}</p>
-                <p className="w-full max-md:text-sm">{perTitle}</p>
-              </span>
-            </div>
+              {/* Products Name */}
+              <div className="flex-none flex items-start justify-start flex-col gap-1 max-md:pb-3 md:pb-6 font-bold border-b border-stroke-250">
+                <span className="flex items-start justify-start flex-col w-full text-lg font-bold text-stroke-800 text-nowrap overflow-hidden *:overflow-x-auto *:scrollbar-none *:py-[0.5px] text-start max-md:max-w-55 md:max-w-68">
+                  <p className="w-full max-md:text-base">{enTitle}</p>
+                  <p className="w-full max-md:text-sm">{perTitle}</p>
+                </span>
+              </div>
+            </Link>
 
             {/* Products Price */}
             <div
               className={`relative flex flex-none items-center md:items-end gap-4 w-full pt-2 ${inStock ? "justify-between" : "justify-end"}`}
             >
-              {representativeVariant && inStock && (
-                <div className="flex flex-col items-start gap-0.5">
-                  <PriceSection
-                    basePrice={cardPrice.basePrice}
-                    unitPrice={cardPrice.finalPrice}
-                    offValue={cardPrice.offValue}
-                    OldPricevisibility="block"
-                    pricesRow="flex-col-reverse max-md:gap-0"
-                    priceClassName="max-md:text-lg md:text-xl lg:text-[32px]"
-                    justify="justify-start"
-                  />
-                  <span className="max-md:absolute -right-18 bottom-0 text-xs md:text-sm text-stroke-600">
-                    {cardLabel}
-                  </span>
+              {inStock ? (
+                representativeVariant && (
+                  <PriceWrapper
+                    {...(cardPrice.basePrice > 0 ? { href: productHref } : {})}
+                    className="flex flex-col items-start gap-0.5"
+                  >
+                    <PriceSection
+                      basePrice={cardPrice.basePrice}
+                      unitPrice={cardPrice.finalPrice}
+                      offValue={cardPrice.offValue}
+                      OldPricevisibility="block"
+                      pricesRow="flex-col-reverse max-md:gap-0"
+                      priceClassName="max-md:text-lg md:text-xl lg:text-[32px]"
+                      justify="justify-start"
+                    />
+                    <span className="max-md:absolute -right-18 bottom-0 text-xs md:text-sm text-stroke-600">
+                      {cardLabel}
+                    </span>
+                  </PriceWrapper>
+                )
+              ) : (
+                <div className="flex items-center justify-start text-wrap size-full text-primary max-sm:text-xl text-2xl font-bold  py-1 px-2 md:p-2 md:h-20">
+                  <p>ناموجود!</p>
                 </div>
               )}
 
               {/* Products Order Button */}
-              <div>
-                {inStock ? (
-                  <p className="btn border border-primary text-primary bg-stroke-50 backdrop-blur-md active:bg-primary active:text-white md:hover:bg-primary md:hover:text-white rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
-                    مشاهده
-                  </p>
-                ) : (
-                  <p className="text-wrap w-full text-primary text-xl font-bold  py-1 px-2 md:p-2 md:h-20">
-                    ناموجود!
-                  </p>
-                )}
-              </div>
+              <Link href={productHref}>
+                <p className="btn border border-primary text-primary bg-stroke-50 backdrop-blur-md active:bg-primary active:text-white active:scale-95 md:hover:bg-primary md:hover:text-white rounded-lg md:rounded-xl py-1 px-2 md:p-2 text-wrap duration-200">
+                  مشاهده
+                </p>
+              </Link>
             </div>
-          </button>
+          </div>
         </div>
       </div>
     </article>

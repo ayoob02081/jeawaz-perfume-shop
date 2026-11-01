@@ -5,6 +5,7 @@ import NotExisted from "@/components/NotExisted";
 import Loading from "@/components/Loading";
 import { useGetAllCampaigns } from "@/hooks/useCampaigns";
 import CampaignsListTable from "./CampaignsListTable";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 function CampaignsLayout() {
   const { data, isPending, error } = useGetAllCampaigns();
@@ -18,9 +19,10 @@ function CampaignsLayout() {
         <Link
           href={"/admin/campaigns/add"}
           prefetch={false}
-          className="btn btn--primary border py-1.5 px-3"
+          className="btn btn--primary gap-1 border py-1.5 px-3"
         >
-          اضافه کردن کمپین
+          <PlusIcon className="size-5 stroke-3" />
+          <p>اضافه کردن کمپین</p>
         </Link>
       </div>
       {isPending ? <Loading /> : <CampaignsListTable campaigns={campaigns} />}

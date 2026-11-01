@@ -22,6 +22,16 @@ import {
   buildProductShareUrl,
   shareProduct,
 } from "@/utils/productShareContract.mjs";
+import {
+  productGalleryImageAlt,
+  productThumbnailAlt,
+} from "@/utils/productImageAlt.mjs";
+
+// Rendered widths of the main slide image and a thumbnail (measured layout:
+// slide padding, then the md/lg/xl gallery columns).
+const SLIDE_SIZES =
+  "(min-width: 80rem) 396px, (min-width: 64rem) 320px, (min-width: 48rem) 290px, (min-width: 40rem) calc(100vw - 128px), calc(100vw - 112px)";
+const THUMBNAIL_SIZES = "104px";
 
 export default function ImageSwiper({ product, images = [] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -154,11 +164,12 @@ export default function ImageSwiper({ product, images = [] }) {
                     wrapper made iOS Safari enlarge the image after each pinch zoom. */}
                 <AppImage
                   src={src}
-                  alt={`${product?.enTitle || "product"}-image-${i}`}
-                  priority={i < 2}
+                  alt={productGalleryImageAlt(product, i)}
+                  priority={i === 0}
                   objectFit="contain"
                   ratio=""
                   className="size-full"
+                  sizes={SLIDE_SIZES}
                 />
               </div>
             ))}
@@ -231,10 +242,10 @@ export default function ImageSwiper({ product, images = [] }) {
               >
                 <AppImage
                   src={imgSrc}
-                  alt={`${product?.enTitle || "product"}-thumb-${i}`}
-                  priority={i < 2}
+                  alt={productThumbnailAlt(product, i)}
                   objectFit="contain"
                   className="size-full"
+                  sizes={THUMBNAIL_SIZES}
                 />
               </button>
             ))}
@@ -282,7 +293,7 @@ export default function ImageSwiper({ product, images = [] }) {
             role="dialog"
             aria-modal="true"
             aria-label="نمایش بزرگ تصویر محصول"
-            className="fixed inset-0 z-99 flex items-center justify-center bg-black/90 p-4 max-md:hidden"
+            className="fixed inset-0 z-99 flex items-center justify-center bg-black/90 p-4 max-md:hidden backdrop-blur-md"
             onClick={closeLightbox}
           >
             {/* Close */}
@@ -316,11 +327,12 @@ export default function ImageSwiper({ product, images = [] }) {
             >
               <AppImage
                 src={images[selectedIndex]}
-                alt={`${product?.enTitle || "product"}-fullscreen-${selectedIndex}`}
+                alt={productGalleryImageAlt(product, selectedIndex)}
                 objectFit="contain"
                 className="max-h-[90dvh] max-w-[90vw]"
                 sizes="100vw"
                 priority
+                responsive={false}
               />
             </div>
 

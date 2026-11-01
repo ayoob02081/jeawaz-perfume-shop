@@ -3,6 +3,7 @@
 import Link from "next/link";
 import NotExisted from "@/components/NotExisted";
 import Loading from "@/components/Loading";
+import Error from "@/components/Error";
 import CategoriesListTable from "./CategoriesListTable";
 import {
   useGetAllBrandCategories,
@@ -10,6 +11,7 @@ import {
 } from "@/hooks/useCategories";
 import RadioButton from "@/ui/RadioButton";
 import { useState } from "react";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 const categoriesMode = [
   {
@@ -28,7 +30,7 @@ const categoriesMode = [
     value: "gender",
   },
   { id: 4, label: "فصل‌ها", value: "season" },
-  { id: 5, label: "دما", value: "temperature" },
+  { id: 5, label: "طبع", value: "temperature" },
   { id: 6, label: "شخصیت رایحه", value: "character" },
   { id: 7, label: "موقعیت استفاده", value: "occasion" },
 ];
@@ -44,12 +46,13 @@ const additionalTypes = [
 
 function CategoriesLayout() {
   const [mode, setMode] = useState("brands");
-  const { data: allCategories, isPending: isAllCategoriesPending } =
+  const { data: allCategories, isPending: isAllCategoriesPending, error: isCategoriesError, refetch: refetchCategories } =
     useGetAllCategories();
   const {
     data: brandCategoriess,
     isPending: isBrandsPending,
     error: isBrandsError,
+    refetch: refetchBrands,
   } = useGetAllBrandCategories();
 
   return (
@@ -86,15 +89,19 @@ function CategoriesLayout() {
               prefetch={false}
               className="btn btn--primary border py-1.5 px-3"
             >
-              اضافه کردن برند
+              <PlusIcon className="size-5 stroke-3" />
+              <p>اضافه کردن برند</p>
             </Link>
           </div>
-          {isBrandsPending ? (
+          {isBrandsError ? (
+            <Error onRetry={refetchBrands} />
+          ) : isBrandsPending ? (
             <Loading />
           ) : (
             <CategoriesListTable categories={brandCategoriess} brands />
           )}
           {brandCategoriess &&
+            !isBrandsError &&
             !isBrandsPending &&
             brandCategoriess?.length === 0 && (
               <NotExisted className="h-96">برندی وجود نداره!</NotExisted>
@@ -111,12 +118,15 @@ function CategoriesLayout() {
             <Link
               href={`/admin/categories/${mode}/add`}
               prefetch={false}
-              className="btn btn--primary border py-1.5 px-3"
+              className="btn btn--primary gap-1 border py-1.5 px-3"
             >
-              افزودن دسته‌بندی
+              <PlusIcon className="size-5 stroke-3" />
+              <p>افزودن دسته‌بندی</p>
             </Link>
           </div>
-          {isAllCategoriesPending ? (
+          {isCategoriesError ? (
+            <Error onRetry={refetchCategories} />
+          ) : isAllCategoriesPending ? (
             <Loading />
           ) : (
             <CategoriesListTable

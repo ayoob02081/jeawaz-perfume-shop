@@ -36,7 +36,11 @@ test("works without optional dialog/selection callbacks (ProductForm)", async ()
 test("Product delete call sites use the handled path and guard double confirmation", () => {
   const table = readFileSync(new URL("./ProductsListTable.jsx", import.meta.url), "utf8");
   const form = readFileSync(new URL("./ProductForm.jsx", import.meta.url), "utf8");
-  assert.match(table, /if \(isDeleting\) return;\s*await runProductDelete\(/);
+  // The ref closes the gap before `isDeleting` re-renders; it is released
+  // however the delete ends, so a failed delete can be confirmed again.
+  assert.match(table, /const deletingRef = useRef\(false\);/);
+  assert.match(table, /if \(isDeleting \|\| deletingRef\.current\) return;\s*deletingRef\.current = true;\s*try \{\s*await runProductDelete\(/);
+  assert.match(table, /\} finally \{\s*deletingRef\.current = false;\s*\}/);
   assert.match(form, /await runProductDelete\(\{ id: product\.id, removeProduct \}\)/);
   for (const source of [table, form]) {
     assert.doesNotMatch(source, /await removeProduct\(/);

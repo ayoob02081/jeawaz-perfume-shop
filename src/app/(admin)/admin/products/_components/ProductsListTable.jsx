@@ -8,20 +8,37 @@ import {
 import { useRemoveProduct } from "@/hooks/useProducts";
 import ConfirmModal from "@/ui/ConfirmModal";
 import { runProductDelete } from "./productDeleteContract.mjs";
+import { adminProductCreateHref } from "@/utils/adminProductsListContract.mjs";
 import Table from "@/ui/Table";
 import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
 import { getVariantsByType } from "@/utils/priceCalculator";
-import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import {
+  DocumentDuplicateIcon,
+  EyeIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from "@heroicons/react/24/solid";
+import ProductGradeBadge from "@/components/ProductGradeBadge";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import CheckBox from "@/ui/CheckBox";
 import { CheckIcon } from "@heroicons/react/24/outline";
 
+// The row's position in the whole filtered list (from the backend total), not
+// its index on the page and not the Product id.
+const rowLabel = (rowNumbers, index) => {
+  const number = rowNumbers?.[index];
+  return number ? toPersianNumbers(number) : "—";
+};
+
 function ProductsListTable({
   products,
+  // The list query, carried by the copy links for the return after saving.
+  listSearch = "",
+  rowNumbers = [],
   selectedIds = [],
   onToggleSelected,
   onSelectVisible,
@@ -30,16 +47,24 @@ function ProductsListTable({
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [product, setProduct] = useState(false);
   const { isDeleting, removeProduct } = useRemoveProduct();
+  // `isDeleting` only changes on the next render: a second click a few ms
+  // later still saw false and sent a second DELETE.
+  const deletingRef = useRef(false);
 
   const removeProductHandler = async () => {
-    if (isDeleting) return;
+    if (isDeleting || deletingRef.current) return;
+    deletingRef.current = true;
 
-    await runProductDelete({
-      id: product.id,
-      removeProduct,
-      onDeleted,
-      close: () => setConfirmModalOpen(false),
-    });
+    try {
+      await runProductDelete({
+        id: product.id,
+        removeProduct,
+        onDeleted,
+        close: () => setConfirmModalOpen(false),
+      });
+    } finally {
+      deletingRef.current = false;
+    }
   };
 
   const handleModal = (data) => {
@@ -91,12 +116,12 @@ function ProductsListTable({
               products?.map((product, index) => {
                 return (
                   <Table.Row key={product.id} className="even:bg-primary/5">
-                    <td className="table__td px-2 rounded-r-xl">
+                    <td className="table__td p-0 rounded-r-xl">
                       <CheckBox
                         value={product.id}
                         name="productIds"
                         checked={selectedIds.includes(product.id)}
-                        className="flex flex-row! items-center justify-between font-bold"
+                        className="flex flex-row! items-center justify-center font-bold size-full"
                         onChange={() => onToggleSelected?.(product.id)}
                       >
                         <div
@@ -106,38 +131,73 @@ function ProductsListTable({
                         </div>
                       </CheckBox>
                     </td>
-                    <td className="table__td px-3 font-bold">
-                      <p>{toPersianNumbers(index + 1)}</p>
+                    <td className="table__td p-0 font-bold">
+                      <CheckBox
+                        value={product.id}
+                        name="productIds"
+                        checked={selectedIds.includes(product.id)}
+                        className="flex flex-row! items-center justify-center font-bold size-full"
+                        onChange={() => onToggleSelected?.(product.id)}
+                      >
+                        <p>{rowLabel(rowNumbers, index)}</p>
+                      </CheckBox>
                     </td>
-                    <td className="table__td p-2 max-w-70 text-wrap">
-                      <div className="flex items-center justify-start gap-2">
-                        <AppImage
-                          src={product?.images?.[0]}
-                          alt={
-                            product?.perTitle
-                              ? `${product.perTitle}-icon`
-                              : "product-icon"
-                          }
-                          width="w-16"
-                          sizes="10vw"
-                        />
-                        <p className="font-bold text-start">
-                          {product.perTitle}
-                        </p>
+                    <td className="table__td p-0 max-w-70 text-wrap">
+                      <CheckBox
+                        value={product.id}
+                        name="productIds"
+                        checked={selectedIds.includes(product.id)}
+                        className="flex flex-row! items-center justify-start font-bold size-full p-2"
+                        onChange={() => onToggleSelected?.(product.id)}
+                      >
+                        <div className="flex flex-col items-center justify-center gap-1">
+                          <AppImage
+                            src={product?.images?.[0]}
+                            alt={
+                              product?.perTitle
+                                ? `${product.perTitle}-icon`
+                                : "product-icon"
+                            }
+                            width="w-16"
+                            sizes="10vw"
+                          />
+                          <ProductGradeBadge
+                            product={product}
+                            variant="admin"
+                          />
+                        </div>
+                        <div className="flex flex-col items-start gap-1">
+                          <p className="font-bold text-start">
+                            {product.perTitle}
+                          </p>
+                        </div>
+                      </CheckBox>
+                    </td>
+                    <td className="table__td gap-2 p-2 flex flex-col justify-center max-h-full">
+                      <div className="flex items-center justify-center overflow-hidden h-full">
+                        <div className="flex flex-col items-center justify-start gap-2 overflow-auto scrollbar-none h-full">
+                          <VariantPriceList
+                            product={product}
+                            type="decant"
+                            showType
+                          />
+                          <VariantPriceList
+                            product={product}
+                            type="sealed"
+                            showType
+                          />
+                        </div>
                       </div>
                     </td>
-                    <td className="table__td px-2 max-w-70 truncate">
-                      <div className="flex items-center justify-center flex-col gap-2 text-xs">
-                        <AppImage
-                          src={product?.brand?.iconUrl || "/brand-icon"}
-                          alt={`${product?.brand?.value}-icon` || "brand-icon"}
-                          ratio="aspect-[4/1]"
-                          className="dark:invert"
-                          width="w-16"
-                          sizes="10vw"
-                        />
-                        <p className="text-stroke-800">
-                          {product?.categories?.gender?.title}
+                    <td className="table__td px-2">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <p
+                          className={`badge badge--primary border ${product.stock >= 100 ? "border-success bg-success/10 text-success" : "border-red-600 bg-red-600/10 text-red-600"} font-bold`}
+                        >
+                          موجودی {toPersianNumbers(product.stock)} میل
+                        </p>
+                        <p className="badge badge--primary font-bold">
+                          %{toPersianNumbers(product.offValue)} تخفیف
                         </p>
                       </div>
                     </td>
@@ -157,52 +217,54 @@ function ProductsListTable({
                         </div>
                       </div>
                     </td>
-                    <td className="table__td px-2">
-                      <div className="flex flex-col items-center justify-center gap-2">
-                        <p className="badge badge--primary font-bold">
-                          %{toPersianNumbers(product.offValue)} تخفیف
-                        </p>
-                        <p
-                          className={`badge badge--primary border ${product.stock >= 100 ? "border-success bg-success/10 text-success" : "border-red-600 bg-red-600/10 text-red-600"} font-bold`}
-                        >
-                          {toPersianNumbers(product.stock)} میل
+                    <td className="table__td px-2 max-w-70 truncate">
+                      <div className="flex items-center justify-center flex-col gap-2 text-xs">
+                        <AppImage
+                          src={product?.brand?.iconUrl || "/brand-icon"}
+                          alt={`${product?.brand?.value}-icon` || "brand-icon"}
+                          ratio="aspect-[4/1]"
+                          className="dark:invert"
+                          width="w-16"
+                          sizes="10vw"
+                        />
+                        <p className="text-stroke-800">
+                          {product?.categories?.gender?.title}
                         </p>
                       </div>
                     </td>
-                    <td className="table__td gap-2 p-2 flex flex-col justify-center max-h-full">
-                      <div className="flex items-center justify-center overflow-hidden h-full">
-                        <div className="flex flex-col items-center justify-start gap-2 overflow-auto scrollbar-none h-full">
-                          <VariantPriceList
-                            product={product}
-                            type="decant"
-                            showType
-                          />
-                          <VariantPriceList
-                            product={product}
-                            type="sealed"
-                            showType
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="table__td px-3 rounded-l-xl">
-                      <div className="flex gap-2 items-center">
+                    <td className="table__td px-2 rounded-l-xl min-w-20">
+                      <div className="flex items-center justify-center flex-wrap gap-1 w-full">
                         <Link
                           href={`/products/${product.id}`}
-                          className="text-stroke-450 hover:text-blue duration-200"
+                          title="مشاهده محصول"
+                          aria-label="مشاهده محصول"
+                          className="text-stroke-450 hover:text-blue duration-200 p-1"
                         >
                           <EyeIcon className=" size-5" />
                         </Link>
                         <Link
                           href={`/admin/products/edit/${product.id}`}
                           prefetch={false}
-                          className="text-stroke-450 hover:text-success duration-200"
+                          title="ویرایش محصول"
+                          aria-label="ویرایش محصول"
+                          className="text-stroke-450 hover:text-success duration-200 p-1"
                         >
-                          <PencilIcon className=" size-5" />
+                          <PencilSquareIcon className=" size-5" />
+                        </Link>
+                        <Link
+                          href={adminProductCreateHref(listSearch, product.id)}
+                          prefetch={false}
+                          title="ساخت محصول مشابه"
+                          aria-label="ساخت محصول مشابه"
+                          className="text-stroke-450 hover:text-stroke-800 duration-200 p-1"
+                        >
+                          <DocumentDuplicateIcon className="size-5" />
                         </Link>
                         <button
                           onClick={() => handleModal(product)}
-                          className="text-stroke-450 hover:text-primary duration-200"
+                          title="حذف محصول"
+                          aria-label="حذف محصول"
+                          className="text-stroke-450 hover:text-primary duration-200 p-1"
                         >
                           <TrashIcon className="size-5" />
                         </button>
@@ -249,12 +311,12 @@ function ProductsListTable({
               products?.map((product, index) => {
                 return (
                   <Table.Row key={product.id} className="even:bg-primary/5">
-                    <td className="table__td px-2 rounded-r-xl">
+                    <td className="table__td p-0 rounded-r-xl">
                       <CheckBox
                         value={product.id}
                         name="productIds"
                         checked={selectedIds.includes(product.id)}
-                        className="flex flex-row! items-center justify-between font-bold"
+                        className="flex flex-row! items-center justify-center font-bold"
                         onChange={() => onToggleSelected?.(product.id)}
                       >
                         <div
@@ -264,23 +326,45 @@ function ProductsListTable({
                         </div>
                       </CheckBox>
                     </td>
-                    <td className="table__td px-3 font-bold">
-                      <p>{toPersianNumbers(index + 1)}</p>
+                    <td className="table__td p-0 font-bold">
+                      <CheckBox
+                        value={product.id}
+                        name="productIds"
+                        checked={selectedIds.includes(product.id)}
+                        className="flex flex-row! items-center justify-center font-bold size-full"
+                        onChange={() => onToggleSelected?.(product.id)}
+                      >
+                        <p>{rowLabel(rowNumbers, index)}</p>
+                      </CheckBox>
                     </td>
-                    <td className="table__td px-2">
-                      <div className="flex items-center justify-start gap-2">
-                        <AppImage
-                          src={product?.images?.[0]}
-                          alt={
-                            product?.perTitle
-                              ? `${product.perTitle}-icon`
-                              : "product-icon"
-                          }
-                          width="w-16"
-                          sizes="10vw"
-                        />
-                        <p className="font-bold">{product.perTitle}</p>
-                      </div>
+                    <td className="table__td p-0">
+                      <CheckBox
+                        value={product.id}
+                        name="productIds"
+                        checked={selectedIds.includes(product.id)}
+                        className="flex flex-row! items-center justify-start font-bold size-full p-2"
+                        onChange={() => onToggleSelected?.(product.id)}
+                      >
+                        <div className="flex flex-col items-center justify-center gap-1">
+                          <AppImage
+                            src={product?.images?.[0]}
+                            alt={
+                              product?.perTitle
+                                ? `${product.perTitle}-icon`
+                                : "product-icon"
+                            }
+                            width="w-16"
+                            sizes="10vw"
+                          />
+                          <ProductGradeBadge
+                            product={product}
+                            variant="admin"
+                          />
+                        </div>
+                        <p className="font-bold min-w-44 max-w-72 text-wrap text-start">
+                          {product.perTitle}
+                        </p>
+                      </CheckBox>
                     </td>
                     <td className="table__td px-2 max-w-70 truncate">
                       <div className="flex items-center justify-center flex-col gap-2 text-xs">
@@ -331,11 +415,16 @@ function ProductsListTable({
                       </div>
                     </td>
                     <td className="table__td px-2">
-                      <p
-                        className={`badge badge--primary border ${product.stock >= 100 ? "border-success bg-success/10 text-success" : "border-red-600 bg-red-600/10 text-red-600"} font-bold`}
-                      >
-                        {toPersianNumbers(product.stock)} میل
-                      </p>
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <p
+                          className={`badge badge--primary border ${product.stock >= 100 ? "border-success bg-success/10 text-success" : "border-red-600 bg-red-600/10 text-red-600"} font-bold`}
+                        >
+                          موجودی {toPersianNumbers(product.stock)} میل
+                        </p>
+                        <p className="badge badge--primary font-bold">
+                          %{toPersianNumbers(product.offValue)} تخفیف
+                        </p>
+                      </div>
                     </td>
                     <td className="table__td gap-2 py-2! px-2">
                       <div className="flex items-center justify-center overflow-hidden h-18">
@@ -351,29 +440,39 @@ function ProductsListTable({
                         </div>
                       </div>
                     </td>
-                    <td className="table__td px-2">
-                      <p className="badge badge--primary font-bold">
-                        %{toPersianNumbers(product.offValue)}
-                      </p>
-                    </td>
-                    <td className="table__td px-3 rounded-l-xl">
-                      <div className="flex gap-2 items-center">
+                    <td className="table__td px-2 rounded-l-xl min-w-20">
+                      <div className="flex items-center justify-center flex-wrap gap-1 w-full">
                         <Link
                           href={`/products/${product.id}`}
-                          className="text-stroke-450 hover:text-blue duration-200"
+                          title="مشاهده محصول"
+                          aria-label="مشاهده محصول"
+                          className="text-stroke-450 hover:text-blue duration-200 p-1"
                         >
                           <EyeIcon className=" size-5" />
                         </Link>
                         <Link
                           href={`/admin/products/edit/${product.id}`}
                           prefetch={false}
-                          className="text-stroke-450 hover:text-success duration-200"
+                          title="ویرایش محصول"
+                          aria-label="ویرایش محصول"
+                          className="text-stroke-450 hover:text-success duration-200 p-1"
                         >
-                          <PencilIcon className=" size-5" />
+                          <PencilSquareIcon className=" size-5" />
+                        </Link>
+                        <Link
+                          href={adminProductCreateHref(listSearch, product.id)}
+                          prefetch={false}
+                          title="ساخت محصول مشابه"
+                          aria-label="ساخت محصول مشابه"
+                          className="text-stroke-450 hover:text-stroke-800 duration-200 p-1"
+                        >
+                          <DocumentDuplicateIcon className="size-5" />
                         </Link>
                         <button
                           onClick={() => handleModal(product)}
-                          className="text-stroke-450 hover:text-primary duration-200"
+                          title="حذف محصول"
+                          aria-label="حذف محصول"
+                          className="text-stroke-450 hover:text-primary duration-200 p-1"
                         >
                           <TrashIcon className="size-5" />
                         </button>

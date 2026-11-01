@@ -30,7 +30,8 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
 const editProfileSource = read(
   "../app/(profile)/profile/_components/EditProfileForm.jsx",
 );
-const completeUserDataSource = read("../components/CompleteUserData.jsx");
+// The account name is no longer asked for after login but at checkout.
+const checkoutSource = read("../app/(user)/cart/_components/CartLayout.jsx");
 const profileInfoSource = read(
   "../app/(profile)/profile/_components/ProfileInfo.jsx",
 );
@@ -126,10 +127,13 @@ test("names without a letter, with punctuation or with other whitespace are reje
   }
 });
 
-test("Complete Profile and Edit Profile share one name rule", () => {
+test("checkout buyer name and Edit Profile share one name rule", () => {
   assert.equal(PERSIAN_NAME_PATTERN.global, false, "stateless for RHF .test()");
-  for (const source of [editProfileSource, completeUserDataSource]) {
-    assert.equal(source.match(/value: PERSIAN_NAME_PATTERN/g)?.length, 2);
+  assert.equal(editProfileSource.match(/value: PERSIAN_NAME_PATTERN/g)?.length, 2);
+  // One rule builder, used by both buyer name fields.
+  assert.equal(checkoutSource.match(/value: PERSIAN_NAME_PATTERN/g)?.length, 1);
+  assert.equal(checkoutSource.match(/validationSchema=\{buyerNameRules\(/g)?.length, 2);
+  for (const source of [editProfileSource, checkoutSource]) {
     assert.doesNotMatch(source, /\\p\{Script=Arabic\}|\[آ-ی/);
   }
 });

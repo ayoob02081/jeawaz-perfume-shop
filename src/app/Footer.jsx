@@ -7,7 +7,7 @@ function Footer() {
   return (
     <article className="max-w-480 mx-auto 2xl:rounded-t-4xl overflow-hidden">
       <OptionsFooter />
-      <section className="bg-black size-full max-sm:px-4 max-md:pb-24 sm:px-16 py-8">
+      <section className="bg-stone-950 size-full max-sm:px-4 max-md:pb-24 sm:px-6 py-8">
         <div className="flex flex-col items-center gap-6 max-sm:pb-6 sm:py-6">
           <Link
             href={"/"}
@@ -18,11 +18,10 @@ function Footer() {
               alt="jeawaz-brand-icon"
               width="w-28 h-[4.25rem]"
               sizes="20vw"
-              priority={true}
             />
             <p className="text-sm">جیاواز، دنیای رایحه‌های خاصه</p>
           </Link>
-          <div className="flex flex-col items-center justify-evenly gap-2 text-stroke-600 dark:text-stroke-600/50 text-xs max-md:text-center">
+          <div className="flex flex-col items-center justify-evenly gap-2 text-stroke-500 dark:text-stroke-250 text-xs max-md:text-center">
             <p>
               ما اینجاییم تا کمک کنیم عطری رو پیدا کنی که با شخصیتت هم‌صدا باشه.
             </p>
@@ -38,11 +37,9 @@ function Footer() {
           </div>
           <section className="flex items-center justify-evenly w-full text-white gap-6 pb-10">
             <nav className="flex flex-col items-start gap-2">
-              <ul>
-                <li>
-                  <h4 className="text-lg">عطر فروشی</h4>
-                </li>
-                <div className="footer--link grid-cols-2">
+              <div>
+                <h2 className="text-lg">عطر فروشی</h2>
+                <ul className="footer--link grid-cols-2">
                   <li>
                     <Link href={"/page/about-us"}>درباره ما</Link>
                   </li>
@@ -57,15 +54,13 @@ function Footer() {
                       پروفایل من
                     </Link>
                   </li>
-                </div>
-              </ul>
+                </ul>
+              </div>
             </nav>
             <nav className="flex flex-col items-start gap-2">
-              <ul>
-                <li>
-                  <h4 className="text-lg">فروشگاه</h4>
-                </li>
-                <div className="footer--link grid-cols-3 *:even:col-span-2">
+              <div>
+                <h2 className="text-lg">فروشگاه</h2>
+                <ul className="footer--link grid-cols-3 *:even:col-span-2">
                   <li>
                     <Link href={"/products?sort=newest"}>جدیدترین</Link>
                   </li>
@@ -84,13 +79,13 @@ function Footer() {
                       محصولات پرفروش
                     </Link>
                   </li>
-                </div>
-              </ul>
+                </ul>
+              </div>
             </nav>
           </section>
           <article className="flex max-sm:flex-col max-sm:gap-6 items-center justify-between w-full sm:px-16 text-white">
-            <section className="flex flex-col justify-between gap-4">
-              <div className="flex items-center justify-between">
+            <section className="flex flex-col max-sm:flex-col-reverse justify-between gap-4">
+              <div className="flex flex-wrap items-center justify-center sm:justify-between gap-4">
                 <Link href={"tel:+989302125151"} className="flex items-center">
                   <p className="text-3xl text-white ">
                     {toPersianNumbers("5151")}
@@ -114,11 +109,11 @@ function Footer() {
                   </p>
                 </Link>
               </div>
-              <span className="flex max-sm:flex-col max-sm:text-center max-sm:items-center items-start text-sm gap-0.5 max-sm:w-full">
+              <span className="flex max-sm:flex-col max-sm:text-center max-sm:items-center items-start text-sm max-sm:gap-2 gap-0.5 max-sm:w-full">
                 <p className="font-bold text-nowrap">
                   منتظر صدای گرم شما هستیم!!{" "}
                 </p>
-                <p className="text-stroke-550 dark:text-stroke-200 font-semibod max-sm:w-full">
+                <p className="text-stroke-500 dark:text-stroke-250 font-semibod max-sm:w-full">
                   اگر سوالی داشتید با ما تماس بگیرید
                 </p>
               </span>
@@ -144,6 +139,7 @@ function Footer() {
                     referrerPolicy="origin"
                     src="https://trustseal.enamad.ir/logo.aspx?id=7688622&Code=xOwa5wAZcc7Sg2vZPyAOvqlYvMusK0sm"
                     alt="اینماد"
+                    loading="lazy"
                     style={{ cursor: "pointer" }}
                     code="xOwa5wAZcc7Sg2vZPyAOvqlYvMusK0sm"
                     className="size-full"
@@ -161,10 +157,15 @@ function Footer() {
             <ul className="flex items-center justify-between gap-2">
               <li>
                 <Link
-                  href={"/"}
+                  href="https://wa.me/989302125151"
                   className="text-white hover:text-green-500 hover:fill-stroke-200 duration-200"
                 >
-                  <i className="fa-brands fa-whatsapp fa-xl "></i>
+                  <AppImage
+                    width="size-6"
+                    src="/images/whatsapp.png"
+                    alt="whatsapp"
+                    sizes="10vw"
+                  />
                 </Link>
               </li>
               <li>
@@ -172,7 +173,12 @@ function Footer() {
                   href="https://t.me/jeaawazperfume"
                   className="text-white hover:text-cyan-500 hover:fill-stroke-200 duration-200"
                 >
-                  <i className="fa-brands fa-telegram fa-xl "></i>
+                  <AppImage
+                    width="size-6"
+                    src="/images/telegram.png"
+                    alt="telegram"
+                    sizes="10vw"
+                  />
                 </Link>
               </li>
               <li>
@@ -180,7 +186,12 @@ function Footer() {
                   href="https://www.instagram.com/jeawaz_perfume/"
                   className="text-white hover:text-rose-700 hover:fill-stroke-200 duration-200"
                 >
-                  <i className="fa-brands fa-instagram fa-xl "></i>
+                  <AppImage
+                    width="size-6"
+                    src="/images/instagram.png"
+                    alt="instagram"
+                    sizes="10vw"
+                  />
                 </Link>
               </li>
             </ul>

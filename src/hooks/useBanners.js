@@ -33,12 +33,16 @@ export const useGetAllBanners = (params = {}) => {
   });
 };
 
-export const useGetActiveBanners = (params = {}) => {
+export const useGetActiveBanners = (params = {}, options = {}) => {
   return useQuery({
     queryKey: bannerKeys.activeList(params),
     queryFn: () => getActiveBannersApi(params),
-    retry: false,
-    refetchOnWindowFocus: false,
+    retry: (failureCount, error) => failureCount < 1 &&
+      !["ERR_CANCELED", "ERR_SESSION_SUPERSEDED"].includes(error?.code) &&
+      (!error?.response || error.response.status >= 500),
+    // Recover a failed section on return without refetching healthy banners.
+    refetchOnWindowFocus: (query) => query.state.status === "error",
+    ...options,
   });
 };
 

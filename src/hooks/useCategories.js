@@ -2,6 +2,7 @@ import {
   getAllBrandsApi,
   getAllCategoriesApi,
   getBrandByIdApi,
+  getBrandSearchAliasesApi,
   getCategoryByIdApi,
   removeBrandApi,
   removeCategoryApi,
@@ -16,6 +17,20 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { storefrontCategoryOptions } from "@/utils/productFilterContract.mjs";
 import toast from "react-hot-toast";
 
+async function refreshCategoryQueries(queryClient, categoryId) {
+  const filters = {
+    predicate: ({ queryKey }) =>
+      queryKey[0] === "get-categories" ||
+      queryKey[0] === "categories" ||
+      (queryKey[0] === "get-category" &&
+        Number(queryKey[1]) === Number(categoryId)),
+  };
+  // Cancel even initial pending reads: invalidation alone can reuse their
+  // pre-save result. Typed lists share these keys with storefront filters.
+  await queryClient.cancelQueries(filters);
+  await queryClient.invalidateQueries(filters);
+}
+
 export const useGetAllCategories = () =>
   useQuery({
     queryKey: ["get-categories"],
@@ -25,13 +40,14 @@ export const useGetAllCategories = () =>
     refetchOnWindowFocus: false,
   });
 
-export const useGetAllBrandCategories = () =>
+export const useGetAllBrandCategories = (options = {}) =>
   useQuery({
     queryKey: ["get-brands"],
     queryFn: getAllBrandsApi,
     retry: false,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
+    ...options,
   });
 
 export const useGetCategoriesByType = (type) =>
@@ -46,7 +62,7 @@ export const useGetCategoriesByType = (type) =>
 
 // Storefront filter options: same request and cache as useGetCategoriesByType
 // (admin keeps every category), with inactive categories selected out.
-export const useGetStorefrontCategoriesByType = (type) =>
+export const useGetStorefrontCategoriesByType = (type, options = {}) =>
   useQuery({
     queryKey: ["categories", type],
     queryFn: () => getCategoriesByTypeApi(type),
@@ -54,6 +70,7 @@ export const useGetStorefrontCategoriesByType = (type) =>
     retry: false,
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
+    ...options,
     select: storefrontCategoryOptions,
   });
 
@@ -73,14 +90,27 @@ export const useGetBrandbyID = (id) =>
     staleTime: 1000 * 60 * 5,
   });
 
+// Admin edit form only. Never served from cache: the form is filled once
+// from it, and a stale copy saved back would undo the last change.
+export const useGetBrandSearchAliases = (id) =>
+  useQuery({
+    queryKey: ["brand-search-aliases", id],
+    queryFn: () => getBrandSearchAliasesApi(id),
+    enabled: !!id,
+    gcTime: 0,
+    staleTime: 0,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
 export function useAddCategory() {
   const queryClient = useQueryClient();
 
   const { isPending: isAdding, mutateAsync: addCategory } = useMutation({
     mutationFn: addCategoryApi,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      await refreshCategoryQueries(queryClient, data?.id);
       toast.success(data?.message || "دسته‌بندی اضافه شد");
-      queryClient.invalidateQueries({ queryKey: ["get-categories"] });
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "خطا در افزودن دسته‌بندی");
@@ -112,13 +142,9 @@ export function useEditCategory(categoryId) {
 
   const { isPending: isEditing, mutateAsync: editCategory } = useMutation({
     mutationFn: (data) => updateCategoryApi({ categoryId, data }),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      await refreshCategoryQueries(queryClient, categoryId);
       toast.success(data?.message || "دسته‌بندی ویرایش شد");
-
-      queryClient.invalidateQueries({ queryKey: ["get-categories"] });
-      queryClient.invalidateQueries({
-        queryKey: ["get-category", categoryId],
-      });
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "خطا در ویرایش دسته‌بندی");

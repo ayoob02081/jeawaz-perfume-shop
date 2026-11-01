@@ -11,7 +11,7 @@ import {
   toPersianNumbers,
   toPersianNumbersWithComma,
 } from "@/utils/toPersianNumbers";
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -101,7 +101,7 @@ function CouponsListTable({ coupons }) {
                           prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200"
                         >
-                          <PencilIcon className=" size-5" />
+                          <PencilSquareIcon className=" size-5" />
                         </Link>
                         <button
                           onClick={() => removeCouponHandler(coupon)}
@@ -189,7 +189,7 @@ function CouponsListTable({ coupons }) {
                           prefetch={false}
                           className="text-stroke-450 hover:text-success duration-200"
                         >
-                          <PencilIcon className=" size-5" />
+                          <PencilSquareIcon className=" size-5" />
                         </Link>
                         <button
                           onClick={() => removeCouponHandler(coupon)}

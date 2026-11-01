@@ -93,6 +93,7 @@ function CampaignsProducts() {
           <ProductCard
             key={product.id}
             product={product}
+            imagePriority={false}
             isPending={section.isPending}
             error={section.error}
           />

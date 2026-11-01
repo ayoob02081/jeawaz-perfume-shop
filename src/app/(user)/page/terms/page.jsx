@@ -1,18 +1,23 @@
+import { publicPageMetadata } from "@/lib/seo.mjs";
 import AppImage from "@/components/AppImage";
 import Accordion from "@/ui/Accordion";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 
-export const metadata = {
+const metadataFields = {
   title: "قوانین و مقررات",
   description: "درباره قوانین و مقررات ما بدانید",
+};
+export const metadata = {
+  ...metadataFields,
+  ...publicPageMetadata({ ...metadataFields, path: "/page/terms" }),
 };
 
 function TermsPage() {
   return (
     <main className="mb-8 md:mt-5">
       {/* Terms */}
-      <article className="flex flex-col items-cente justify-center container mx-auto size-full xl:max-w-7xl bg-[#FEF8FA] dark:bg-stroke-50/50 sm:px-6 md:p-6 rounded-2.5xl sm:rounded-3xl md:rounded-t-5xl">
-        <section className="flex flex-col justify-start gap-6 md:gap-15 w-full p-6 ">
+      <article className="flex flex-col items-cente justify-center container mx-auto size-full xl:max-w-7xl bg-[#FEF8FA] dark:bg-stroke-50/50 min-[30rem]:px-6 md:p-6 rounded-2.5xl sm:rounded-3xl md:rounded-t-5xl">
+        <section className="flex flex-col justify-start w-full max-sm:p-4 p-6 ">
           <div className="flex max-md:flex-col md:flex-row items-center max-md:justify-center md:justify-between max-md:gap-8 md:gap-10 w-full">
             <span className="flex flex-col max-md:items-center md:items-start justify-center font-bold max-md:gap-4 md:gap-6">
               <h1 className="text-xs md:text-base text-primary ">
@@ -29,8 +34,8 @@ function TermsPage() {
             </span>
           </div>
         </section>
-        <section className="flex flex-col max-md:gap-4 md:gap-8 bg-stroke-0 max-md:ring-4 md:ring-8 ring-black/5  max-md:rounded-2.5xl md:rounded-5xl p-6">
-          <div className="flex flex-col items-start justify-center px-6">
+        <section className="flex flex-col max-md:gap-4 md:gap-8 bg-stroke-0 max-md:ring-4 md:ring-8 ring-black/5  max-md:rounded-2.5xl md:rounded-5xl max-sm:p-4 p-6">
+          <div className="flex flex-col items-start justify-center">
             <div className="flex items-center justify-between w-full">
               <h2 className="text-2xl font-bold text-primary">قوانین عمومی</h2>
               <AppImage
@@ -97,12 +102,12 @@ function TermsPage() {
                 </p>
               </span>
               <span>
-                <h3>🔹 محصولات سفارش اروپا (European Order)</h3>
+                <h3>🔹 محصولات سوپر مستر (Super Master)</h3>
                 <p>
-                  - محصولات سفارش اروپا نسخه‌های باکیفیت و نزدیک به اورجینال
+                  - محصولات سوپر مستر نسخه‌های باکیفیت و نزدیک به اورجینال
                   هستند که با جزئیات دقیق و استاندارد بالا تولید شده‌اند.
                 </p>
-                - در صفحه‌ی هر محصول، نوع کیفیت (اورجینال یا سفارش اروپا) به‌طور
+                - در صفحه‌ی هر محصول، نوع کیفیت (اورجینال یا سوپر مستر) به‌طور
                 شفاف ذکر می‌شود تا مشتری با آگاهی کامل انتخاب کند.
               </span>
               <p>

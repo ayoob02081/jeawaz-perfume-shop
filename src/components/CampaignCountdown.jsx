@@ -22,7 +22,7 @@ function CampaignCountdown({ endsAt, onExpire, clockOffsetMs }) {
 
   return (
     <div
-    dir="ltr"
+      dir="ltr"
       role="timer"
       aria-label="زمان باقی‌مانده تا پایان تخفیف"
       className="flex items-center gap-1 sm:gap-2 text-nowrap"
@@ -30,12 +30,14 @@ function CampaignCountdown({ endsAt, onExpire, clockOffsetMs }) {
       {units.map(({ label, value }) => (
         <div
           key={label}
-          className="flex flex-col items-center justify-center min-w-11 sm:min-w-14 py-1 px-2 rounded-xl border-[1.5px] border-stroke-200 bg-stroke-0 dark:bg-stroke-50"
+          className="flex flex-col items-center justify-center sm:min-w-14 max-[30rem]:py-0.5 py-1 max-[30rem]:px-1 px-2 max-[30rem]:rounded-md rounded-xl border-[1.5px] border-stroke-200 bg-stroke-0 dark:bg-stroke-50"
         >
-          <span className="text-base sm:text-xl font-bold text-primary tabular-nums">
+          <span className="max-[30rem]:text-sm text-base sm:text-xl font-bold text-primary tabular-nums translate-y-px">
             {pad(value)}
           </span>
-          <span className="text-[10px] sm:text-xs text-stroke-600">{label}</span>
+          <span className="max-[30rem]:text-[8px] text-[10px] sm:text-xs text-stroke-600">
+            {label}
+          </span>
         </div>
       ))}
     </div>

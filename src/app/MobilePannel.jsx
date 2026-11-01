@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { UserCircleIcon, UserIcon } from "@heroicons/react/24/outline";
 import {
   UserIcon as UserSolidIcon,
@@ -10,9 +10,9 @@ import AppImage from "@/components/AppImage";
 import { useAuth } from "@/contexts/auth/AuthContext";
 import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import { useUnreadNotificationsCount } from "@/hooks/useNotification";
+import Link from "next/link";
 
 function MobilePannel() {
-  const router = useRouter();
   const pathname = usePathname();
   const { user, isAuthenticated } = useAuth();
   const showElement = useHideOnScroll();
@@ -25,14 +25,14 @@ function MobilePannel() {
      transition-all duration-200 ease-in-out overflow-hidden h-24"
       >
         <ul
-          className={`grid ${user?.role === "admin" ? "grid-cols-5" : "grid-cols-4"} justify-items-center gap-x-5 h-20.75 w-[95%] shadow-lg shadow-stroke-800/40 dark:shadow-stroke-800/10 rounded-2xl bg-stroke-0/0 backdrop-blur-xl px-5`}
+          className={`grid ${user?.role === "admin" ? "grid-cols-5" : "grid-cols-4"} justify-items-center gap-x-5 h-20.75 w-[95%] shadow-lg shadow-black/30 rounded-2xl bg-stroke-800/5 backdrop-blur-xl max-lg:border border-stroke-0/5 px-5`}
         >
           <li className="flex items-center justify-center ">
-            <button
-              className="flex flex-col justify-center items-center gap-2"
-              onClick={() => router.push("/")}
+            <Link
+              className="group flex flex-col justify-center items-center gap-2"
+              href={"/"}
             >
-              <div className="size-7">
+              <div className="size-7 group-active:scale-95 duration-100">
                 <AppImage
                   width="size-7"
                   src={
@@ -52,14 +52,14 @@ function MobilePannel() {
               >
                 خانه
               </p>
-            </button>
+            </Link>
           </li>
           <li className="flex items-center justify-center ">
-            <button
-              className="flex flex-col justify-center items-center gap-2"
-              onClick={() => router.push("/products")}
+            <Link
+              className="group flex flex-col justify-center items-center gap-2"
+              href={"/products"}
             >
-              <div className="size-7">
+              <div className="size-7 group-active:scale-95 duration-100">
                 <AppImage
                   width="size-7"
                   src={
@@ -81,14 +81,14 @@ function MobilePannel() {
               >
                 فروشگاه
               </p>
-            </button>
+            </Link>
           </li>
           <li className="flex items-center justify-center ">
-            <button
-              className="flex flex-col justify-center items-center gap-2"
-              onClick={() => router.push("/cart")}
+            <Link
+              className="group flex flex-col justify-center items-center gap-2"
+              href={"/cart"}
             >
-              <div className="size-7">
+              <div className="size-7 group-active:scale-95 duration-100">
                 <AppImage
                   width="size-7"
                   src={
@@ -110,18 +110,15 @@ function MobilePannel() {
               >
                 سبد خرید
               </p>
-            </button>
+            </Link>
           </li>
           <li className="flex items-center justify-center ">
-            <button
-              className="relative flex flex-col justify-center items-center gap-2"
-              onClick={
-                isAuthenticated !== true
-                  ? () => router.push("/auth/login")
-                  : () => router.push("/profile/me")
-              }
+            <Link
+              className="relative group flex flex-col justify-center items-center gap-2"
+              href={isAuthenticated !== true ? "/auth/login" : "/profile/me"}
+              prefetch={false}
             >
-              <div className="flex items-center justify-center size-7">
+              <div className="flex items-center justify-center size-7 group-active:scale-95 duration-100">
                 {pathname.startsWith("/profile") ? (
                   <UserSolidIcon className="size-6 text-primary" />
                 ) : (
@@ -139,18 +136,19 @@ function MobilePannel() {
               </p>
               {data?.total > 0 && (
                 <div className="absolute -top-1 right-1 z-10 flex items-center justify-center aspect-square text-nowrap p-1 rounded-full max-md:bg-stroke-90 bg-primary text-stroke-0 h-2 text-xs">
-                  <p className="translate-y-px"></p>
+                  <p className="translate-y-px" />
                 </div>
               )}
-            </button>
+            </Link>
           </li>
           {user?.role === "admin" && (
             <li className="flex items-center justify-center ">
-              <button
-                className="relative flex flex-col justify-center items-center gap-2"
-                onClick={() => router.push("/admin/dashboard")}
+              <Link
+                className="relative group flex flex-col justify-center items-center gap-2"
+                href={"/admin/dashboard"}
+                prefetch={false}
               >
-                <div className="flex items-center justify-center size-7">
+                <div className="flex items-center justify-center size-7 group-active:scale-95 duration-100">
                   {pathname.startsWith("/admin") ? (
                     <UserCircleSolidIcon className="size-6 text-primary" />
                   ) : (
@@ -166,7 +164,7 @@ function MobilePannel() {
                 >
                   ادمین
                 </p>
-              </button>
+              </Link>
             </li>
           )}
         </ul>

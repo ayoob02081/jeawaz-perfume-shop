@@ -11,8 +11,9 @@ function Skeleton({
       aria-hidden="true"
       className={clsx(
         "relative isolate overflow-hidden",
-        "bg-stroke-250 dark:bg-stroke-0",
+        "bg-stroke-250 dark:bg-stroke-500/15",
         rounded,
+        animate && "motion-reduce:animate-none motion-reduce:before:animate-none",
 
         // Pulse
         animate &&

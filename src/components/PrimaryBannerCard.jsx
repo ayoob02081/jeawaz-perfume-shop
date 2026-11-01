@@ -1,41 +1,32 @@
 "use client";
 
 import React from "react";
-import AppImage from "./AppImage";
+import BannerPicture from "./BannerPicture";
 import Link from "next/link";
 import {
   ArrowLeftIcon,
   ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/auth/AuthContext";
-import { PencilIcon } from "lucide-react";
+import { PencilSquareIcon } from "@heroicons/react/24/solid";
 
 export function PrimaryBannerCard({ banner, priority = false }) {
   const { id, title, imageUrl, mobileImageUrl, link } = banner;
   const { user } = useAuth();
 
   return (
-    <div className="relative flex w-full items-center justify-center overflow-hidden rounded-xl md:rounded-3xl banner--primary ">
-      {/* Desktop */}
-      <AppImage
+    <div
+      dir="rtl"
+      className="relative flex w-full items-center justify-center overflow-hidden rounded-xl md:rounded-3xl banner--primary "
+    >
+      {/* Desktop art from 30rem, mobile art below it */}
+      <BannerPicture
         src={imageUrl}
+        mobileSrc={mobileImageUrl || imageUrl}
         alt={title || "بنر"}
-        className="max-[30rem]:hidden block"
-        objectFit="cover"
-        width="size-full"
-        loading={priority ? "eager" : "lazy"}
-        sizes="(max-width: 640px) 100vw, 90vw"
-      />
-
-      {/* Mobile */}
-      <AppImage
-        src={mobileImageUrl || imageUrl}
-        alt={title || "بنر"}
-        className="max-[30rem]:block hidden"
-        objectFit="cover"
-        width="size-full"
-        loading={priority ? "eager" : "lazy"}
-        sizes="100vw"
+        sizes="(min-width: 80rem) 1248px, (min-width: 64rem) 992px, (min-width: 48rem) 736px, (min-width: 40rem) 608px, calc(100vw - 16px)"
+        mobileSizes="calc(100vw - 16px)"
+        priority={priority}
       />
 
       {/* Edit Button */}
@@ -47,7 +38,7 @@ export function PrimaryBannerCard({ banner, priority = false }) {
             aria-label="ویرایش بنر"
             className="flex items-center justify-center aspect-square size-10 lg:size-12 rounded-full bg-stroke-0 shadow-md"
           >
-            <PencilIcon className="text-primary size-4 lg:size-5" />
+            <PencilSquareIcon className="text-primary size-4 lg:size-5" />
           </Link>
         </div>
       )}
@@ -64,7 +55,7 @@ export function PrimaryBannerCard({ banner, priority = false }) {
               مشاهده محصولات
             </span>
 
-            <ArrowLeftIcon className="size-4 xl:size-5" />
+            <ArrowLeftIcon className="size-4 xl:size-5 stroke-3" />
           </Link>
         )}
 
@@ -74,12 +65,12 @@ export function PrimaryBannerCard({ banner, priority = false }) {
             href="tel:+989302125151"
             className="flex items-center justify-between hover:gap-1 max-sm:hidden group hover:bg-white/50 active:bg-white/50 backdrop-blur-md rounded-full max-xl:h-8 xl:h-10 2xl:h-12 hover:pl-2 transition-all duration-200"
           >
-            <button
+            <div
               className="btn rounded-full h-full sm:border-2 border-primary/10 text-white bg-stroke-900 group-hover:text-stroke-900 group-hover:bg-white backdrop-blur-md group-hover:border-stroke-900
             group-active:text-stroke-900 group-active:bg-white group-active:border-stroke-900 aspect-square z-10 transition-all duration-200"
             >
-              <ChatBubbleLeftRightIcon className="max-xl:size-4 xl:size-6" />
-            </button>
+              <ChatBubbleLeftRightIcon className="max-xl:size-4 xl:size-6 stroke-2" />
+            </div>
             <p className="max-lg:text-[10px] max-xl:text-xs font-bold text-nowrap translate-x-20 group-hover:translate-x-0 w-0 opacity-0 group-hover:opacity-100 group-hover:w-fit text-stroke-950 group-hover:text-stroke-900 group-active:text-stroke-900 transition-all duration-200">
               دریافت مشاوره
             </p>

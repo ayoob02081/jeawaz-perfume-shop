@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 import Modal from "@/components/Modal";
 import { useFilters } from "@/hooks/useFilters";
+import { useIsHydrated } from "@/hooks/useIsHydrated";
 import SortSection from "@/components/SortSection";
 import FilterCheckBox from "@/ui/FilterCheckBox";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -29,6 +30,8 @@ import {
   withoutFilterValue,
 } from "@/utils/productFilterContract.mjs";
 import { concentrationLabel } from "@/utils/productConcentration.mjs";
+import { gradeLabel } from "@/utils/productGrade.mjs";
+import { brandLogoAlt } from "@/utils/productImageAlt.mjs";
 import { useForm } from "react-hook-form";
 import Skeleton from "@/ui/Skeleton";
 import { scrollTo } from "@/utils/scrollTo";
@@ -50,6 +53,11 @@ function FilterSection() {
     isLoading: brandsLoading,
     error,
   } = useGetAllBrandCategories();
+  // The root layout's CategorySidebar runs the same brands query once its
+  // trigger is hovered, focused or opened, and can fill the cache before this
+  // subtree hydrates; render the server's skeletons
+  // until hydration ends so the first client render matches the HTML.
+  const isHydrated = useIsHydrated();
   const { data: categories, isLoading: categoriesLoading } =
     useGetAllCategories();
   const filtersFromUrl = getFiltersFromSearchParams(searchParams);
@@ -254,13 +262,14 @@ function FilterSection() {
                   error
                 />
               )}
-              {filtersFromUrl?.original && (
+              {filtersFromUrl.grades.map((grade) => (
                 <Badge
-                  title="اورجینال"
-                  onClick={() => resetOneAndSync("original")}
+                  key={`grades-${grade}`}
+                  title={gradeLabel(grade)}
+                  onClick={() => removeValueAndSync("grades", grade)}
                   error
                 />
-              )}
+              ))}
               {filtersFromUrl?.inStock && (
                 <Badge
                   title="موجود"
@@ -304,7 +313,7 @@ function FilterSection() {
             ref={brandsRef}
             state={state.draft?.brandIds}
             toggleBrandAndSync={toggleBrandAndSync}
-            brandsLoading={brandsLoading}
+            brandsLoading={!isHydrated || brandsLoading}
           />
 
           {/* Bread Crumbs */}
@@ -396,19 +405,22 @@ function BrandsFilter({
                   key={brand.id}
                   checkId={brand.id}
                   imageSrc={brand.iconUrl}
+                  // The logo is the checkbox's only content: it names the brand.
+                  imageAlt={brandLogoAlt(brand) || undefined}
                   name={"brandFilter"}
                   onChange={() => toggleBrandAndSync(brand.id)}
                   checked={isChecked}
                   className={`flex items-center justify-center text-nowrap size-full snap-center
-                    ${isChecked && "dark:*:bg-stroke-0 *:border-2 dark:*:border-[1.5px] *:bg-white *:border-primary dark:*:border-stroke-200"}`}
-                  imageClassName="px-2 h-full rounded-full duration-200 dark:*:invert "
-                  ratio="aspect-3/2"
+                    ${isChecked && "dark:*:bg-stroke-0 *:ring-2 dark:*:ring-2 *:bg-white *:ring-primary dark:*:ring-stroke-200"}`}
+                  imageClassName="px-2 h-full rounded-lg duration-200 dark:*:invert "
+                  ratio="aspect-10/3"
                 />
               );
             })}
       </div>
       <button
         type="button"
+        aria-label="نمایش برندهای بیشتر"
         onClick={() => scrollTo(ref, "x", -400)}
         className="absolute left-0 z-10 flex items-center justify-center bg-stroke-0/10 backdrop-blur-md text-stroke-800 lg:text-lg font-bold h-full px-2"
       >

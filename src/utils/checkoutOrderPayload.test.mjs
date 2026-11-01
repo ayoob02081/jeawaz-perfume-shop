@@ -97,9 +97,9 @@ test("checkout requests the account's addresses only when signed in and on step 
     hooks,
     /export const useGetAddresses = \(\{ enabled = true \} = \{\}\) =>\s*useQuery\(\{\s*queryKey: \["addresses"\],\s*queryFn: getAllAddressesApi,\s*enabled,/,
   );
-  // The profile address book keeps fetching as before.
+  // The profile waits for the existing authenticated-session confirmation.
   assert.match(
     read("../app/(profile)/profile/_components/AddressLayout.jsx"),
-    /useGetAddresses\(\)/,
+    /useGetAddresses\(\{ enabled: Boolean\(user\) && sessionReady \}\)/,
   );
 });
