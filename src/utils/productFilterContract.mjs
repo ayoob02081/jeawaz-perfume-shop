@@ -204,16 +204,16 @@ export const TAXONOMY_SLUG_FILTERS = ["seasons", "characters", "occasions"];
 // One definition of the Product V2 taxonomy filter groups for every filter UI:
 // filter/URL key, Category type (storefront options) and Persian label.
 export const TAXONOMY_FILTER_GROUPS = [
+  { key: "gender", type: "gender", label: "جنسیت", multiple: false },
   { key: "seasons", type: "season", label: "فصل", multiple: true },
   { key: "characters", type: "character", label: "شخصیت", multiple: true },
+  { key: "temperature", type: "temperature", label: "طبع", multiple: false },
   {
     key: "occasions",
     type: "occasion",
     label: "موقعیت استفاده",
     multiple: true,
   },
-  { key: "temperature", type: "temperature", label: "طبع", multiple: false },
-  { key: "gender", type: "gender", label: "جنسیت", multiple: false },
 ];
 export const CONCENTRATION_FILTER_LABEL = "غلظت";
 export const GRADE_FILTER_LABEL = "نوع کیفیت";
@@ -495,7 +495,9 @@ export function normalizeProductsQuery(query = {}) {
     ...(query.availabilityFirst === false ? { availabilityFirst: false } : {}),
     // Admin management searches like Bulk Price targeting (the previous
     // search), so its list and a bulk change over its filters always match.
-    ...(query.searchMode === "legacy" && query.search ? { searchMode: "legacy" } : {}),
+    ...(query.searchMode === "legacy" && query.search
+      ? { searchMode: "legacy" }
+      : {}),
     ...(seasons.length ? { seasons } : {}),
     ...(temperature ? { temperature } : {}),
     ...(characters.length ? { characters } : {}),
@@ -516,8 +518,13 @@ export function normalizeProductsQuery(query = {}) {
     maxPrice: maxPrice ?? undefined,
     // Searching without a chosen sort uses backend relevance. Admin legacy
     // search and ordinary lists retain their existing newest default.
-    sort: productSort(query.sort) ??
-      (typeof query.search === "string" && query.search.trim() && query.searchMode !== "legacy" ? undefined : "newest"),
+    sort:
+      productSort(query.sort) ??
+      (typeof query.search === "string" &&
+      query.search.trim() &&
+      query.searchMode !== "legacy"
+        ? undefined
+        : "newest"),
     page: normalizeProductListPage(query.page),
     limit: normalizeProductListLimit(query.limit),
   };

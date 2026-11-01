@@ -1,5 +1,8 @@
 import { PRODUCT_CONCENTRATIONS } from "../../../../../utils/productConcentration.mjs";
-import { PRODUCT_GRADES, productGrade } from "../../../../../utils/productGrade.mjs";
+import {
+  PRODUCT_GRADES,
+  productGrade,
+} from "../../../../../utils/productGrade.mjs";
 import { searchAliasesPayload } from "../../../../../utils/searchAliasesContract.mjs";
 
 export const concentrationOptions = PRODUCT_CONCENTRATIONS;
@@ -18,7 +21,8 @@ export const VARIANT_VOLUME_MAX = 16_777_216;
 // Optional admin short name for order Excel/print; empty = use enTitle.
 export const PRINT_NAME_MAX = 100;
 
-const isEmpty = (value) => value === "" || value === null || value === undefined;
+const isEmpty = (value) =>
+  value === "" || value === null || value === undefined;
 const inIntegerRange = (value, min, max) =>
   Number.isInteger(value) && value >= min && value <= max;
 
@@ -160,10 +164,20 @@ export function buildProductFormPayload(
       errors.push(invalid(`variants.${index}.type`, "نوع معتبر نیست"));
     }
     if (!inIntegerRange(volume, 1, VARIANT_VOLUME_MAX)) {
-      errors.push(invalid(`variants.${index}.volume`, "حجم باید عدد صحیح مثبت و معتبر باشد"));
+      errors.push(
+        invalid(
+          `variants.${index}.volume`,
+          "حجم باید عدد صحیح مثبت و معتبر باشد",
+        ),
+      );
     }
     if (!inIntegerRange(price, 1, VARIANT_PRICE_MAX)) {
-      errors.push(invalid(`variants.${index}.price`, "قیمت باید عدد صحیح مثبت و معتبر باشد"));
+      errors.push(
+        invalid(
+          `variants.${index}.price`,
+          "قیمت باید عدد صحیح مثبت و معتبر باشد",
+        ),
+      );
     }
     return { type, volume, price };
   });
@@ -172,7 +186,12 @@ export function buildProductFormPayload(
   }
   const seenVariants = new Set();
   variants.forEach(({ type, volume }, index) => {
-    if (!variantTypes.includes(type) || !Number.isInteger(volume) || volume <= 0) return;
+    if (
+      !variantTypes.includes(type) ||
+      !Number.isInteger(volume) ||
+      volume <= 0
+    )
+      return;
     const key = `${type}:${volume}`;
     if (seenVariants.has(key)) {
       errors.push(invalid(`variants.${index}.volume`, "نوع و حجم تکراری است"));
@@ -185,8 +204,11 @@ export function buildProductFormPayload(
   if (!Number.isInteger(genderId) || genderId <= 0) {
     errors.push(invalid("genderId", "انتخاب جنسیت ضروری است"));
   }
-  if (temperatureId !== null && (!Number.isInteger(temperatureId) || temperatureId <= 0)) {
-    errors.push(invalid("temperatureId", "دما معتبر نیست"));
+  if (
+    temperatureId !== null &&
+    (!Number.isInteger(temperatureId) || temperatureId <= 0)
+  ) {
+    errors.push(invalid("temperatureId", "طبع معتبر نیست"));
   }
   const categoryIds = [genderId];
   if (temperatureId !== null) categoryIds.push(temperatureId);
@@ -214,22 +236,42 @@ export function buildProductFormPayload(
     errors.push(invalid("performance.longevity.level", "ماندگاری معتبر نیست"));
   }
   if ((minProvided || maxProvided) && !level) {
-    errors.push(invalid("performance.longevity.level", "برای بازهٔ ساعت، سطح ماندگاری را انتخاب کنید"));
+    errors.push(
+      invalid(
+        "performance.longevity.level",
+        "برای بازهٔ ساعت، سطح ماندگاری را انتخاب کنید",
+      ),
+    );
   }
   if (minProvided !== maxProvided) {
-    errors.push(invalid("performance.longevity.maxHours", "هر دو کران بازهٔ ساعت لازم است"));
+    errors.push(
+      invalid(
+        "performance.longevity.maxHours",
+        "هر دو کران بازهٔ ساعت لازم است",
+      ),
+    );
   }
   if (
     minProvided &&
     (!Number.isInteger(minHours) || minHours < 0 || minHours > 168)
   ) {
-    errors.push(invalid("performance.longevity.minHours", "ساعت باید عدد صحیح بین ۰ و ۱۶۸ باشد"));
+    errors.push(
+      invalid(
+        "performance.longevity.minHours",
+        "ساعت باید عدد صحیح بین ۰ و ۱۶۸ باشد",
+      ),
+    );
   }
   if (
     maxProvided &&
-    (!Number.isInteger(maxHours) || maxHours < 0 || maxHours > 168 || maxHours < minHours)
+    (!Number.isInteger(maxHours) ||
+      maxHours < 0 ||
+      maxHours > 168 ||
+      maxHours < minHours)
   ) {
-    errors.push(invalid("performance.longevity.maxHours", "بیشینهٔ ساعت معتبر نیست"));
+    errors.push(
+      invalid("performance.longevity.maxHours", "بیشینهٔ ساعت معتبر نیست"),
+    );
   }
   const projection = data.performance?.projection || null;
   const sillage = data.performance?.sillage || null;
@@ -266,7 +308,7 @@ export function buildProductFormPayload(
       brandId,
       categoryIds,
       images: (data.images ?? [])
-        .map((image) => typeof image === "string" ? image : image?.url)
+        .map((image) => (typeof image === "string" ? image : image?.url))
         .filter((url) => typeof url === "string" && url.trim() !== ""),
       notes: {
         top: (data.notes?.top ?? []).filter(Boolean),
@@ -274,11 +316,17 @@ export function buildProductFormPayload(
         base: (data.notes?.base ?? []).filter(Boolean),
       },
       variants,
-      ...(originalVariants !== undefined ? {
-        expectedVariants: originalVariants.map(({ type, volume, price }) => ({
-          type, volume: Number(volume), price: Number(price),
-        })),
-      } : {}),
+      ...(originalVariants !== undefined
+        ? {
+            expectedVariants: originalVariants.map(
+              ({ type, volume, price }) => ({
+                type,
+                volume: Number(volume),
+                price: Number(price),
+              }),
+            ),
+          }
+        : {}),
       performance: {
         longevity: level
           ? {

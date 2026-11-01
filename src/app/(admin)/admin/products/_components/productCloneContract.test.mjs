@@ -217,7 +217,7 @@ test("duplicate mode is create mode: the source is never productToEdit", () => {
   // Alias defaults are loaded before mounting; edit/PATCH still uses productToEdit only.
   assert.match(form, /productToEdit\s*\?\s*initialProductFormValues\(productToEdit, searchAliases\)\s*:\s*\(cloneDefaults \?\? initialProductFormValues\(\)\)/);
   assert.match(form, /buildProductFormPayload\(\s*data,\s*productToEdit \? editBaseline\.current\.variants : undefined,\s*\{ searchAliasesEditable: !searchAliasesUnavailable \},\s*\)/);
-  assert.match(form, /productToEdit \? editProduct\(payload, release\) : addProduct\(payload, release\);/);
+  assert.match(form, /productToEdit\s*\?\s*editProduct\(payload, release\)\s*:\s*addProduct\(payload, release\);/);
   assert.match(form, /useEditProduct\(productToEdit\?\.id\)/);
 });
 

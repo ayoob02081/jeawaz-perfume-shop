@@ -29,7 +29,7 @@ test("user actions push history entries; automatic corrections replace", () => {
   assert.match(layout, /canonicalAdminProductsSearch\(search\);\s*if \(canonical !== null\) navigate\(canonical, \{ replace: true \}\)/);
   assert.match(layout, /correctedAdminProductsPage\(\{[\s\S]*?navigate\(nextAdminProductsSearch\(searchRef\.current, \{ page: target \}\), \{\s*replace: true,\s*\}\)/);
   // The correction waits for the requested page's own answer.
-  assert.match(layout, /if \(isFetching \|\| isPlaceholderData \|\| !meta \|\| meta\.page !== query\.page\) return;/);
+  assert.match(layout, /if \(isFetching \|\| isPlaceholderData \|\| !meta \|\| meta\.page !== query\.page\)\s*return;/);
   for (const action of ["applyFilters", "resetFilters", "setPage"]) {
     const body = layout.match(new RegExp(`const ${action} = useCallback\\(([\\s\\S]*?)\\[navigate\\]`))?.[1];
     assert.ok(body, action);

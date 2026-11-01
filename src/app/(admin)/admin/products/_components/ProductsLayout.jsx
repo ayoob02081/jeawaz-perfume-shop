@@ -38,7 +38,10 @@ function ProductsLayout() {
   const search = searchParams.toString();
   // The URL is the list state: refresh, links, Back/Forward and the return
   // from the edit page restore it.
-  const query = useMemo(() => parseAdminProductsQuery(searchParams), [searchParams]);
+  const query = useMemo(
+    () => parseAdminProductsQuery(searchParams),
+    [searchParams],
+  );
   const filters = useMemo(() => adminProductsApiFilters(query), [query]);
 
   const [selectedIds, setSelectedIds] = useState([]);
@@ -72,7 +75,12 @@ function ProductsLayout() {
 
   const applyFilters = useCallback(
     (draft) =>
-      navigate(nextAdminProductsSearch(searchRef.current, filterUpdatesFromDraft(draft))),
+      navigate(
+        nextAdminProductsSearch(
+          searchRef.current,
+          filterUpdatesFromDraft(draft),
+        ),
+      ),
     [navigate],
   );
   const resetFilters = useCallback(
@@ -105,7 +113,8 @@ function ProductsLayout() {
   // A page past the last one (after a deletion, or an old link) moves to the
   // last existing page with the same filters, once its own answer is in.
   useEffect(() => {
-    if (isFetching || isPlaceholderData || !meta || meta.page !== query.page) return;
+    if (isFetching || isPlaceholderData || !meta || meta.page !== query.page)
+      return;
     const target = correctedAdminProductsPage({
       page: query.page,
       totalPages: meta.totalPages,
@@ -141,7 +150,7 @@ function ProductsLayout() {
             prefetch={false}
             className="btn btn--primary gap-2 border py-1.5 px-3 max-[33rem]:w-full"
           >
-            <PlusIcon className="size-5 stroke-3"/>
+            <PlusIcon className="size-5 stroke-3" />
             <p>اضافه کردن محصول</p>
           </Link>
         </div>

@@ -231,7 +231,7 @@ test("create pending state includes isAdding and a lock blocks a double submit",
   assert.match(form,
     /if \(submitLock\.current \|\| isAdding \|\| isEditing\) return;\s*submitLock\.current = true;/);
   assert.match(form, /onSettled: \(\) => \{\s*submitLock\.current = false;\s*\}/);
-  assert.match(form, /productToEdit \? editProduct\(payload, release\) : addProduct\(payload, release\);/);
+  assert.match(form, /productToEdit\s*\?\s*editProduct\(payload, release\)\s*:\s*addProduct\(payload, release\);/);
   // The lock is taken only after client validation passed.
   const submit = form.slice(form.indexOf("const onSubmit"), form.indexOf("const removeProductHandler"));
   assert.ok(submit.indexOf("payloadErrors.length") < submit.indexOf("submitLock.current = true"));

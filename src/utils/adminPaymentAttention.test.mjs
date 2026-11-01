@@ -308,6 +308,91 @@ const listRows = () => [
 ];
 const count = (html, pattern) => html.match(new RegExp(pattern, "g"))?.length ?? 0;
 
+// Real tables and checkbox inputs, with only network hooks/state controlled.
+function orderTableFixture(status, { isStale = false, orders } = {}) {
+  const state = [false, [], [], undefined];
+  let index = 0;
+  const mocks = {
+    ...uiMocks,
+    react: { ...React, useEffect() {}, useState() {
+      const slot = index++;
+      return [state[slot], (next) => { state[slot] = typeof next === "function" ? next(state[slot]) : next; }];
+    } },
+    "@/hooks/useOrders": {
+      useUpdateOrderStatus: () => ({}), useBulkUpdateStatus: () => ({}), useExportOrders: () => ({}),
+    },
+  };
+  delete mocks["@/ui/Table"];
+  delete mocks["@/ui/CheckBox"];
+  const Component = loader(mocks)("app/(admin)/admin/orders/_components/OrdersListTable.jsx").default;
+  const rows = orders ?? [101, 102].map((id, i) => ({
+    ...adminOrder(id, status ?? "PAID", []),
+    shipping: { receiver: `Synthetic Receiver ${i + 1}` },
+  }));
+  const props = { orders: rows, status, isStale, isLoading: false, selectionKey: "fixture" };
+  const findAll = (node, predicate) => {
+    if (!node || typeof node !== "object") return [];
+    if (Array.isArray(node)) return node.flatMap((child) => findAll(child, predicate));
+    return [...(predicate(node) ? [node] : []), ...findAll(node.props?.children, predicate)];
+  };
+  return {
+    html() { index = 0; return renderToStaticMarkup(h(Component, props)); },
+    bulkButtons() {
+      index = 0;
+      return findAll(Component(props), (node) => node.type === "button" && /انتخاب همه سفارش/.test(node.props["aria-label"] ?? ""));
+    },
+  };
+}
+
+for (const status of [undefined, "SHIPPED", "CANCELLED", "EXPIRED", "PENDING", "PAID", "READY_TO_PRINT", "PRINTED"]) {
+  test(`orders table: ${status ?? "All"} keeps receiver names and row numbers in mobile and desktop tables`, () => {
+    const fixture = orderTableFixture(status);
+    const tables = [...fixture.html().matchAll(/<table\b[^>]*>([\s\S]*?)<\/table>/g)];
+    assert.equal(tables.length, 2);
+    assert.match(tables[0][0], /md:hidden/);
+    assert.match(tables[1][0], /max-md:hidden/);
+    const eligible = ["PENDING", "PAID", "READY_TO_PRINT", "PRINTED"].includes(status);
+    for (const table of tables) {
+      const body = table[1].match(/<tbody\b[^>]*>([\s\S]*?)<\/tbody>/)[1];
+      const rows = [...body.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/g)];
+      assert.equal(rows.length, 2);
+      for (const [i, row] of rows.entries()) {
+        const cells = [...row[1].matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)];
+        assert.equal(cells[1][1].replace(/<[^>]*>/g, ""), ["۱", "۲"][i]);
+        assert.ok(cells[2][1].includes(`Synthetic Receiver ${i + 1}`));
+        assert.equal(/type="checkbox"/.test(row[1]), eligible);
+      }
+      assert.equal(/aria-label="انتخاب همه سفارش‌ها"/.test(table[1]), eligible);
+    }
+    assert.equal(fixture.bulkButtons().length, eligible ? 2 : 0);
+  });
+}
+
+test("orders table: bulk select/deselect stays synchronized between mobile and desktop", () => {
+  const fixture = orderTableFixture("PENDING");
+  const inputs = () => [...fixture.html().matchAll(/<input\b[^>]*name="orderIds"[^>]*>/g)].map(([tag]) => tag.includes('checked=""'));
+  assert.ok(inputs().length > 0);
+  assert.ok(inputs().every((checked) => !checked));
+  fixture.bulkButtons()[0].props.onClick();
+  assert.ok(inputs().every(Boolean));
+  assert.ok(fixture.bulkButtons().every((button) => button.props["aria-label"] === "لغو انتخاب همه سفارش‌ها"));
+  fixture.bulkButtons()[1].props.onClick();
+  assert.ok(inputs().every((checked) => !checked));
+});
+
+test("orders table: stale or empty eligible results cannot be bulk selected", () => {
+  for (const fixture of [orderTableFixture("PENDING", { isStale: true }), orderTableFixture("PENDING", { orders: [] })]) {
+    assert.ok(fixture.bulkButtons().every((button) => button.props.disabled));
+    for (const button of fixture.bulkButtons()) button.props.onClick();
+    assert.doesNotMatch(fixture.html(), /checked=""/);
+  }
+});
+
+test("orders table: a missing receiver keeps the existing fallback in both layouts", () => {
+  const html = orderTableFixture("SHIPPED", { orders: [{ ...adminOrder(103, "SHIPPED", []), shipping: {} }] }).html();
+  assert.equal(count(html, "اسمی ثبت نشده"), 2);
+});
+
 test("list: only affected orders get a distinct badge, in both the mobile and desktop tables", () => {
   const html = renderList({ orders: listRows(), status: "PENDING" });
   // Two tables (mobile + desktop), one badge per affected order in each.

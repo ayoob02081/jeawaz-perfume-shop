@@ -243,7 +243,9 @@ function ProductForm({
         submitLock.current = false;
       },
     };
-    productToEdit ? editProduct(payload, release) : addProduct(payload, release);
+    productToEdit
+      ? editProduct(payload, release)
+      : addProduct(payload, release);
   };
 
   const removeProductHandler = async (product) => {
@@ -357,8 +359,8 @@ function ProductForm({
               </p>
               {copySource && (
                 <p className="text-xs font-bold text-stroke-800 bg-warning/20 rounded-lg px-2 py-1 mr-2 w-fit">
-                  از محصول منبع کپی شده است؛ بازبینی کنید تا در خروجی اکسل و
-                  چاپ با محصول منبع یکسان نباشد.
+                  از محصول منبع کپی شده است؛ بازبینی کنید تا در خروجی اکسل و چاپ
+                  با محصول منبع یکسان نباشد.
                 </p>
               )}
             </div>
@@ -583,7 +585,7 @@ function ProductForm({
           </div>
         ))}
         <FormSelect
-          label="دما"
+          label="طبع"
           name="temperatureId"
           register={register}
           options={temperatureCategories.map((category) => ({

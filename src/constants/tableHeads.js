@@ -515,15 +515,15 @@ export const orderMobileTHeads = [
     label: "دریافت کننده",
   },
   {
-    id: 4,
+    id: 3,
     label: "شماره سفارش",
   },
   {
-    id: 5,
+    id: 4,
     label: "مبلغ پرداخت شده",
   },
   {
-    id: 9,
+    id: 5,
     label: "عملیات",
   },
 ];
@@ -537,7 +537,6 @@ export const orderDesktopTHeads = [
     id: 2,
     label: "دریافت کننده",
   },
-
   {
     id: 3,
     label: "شماره موبایل",
@@ -547,15 +546,15 @@ export const orderDesktopTHeads = [
     label: "شماره سفارش",
   },
   {
-    id: 6,
+    id: 5,
     label: "وضعیت مرسوله",
   },
   {
-    id: 7,
+    id: 6,
     label: "تعداد محصولات",
   },
   {
-    id: 5,
+    id: 7,
     label: "مبلغ پرداخت شده",
   },
   {

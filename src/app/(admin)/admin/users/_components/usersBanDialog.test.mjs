@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { QueryClient, MutationObserver } from "@tanstack/react-query";
 import { createSessionLifecycle } from "../../../../../utils/sessionLifecycle.mjs";
+import { canChangeUserBan, userAccountStatus } from "../../../../../utils/adminUsersContract.mjs";
 
 const require = createRequire(import.meta.url);
 const { transformSync } = require("next/dist/build/swc");
@@ -99,6 +100,10 @@ function harness() {
     "@/hooks/useOutsideClick": defaultExport(() => ({ current: null })),
     "@/ui/Backdrop": defaultExport("Backdrop"),
   }).default;
+  const ConfirmModal = load("../../../../../ui/ConfirmModal.jsx", {
+    "@/components/Modal": defaultExport(Modal),
+    "@heroicons/react/24/outline": { CheckIcon: "CheckIcon", XMarkIcon: "XMarkIcon" },
+  }).default;
   const data = { data: [{ id: 2 }, { id: 3 }], meta: { total: 2, page: 1, totalPages: 1 } };
   const Layout = load("./UsersLayout.jsx", {
     "@/components/PagesNumber": defaultExport("PagesNumber"),
@@ -115,24 +120,30 @@ function harness() {
     },
     "./UsersListTable": defaultExport("UsersListTable"),
     "@/components/Loading": defaultExport("Loading"), "@/components/Error": defaultExport("Error"),
-    "@/components/NotExisted": defaultExport("NotExisted"), "@/components/Modal": defaultExport(Modal),
+    "@/components/NotExisted": defaultExport("NotExisted"), "@/ui/ConfirmModal": defaultExport(ConfirmModal),
     "@/utils/toPersianNumbers": { toPersianNumbers: String },
     "react-hot-toast": defaultExport({ success: (message) => toasts.push(message) }),
   }).default;
   let tree;
   const render = () => tree = component.render(Layout);
-  const dialog = () => find(tree, (node) => node.type === Modal);
+  const dialog = () => {
+    const wrapper = find(tree, (node) => node.type === ConfirmModal);
+    return wrapper && ConfirmModal(wrapper.props);
+  };
   render();
   return {
     requests, invalidations, toasts, render, dialog,
-    open(id = 2) {
+    surface() { return modal.render(() => Modal(dialog().props)); },
+    open(id = 2, accountStatus = "verified") {
       const table = find(tree, (node) => node.type === "UsersListTable");
       assert.equal(table.props.disabled, false);
       // Conditional rendering unmounts Modal on close; a new opening gets new refs.
       modal = runtime(false);
-      table.props.onBan({ id, accountStatus: "verified", fullName: `Fixture ${id}` }); render();
+      table.props.onBan({ id, accountStatus, fullName: `Fixture ${id}` }); render();
     },
-    submit() { return find(dialog().props.children, (node) => node.type === "button" && node.props.className.includes("btn--primary")).props.onClick(); },
+    confirmButton() { return find(dialog().props.children, (node) => node.type === "button" && node.props.className.includes("btn--success")); },
+    cancelButton() { return find(dialog().props.children, (node) => node.type === "button" && node.props.className.includes("btn--primary")); },
+    submit() { return this.confirmButton().props.onClick(); },
     async started() { await requestStarted.promise; requestStarted = deferred(); render(); },
     dismiss(reason) {
       const actual = modal.render(() => Modal(dialog().props));
@@ -142,6 +153,91 @@ function harness() {
     cleanup() { component.unmount(); client.clear(); },
   };
 }
+
+test("the real wrapper forwards action labels into the focus-trapping accessible Modal", () => {
+  const h = harness();
+  try {
+    for (const [status, label] of [["verified", "مسدود کردن حساب کاربر"], ["banned", "رفع مسدودی حساب کاربر"]]) {
+      h.open(2, status);
+      assert.equal(h.dialog().props.accessibleLabel, label);
+      assert.equal(h.confirmButton().props.disabled, false);
+      const surface = h.surface();
+      assert.equal(find(surface, (node) => node.type === "DialogRoot").props.modal, "trap-focus");
+      const popup = find(surface, (node) => node.type === "Popup");
+      assert.equal(popup.props["aria-label"], label);
+      assert.equal(popup.props["aria-modal"], true);
+      assert.equal(popup.props.finalFocus, true);
+      assert.equal(typeof popup.props.initialFocus, "function");
+      h.dismiss("escape-key");
+      assert.equal(h.dialog(), undefined);
+    }
+  } finally { h.cleanup(); }
+});
+
+test("mobile and desktop row actions name Ban/Unban accurately and preserve eligibility", () => {
+  const Table = Object.assign(() => null, { Header: "Header", body: "Body", Row: "Row" });
+  const List = load("./UsersListTable.jsx", {
+    "@/constants/tableHeads": { userDesktopTHeads: [], userMobileTHeads: [] },
+    "@/ui/Table": defaultExport(Table),
+    "@/utils/toLocalDate": { toLocalDateString: () => "fixture-date" },
+    "@/utils/toPersianNumbers": { normalizeIranPhone: String, toPersianNumbers: String },
+    "@/utils/adminUsersContract.mjs": { canChangeUserBan, userAccountStatus },
+    "next/link": defaultExport("Link"),
+    "@heroicons/react/24/solid": { CheckCircleIcon: "CheckCircleIcon", EyeIcon: "EyeIcon" },
+    "@heroicons/react/24/outline": { NoSymbolIcon: "NoSymbolIcon" },
+  }).default;
+  const allButtons = (node) => {
+    if (!node) return [];
+    if (Array.isArray(node)) return node.flatMap(allButtons);
+    return [...(node.type === "button" ? [node] : []), ...allButtons(node.props?.children)];
+  };
+  for (const [status, label] of [["verified", "مسدود کردن کاربر"], ["banned", "رفع مسدودی کاربر"]]) {
+    const user = { id: 2, role: "user", accountStatus: status };
+    const selected = [];
+    const buttons = allButtons(List({ users: [user], actorId: 1, onBan: (target) => selected.push(target) }));
+    assert.equal(buttons.length, 2, "mobile and desktop actions");
+    for (const button of buttons) {
+      assert.equal(button.props["aria-label"], label);
+      assert.equal(button.props.disabled, false);
+      button.props.onClick();
+    }
+    assert.deepEqual(selected, [user, user]);
+    assert.ok(allButtons(List({ users: [user], actorId: 1, disabled: true })).every((button) => button.props.disabled));
+    assert.ok(allButtons(List({ users: [user], actorId: 2 })).every((button) => button.props.disabled));
+  }
+});
+
+test("existing ConfirmModal consumers keep their non-opt-in behavior and callbacks", () => {
+  const Wrapper = load("../../../../../ui/ConfirmModal.jsx", {
+    "@/components/Modal": defaultExport("Modal"),
+    "@heroicons/react/24/outline": { CheckIcon: "CheckIcon", XMarkIcon: "XMarkIcon" },
+  }).default;
+  const clicks = [];
+  const node = Wrapper({ isOpen: true, confirmBtn: () => clicks.push("confirm"), cancellBtn: () => clicks.push("cancel") });
+  assert.equal(node.props.accessibleLabel, undefined);
+  const buttons = node.props.children[1].props.children;
+  assert.equal(buttons[1].props.disabled, false);
+  assert.equal(buttons[1].props["aria-busy"], undefined);
+  assert.equal(buttons[1].props.type, "submit");
+  buttons[0].props.onClick(); buttons[1].props.onClick();
+  assert.deepEqual(clicks, ["cancel", "confirm"]);
+});
+
+test("pending confirmation is disabled and busy, while Cancel stays available", async () => {
+  const h = harness();
+  try {
+    h.open(); const pending = h.submit(); await h.started();
+    assert.equal(h.confirmButton().props.disabled, true);
+    assert.equal(h.confirmButton().props["aria-busy"], true);
+    assert.ok(find(h.confirmButton(), (node) => node.props?.children === "در حال ثبت…"));
+    assert.notEqual(h.cancelButton().props.disabled, true);
+    h.cancelButton().props.onClick(); h.render();
+    assert.equal(h.dialog(), undefined);
+    h.requests[0].reject(Error("synthetic failure")); await pending; h.render();
+    assert.equal(h.dialog(), undefined);
+    assert.deepEqual(h.toasts, []);
+  } finally { h.cleanup(); }
+});
 
 for (const reason of ["escape-key", "outside-press"]) {
   test(`${reason}: pending dismissal closes; late failure cannot restore dialog/error`, async () => {
@@ -164,7 +260,7 @@ for (const successful of [true, false]) {
       const replacement = h.dialog();
       if (successful) h.requests[0].resolve({ id: 2, isBanned: true }); else h.requests[0].reject(Error("synthetic failure"));
       await old; h.render();
-      assert.ok(h.dialog()); assert.deepEqual(h.dialog().props.children[0].props.children, replacement.props.children[0].props.children);
+      assert.ok(h.dialog()); assert.deepEqual(h.dialog().props.children[0], replacement.props.children[0]);
       assert.equal(h.error(), undefined); assert.deepEqual(h.toasts, []);
       assert.equal(h.invalidations.length, successful ? 3 : 0);
       const fresh = h.submit(); await h.started(); assert.equal(h.requests[1].payload.id, 3);

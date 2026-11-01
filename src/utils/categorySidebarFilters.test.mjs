@@ -5,6 +5,9 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { createRequire } from "node:module";
+import * as filterContract from "./productFilterContract.mjs";
+import * as concentrationContract from "./productConcentration.mjs";
 import {
   SIDEBAR_PRICE_RANGES,
   buildQueryFromFilters,
@@ -111,4 +114,69 @@ test("the sidebar uses the shared presets, selection, apply rule and gender link
   assert.match(sidebar, /\{activeGender && \(/);
   assert.match(sidebar, /router\.replace\(genderProductsHref\(activeGender\.slug\)\);/);
   assert.doesNotMatch(sidebar, /gender=\$\{/);
+});
+
+test("the real sidebar keeps URL-loaded temperature selection, replacement, Cancel and Apply single-valued", () => {
+  const require = createRequire(import.meta.url);
+  const { transformSync } = require("next/dist/build/swc");
+  let state = hydrate("temperature=cool&search=rose&page=3");
+  let current = new URLSearchParams("temperature=cool&search=rose&page=3");
+  const actions = [], navigations = [];
+  const categories = [{ id: 1, slug: "cool", title: "سرد" }, { id: 2, slug: "warm", title: "گرم" }];
+  const dependencies = {
+    react: { useState: () => [false, () => {}] },
+    "@/hooks/useFilters": { useFilters: () => ({ state, dispatch: (action) => { actions.push(action); state = filtersReducer(state, action); } }) },
+    "@/hooks/useCategories": {
+      useGetAllBrandCategories: () => ({ data: [], isPending: false }),
+      useGetStorefrontCategoriesByType: (type) => ({ data: type === "temperature" ? categories : [], isPending: false }),
+    },
+    "@/hooks/useProducts": { useGetProductVolumeOptions: () => ({ data: { data: [] }, isPending: false }) },
+    "@/contexts/Sidebars/SidebarContext": { useSidebar: () => ({ isCategoryOpen: true, closeCategory() {} }) },
+    "@/utils/productFilterContract.mjs": filterContract,
+    "@/utils/productConcentration.mjs": concentrationContract,
+    "@/utils/queryFilters": { buildQueryFromFilters },
+    "@/utils/toPersianNumbers": { toPersianNumbers: String },
+    "next/navigation": { useRouter: () => ({ replace: (url) => navigations.push(url) }), useSearchParams: () => current },
+  };
+  const { code } = transformSync(readFileSync(new URL("../app/(user)/_components/CategorySidebar.jsx", import.meta.url), "utf8"), {
+    filename: "CategorySidebar.jsx", module: { type: "commonjs" },
+    jsc: { parser: { syntax: "ecmascript", jsx: true }, transform: { react: { runtime: "automatic" } } },
+  });
+  const exports = {};
+  new Function("require", "exports", code)((name) => dependencies[name] ?? (name.startsWith("@/") ? { __esModule: true, default: name } : require(name)), exports);
+  function find(node, predicate) {
+    if (!node) return undefined;
+    if (Array.isArray(node)) return node.map((child) => find(child, predicate)).find(Boolean);
+    return predicate(node) ? node : find(node.props?.children, predicate);
+  }
+  const temperatureButton = (slug) => {
+    const group = find(exports.default(), (node) => node.props?.fieldsetId === "temperature-value");
+    const index = categories.findIndex((category) => category.slug === slug);
+    const button = group.props.children[index];
+    assert.equal(button.type, "button", "temperature must use the single-choice UI branch");
+    return button;
+  };
+  assert.equal(temperatureButton("cool").props["aria-pressed"], true);
+  temperatureButton("cool").props.onClick();
+  assert.equal(state.draft.temperature, null);
+  assert.equal(actions.at(-1).type, "SET_ITEM");
+  const cancel = find(exports.default(), (node) => node.type === "button" && node.props.children?.props?.children === "انصراف");
+  assert.ok(cancel);
+  cancel.props.onClick();
+  assert.equal(temperatureButton("cool").props["aria-pressed"], true, "Cancel restores URL selection");
+  temperatureButton("warm").props.onClick();
+  assert.equal(state.draft.temperature, "warm");
+  assert.equal(temperatureButton("cool").props["aria-pressed"], false);
+  const form = find(exports.default(), (node) => node.type === "form");
+  const apply = find(form, (node) => node.type === "button" && node.props.children?.props?.children === "اعمال فیلتر");
+  // The component's Apply button calls submitFilters directly.
+  assert.ok(apply, "actual Apply control exists");
+  apply.props.onClick();
+  current = new URL(navigations.at(-1), "http://localhost").searchParams;
+  assert.deepEqual(current.getAll("temperature"), ["warm"]);
+  assert.equal(current.get("search"), "rose");
+  assert.equal(current.get("page"), null);
+  state = filtersReducer(state, { type: "HYDRATE_FROM_URL", payload: getFiltersFromSearchParams(current) });
+  assert.equal(state.applied.temperature, "warm");
+  assert.equal(temperatureButton("warm").props["aria-pressed"], true);
 });

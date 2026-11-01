@@ -410,7 +410,10 @@ function CategorySidebar() {
                             checkId={`${key}-${category.slug}`}
                             name={key}
                             label={category.title}
-                            checked={state.draft[key].includes(category.slug)}
+                            checked={
+                              state.draft[key] &&
+                              state.draft[key].includes(category.slug)
+                            }
                             onChange={() =>
                               addFilter("SET_ITEMS", key, category.slug)
                             }

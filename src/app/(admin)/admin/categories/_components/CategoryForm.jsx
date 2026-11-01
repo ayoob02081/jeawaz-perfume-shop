@@ -15,7 +15,7 @@ const categoryLabels = {
   fragrance_family: "خانواده بویایی",
   gender: "جنسیت",
   season: "فصل",
-  temperature: "دما",
+  temperature: "طبع",
   character: "شخصیت رایحه",
   occasion: "موقعیت استفاده",
 };

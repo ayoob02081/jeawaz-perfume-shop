@@ -219,7 +219,7 @@ export function ProfileLink({
   if (profileMode) {
     return (
       <li className=" flex flex-col items-center justify-center size-full px-4 lg:px-2">
-        <div className="flex items-center justify-start py-4 lg:pt-6 size-full rounded-3xl">
+        <div className="flex items-center justify-start py-4 size-full rounded-3xl">
           <div className="flex items-center max-lg:justify-between justify-center group-hover:lg:justify-start 2xl:justify-start w-full h-full group-hover:lg:gap-12 2xl:gap-12 transition-all duration-200">
             <Link
               onClick={closeSidebar}

@@ -246,11 +246,11 @@ test("storefront taxonomy options come from the inactive-free hook in both filte
   }
   assert.deepEqual(TAXONOMY_FILTER_GROUPS.map(({ key, type, label, multiple }) =>
     [key, type, label, multiple]), [
+    ["gender", "gender", "جنسیت", false],
     ["seasons", "season", "فصل", true],
     ["characters", "character", "شخصیت", true],
-    ["occasions", "occasion", "موقعیت استفاده", true],
     ["temperature", "temperature", "طبع", false],
-    ["gender", "gender", "جنسیت", false],
+    ["occasions", "occasion", "موقعیت استفاده", true],
   ]);
   assert.equal(CONCENTRATION_FILTER_LABEL, "غلظت");
   // The modal renders gender through the shared groups with storefront options.

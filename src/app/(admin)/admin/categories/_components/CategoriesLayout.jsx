@@ -30,7 +30,7 @@ const categoriesMode = [
     value: "gender",
   },
   { id: 4, label: "فصل‌ها", value: "season" },
-  { id: 5, label: "دما", value: "temperature" },
+  { id: 5, label: "طبع", value: "temperature" },
   { id: 6, label: "شخصیت رایحه", value: "character" },
   { id: 7, label: "موقعیت استفاده", value: "occasion" },
 ];

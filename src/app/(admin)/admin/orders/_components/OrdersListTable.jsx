@@ -181,7 +181,7 @@ function OrdersListTable({
     <div className="flex flex-col gap-4 rounded-2xl p-4 pt-0 overflow-hidden w-full">
       {status !== undefined && (
         <div className="flex items-center justify-between w-full gap-4">
-          {nextPossibleBulkStatuses?.length > 0 && (
+          {/* {nextPossibleBulkStatuses?.length > 0 && (
             <button
               type="button"
               onClick={addAll}
@@ -201,7 +201,7 @@ function OrdersListTable({
               </span>
               <p>انتخاب همه</p>
             </button>
-          )}
+          )} */}
           {!isLoading && orders?.length >= 1 && status === "READY_TO_PRINT" && (
             <button
               type="submit"
@@ -236,6 +236,35 @@ function OrdersListTable({
           <>
             <Table className="md:hidden overflow-auto">
               <Table.Header>
+                <th className="whitespace-nowrap table__th px-0">
+                  {nextPossibleBulkStatuses.length > 0 && (
+                  <button
+                    type="button"
+                    aria-label={isAllSelected ? "لغو انتخاب همه سفارش‌ها" : "انتخاب همه سفارش‌ها"}
+                    onClick={addAll}
+                    disabled={
+                      !nextPossibleBulkStatuses ||
+                      orders?.length <= 0 ||
+                      isStale
+                    }
+                    className={`btn  px-3 py-1 disabled:opacity-60 w-fit gap-2 hover:*:odd:border-stroke-0 ${
+                      isAllSelected
+                        ? "font-bold hover:*:text-primary hover:*:even:text-stroke-0 hover:*:odd:bg-stroke-0 "
+                        : "text-stroke-600  hover:text-stroke-0"
+                    }`}
+                  >
+                    <div
+                      className={`flex items-center justify-center size-4 border rounded-sm  ${
+                        isAllSelected
+                          ? "border-primary bg-white text-primary"
+                          : "border-stroke-0 text-transparent "
+                      } transition-all duration-200`}
+                    >
+                      <CheckIcon className=" size-2.5 stroke-4 " />
+                    </div>
+                  </button>
+                  )}
+                </th>
                 {orderMobileTHeads.map((item) => (
                   <th className="whitespace-nowrap table__th" key={item.id}>
                     {item.label}
@@ -252,17 +281,25 @@ function OrdersListTable({
                   return (
                     <Table.Row key={order.id} className="even:bg-primary/5">
                       <td className="pl-2 pr-3 w-fit text-center rounded-r-xl">
-                        <div className="flex flex-col items-center justify-between gap-2 text-stroke-800">
-                          {toPersianNumbers(index + 1)}
-                          <OrderCheckbox
-                            order={order}
-                            status={status}
-                            handleOrderIds={handleOrderIds}
-                            orderIds={orderIds}
-                          />
-                        </div>
+                        <OrderCheckbox
+                          order={order}
+                          status={status}
+                          handleOrderIds={handleOrderIds}
+                          orderIds={orderIds}
+                        />
                       </td>
-                      <td className="table__td px-2 max-w-70 truncate">
+                      <td className="pl-2 pr-3 w-fit text-center">
+                        <OrderCheckbox
+                          order={order}
+                          status={status}
+                          handleOrderIds={handleOrderIds}
+                          orderIds={orderIds}
+                          showBox={false}
+                        >
+                          {toPersianNumbers(index + 1)}
+                        </OrderCheckbox>
+                      </td>
+                      <td className="table__td pl-2 pr-0 max-w-70 truncate">
                         <div className="flex flex-col items-center justify-center gap-1">
                           <p>{order?.shipping?.receiver || "اسمی ثبت نشده"}</p>
                           <Link
@@ -289,7 +326,9 @@ function OrdersListTable({
                             {currentStatus?.title}
                           </p>
                           <PaymentAttentionBadges
-                            attention={getAdminPaymentAttention(order?.payments)}
+                            attention={getAdminPaymentAttention(
+                              order?.payments,
+                            )}
                           />
                         </div>
                       </td>
@@ -321,6 +360,35 @@ function OrdersListTable({
             </Table>
             <Table className="max-md:hidden overflow-auto">
               <Table.Header>
+                <th className="whitespace-nowrap table__th px-0">
+                  {nextPossibleBulkStatuses.length > 0 && (
+                  <button
+                    type="button"
+                    aria-label={isAllSelected ? "لغو انتخاب همه سفارش‌ها" : "انتخاب همه سفارش‌ها"}
+                    onClick={addAll}
+                    disabled={
+                      !nextPossibleBulkStatuses ||
+                      orders?.length <= 0 ||
+                      isStale
+                    }
+                    className={`btn  px-3 py-1 disabled:opacity-60 w-fit gap-2 hover:*:odd:border-stroke-0 ${
+                      isAllSelected
+                        ? "font-bold hover:*:text-primary hover:*:even:text-stroke-0 hover:*:odd:bg-stroke-0 "
+                        : "text-stroke-600  hover:text-stroke-0"
+                    }`}
+                  >
+                    <div
+                      className={`flex items-center justify-center size-4 border rounded-sm  ${
+                        isAllSelected
+                          ? "border-primary bg-white text-primary"
+                          : "border-stroke-0 text-transparent "
+                      } transition-all duration-200`}
+                    >
+                      <CheckIcon className=" size-2.5 stroke-4 " />
+                    </div>
+                  </button>
+                  )}
+                </th>
                 {orderDesktopTHeads.map((item) => (
                   <th className="whitespace-nowrap table__th" key={item.id}>
                     {item.label}
@@ -337,18 +405,34 @@ function OrdersListTable({
                   return (
                     <Table.Row key={order.id} className="even:bg-primary/5">
                       <td className="pl-2 pr-3 w-fit text-center rounded-r-xl">
-                        <div className="flex items-center justify-between gap-2 text-stroke-800">
-                          <OrderCheckbox
-                            order={order}
-                            status={status}
-                            handleOrderIds={handleOrderIds}
-                            orderIds={orderIds}
-                          />
+                        <OrderCheckbox
+                          order={order}
+                          status={status}
+                          handleOrderIds={handleOrderIds}
+                          orderIds={orderIds}
+                        />
+                      </td>
+                      <td className="pl-2 pr-3 w-fit text-center">
+                        <OrderCheckbox
+                          order={order}
+                          status={status}
+                          handleOrderIds={handleOrderIds}
+                          orderIds={orderIds}
+                          showBox={false}
+                        >
                           {toPersianNumbers(index + 1)}
-                        </div>
+                        </OrderCheckbox>
                       </td>
                       <td className="table__td px-2 max-w-70 truncate">
-                        <p>{order?.shipping?.receiver || "اسمی ثبت نشده"}</p>
+                        <OrderCheckbox
+                          order={order}
+                          status={status}
+                          handleOrderIds={handleOrderIds}
+                          orderIds={orderIds}
+                          showBox={false}
+                        >
+                          <p className="flex items-center justify-center w-full">{order?.shipping?.receiver || "اسمی ثبت نشده"}</p>
+                        </OrderCheckbox>
                       </td>
                       <td className="table__td px-2">
                         <Link
@@ -376,7 +460,9 @@ function OrdersListTable({
                             {currentStatus?.title}
                           </p>
                           <PaymentAttentionBadges
-                            attention={getAdminPaymentAttention(order?.payments)}
+                            attention={getAdminPaymentAttention(
+                              order?.payments,
+                            )}
                           />
                         </div>
                       </td>
@@ -528,14 +614,25 @@ function StatusButtons({
   );
 }
 
-function OrderCheckbox({ order, status, handleOrderIds, orderIds }) {
+function OrderCheckbox({
+  order,
+  status,
+  handleOrderIds,
+  orderIds,
+  showBox = true,
+  children,
+}) {
   const isChecked = orderIds.includes(order.id);
+  const selectable =
+    status === "PENDING" ||
+    status === "PAID" ||
+    status === "READY_TO_PRINT" ||
+    status === "PRINTED";
+
+  // Text cells remain present even when this view does not permit selection.
+  if (!selectable) return showBox ? null : children;
 
   return (
-    (status === "PENDING" ||
-      status === "PAID" ||
-      status === "READY_TO_PRINT" ||
-      status === "PRINTED") && (
       <CheckBox
         id={order.id}
         value={order.id}
@@ -544,12 +641,15 @@ function OrderCheckbox({ order, status, handleOrderIds, orderIds }) {
         className="flex flex-row! items-center justify-between font-bold"
         onChange={handleOrderIds}
       >
-        <div
-          className={`flex items-center justify-center size-4 border rounded-sm  ${isChecked ? "border-primary bg-primary text-white" : "border-stroke-600 text-transparent "} transition-all duration-200`}
-        >
-          <CheckIcon className=" size-2.5 stroke-4 " />
-        </div>
+        {showBox ? (
+          <div
+            className={`flex items-center justify-center size-4 border rounded-sm ${isChecked ? "border-primary bg-primary text-white" : "border-stroke-600 text-transparent "} transition-all duration-200`}
+          >
+            <CheckIcon className=" size-2.5 stroke-4 " />
+          </div>
+        ) : (
+          children
+        )}
       </CheckBox>
-    )
   );
 }

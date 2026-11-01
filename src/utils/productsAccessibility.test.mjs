@@ -57,7 +57,7 @@ test("every icon-only filter panel arrow has a Persian action name and retains i
     arrow.props.onClick();
   }
   assert.equal(names.size, arrows.length);
-  assert.deepEqual(modes, ["brand", "fragranceFamilies", "seasons", "characters", "occasions", "temperature", "gender", "type", "concentrations", "volume"]);
+  assert.deepEqual(modes, ["brand", "fragranceFamilies", "gender", "seasons", "characters", "temperature", "occasions", "type", "concentrations", "volume"]);
 });
 
 test("selected filters retain their action names, selected controls and unchanged markup classes", () => {

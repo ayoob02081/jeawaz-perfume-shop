@@ -91,7 +91,7 @@ function AdaptiveOverlayPage({
               justify={justify}
             />
           </div>
-          <div className="max-sm:p-4 sm:p-6">{children}</div>
+          <div className="max-sm:p-4 sm:p-6 sm:pt-4 lg:pt-0">{children}</div>
         </div>
       </div>
     );

@@ -32,13 +32,8 @@ import {
 } from "@/utils/headerSearch.mjs";
 
 function HeaderLayout() {
-  const {
-    isCategoryOpen,
-    openSidebar,
-    toggleSidebar,
-    toggleCategory,
-    warmCategory,
-  } = useSidebar();
+  const { isCategoryOpen, openSidebar, toggleCategory, warmCategory } =
+    useSidebar();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -236,7 +231,7 @@ function DesktopHeader({
     <nav className="max-lg:hidden relative lg:fixed top-0 h-fit container mx-auto xl:max-w-7xl p-4 rounded-b-4xl bg-stroke-0 shadow-md shadow-black/10 dark:shadow-black/20 z-90 duration-200">
       <div className="flex flex-col justify-between gap-6">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex grow items-center justify-betwee gap-4">
+          <div className="flex grow items-center justify-betwee gap-3">
             <ul className="flex grow items-center justify-between">
               <li className=" justify-items-center">
                 <Link className="block p-2" href="/">
@@ -381,9 +376,11 @@ function DesktopHeader({
                   onFocus={warmCategory}
                   disabled={isCategoryOpen}
                 >
-                  <Squares2X2Icon className="size-6" />
-                  <p className="text-xs lg:text-sm">دسته بندی ها</p>
-                  <ChevronDownIcon className="size-4" />
+                  <Squares2X2Icon className="size-6 stroke-2" />
+                  <p className="text-xs lg:text-sm font-bold">دسته بندی ها</p>
+                  <ChevronDownIcon
+                    className={`size-4 stroke-3 ${isCategoryOpen ? "rotate-180" : "rotate-0"} transition-all duration-200`}
+                  />
                 </button>
               </li>
             </ul>
@@ -506,10 +503,7 @@ function MobileHeader({
             )}
           </button>
         </li>
-        <li
-          className="px-2 flex-1 max-sm:pl-0 max-sm:w-full h-full backdrop-blur-md bg-stroke-800/5 border-2 border-stroke-0/5
-            shadow-md shadow-black/10 rounded-full"
-        >
+        <li className="px-2 flex-1 max-sm:pl-0 max-sm:w-full h-full backdrop-blur-md bg-stroke-800/5 border-2 border-stroke-0/5 shadow-md shadow-black/10 rounded-full">
           <div className="max-sm:flex items-center justify-between gap-1 h-full">
             <Link
               className="flex items-center justify-center size-full max-sm:hidden max-sm:pr-1 sm:px-2"

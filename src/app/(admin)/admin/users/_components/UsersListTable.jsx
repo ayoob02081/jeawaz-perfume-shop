@@ -2,9 +2,16 @@ import { userDesktopTHeads, userMobileTHeads } from "@/constants/tableHeads";
 import Table from "@/ui/Table";
 import { toLocalDateString } from "@/utils/toLocalDate";
 import { normalizeIranPhone, toPersianNumbers } from "@/utils/toPersianNumbers";
-import { EyeIcon } from "@heroicons/react/24/solid";
-import { canChangeUserBan, userAccountStatus } from "@/utils/adminUsersContract.mjs";
+import {
+  CheckCircleIcon,
+  EyeIcon,
+} from "@heroicons/react/24/solid";
+import {
+  canChangeUserBan,
+  userAccountStatus,
+} from "@/utils/adminUsersContract.mjs";
 import Link from "next/link";
+import { NoSymbolIcon } from "@heroicons/react/24/outline";
 
 function UsersListTable({ users, rowOffset = 0, actorId, disabled, onBan }) {
   return (
@@ -26,10 +33,12 @@ function UsersListTable({ users, rowOffset = 0, actorId, disabled, onBan }) {
                     <td className="table__td font-bold rounded-r-xl px-2">
                       {toPersianNumbers(rowOffset + index + 1)}
                     </td>
-                    <td className="table__td px-2 max-w-70 min-w-40 text-wrap">
-                      <p>{user?.fullName || "اسمی ثبت نشده"}</p>
+                    <td className="table__td px-2 max-w-35 text-wrap">
+                      <p className="w-full flex items-center justify-start overflow-x-auto py-px text-nowrap scrollbar-none">
+                        {user?.fullName || "اسمی ثبت نشده"}
+                      </p>
                     </td>
-                    <td className="table__td px-2">
+                    <td className="table__td px-2 max-w-40">
                       <div className="flex flex-col items-center justify-center gap-2">
                         <Link
                           href={
@@ -40,7 +49,16 @@ function UsersListTable({ users, rowOffset = 0, actorId, disabled, onBan }) {
                           {normalizeIranPhone(user?.phoneNumber) ||
                             "شماره‌ای ثبت نشده"}
                         </Link>
-                        <p>{user?.email || "ایمیلی ثبت نشده"}</p>
+                        {user?.email ? (
+                          <p
+                            dir="ltr"
+                            className="w-full flex items-center justify-start overflow-x-auto py-px scrollbar-none"
+                          >
+                            {user?.email}
+                          </p>
+                        ) : (
+                          "ایمیلی ثبت نشده"
+                        )}
                       </div>
                     </td>
                     <td className="table__td px-2">
@@ -79,9 +97,14 @@ function UsersListTable({ users, rowOffset = 0, actorId, disabled, onBan }) {
                         type="button"
                         disabled={disabled || !canChangeUserBan(user, actorId)}
                         onClick={() => onBan(user)}
-                        className="flex items-center justify-center text-stroke-450 hover:text-primary duration-200 disabled:opacity-40 text-sm whitespace-nowrap"
+                        aria-label={user.accountStatus === "banned" ? "رفع مسدودی کاربر" : "مسدود کردن کاربر"}
+                        className="flex items-center justify-center disabled:opacity-40 text-sm whitespace-nowrap"
                       >
-                        {user.accountStatus === "banned" ? "رفع مسدودی" : "مسدود کردن"}
+                        {user.accountStatus === "banned" ? (
+                          <CheckCircleIcon className=" size-5 text-stroke-450 hover:text-success duration-200" />
+                        ) : (
+                          <NoSymbolIcon className="stroke-3 size-5 text-primary/70 hover:text-primary duration-200" />
+                        )}
                       </button>
                     </td>
                   </Table.Row>
@@ -119,8 +142,17 @@ function UsersListTable({ users, rowOffset = 0, actorId, disabled, onBan }) {
                           "شماره‌ای ثبت نشده"}
                       </Link>
                     </td>
-                    <td className="table__td px-2 max-w-70 truncate">
-                      {user?.email || "ایمیلی ثبت نشده"}
+                    <td className="table__td px-4 max-w-40 truncate">
+                      {user?.email ? (
+                        <p
+                          dir="ltr"
+                          className="w-full flex items-center justify-start overflow-x-auto py-px scrollbar-none"
+                        >
+                          {user?.email}
+                        </p>
+                      ) : (
+                        "ایمیلی ثبت نشده"
+                      )}
                     </td>
                     <td className="table__td px-2">
                       <p
@@ -159,9 +191,14 @@ function UsersListTable({ users, rowOffset = 0, actorId, disabled, onBan }) {
                         type="button"
                         disabled={disabled || !canChangeUserBan(user, actorId)}
                         onClick={() => onBan(user)}
-                        className="flex items-center justify-center text-stroke-450 hover:text-primary duration-200 disabled:opacity-40 text-sm whitespace-nowrap"
+                        aria-label={user.accountStatus === "banned" ? "رفع مسدودی کاربر" : "مسدود کردن کاربر"}
+                        className="flex items-center justify-center disabled:opacity-40 text-sm whitespace-nowrap"
                       >
-                        {user.accountStatus === "banned" ? "رفع مسدودی" : "مسدود کردن"}
+                        {user.accountStatus === "banned" ? (
+                          <CheckCircleIcon className=" size-5 text-stroke-450 hover:text-success duration-200" />
+                        ) : (
+                          <NoSymbolIcon className="stroke-3 size-5 text-primary/70 hover:text-primary duration-200" />
+                        )}
                       </button>
                     </td>
                   </Table.Row>

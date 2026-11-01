@@ -186,7 +186,10 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
               </div>
               <div className="w-full mb-4">
                 <div className="flex flex-wrap max-md:items-start justify-start gap-4 w-full mb-4">
-                  <OrderDetail label="زمان ارسال مرسوله :" title="۱ روز کاری" />
+                  <OrderDetail
+                    label="زمان ارسال مرسوله :"
+                    title="۱ تا ۲ روز کاری"
+                  />
                   <OrderDetail
                     label="کد پیگیری سفارش :"
                     title={toPersianNumbers(orderNumber)}
@@ -264,31 +267,38 @@ function SingleOrderPage({ order, isOrderLoading, admin }) {
                   </Link>
                 ))}
               </div>
-              <div className="flex items-center flex-wrap justify-start p-4 max-sm:py-3 max-sm:mt-4 mt-6 bg-warning/20 dark:bg-stroke-900 rounded-xl text-start text-stroke-800">
-                <div>
-                  در صورت عدم دریافت پیامک کد رهگیری مرسوله، لطفا{" "}
-                  <span>
-                    به{" "}
-                    <Link
-                      className="px-1 text-primary font-bold"
-                      href="https://t.me/jeaawazperfume"
-                    >
-                      کانال تلگرام جیاواز
-                    </Link>{" "}
-                    مراجعه کنید و یا{" "}
-                  </span>
-                  <span>
-                    به شماره{" "}
-                    <Link
-                      className="px-1 text-primary font-bold"
-                      href="tel:+989302125151"
-                    >
-                      ۰۹۳۰۲۱۲۵۱۵۱
-                    </Link>
-                    در واتساپ یا روبیکا پیام دهید.
-                  </span>
-                </div>
-              </div>
+            </div>
+          </div>
+          <div className="flex items-center flex-wrap justify-start p-4 max-sm:py-3 max-sm:mt-4 mt-6 bg-warning/20 dark:bg-stroke-900 rounded-xl text-start text-stroke-800">
+            <div>
+              در صورت عدم دریافت پیامک کد رهگیری مرسوله، لطفا{" "}
+              <span>
+                به{" "}
+                <Link
+                  className="text-primary font-bold"
+                  href="https://t.me/jeaawazperfume"
+                >
+                  کانال تلگرام جیاواز (t.me/jeaawazperfume)
+                </Link>{" "}
+                مراجعه کنید و یا{" "}
+              </span>
+              <span>
+                با شماره‌های{" "}
+                <Link
+                  className="px-1 text-primary font-bold"
+                  href="tel:+989185987446"
+                >
+                  ۰۹۱۸۵۹۸۷۴۴۶
+                </Link>
+                و
+                <Link
+                  className="px-1 text-primary font-bold"
+                  href="tel:+989302125151"
+                >
+                  ۰۹۳۰۲۱۲۵۱۵۱
+                </Link>
+                در تماس باشید.
+              </span>
             </div>
           </div>
         </div>

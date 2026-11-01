@@ -4,16 +4,23 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAdminUsers, useSetUserBan } from "@/hooks/useUsers";
 import { useAuth } from "@/contexts/auth/AuthContext";
-import { sessionLifecycle, isSessionSuperseded } from "@/utils/sessionLifecycle.mjs";
+import {
+  sessionLifecycle,
+  isSessionSuperseded,
+} from "@/utils/sessionLifecycle.mjs";
 import { getSafeApiErrorMessage } from "@/utils/profileFormContract.mjs";
-import { ADMIN_USERS_LIMITS, nextAdminUsersSearch, parseAdminUsersQuery } from "@/utils/adminUsersContract.mjs";
+import {
+  ADMIN_USERS_LIMITS,
+  nextAdminUsersSearch,
+  parseAdminUsersQuery,
+} from "@/utils/adminUsersContract.mjs";
 import UsersListTable from "./UsersListTable";
 import Loading from "@/components/Loading";
 import Error from "@/components/Error";
 import NotExisted from "@/components/NotExisted";
-import Modal from "@/components/Modal";
 import { toPersianNumbers } from "@/utils/toPersianNumbers";
 import toast from "react-hot-toast";
+import ConfirmModal from "@/ui/ConfirmModal";
 import PagesNumber from "@/components/PagesNumber";
 
 function UsersLayout() {
@@ -23,7 +30,9 @@ function UsersLayout() {
   const search = params.toString();
   const query = useMemo(() => parseAdminUsersQuery(params), [params]);
   const { user, sessionReady } = useAuth();
-  const { data, isPending, isFetching, error, refetch } = useAdminUsers(query, { enabled: sessionReady && user?.role === "admin" });
+  const { data, isPending, isFetching, error, refetch } = useAdminUsers(query, {
+    enabled: sessionReady && user?.role === "admin",
+  });
   const ban = useSetUserBan();
   const [selected, setSelected] = useState(null);
   const [draft, setDraft] = useState(query.search);
@@ -40,7 +49,10 @@ function UsersLayout() {
     const next = nextAdminUsersSearch(latestSearch.current, changes);
     if (next === latestSearch.current) return;
     latestSearch.current = next;
-    router[replace ? "replace" : "push"](next ? `${pathname}?${next}` : pathname, { scroll: false });
+    router[replace ? "replace" : "push"](
+      next ? `${pathname}?${next}` : pathname,
+      { scroll: false },
+    );
   }
 
   function closeBanDialog() {
@@ -59,17 +71,31 @@ function UsersLayout() {
 
   useEffect(() => {
     mounted.current = true;
-    return () => { mounted.current = false; dialogEpoch.current += 1; };
+    return () => {
+      mounted.current = false;
+      dialogEpoch.current += 1;
+    };
   }, []);
   // URL changes (including Back/Forward) cancel a pending search debounce.
-  useEffect(() => { setDraft(query.search); closeBanDialog(); }, [search, query.search]);
+  useEffect(() => {
+    setDraft(query.search);
+    closeBanDialog();
+  }, [search, query.search]);
   useEffect(() => {
     if (draft === query.search) return undefined;
-    const timer = setTimeout(() => navigate({ search: draft.trim().replace(/\s+/g, " ") }, true), 350);
+    const timer = setTimeout(
+      () => navigate({ search: draft.trim().replace(/\s+/g, " ") }, true),
+      350,
+    );
     return () => clearTimeout(timer);
   }, [draft, query.search, search]);
   useEffect(() => {
-    if (!isFetching && !error && meta && query.page > Math.max(1, meta.totalPages)) {
+    if (
+      !isFetching &&
+      !error &&
+      meta &&
+      query.page > Math.max(1, meta.totalPages)
+    ) {
       navigate({ page: Math.max(1, meta.totalPages) }, true);
     }
   }, [isFetching, error, meta, query.page]);
@@ -81,46 +107,99 @@ function UsersLayout() {
     const opening = dialogEpoch.current;
     setBanError("");
     try {
-      await ban.mutateAsync({ id: selected.id, isBanned: selected.accountStatus !== "banned", generation });
+      await ban.mutateAsync({
+        id: selected.id,
+        isBanned: selected.accountStatus !== "banned",
+        generation,
+      });
       sessionLifecycle.assertCurrent(generation, true);
       if (!mounted.current || dialogEpoch.current !== opening) return;
       closeBanDialog();
       toast.success("وضعیت کاربر به‌روزرسانی شد");
     } catch (cause) {
-      if (mounted.current && dialogEpoch.current === opening && sessionLifecycle.current(generation) && !isSessionSuperseded(cause)) {
-        setBanError(getSafeApiErrorMessage(cause, "تغییر وضعیت کاربر ناموفق بود"));
+      if (
+        mounted.current &&
+        dialogEpoch.current === opening &&
+        sessionLifecycle.current(generation) &&
+        !isSessionSuperseded(cause)
+      ) {
+        setBanError(
+          getSafeApiErrorMessage(cause, "تغییر وضعیت کاربر ناموفق بود"),
+        );
       }
-    } finally { pending.current = false; }
+    } finally {
+      pending.current = false;
+    }
   }
 
   return (
-    <div className="space-y-4 w-full px-4 pb-10">
+    <div className="flex flex-col justify-between gap-4 lg:gap-6 max-lg:w-full lg:w-[calc(100%-88px)] 2xl:w-[calc(100%-270px)] px-4 2xl:px-0 pt-0 pb-10">
       <h1 className="font-bold max-sm:text-center text-secndary-900 text-xl max-sm:pb-4 pb-6 text-stroke-800">
         اطلاعات کاربران
       </h1>
       <div className="flex flex-wrap gap-3 items-end">
         <label className="flex flex-col gap-2 grow">
           جستجوی نام، شماره موبایل یا ایمیل
-          <input type="search" value={draft} maxLength={200} onChange={(event) => setDraft(event.target.value)} className="textField__input" />
+          <input
+            type="search"
+            value={draft}
+            maxLength={200}
+            onChange={(event) => setDraft(event.target.value)}
+            className="textField__input"
+          />
         </label>
         <label className="flex flex-col gap-2">
           وضعیت حساب
-          <select value={query.isBanned === undefined ? "" : String(query.isBanned)} onChange={(event) => navigate({ isBanned: event.target.value })} className="textField__input">
-            <option value="">همه</option><option value="false">فعال (مسدود نیست)</option><option value="true">مسدود</option>
+          <select
+            value={query.isBanned === undefined ? "" : String(query.isBanned)}
+            onChange={(event) => navigate({ isBanned: event.target.value })}
+            className="textField__input"
+          >
+            <option value="">همه</option>
+            <option value="false">فعال (مسدود نیست)</option>
+            <option value="true">مسدود</option>
           </select>
         </label>
         <label className="flex flex-col gap-2">
           تعداد در صفحه
-          <select value={query.limit} onChange={(event) => navigate({ limit: Number(event.target.value) })} className="textField__input">
-            {ADMIN_USERS_LIMITS.map((limit) => <option key={limit} value={limit}>{toPersianNumbers(limit)}</option>)}
+          <select
+            value={query.limit}
+            onChange={(event) =>
+              navigate({ limit: Number(event.target.value) })
+            }
+            className="textField__input"
+          >
+            {ADMIN_USERS_LIMITS.map((limit) => (
+              <option key={limit} value={limit}>
+                {toPersianNumbers(limit)}
+              </option>
+            ))}
           </select>
         </label>
       </div>
-      <p role="status">{isFetching ? "در حال دریافت کاربران…" : meta ? `${toPersianNumbers(meta.total)} کاربر` : ""}</p>
-      {error ? <Error onRetry={refetch} /> : isPending ? <Loading /> : (
-        <UsersListTable users={users} rowOffset={(query.page - 1) * query.limit} actorId={user?.id} disabled={!sessionReady || !user || isFetching} onBan={openBanDialog} />
+      <p role="status">
+        {isFetching
+          ? "در حال دریافت کاربران…"
+          : meta
+            ? `${toPersianNumbers(meta.total)} کاربر`
+            : ""}
+      </p>
+      {error ? (
+        <Error onRetry={refetch} />
+      ) : isPending ? (
+        <Loading />
+      ) : (
+        <UsersListTable
+          users={users}
+          rowOffset={(query.page - 1) * query.limit}
+          actorId={user?.id}
+          disabled={!sessionReady || !user || isFetching}
+          onBan={openBanDialog}
+        />
       )}
-      {!error && !isPending && users.length === 0 && <NotExisted className="h-40">کاربری یافت نشد.</NotExisted>}
+      {!error && !isPending && users.length === 0 && (
+        <NotExisted className="h-40">کاربری یافت نشد.</NotExisted>
+      )}
       {meta && !error && meta.totalPages > 1 && (
         <nav
           aria-label="صفحه‌بندی کاربران"
@@ -134,15 +213,35 @@ function UsersLayout() {
           />
         </nav>
       )}
-      {selected && <Modal isOpen={true} accessibleLabel="تغییر وضعیت حساب کاربر" onClose={closeBanDialog} className="h-fit md:w-fit p-6 space-y-5">
-        <p>{selected.accountStatus === "banned" ? "رفع مسدودی" : "مسدود کردن"} حساب {selected.fullName || "کاربر"}؟</p>
-        <p className="text-sm">با مسدود کردن، نشست تازه‌سازی کاربر لغو می‌شود.</p>
-        {banError && <p role="alert" className="text-error">{banError}</p>}
-        <div className="flex gap-3">
-          <button type="button" className="btn btn--primary px-4 py-2" disabled={ban.isPending} onClick={confirmBan}>{ban.isPending ? "در حال ثبت…" : "تایید"}</button>
-          <button type="button" className="btn px-4 py-2" onClick={closeBanDialog}>لغو</button>
-        </div>
-      </Modal>}
+      {selected && (
+        <ConfirmModal
+          accessibleLabel={selected.accountStatus === "banned" ? "رفع مسدودی حساب کاربر" : "مسدود کردن حساب کاربر"}
+          isPending={ban.isPending}
+          cancellBtn={closeBanDialog}
+          confirmBtn={confirmBan}
+          isOpen={true}
+          onClose={closeBanDialog}
+        >
+          <div className="flex flex-col items-center justify-center gap-1 text-stroke-800 max-md:text-xl md:text-2xl">
+            <span className="flex flex-wrap *:text-nowrap items-center justify-center gap-1 max-[30rem]:text-lg font-bold">
+              {selected.accountStatus === "banned" ? (
+                <p className="text-success">رفع مسدودی حساب</p>
+              ) : (
+                <p className="text-primary">مسدود کردن حساب</p>
+              )}
+              <p className="text-blue">{selected.fullName || "کاربر"}</p>؟
+            </span>
+            <p className="max-sm:text-xs text-sm text-stroke-400">
+              در صورت مسدود سازی، کاربر از حساب خود خارج می‌شود.
+            </p>
+          </div>
+          {banError && (
+            <p role="alert" className="text-error">
+              {banError}
+            </p>
+          )}
+        </ConfirmModal>
+      )}
     </div>
   );
 }

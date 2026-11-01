@@ -122,7 +122,7 @@ function FiltersModal({
     switch (mode) {
       case "all":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl md:py-6">
             <div className="flex flex-col justify-between md:gap-4">
               <FilterOption
                 button
@@ -313,7 +313,7 @@ function FiltersModal({
         );
       case "temperature":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl max-md:px-4">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl max-md:px-4 max-md:py-4">
             <SingleCategoryFilter
               mode={mode}
               addFilter={addFilter}
@@ -327,7 +327,7 @@ function FiltersModal({
         );
       case "type":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl max-md:px-4">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl max-md:px-4 max-md:py-4">
             <VariantTypeFilter
               value={state.draft?.type}
               addFilter={addFilter}
@@ -338,7 +338,7 @@ function FiltersModal({
         );
       case "gender":
         return (
-          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl max-md:px-4">
+          <div className="flex flex-col justify-between gap-6 bg-stroke-0 w-full rounded-2.5xl max-md:px-4 max-md:py-4">
             <SingleCategoryFilter
               mode={mode}
               addFilter={addFilter}
@@ -385,7 +385,7 @@ function FiltersModal({
         </div>
         <div className=" border-b-[1.5px] border-stroke-250 max-md:px-4"></div>
       </div>
-      <div className="size-full overflow-y-auto scrollbar-none px-px max-md:py-4 py-6 pb-16!">
+      <div className="size-full overflow-y-auto scrollbar-none px-px pb-16!">
         {renderTypes()}
       </div>
       <div className="absolute flex items-center justify-between md:justify-end flex-row-reverse gap-4 w-full max-w-full px-4 md:px-6 h-10 sm:h-12 left-0 right-0 bottom-4 md:bottom-6 z-10">
@@ -466,7 +466,7 @@ function FilterOption({
               <ChevronLeftIcon className="size-5 text-stroke-800" />
             </button>
           </div>
-          {state.length > 0 && (
+          {state?.length > 0 && (
             <div className="w-full flex flex-wrap items-center justify-start gap-2 ">
               {Array.isArray(state) &&
                 state.map((item) => {
@@ -508,7 +508,6 @@ function BrandsFilter({ state, brands, addFilter }) {
               checkId={brand.value + index}
               label={brand.title}
               imageSrc={brand.iconUrl}
-              // The visible label names the brand; the logo is decorative.
               imageAlt={brand.title ? "" : undefined}
               name={"brandsModalFilter"}
               onChange={() => addFilter("SET_ITEMS", "brandIds", brand.id)}
@@ -634,15 +633,14 @@ function VolumesFilter({ state, volumes, type, addFilter }) {
         const isChecked = state?.includes(item.quantity);
 
         return (
-          <div className="flex flex-col w-full">
+          <div key={item.id} className="flex flex-col w-full">
             <FilterCheckBox
-              key={item.id}
               checkId={item.value + index}
               label={item.title}
               name="volumesModalFilter"
               onChange={() => addFilter("SET_ITEMS", type, item.quantity)}
               checked={isChecked}
-              className="flex flex-row-reverse justify-between text-nowrap text-stroke-800 size-full max-md:py-4 py-6 "
+              className="flex flex-row-reverse justify-between text-nowrap text-stroke-800 size-full py-4 "
               imageClassName="flex items-center justify-end py-1 lg:py-2 rounded-full wfull size-12 duration-200"
               textClassName="text-base"
               checkbox
@@ -673,7 +671,7 @@ function SingleCategoryFilter({
       aria-label={label}
     >
       <div
-        className={`flex items-center gap-2 w-full ${mode ? "" : "max-md:hidden"}`}
+        className={`flex items-center gap-2 w-full max-md:flex-wrap ${mode ? "" : "max-md:hidden"}`}
       >
         {options?.map((category) => (
           <button
@@ -687,7 +685,7 @@ function SingleCategoryFilter({
                 value === category.slug ? null : category.slug,
               )
             }
-            className={`rounded-full px-4 py-2 border text-sm w-full ${
+            className={`rounded-full px-4 py-2 border text-sm w-full text-nowrap ${
               value === category.slug
                 ? "border-primary text-primary font-bold"
                 : "bg-stroke-150 border-stroke-200 text-stroke-600"

@@ -54,7 +54,7 @@ function PagesNumber({ page, setPage, totalPages, isLoading }) {
         onClick={() => safeSetPage(page - 1)}
         className="disabled:opacity-30"
       >
-        <ArrowLeftIcon className="size-5 text-stroke-800" />
+        <ArrowLeftIcon className="size-5 text-stroke-800 stroke-3 hover:text-primary duration-200" />
       </button>
 
       {pages.map((item, index) =>
@@ -86,7 +86,7 @@ function PagesNumber({ page, setPage, totalPages, isLoading }) {
         onClick={() => safeSetPage(page + 1)}
         className="disabled:opacity-30"
       >
-        <ArrowRightIcon className="size-5 text-stroke-800" />
+        <ArrowRightIcon className="size-5 text-stroke-800 stroke-3 hover:text-primary duration-200" />
       </button>
     </section>
   );
