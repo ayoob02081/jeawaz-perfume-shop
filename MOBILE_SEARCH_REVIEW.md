@@ -134,7 +134,7 @@ Task-start fingerprints cover 527 frontend and 539 non-generated backend files.
 Exactly eight intended existing frontend files changed, plus the three new
 feature/test/report files above. All other 519 frontend files and all 539 checked
 backend files remain byte-identical. This includes the complete uncommitted
-pagination implementation/review, owner flower.svg, LoginForm, FiltersModal,
+pagination implementation/review, owner flower.webpp, LoginForm, FiltersModal,
 admin OrdersListTable and audit notes. Owner logo attributes in the deliberately
 modified HeaderLayout remain byte-identical. Graphify output was not touched.
 HEADs remain unchanged, nothing is staged and no release archive was modified.
